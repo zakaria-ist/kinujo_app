@@ -6,11 +6,29 @@ import {
   TextInput,
   Image,
   View,
+  TouchableWithoutFeedback,
 } from "react-native";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import ButtonInBlack from "../assets/CustomButtons/ButtonInBlack";
-export default function LoginScreen() {
+import CustomKinujoWord from "../CustomComponents/CustomKinujoWordWithArrow";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+
+const request = new Request();
+const alert = new CustomAlert();
+
+export default function RegistrationStore(props) {
+  const [nickname, onNicknameChanged] = React.useState("");
+  const [password, onPasswordChanged] = React.useState("");
+  const [confirm_password, onConfirmPasswordChanged] = React.useState("");
+  const [phone, onPhoneChanged] = React.useState("");
+
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -19,10 +37,17 @@ export default function LoginScreen() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{ marginLeft: "5%", marginTop: "10%", width: 30, height: 30 }}
-          source={require("../assets/Images/whiteBackArrow.png")}
-        />
+        <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
+          <Image
+            style={{
+              marginLeft: "5%",
+              marginTop: "10%",
+              width: 20,
+              height: 20,
+            }}
+            source={require("../assets/Images/whiteBackArrow.png")}
+          />
+        </TouchableWithoutFeedback>
         <View
           style={{
             justifyContent: "center",
@@ -30,60 +55,126 @@ export default function LoginScreen() {
             alignItems: "center",
           }}
         >
-          <Image
+          <CustomKinujoWord />
+          <Text
             style={{
-              width: "60%",
-              height: "5%",
-              marginTop: "10%",
+              marginTop: heightPercentageToDP("5%"),
+              color: Colors.white,
+              fontSize: RFValue(24),
             }}
-            source={require("../assets/Images/kinujo.png")}
-          />
-          <Text style={{ marginTop: "30%", color: Colors.white, fontSize: 20 }}>
+          >
             ストアアカウント
           </Text>
-          <Text style={{ marginTop: 10, color: Colors.white, fontSize: 20 }}>
+          <Text
+            style={{
+              marginTop: 5,
+              color: Colors.white,
+              fontSize: RFValue(20),
+            }}
+          >
             新規会員登録
           </Text>
           <Image
             style={{
-              marginTop: "10%",
-              width: 15,
-              height: 55,
+              marginTop: heightPercentageToDP("2%"),
+              width: widthPercentageToDP("4%"),
+              height: heightPercentageToDP("8%"),
             }}
             source={require("../assets/Images/tripleWhiteDot.png")}
           />
-          <TextInput
-            style={styles.ニックネーム}
-            placeholderTextColor={Colors.white}
-            placeholder="ニックネーム"
-          ></TextInput>
-          <TextInput
-            style={styles.パスワード}
-            placeholderTextColor={Colors.white}
-            placeholder="パスワード"
-          ></TextInput>
-          <TextInput
-            style={styles.パスワード確認}
-            placeholderTextColor={Colors.white}
-            placeholder="パスワード（確認）"
-          ></TextInput>
-          <TextInput
-            style={styles.携帯電話番号}
-            placeholderTextColor={Colors.white}
-            placeholder="携帯電話番号"
-          ></TextInput>
         </View>
-        <ButtonInBlack text="SMS認証へ進む"></ButtonInBlack>
-        <Text
+        <TextInput
+          style={styles.ニックネーム}
+          placeholderTextColor={Colors.white}
+          placeholder="ニックネーム"
+          onChangeText={(text) => onNicknameChanged(text)}
+          value={nickname}
+        ></TextInput>
+        <TextInput
+          style={styles.パスワード}
+          placeholderTextColor={Colors.white}
+          secureTextEntry={true}
+          placeholder="パスワード"
+          onChangeText={(text) => onPasswordChanged(text)}
+          value={password}
+        ></TextInput>
+        <TextInput
+          style={styles.パスワード確認}
+          placeholderTextColor={Colors.white}
+          secureTextEntry={true}
+          placeholder="パスワード（確認）"
+          onChangeText={(text) => onConfirmPasswordChanged(text)}
+          value={confirm_password}
+        ></TextInput>
+        <TextInput
+          style={styles.携帯電話番号}
+          placeholderTextColor={Colors.white}
+          placeholder="携帯電話番号"
+          onChangeText={(text) => onPhoneChanged(text)}
+          value={phone}
+        ></TextInput>
+
+        <ButtonInBlack
+          onPress={() => {
+            if (nickname && phone && password && password && confirm_password) {
+              if (password == confirm_password) {
+                request
+                  .post("user/register", {
+                    nickname: nickname,
+                    username: phone,
+                    password: password,
+                    authority: "store",
+                  })
+                  .then(function (response) {
+                    if (response.success) {
+                      props.navigation.navigate("SMSAuthentication");
+                    } else {
+                      alert.warning(response.error);
+                    }
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                    alert.warning("unknown_error");
+                  });
+              } else {
+                alert.warning("Password and confirm password must be same.");
+              }
+            } else {
+              alert.warning("All fields must be filled.");
+            }
+          }}
+          text="SMS認証へ進む"
+        ></ButtonInBlack>
+
+        <View
+          onPress={() => props.navigation.pop()}
           style={{
-            alignSelf: "center",
-            color: Colors.white,
-            marginTop: "8%",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignContent: "center",
+            marginTop: heightPercentageToDP("4%"),
           }}
         >
-          美容師以外の方はこちら
-          <Image source={require("../assets/Images/whiteNextArrow.png")} />
-        </Text>
+          <Text
+            onPress={() => props.navigation.pop()}
+            style={{
+              color: Colors.white,
+            }}
+          >
+            美容師以外の方はこちら
+            <Image source={require("../assets/Images/whiteNextArrow.png")} />
+          </Text>
+          <Image
+            onPress={() => props.navigation.pop()}
+            style={{
+              alignSelf: "center",
+              marginLeft: 5,
+              width: 15,
+              height: 15,
+            }}
+            source={require("../assets/Images/whiteNextArrow.png")}
+          />
+        </View>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -91,34 +182,26 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   ニックネーム: {
-    alignSelf: "flex-start",
     borderBottomWidth: 1,
-    marginLeft: "10%",
     padding: 10,
-    width: "80%",
+    marginHorizontal: 35,
     borderBottomColor: Colors.white,
   },
   パスワード: {
-    alignSelf: "flex-start",
     borderBottomWidth: 1,
-    width: "80%",
-    marginLeft: "10%",
+    marginHorizontal: 35,
     padding: 10,
     borderBottomColor: Colors.white,
   },
   パスワード確認: {
-    alignSelf: "flex-start",
     borderBottomWidth: 1,
-    width: "80%",
-    marginLeft: "10%",
+    marginHorizontal: 35,
     padding: 10,
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
-    alignSelf: "flex-start",
     borderBottomWidth: 1,
-    width: "80%",
-    marginLeft: "10%",
+    marginHorizontal: 35,
     padding: 10,
     borderBottomColor: Colors.white,
   },

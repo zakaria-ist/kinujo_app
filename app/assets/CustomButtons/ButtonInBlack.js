@@ -1,9 +1,9 @@
 import React from "react";
-import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, View, StyleSheet, ViewPagerAndroid } from "react-native";
 import { Colors } from "../Colors";
 export default function ButtonInBlack({ text, onPress }) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <View style={styles.button}>
         <Text style={styles.buttonText}>{text}</Text>
       </View>
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#f01d71",
     paddingVertical: 8,
-    marginTop: 50,
+    marginTop: 40,
     marginHorizontal: 35,
     backgroundColor: Colors.deepGrey,
   },

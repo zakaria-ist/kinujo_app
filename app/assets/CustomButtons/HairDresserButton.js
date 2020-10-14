@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { Colors } from "../Colors";
 export default function HairDresserButton({ text, onPress }) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <View style={styles.button}>
         <Text style={styles.buttonText}>{text}</Text>
       </View>

@@ -1,9 +1,13 @@
 import React from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
 import { Colors } from "../Colors";
 export default function OKButtonInYellow({ text, onPress }) {
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onPress}>
       <View style={styles.button}>
         <Text style={styles.buttonText}>{text}</Text>
       </View>
@@ -16,8 +20,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#f01d71",
     paddingVertical: 8,
-    marginHorizontal: "30%",
-    marginVertical: "30%",
+    marginHorizontal: widthPercentageToDP("30%"),
+    marginVertical: heightPercentageToDP("20%"),
     backgroundColor: Colors.D7CCA6,
   },
   buttonText: {

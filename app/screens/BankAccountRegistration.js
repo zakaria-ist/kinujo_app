@@ -1,19 +1,18 @@
 import React from "react";
-import {
-  StyleSheet,
-  SafeAreaView,
-  Text,
-  TextInput,
-  Image,
-  View,
-} from "react-native";
+import { StyleSheet, SafeAreaView, Text, Image, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Dimensions } from "react-native";
 import { Colors } from "../assets/Colors";
-import SalonShopButton from "../assets/CustomButtons/SalonShopButton";
-import HairDresserButton from "../assets/CustomButtons/HairDresserButton";
-import ButtonInBlack from "../assets/CustomButtons/ButtonInBlack";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 import BankAccountRegisterButton from "../assets/CustomButtons/BankAccountRegisterButton";
-export default function LoginScreen() {
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import CustomKinujoWord from "../CustomComponents/CustomKinujoWordWithArrow";
+export default function BankAccountRegisterButton() {
+  const win = Dimensions.get("window");
+  const ratio = win.width / 1.6 / 151;
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -22,41 +21,57 @@ export default function LoginScreen() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{ marginLeft: "5%", marginTop: "10%", width: 30, height: 30 }}
-          source={require("../assets/Images/whiteBackArrow.png")}
-        />
-        <Image
-          style={{
-            width: "60%",
-            height: "5%",
-            marginTop: "10%",
-            alignSelf: "center",
-          }}
-          source={require("../assets/Images/kinujo.png")}
-        />
-        <Text style={styles.bankAccountRegistrationText}>銀行口座登録</Text>
-        <Text
-          style={{
-            color: "white",
-            fontSize: 12,
-            alignSelf: "center",
-            marginTop: "10%",
-          }}
-        >
-          売上金の入金をするには、銀行口座登録が必要です。
-        </Text>
-        <BankAccountRegisterButton text="今すぐ銀行口座を登録する"></BankAccountRegisterButton>
-        <Text
-          style={{
-            alignSelf: "center",
-            color: Colors.white,
-            marginTop: "8%",
-          }}
-        >
-          後で登録する
-          <Image source={require("../assets/Images/whiteNextArrow.png")} />
-        </Text>
+        <View>
+          <Image
+            style={{
+              marginLeft: "5%",
+              marginTop: "10%",
+              width: 20,
+              height: 20,
+            }}
+            source={require("../assets/Images/whiteBackArrow.png")}
+          />
+          <CustomKinujoWord />
+          <Text style={styles.bankAccountRegistrationText}>銀行口座登録</Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: RFValue(14),
+              alignSelf: "center",
+              marginTop: "10%",
+              textAlign: "center",
+            }}
+          >
+            売上金の入金をするには、銀行口座登録が必要です。
+          </Text>
+          <BankAccountRegisterButton text="今すぐ銀行口座を登録する"></BankAccountRegisterButton>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginTop: 10,
+            }}
+          >
+            <Text
+              style={{
+                alignSelf: "center",
+                color: Colors.white,
+                textAlign: "center",
+              }}
+            >
+              後で登録する
+            </Text>
+            <Image
+              style={{
+                marginLeft: 5,
+                width: 15,
+                height: 15,
+                alignSelf: "center",
+              }}
+              source={require("../assets/Images/whiteNextArrow.png")}
+            />
+          </View>
+        </View>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -64,8 +79,9 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   bankAccountRegistrationText: {
     color: "white",
-    fontSize: 18,
+    textAlign: "center",
+    fontSize: RFValue(18),
     alignSelf: "center",
-    marginTop: "40%",
+    marginTop: hp("14%"),
   },
 });

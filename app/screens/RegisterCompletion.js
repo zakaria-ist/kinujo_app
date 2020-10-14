@@ -1,16 +1,15 @@
 import React from "react";
-import {
-  StyleSheet,
-  SafeAreaView,
-  Text,
-  TextInput,
-  Image,
-  View,
-} from "react-native";
+import { StyleSheet, SafeAreaView, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import OKButton from "../assets/CustomButtons/OKButton";
-export default function LoginScreen() {
+import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
+export default function RegisterCompletion() {
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -19,24 +18,18 @@ export default function LoginScreen() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{
-            width: "60%",
-            height: "5%",
-            marginTop: "35%",
-            alignSelf: "center",
-          }}
-          source={require("../assets/Images/kinujo.png")}
-        />
-        <Text style={styles.bankAccountRegistrationText}>銀行口座登録</Text>
+        <CustomKinujoWord />
+        <Text style={styles.bankAccountRegistrationText}>
+          ご登録ありがとうございます！
+        </Text>
         <Text
           style={{
             color: "white",
-            fontSize: 12,
+            fontSize: RFValue(14),
             alignSelf: "center",
-            marginTop: "10%",
+            marginTop: heightPercentageToDP("5%"),
             textAlign: "center",
-            paddingHorizontal: "10%",
+            paddingHorizontal: widthPercentageToDP("10%"),
           }}
         >
           ご登録が完了いたしました。
@@ -44,11 +37,11 @@ export default function LoginScreen() {
         <Text
           style={{
             color: "white",
-            fontSize: 12,
+            fontSize: RFValue(14),
             alignSelf: "center",
             marginTop: 8,
             textAlign: "center",
-            paddingHorizontal: "10%",
+            paddingHorizontal: widthPercentageToDP("10%"),
           }}
         >
           KINUJOアプリをお楽しみください。
@@ -61,8 +54,9 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   bankAccountRegistrationText: {
     color: "white",
-    fontSize: 18,
+    fontSize: RFValue(22),
     alignSelf: "center",
-    marginTop: "40%",
+    textAlign: "center",
+    marginTop: heightPercentageToDP("12%"),
   },
 });

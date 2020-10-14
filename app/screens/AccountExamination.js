@@ -1,16 +1,18 @@
 import React from "react";
-import {
-  StyleSheet,
-  SafeAreaView,
-  Text,
-  TextInput,
-  Image,
-  View,
-} from "react-native";
+import { StyleSheet, Text, Image, View } from "react-native";
+import { Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import OKButton from "../assets/CustomButtons/OKButton";
-export default function LoginScreen() {
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
+export default function AccountExamination() {
+  const win = Dimensions.get("window");
+  const ratio = win.width / 1.6 / 151;
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -18,27 +20,19 @@ export default function LoginScreen() {
       end={[1, 0.6]}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{
-            width: "60%",
-            height: "5%",
-            marginTop: "35%",
-            alignSelf: "center",
-          }}
-          source={require("../assets/Images/kinujo.png")}
-        />
+      <CustomKinujoWord />
+      <View>
         <Text style={styles.thanksForRegistration}>
           ご登録ありがとうございます！
         </Text>
         <Text
           style={{
             color: "white",
-            fontSize: 12,
+            fontSize: RFValue(12),
             alignSelf: "center",
-            marginTop: 8,
             textAlign: "center",
             paddingHorizontal: "10%",
+            marginTop: 10,
           }}
         >
           現在、ご登録いただきましたストアアカウントを 審査しております。
@@ -46,15 +40,15 @@ export default function LoginScreen() {
           審査状況につきましては、 アプリ内メッセージにてお問い合わせください。
         </Text>
         <OKButton text="OK"></OKButton>
-      </SafeAreaView>
+      </View>
     </LinearGradient>
   );
 }
 const styles = StyleSheet.create({
   thanksForRegistration: {
     color: "white",
-    fontSize: 18,
+    fontSize: RFValue(16),
     alignSelf: "center",
-    marginTop: "40%",
+    marginTop: hp("14%"),
   },
 });

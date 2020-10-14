@@ -5,9 +5,9 @@
     "version": "1.0.0",
     "android": { "softwareKeyboardLayoutMode": "pan" },
     "orientation": "portrait",
-    "icon": "./app/assets/icon.png",
+    "icon": "./app/assets/Images/icon.png",
     "splash": {
-      "image": "./app/assets/splash.png",
+      "image": "./app/assets/Images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
       "supportsTablet": true
     },
     "web": {
-      "favicon": "./app/assets/favicon.png"
+      "favicon": "./app/assets/Images/favicon.png"
     }
   }
 }

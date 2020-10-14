@@ -10,8 +10,10 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import SMSButton from "../assets/CustomButtons/SMSButton";
-import { ScrollView } from "react-native-gesture-handler";
-export default function LoginScreen() {
+import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
+import { heightPercentageToDP } from "react-native-responsive-screen";
+import { RFValue } from "react-native-responsive-fontsize";
+export default function SMSAuthentication(props) {
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -20,22 +22,15 @@ export default function LoginScreen() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{
-            width: "60%",
-            height: "5%",
-            marginTop: "35%",
-            alignSelf: "center",
-          }}
-          source={require("../assets/Images/kinujo.png")}
-        />
+        <CustomKinujoWord />
         <Text style={styles.SMS認証}>SMS 認証</Text>
         <Text
           style={{
             color: "white",
-            fontSize: 14,
+            fontSize: RFValue(16),
             alignSelf: "center",
-            marginTop: "10%",
+            marginTop: heightPercentageToDP("3%"),
+            textAlign: "center",
           }}
         >
           08012345678へ認証コードを送信しました。
@@ -45,7 +40,10 @@ export default function LoginScreen() {
           placeholder="認証コードを入力してください"
           placeholderTextColor="white"
         ></TextInput>
-        <SMSButton text="認証する"></SMSButton>
+        <SMSButton
+          text="認証する"
+          onPress={() => props.navigation.navigate("AccountExamination")}
+        ></SMSButton>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -53,15 +51,16 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   SMS認証: {
     color: "white",
-    fontSize: 22,
+    fontSize: RFValue(22),
     alignSelf: "center",
-    marginTop: "40%",
+    marginTop: heightPercentageToDP("10%"),
   },
   verificationCode: {
     borderBottomWidth: 1,
     borderBottomColor: "white",
     padding: 10,
-    marginTop: "20%",
+    fontSize: RFValue(14),
+    marginTop: heightPercentageToDP("8%"),
     marginHorizontal: 35,
   },
 });
