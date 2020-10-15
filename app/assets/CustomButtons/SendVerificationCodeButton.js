@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 5,
     paddingVertical: 8,
-    marginHorizontal: widthPercentageToDP("30%"),
+    marginHorizontal: widthPercentageToDP("28%"),
     marginTop: heightPercentageToDP("3%"),
     backgroundColor: Colors.D7CCA6,
   },

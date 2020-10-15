@@ -7,14 +7,57 @@ import {
   Image,
   View,
 } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import SalonShopButton from "../assets/CustomButtons/SalonShopButton";
 import HairDresserButton from "../assets/CustomButtons/HairDresserButton";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { heightPercentageToDP } from "react-native-responsive-screen";
-export default function StoreAccountSelection() {
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
+
+const request = new Request();
+const alert = new CustomAlert();
+
+import Translate from "../assets/Translates/Translate";
+export default function StoreAccountSelection(props) {
+  async function updateProfile(){
+    AsyncStorage.getItem('user').then(function(url){
+      request.get(url).then(function(response){
+        response = response.data;
+        let payload = response.payload;
+        if(payload){
+          payload = JSON.parse(payload);
+          payload['account_selected'] = true;
+          payload = JSON.stringify(payload)
+        } else {
+          payload = JSON.stringify({
+            "account_selected" : true
+          })
+        }
+        response.payload = payload;
+        request
+        .patch(url, {
+          payload: payload
+        })
+        .then(function (response) {
+            props.navigation.navigate("BankAccountRegistration")
+        })
+        .catch(function (error) {
+          console.log(error);
+          alert.warning("unknown_error");
+        });
+      }).catch(function(error){
+        console.log(error);
+        alert.warning("unknown_error");
+      })
+    })
+  }
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -26,21 +69,30 @@ export default function StoreAccountSelection() {
         <View>
           <CustomKinujoWord />
           <Text style={styles.storeAccountSelectionText}>
-            ストアアカウントの選択
+            {Translate.t("storeAccountSelection")}
           </Text>
           <Text
             style={{
               color: "white",
-              fontSize: RFValue(16),
+              fontSize: RFValue(11),
+              marginHorizontal: widthPercentageToDP("3%"),
               alignSelf: "center",
               marginTop: heightPercentageToDP("5%"),
               textAlign: "center",
             }}
           >
-            ご希望のストアアカウントを選択してください。
+            {Translate.t("selectYourDesiredStoreAccount")}
           </Text>
-          <SalonShopButton text="サロン・ショップとして登録"></SalonShopButton>
-          <HairDresserButton text="理美容師として登録"></HairDresserButton>
+          <SalonShopButton
+            text={Translate.t("registerAsSalonShop")}
+            onPress={() => {
+              updateProfile();
+            }}
+          ></SalonShopButton>
+          <HairDresserButton
+            text={Translate.t("registerAsHairDresser")}
+            onPress={() => updateProfile()}
+          ></HairDresserButton>
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -49,7 +101,7 @@ export default function StoreAccountSelection() {
 const styles = StyleSheet.create({
   storeAccountSelectionText: {
     color: "white",
-    fontSize: RFValue(22),
+    fontSize: RFValue(16),
     alignSelf: "center",
     textAlign: "center",
     marginTop: heightPercentageToDP("15%"),

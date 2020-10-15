@@ -1,18 +1,63 @@
 import React from "react";
-import { StyleSheet, SafeAreaView, Text, Image, View } from "react-native";
+import {
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  Image,
+  View,
+  TouchableWithoutFeedback,
+} from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
-import { Dimensions } from "react-native";
 import { Colors } from "../assets/Colors";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
+  heightPercentageToDP,
 } from "react-native-responsive-screen";
 import BankAccountRegisterButton from "../assets/CustomButtons/BankAccountRegisterButton";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWordWithArrow";
-export default function BankAccountRegisterButton() {
-  const win = Dimensions.get("window");
-  const ratio = win.width / 1.6 / 151;
+import { RFValue } from "react-native-responsive-fontsize";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
+import Translate from "../assets/Translates/Translate";
+
+const request = new Request();
+const alert = new CustomAlert();
+
+export default function BankAccountRegistration(props) {
+  async function updateProfile(nextPage){
+    AsyncStorage.getItem('user').then(function(url){
+      request.get(url).then(function(response){
+        response = response.data;
+        let payload = response.payload;
+        if(payload){
+          payload = JSON.parse(payload);
+          payload['bank_skipped'] = true;
+          payload = JSON.stringify(payload)
+        } else {
+          payload = JSON.stringify({
+            "bank_skipped" : true
+          })
+        }
+        response.payload = payload;
+        request
+        .patch(url, {
+          payload: payload
+        })
+        .then(function (response) {
+            props.navigation.navigate(nextPage)
+        })
+        .catch(function (error) {
+          console.log(error);
+          alert.warning("unknown_error");
+        });
+      }).catch(function(error){
+        console.log(error);
+        alert.warning("unknown_error");
+      })
+    })
+  }
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -22,55 +67,66 @@ export default function BankAccountRegisterButton() {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View>
-          <Image
-            style={{
-              marginLeft: "5%",
-              marginTop: "10%",
-              width: 20,
-              height: 20,
-            }}
-            source={require("../assets/Images/whiteBackArrow.png")}
-          />
+          <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
+            <Image
+              style={{
+                marginLeft: "5%",
+                marginTop: "10%",
+                width: 20,
+                height: 20,
+              }}
+              source={require("../assets/Images/whiteBackArrow.png")}
+            />
+          </TouchableWithoutFeedback>
           <CustomKinujoWord />
-          <Text style={styles.bankAccountRegistrationText}>銀行口座登録</Text>
+
+          <Text style={styles.bankAccountRegistrationText}>
+            {Translate.t("bankAccountRegistration")}
+          </Text>
           <Text
             style={{
               color: "white",
               fontSize: RFValue(14),
               alignSelf: "center",
-              marginTop: "10%",
+              marginTop: hp("5%"),
               textAlign: "center",
             }}
           >
-            売上金の入金をするには、銀行口座登録が必要です。
+            {Translate.t("bankAccountRegistrationIsRequiredText")}
           </Text>
-          <BankAccountRegisterButton text="今すぐ銀行口座を登録する"></BankAccountRegisterButton>
-          <View
+        </View>
+        <BankAccountRegisterButton
+          text={Translate.t("registerBankAccountNow")}
+        ></BankAccountRegisterButton>
+        <View
+          onPress={() => props.navigation.navigate("AccountExamination")}
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            marginTop: heightPercentageToDP("3%"),
+          }}
+        >
+          <Text
+            onPress={() => updateProfile("AccountExamination")}
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              marginTop: 10,
+              alignSelf: "center",
+              color: Colors.white,
+              textAlign: "center",
+              fontSize: RFValue(14),
             }}
           >
-            <Text
-              style={{
-                alignSelf: "center",
-                color: Colors.white,
-                textAlign: "center",
-              }}
-            >
-              後で登録する
-            </Text>
-            <Image
-              style={{
-                marginLeft: 5,
-                width: 15,
-                height: 15,
-                alignSelf: "center",
-              }}
-              source={require("../assets/Images/whiteNextArrow.png")}
-            />
-          </View>
+            {Translate.t("registerLater")}
+          </Text>
+          <Image
+            onPress={() => updateProfile("AccountExamination")}
+            style={{
+              marginLeft: 5,
+              width: 15,
+              height: 15,
+              alignSelf: "center",
+            }}
+            source={require("../assets/Images/whiteNextArrow.png")}
+          />
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -82,6 +138,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: RFValue(18),
     alignSelf: "center",
-    marginTop: hp("14%"),
+    marginTop: hp("10%"),
   },
 });

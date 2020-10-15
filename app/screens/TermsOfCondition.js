@@ -3,21 +3,20 @@ import {
   StyleSheet,
   SafeAreaView,
   Text,
-  TextInput,
   Image,
-  View,
-  Button,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import SMSButton from "../assets/CustomButtons/SMSButton";
 import { ScrollView } from "react-native-gesture-handler";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWordWithArrow";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-export default function TermsOfCondition() {
+import Translate from "../assets/Translates/Translate";
+export default function TermsOfCondition(props) {
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -26,17 +25,19 @@ export default function TermsOfCondition() {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{
-            marginLeft: "5%",
-            marginTop: "10%",
-            width: 20,
-            height: 20,
-          }}
-          source={require("../assets/Images/whiteBackArrow.png")}
-        />
+        <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
+          <Image
+            style={{
+              marginLeft: "5%",
+              marginTop: "10%",
+              width: 20,
+              height: 20,
+            }}
+            source={require("../assets/Images/whiteBackArrow.png")}
+          />
+        </TouchableWithoutFeedback>
         <CustomKinujoWord />
-        <Text style={styles.利用規約}>利用規約</Text>
+        <Text style={styles.利用規約}>{Translate.t("termsOfService")}</Text>
         <ScrollView style={styles.ScrollView}>
           <Text style={styles.利用規約Content}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
@@ -76,7 +77,10 @@ export default function TermsOfCondition() {
             anim id est laborum.
           </Text>
         </ScrollView>
-        <SMSButton text="同意する"></SMSButton>
+        <SMSButton
+          text={Translate.t("agree")}
+          onPress={() => props.navigation.navigate("RegistrationGeneral")}
+        ></SMSButton>
       </SafeAreaView>
     </LinearGradient>
   );

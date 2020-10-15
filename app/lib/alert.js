@@ -1,19 +1,13 @@
-import axios from 'axios'
-import {
-  Alert
-} from "react-native";
+import axios from "axios";
+import { Alert } from "react-native";
 
-class CustomAlert{
-    async warning(text){
-        Alert.alert(
-            "Warning",
-            text,
-            [
-              { text: "OK"}
-            ],
-            { cancelable: false }
-          )
-    }
-} 
+class CustomAlert {
+  async warning(text, func) {
+    Alert.alert("Warning", text, [{ 
+      text: "OK",
+      onPress: () => func()
+    }], { cancelable: false });
+  }
+}
 
 export default CustomAlert;

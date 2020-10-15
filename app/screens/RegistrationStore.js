@@ -13,12 +13,13 @@ import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import ButtonInBlack from "../assets/CustomButtons/ButtonInBlack";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWordWithArrow";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import Translate from "../assets/Translates/Translate";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -37,7 +38,9 @@ export default function RegistrationStore(props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
+        <TouchableWithoutFeedback
+          onPress={() => props.navigation.navigate("TermsOfCondition")}
+        >
           <Image
             style={{
               marginLeft: "5%",
@@ -60,19 +63,19 @@ export default function RegistrationStore(props) {
             style={{
               marginTop: heightPercentageToDP("5%"),
               color: Colors.white,
-              fontSize: RFValue(24),
+              fontSize: RFValue(16),
             }}
           >
-            ストアアカウント
+            {Translate.t("storeAccount")}
           </Text>
           <Text
             style={{
               marginTop: 5,
               color: Colors.white,
-              fontSize: RFValue(20),
+              fontSize: RFValue(16),
             }}
           >
-            新規会員登録
+            {Translate.t("newMemberRegistration")}
           </Text>
           <Image
             style={{
@@ -86,7 +89,7 @@ export default function RegistrationStore(props) {
         <TextInput
           style={styles.ニックネーム}
           placeholderTextColor={Colors.white}
-          placeholder="ニックネーム"
+          placeholder={Translate.t("name")}
           onChangeText={(text) => onNicknameChanged(text)}
           value={nickname}
         ></TextInput>
@@ -94,7 +97,7 @@ export default function RegistrationStore(props) {
           style={styles.パスワード}
           placeholderTextColor={Colors.white}
           secureTextEntry={true}
-          placeholder="パスワード"
+          placeholder={Translate.t("password")}
           onChangeText={(text) => onPasswordChanged(text)}
           value={password}
         ></TextInput>
@@ -102,34 +105,47 @@ export default function RegistrationStore(props) {
           style={styles.パスワード確認}
           placeholderTextColor={Colors.white}
           secureTextEntry={true}
-          placeholder="パスワード（確認）"
+          placeholder={Translate.t("passwordConfirmation")}
           onChangeText={(text) => onConfirmPasswordChanged(text)}
           value={confirm_password}
         ></TextInput>
         <TextInput
           style={styles.携帯電話番号}
           placeholderTextColor={Colors.white}
-          placeholder="携帯電話番号"
+          placeholder={Translate.t("phoneNumber")}
           onChangeText={(text) => onPhoneChanged(text)}
           value={phone}
         ></TextInput>
 
         <ButtonInBlack
           onPress={() => {
-            if (nickname && phone && password && password && confirm_password) {
+            if (nickname && phone && password && confirm_password) {
               if (password == confirm_password) {
                 request
-                  .post("user/register", {
+                  .post("user/register/check", {
                     nickname: nickname,
                     username: phone,
                     password: password,
                     authority: "store",
                   })
                   .then(function (response) {
+                    response = response.data;
                     if (response.success) {
-                      props.navigation.navigate("SMSAuthentication");
+                      onConfirmPasswordChanged("")
+                      onNicknameChanged("")
+                      onPasswordChanged("")
+                      onPhoneChanged("")
+                      
+                      props.navigation.navigate("SMSAuthentication", {
+                        nickname: nickname,
+                        username: phone,
+                        password: password,
+                        authority: "store",
+                      });
                     } else {
-                      alert.warning(response.error);
+                      alert.warning(response.error, function(){
+                        props.navigation.popToTop()
+                      });
                     }
                   })
                   .catch(function (error) {
@@ -143,7 +159,7 @@ export default function RegistrationStore(props) {
               alert.warning("All fields must be filled.");
             }
           }}
-          text="SMS認証へ進む"
+          text={Translate.t("proceedToSMSAuthentication")}
         ></ButtonInBlack>
 
         <View
@@ -159,18 +175,18 @@ export default function RegistrationStore(props) {
             onPress={() => props.navigation.pop()}
             style={{
               color: Colors.white,
+              fontSize: RFValue(12),
             }}
           >
-            美容師以外の方はこちら
-            <Image source={require("../assets/Images/whiteNextArrow.png")} />
+            {Translate.t("nonBeautician")}
           </Text>
           <Image
             onPress={() => props.navigation.pop()}
             style={{
               alignSelf: "center",
               marginLeft: 5,
-              width: 15,
-              height: 15,
+              width: widthPercentageToDP("4.1%"),
+              height: heightPercentageToDP("2.2%"),
             }}
             source={require("../assets/Images/whiteNextArrow.png")}
           />
@@ -186,23 +202,27 @@ const styles = StyleSheet.create({
     padding: 10,
     marginHorizontal: 35,
     borderBottomColor: Colors.white,
+    fontSize: RFValue("12"),
   },
   パスワード: {
     borderBottomWidth: 1,
     marginHorizontal: 35,
     padding: 10,
     borderBottomColor: Colors.white,
+    fontSize: RFValue("12"),
   },
   パスワード確認: {
     borderBottomWidth: 1,
     marginHorizontal: 35,
     padding: 10,
+    fontSize: RFValue("12"),
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
     borderBottomWidth: 1,
     marginHorizontal: 35,
     padding: 10,
+    fontSize: RFValue("12"),
     borderBottomColor: Colors.white,
   },
 });

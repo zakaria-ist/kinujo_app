@@ -1,12 +1,17 @@
 import { createStackNavigator } from "react-navigation-stack";
 import { createAppContainer } from "react-navigation";
-import LoginScreen from "../screens/LoginScreen";
-import RegistrationGeneral from "../screens/RegistrationGeneral";
-import RegistrationStore from "../screens/RegistrationStore";
-import SMSAuthentication from "../screens/SMSAuthentication";
-import AccountExamination from "../screens/AccountExamination";
-import PasswordReset from "../screens/PasswordReset";
-import PasswordResetCompletion from "../screens/PasswordResetCompletion";
+import LoginScreen from "../Screens/LoginScreen";
+import RegistrationGeneral from "../Screens/RegistrationGeneral";
+import RegistrationStore from "../Screens/RegistrationStore";
+import SMSAuthentication from "../Screens/SMSAuthentication";
+import AccountExamination from "../Screens/AccountExamination";
+import PasswordReset from "../Screens/PasswordReset";
+import PasswordResetCompletion from "../Screens/PasswordResetCompletion";
+import TermsOfCondition from "../Screens/TermsOfCondition";
+import StoreAccountSelection from "../Screens/StoreAccountSelection";
+import BankAccountRegistration from "../Screens/BankAccountRegistration";
+import RegisterCompletion from "../Screens/RegisterCompletion";
+
 const screens = {
   LoginScreen: {
     screen: LoginScreen,
@@ -28,6 +33,18 @@ const screens = {
   },
   PasswordResetCompletion: {
     screen: PasswordResetCompletion,
+  },
+  RegisterCompletion: {
+    screen: RegisterCompletion,
+  },
+  TermsOfCondition: {
+    screen: TermsOfCondition,
+  },
+  StoreAccountSelection: {
+    screen: StoreAccountSelection,
+  },
+  BankAccountRegistration: {
+    screen: BankAccountRegistration,
   },
 };
 

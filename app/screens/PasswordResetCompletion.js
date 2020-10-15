@@ -1,38 +1,32 @@
 import React from "react";
-import {
-  StyleSheet,
-  SafeAreaView,
-  Text,
-  TextInput,
-  Image,
-  View,
-} from "react-native";
+import { StyleSheet, SafeAreaView, Text, View } from "react-native";
 import OKButtonInYellow from "../assets/CustomButtons/OKButtonInYellow";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
+import { RFValue } from "react-native-responsive-fontsize";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import Translate from "../assets/Translates/Translate";
 export default function PasswordResetCompletion(props) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View>
         <CustomKinujoWord />
         <Text style={styles.passwordChangeCompleteText}>
-          パスワードを変更しました。
+          {Translate.t("passwordChanged")}
         </Text>
         <Text
           style={{
             color: "black",
-            fontSize: RFValue(14),
+            fontSize: RFValue(18),
             alignSelf: "center",
-            marginTop: heightPercentageToDP("3%"),
+            marginTop: heightPercentageToDP("5%"),
             textAlign: "center",
-            paddingHorizontal: widthPercentageToDP("10%"),
+            paddingHorizontal: widthPercentageToDP("3%"),
           }}
         >
-          ログイン画面よりログインしてください。
+          {Translate.t("pleaseLoginFromLoginScreen")}
         </Text>
         <OKButtonInYellow
           text="OK"
@@ -45,9 +39,9 @@ export default function PasswordResetCompletion(props) {
 const styles = StyleSheet.create({
   passwordChangeCompleteText: {
     color: "black",
-    fontSize: RFValue(22),
+    fontSize: RFValue(26),
     alignSelf: "center",
-    marginTop: heightPercentageToDP("15%"),
+    marginTop: heightPercentageToDP("20%"),
     textAlign: "center",
   },
 });

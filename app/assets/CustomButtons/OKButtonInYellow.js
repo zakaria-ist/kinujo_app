@@ -5,6 +5,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { Colors } from "../Colors";
+import { RFValue } from "react-native-responsive-fontsize";
 export default function OKButtonInYellow({ text, onPress }) {
   return (
     <TouchableOpacity onPress={onPress}>
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 14,
+    fontSize: RFValue(18),
     textAlign: "center",
   },
 });

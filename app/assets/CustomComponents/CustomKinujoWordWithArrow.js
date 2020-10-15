@@ -4,20 +4,21 @@ import { Dimensions } from "react-native";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
+  heightPercentageToDP,
 } from "react-native-responsive-screen";
 export default function CustomKinujoWord() {
   const win = Dimensions.get("window");
   const ratio = win.width / 1.6 / 151;
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <Image
         style={{
           width: win.width / 1.6,
           height: 44 * ratio,
-          top: 0,
+          marginTop: heightPercentageToDP("5%"),
           alignSelf: "center",
         }}
-        source={require("../assets/Images/kinujo.png")}
+        source={require("../Images/kinujo.png")}
       />
     </View>
   );

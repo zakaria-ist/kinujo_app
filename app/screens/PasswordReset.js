@@ -9,6 +9,9 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
+import AsyncStorage from '@react-native-community/async-storage';
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors";
 import SendVerificationCodeButton from "../assets/CustomButtons/SendVerificationCodeButton";
 import {
@@ -17,8 +20,18 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWordWithArrow";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
+import Translate from "../assets/Translates/Translate";
+
+const request = new Request();
+const alert = new CustomAlert();
+
 export default function PasswordReset(props) {
+  const [phone, onPhoneChanged] = React.useState("");
+  const [code, onCodeChanged] = React.useState("");
+  const [password, onPasswordChanged] = React.useState("");
+  const [confirm_password, onConfirmPasswordChanged] = React.useState("");
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View>
@@ -34,60 +47,113 @@ export default function PasswordReset(props) {
           />
         </TouchableWithoutFeedback>
         <CustomKinujoWord />
-        <Text style={styles.passwordResetText}>パスワードの再設定</Text>
+        <Text style={styles.passwordResetText}>
+          {Translate.t("passwordReset")}
+        </Text>
         <TextInput
           style={styles.registeredPhoneNumber}
-          placeholder=" 登録した携帯電話番号を入力してください。"
+          placeholder={Translate.t("phoneNumberForPasswordReset")}
           placeholderTextColor={Colors.D7CCA6}
+          onChangeText={(text) => onPhoneChanged(text)}
+          value={phone}
         ></TextInput>
-        <SendVerificationCodeButton text="認証コード送信"></SendVerificationCodeButton>
+        <SendVerificationCodeButton
+          text={Translate.t("sendVerificatioCode")}
+        ></SendVerificationCodeButton>
         <Text
           style={{
             alignSelf: "center",
-            fontSize: RFValue(14),
+            fontSize: RFValue(12),
             marginTop: heightPercentageToDP("3%"),
             color: Colors.deepGrey,
+            textAlign: "center",
           }}
         >
-          再送信可能まで00s
+          {Translate.t("resendVerificationCodeText")}
         </Text>
         <Text
           style={{
             alignSelf: "center",
-            fontSize: RFValue(14),
+            fontSize: RFValue(12),
             marginTop: 5,
             color: Colors.deepGrey,
+            textAlign: "center",
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.black,
           }}
         >
-          認証コードが届かない場合はこちら
+          {Translate.t("clickHereIfNoReceiveVerificationCode")}
         </Text>
         <TextInput
           style={styles.verficationCodeInput}
-          placeholder=" 認証コードを入力してください。"
+          placeholder={Translate.t("enterVerificationCode")}
           placeholderTextColor={Colors.D7CCA6}
+          onChangeText={(text) => onCodeChanged(text)}
+          value={code}
         ></TextInput>
         <Text
           style={{
             alignSelf: "center",
-            marginTop: heightPercentageToDP("3%"),
+            marginTop: heightPercentageToDP("5%"),
             color: Colors.deepGrey,
+            fontSize: RFValue(12),
+            textAlign: "center",
           }}
         >
-          新しいパスワード設定
+          {Translate.t("newPasswordSetting")}
         </Text>
         <TextInput
           style={styles.newPasswordInput}
-          placeholder=" 新しいパスワード"
+          placeholder={Translate.t("newPassword")}
           placeholderTextColor={Colors.D7CCA6}
+          secureTextEntry={true}
+          onChangeText={(text) => onPasswordChanged(text)}
+          value={password}
         ></TextInput>
         <TextInput
-          style={styles.newPasswordInput}
-          placeholder=" 新しいパスワード（再入力）"
+          style={styles.newPasswordInputReenter}
+          placeholder={Translate.t("newPasswordReenter")}
           placeholderTextColor={Colors.D7CCA6}
+          secureTextEntry={true}
+          onChangeText={(text) => onConfirmPasswordChanged(text)}
+          value={confirm_password}
         ></TextInput>
         <SendVerificationCodeButton
-          text="パスワードを変更"
-          onPress={() => props.navigation.navigate("PasswordResetCompletion")}
+          text={Translate.t("changePassword")}
+          onPress={() => {
+            if (password && confirm_password) {
+              if (password == confirm_password) {
+                  request
+                  .post("password/reset", {
+                    tel: phone,
+                    password: password,
+                    confirm_password: confirm_password
+                  })
+                  .then(function (response) {
+                    response = response.data;
+
+                    if(response.success){
+                      onCodeChanged("");
+                      onConfirmPasswordChanged("");
+                      onPasswordChanged("");
+                      onPhoneChanged("");
+                      props.navigation.navigate("PasswordResetCompletion");
+                    } else {
+                      alert.warning(response.error);
+                    }
+                    console.log();
+                  })
+                  .catch(function (error) {
+                    console.log(error);
+                    alert.warning("unknown_error");
+                  });
+              } else {
+                alert.warning("password_mismatch");
+              }
+            } else {
+              alert.warning("must_filled");
+            }
+          }}
         ></SendVerificationCodeButton>
       </View>
     </SafeAreaView>
@@ -104,9 +170,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
     padding: 10,
+
     marginTop: heightPercentageToDP("3%"),
     marginHorizontal: 35,
-    fontSize: 11,
+    fontSize: RFValue(11),
   },
   verficationCodeInput: {
     borderBottomWidth: 1,
@@ -114,13 +181,21 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: heightPercentageToDP("3%"),
     marginHorizontal: 35,
-    fontSize: 11,
+    fontSize: RFValue(11),
   },
   newPasswordInput: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
     padding: 10,
+    marginTop: heightPercentageToDP("3%"),
     marginHorizontal: 35,
-    fontSize: 11,
+    fontSize: RFValue(11),
+  },
+  newPasswordInputReenter: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.D7CCA6,
+    padding: 10,
+    marginHorizontal: 35,
+    fontSize: RFValue(11),
   },
 });

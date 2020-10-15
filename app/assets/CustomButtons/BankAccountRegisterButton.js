@@ -1,6 +1,9 @@
 import React from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
 import { Colors } from "../Colors";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 export default function BankAccountRegisterButton({ text, onPress }) {
@@ -19,7 +22,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f01d71",
     paddingVertical: 8,
     marginTop: heightPercentageToDP("14%"),
-    marginHorizontal: 80,
+    marginHorizontal: widthPercentageToDP("14%"),
     backgroundColor: Colors.deepGrey,
   },
   buttonText: {

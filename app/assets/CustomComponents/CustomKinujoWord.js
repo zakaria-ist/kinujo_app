@@ -9,7 +9,7 @@ export default function CustomKinujoWord() {
   const win = Dimensions.get("window");
   const ratio = win.width / 1.6 / 151;
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <Image
         style={{
           width: win.width / 1.6,
@@ -17,7 +17,7 @@ export default function CustomKinujoWord() {
           marginTop: hp("10%"),
           alignSelf: "center",
         }}
-        source={require("../assets/Images/kinujo.png")}
+        source={require("../Images/kinujo.png")}
       />
     </View>
   );

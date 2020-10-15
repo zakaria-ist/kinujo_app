@@ -6,26 +6,25 @@ import {
   ImageBackground,
   TextInput,
 } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import ButtonInBlack from "../assets/CustomButtons/ButtonInBlack";
 import ButtonInBrown from "../assets/CustomButtons/ButtonInBrown";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import { Dimensions } from "react-native";
-
+import Translate from "../assets/Translates/Translate";
 const request = new Request();
 const alert = new CustomAlert();
 
-export default function MainMenuScreen(props) {
+export default function LoginScreen(props) {
   const [password, onPasswordChanged] = React.useState("");
   const [phone, onPhoneChanged] = React.useState("");
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: Colors.white }}>
       <ImageBackground
@@ -41,10 +40,11 @@ export default function MainMenuScreen(props) {
       <TextInput
         onChangeText={(text) => onPhoneChanged(text)}
         value={phone}
-        placeholder="携帯電話番号"
+        placeholder={Translate.t("phoneNumber")}
         style={styles.携帯電話番号}
       ></TextInput>
       <TextInput
+        placeholder={Translate.t("password")}
         placeholder="パスワード"
         secureTextEntry={true}
         onChangeText={(text) => onPasswordChanged(text)}
@@ -60,21 +60,33 @@ export default function MainMenuScreen(props) {
                 password: password,
               })
               .then(function (response) {
+                onPasswordChanged("");
+                onPhoneChanged("");
+                
+                response = response.data;
                 if (response.success) {
-                  let profile = response.data;
-                  if(profile.authority.name == 'Store' && !profile.tel_verified){
-                    props.navigation.navigate("SMSAuthentication")
+                  let user = response.data.user;
+                  if(user.payload){
+                    user.payload = JSON.parse(user.payload)
+                  } else {
+                    user.payload = {}
                   }
-                  if(profile.authority.name == 'Store' && !profile.store_account_selected){
-                    props.navigation.navigate("StoreAccountSelection")
-                  }
-                  if(profile.authority.name == 'Store' && !profile.bank_skipped){
-                    props.navigation.navigate("BankAccountRegistration")
-                  }
-                  if(profile.authority.name == 'Store' && !profile.examined){
-                    props.navigation.navigate("AccountExamination")
-                  }
-                  props.navigation.navigate("Home");
+                  AsyncStorage.setItem(
+                    'user',
+                    user.url
+                  ).then(function(response){
+                    if(user.authority.name == 'Store' && !user.payload.account_selected){
+                      props.navigation.navigate("StoreAccountSelection")
+                    } else if(user.authority.name == 'Store' && !user.payload.bank_skipped){
+                      props.navigation.navigate("BankAccountRegistration")
+                    } else if(user.authority.name == 'Store' && !user.is_approved){
+                      props.navigation.navigate("AccountExamination")
+                    } else if(user.authority.name == 'Store' && !user.payload.register_completed){
+                      props.navigation.navigate("RegisterCompletion")
+                    } else {
+                      props.navigation.navigate("Home");
+                    }
+                  })
                 } else {
                   alert.warning(response.error);
                 }
@@ -87,22 +99,22 @@ export default function MainMenuScreen(props) {
             alert.warning("All fields must be filled.");
           }
         }}
-        text="ログイン"
+        text={Translate.t("login")}
       ></ButtonInBrown>
       <Text
         onPress={() => props.navigation.navigate("PasswordReset")}
         style={{
           alignSelf: "center",
-          marginTop: "10%",
+          marginTop: hp("3%"),
           borderBottomColor: Colors.black,
           borderBottomWidth: 1,
         }}
       >
-        パスワードを忘れた方はこちら
+        {Translate.t("forgetPasswordText")}
       </Text>
       <ButtonInBlack
-        text="新規登録はこちら"
-        onPress={() => props.navigation.navigate("RegistrationGeneral")}
+        text={Translate.t("newRegistration")}
+        onPress={() => props.navigation.navigate("TermsOfCondition")}
       ></ButtonInBlack>
     </SafeAreaView>
   );

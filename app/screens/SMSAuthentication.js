@@ -7,13 +7,23 @@ import {
   Image,
   View,
 } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import SMSButton from "../assets/CustomButtons/SMSButton";
-import CustomKinujoWord from "../CustomComponents/CustomKinujoWord";
+import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
+
+const request = new Request();
+const alert = new CustomAlert();
+
+import Translate from "../assets/Translates/Translate";
 export default function SMSAuthentication(props) {
+  const [code, onCodeChanged] = React.useState("");
+  const phone = props.navigation.state.params.username
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -23,26 +33,52 @@ export default function SMSAuthentication(props) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <CustomKinujoWord />
-        <Text style={styles.SMS認証}>SMS 認証</Text>
+        <Text style={styles.SMS認証}>{Translate.t("smsAuthentication")}</Text>
         <Text
           style={{
             color: "white",
-            fontSize: RFValue(16),
+            fontSize: RFValue(12),
             alignSelf: "center",
             marginTop: heightPercentageToDP("3%"),
             textAlign: "center",
           }}
         >
-          08012345678へ認証コードを送信しました。
+          {Translate.t("sentVerificationCode")}
         </Text>
         <TextInput
           style={styles.verificationCode}
-          placeholder="認証コードを入力してください"
+          placeholder={Translate.t("enterVerificationCode")}
           placeholderTextColor="white"
+          onChangeText={(text) => onCodeChanged(text)}
+          value={code}
         ></TextInput>
         <SMSButton
-          text="認証する"
-          onPress={() => props.navigation.navigate("AccountExamination")}
+          text={Translate.t("authenticate")}
+          onPress={() => {
+            request.post("user/register", props.navigation.state.params)
+            .then(function (response) {
+              response = response.data;
+              if (response.success) {
+                AsyncStorage.setItem(
+                  'user',
+                  response.data.user.url
+                ).then(function(response){
+                  onCodeChanged("")
+                  if(props.navigation.state.params.authority == 'general'){
+                    props.navigation.navigate("RegisterCompletion")
+                  } else if(props.navigation.state.params.authority == 'store'){
+                    props.navigation.navigate("StoreAccountSelection")
+                  }
+                })
+              } else {
+                alert.warning(response.error);
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+              alert.warning("unknown_error");
+            });
+          }}
         ></SMSButton>
       </SafeAreaView>
     </LinearGradient>
@@ -51,9 +87,9 @@ export default function SMSAuthentication(props) {
 const styles = StyleSheet.create({
   SMS認証: {
     color: "white",
-    fontSize: RFValue(22),
+    fontSize: RFValue(16),
     alignSelf: "center",
-    marginTop: heightPercentageToDP("10%"),
+    marginTop: heightPercentageToDP("16%"),
   },
   verificationCode: {
     borderBottomWidth: 1,
