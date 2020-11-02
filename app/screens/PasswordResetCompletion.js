@@ -1,7 +1,13 @@
 import React from "react";
-import { StyleSheet, SafeAreaView, Text, View } from "react-native";
-import OKButtonInYellow from "../assets/CustomButtons/OKButtonInYellow";
+import {
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
+import { Colors } from "../assets/Colors";
 import { RFValue } from "react-native-responsive-fontsize";
 import {
   heightPercentageToDP,
@@ -19,7 +25,7 @@ export default function PasswordResetCompletion(props) {
         <Text
           style={{
             color: "black",
-            fontSize: RFValue(18),
+            fontSize: RFValue(16),
             alignSelf: "center",
             marginTop: heightPercentageToDP("5%"),
             textAlign: "center",
@@ -28,10 +34,12 @@ export default function PasswordResetCompletion(props) {
         >
           {Translate.t("pleaseLoginFromLoginScreen")}
         </Text>
-        <OKButtonInYellow
-          text="OK"
-          onPress={() => props.navigation.popToTop()}
-        ></OKButtonInYellow>
+
+        <TouchableOpacity onPress={() => props.navigation.popToTop()}>
+          <View style={styles.okButton}>
+            <Text style={styles.okButtonText}>OK</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -39,9 +47,21 @@ export default function PasswordResetCompletion(props) {
 const styles = StyleSheet.create({
   passwordChangeCompleteText: {
     color: "black",
-    fontSize: RFValue(26),
+    fontSize: RFValue(20),
     alignSelf: "center",
     marginTop: heightPercentageToDP("20%"),
+    textAlign: "center",
+  },
+  okButton: {
+    marginTop: heightPercentageToDP("10"),
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("25%"),
+    backgroundColor: Colors.D7CCA6,
+  },
+  okButtonText: {
+    color: "white",
+    fontSize: RFValue(16),
     textAlign: "center",
   },
 });

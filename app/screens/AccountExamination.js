@@ -1,12 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View, ImagePropTypes } from "react-native";
-import AsyncStorage from '@react-native-community/async-storage';
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import OKButton from "../assets/CustomButtons/OKButton";
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
+  widthPercentageToDP,
+  heightPercentageToDP,
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
@@ -31,18 +30,21 @@ export default function AccountExamination(props) {
             alignSelf: "center",
             textAlign: "center",
             paddingHorizontal: "10%",
-            marginTop: 10,
+            marginTop: heightPercentageToDP("5%"),
           }}
         >
           {Translate.t("accountReviewingText")}
         </Text>
-        <OKButton onPress={() => {
-            AsyncStorage.setItem(
-              'user',
-              ""
-            );
-            props.navigation.navigate('LoginScreen')
-        }} text="OK"></OKButton>
+        <TouchableOpacity
+          onPress={() => {
+            AsyncStorage.setItem("user", "");
+            props.navigation.navigate("LoginScreen");
+          }}
+        >
+          <View style={styles.okButton}>
+            <Text style={styles.okButtonText}>OK</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -52,6 +54,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: RFValue(16),
     alignSelf: "center",
-    marginTop: hp("14%"),
+    marginTop: heightPercentageToDP("14%"),
+  },
+  okButton: {
+    marginTop: heightPercentageToDP("10"),
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("25%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  okButtonText: {
+    color: "white",
+    fontSize: RFValue(16),
+    textAlign: "center",
   },
 });

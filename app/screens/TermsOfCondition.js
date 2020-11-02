@@ -5,10 +5,11 @@ import {
   Text,
   Image,
   TouchableWithoutFeedback,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import SMSButton from "../assets/CustomButtons/SMSButton";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
@@ -16,6 +17,8 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import { RFValue } from "react-native-responsive-fontsize";
+import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 export default function TermsOfCondition(props) {
   return (
     <LinearGradient
@@ -25,17 +28,7 @@ export default function TermsOfCondition(props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
-          <Image
-            style={{
-              marginLeft: "5%",
-              marginTop: "10%",
-              width: 20,
-              height: 20,
-            }}
-            source={require("../assets/Images/whiteBackArrow.png")}
-          />
-        </TouchableWithoutFeedback>
+        <WhiteBackArrow onPress={() => props.navigation.pop()} />
         <CustomKinujoWord />
         <Text style={styles.利用規約}>{Translate.t("termsOfService")}</Text>
         <ScrollView style={styles.ScrollView}>
@@ -77,10 +70,13 @@ export default function TermsOfCondition(props) {
             anim id est laborum.
           </Text>
         </ScrollView>
-        <SMSButton
-          text={Translate.t("agree")}
+        <TouchableOpacity
           onPress={() => props.navigation.navigate("RegistrationGeneral")}
-        ></SMSButton>
+        >
+          <View style={styles.agreeButton}>
+            <Text style={styles.agreeButtonText}>{Translate.t("agree")}</Text>
+          </View>
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -94,8 +90,21 @@ const styles = StyleSheet.create({
   利用規約Content: { color: "white" },
   利用規約: {
     alignSelf: "center",
-    marginTop: "10%",
+    marginTop: heightPercentageToDP("5%"),
     color: "white",
-    fontSize: 20,
+    fontSize: RFValue(16),
+  },
+  agreeButton: {
+    borderRadius: 5,
+    backgroundColor: "#f01d71",
+    paddingVertical: heightPercentageToDP("1.5%"),
+    marginHorizontal: heightPercentageToDP("12%"),
+    marginVertical: widthPercentageToDP("23%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  agreeButtonText: {
+    color: "white",
+    fontSize: RFValue(14),
+    textAlign: "center",
   },
 });

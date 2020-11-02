@@ -4,17 +4,19 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  Image,
+  TouchableOpacity,
   View,
 } from "react-native";
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import SMSButton from "../assets/CustomButtons/SMSButton";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
-import { heightPercentageToDP } from "react-native-responsive-screen";
+import {
+  heightPercentageToDP,
+  widthPercentageToDP,
+} from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 
 const request = new Request();
@@ -33,7 +35,7 @@ export default function SMSAuthentication(props) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <CustomKinujoWord />
-        <Text style={styles.SMS認証}>{Translate.t("smsAuthentication")}</Text>
+        <Text style={styles.SMS認証}>{Translate.t("smsVerification")}</Text>
         <Text
           style={{
             color: "white",
@@ -52,34 +54,43 @@ export default function SMSAuthentication(props) {
           onChangeText={(text) => onCodeChanged(text)}
           value={code}
         ></TextInput>
-        <SMSButton
-          text={Translate.t("authenticate")}
+        <TouchableOpacity
           onPress={() => {
-            request.post("user/register", props.navigation.state.params)
-            .then(function (response) {
-              response = response.data;
-              if (response.success) {
-                AsyncStorage.setItem(
-                  'user',
-                  response.data.user.url
-                ).then(function(response){
-                  onCodeChanged("")
-                  if(props.navigation.state.params.authority == 'general'){
-                    props.navigation.navigate("RegisterCompletion")
-                  } else if(props.navigation.state.params.authority == 'store'){
-                    props.navigation.navigate("StoreAccountSelection")
-                  }
-                })
-              } else {
-                alert.warning(response.error);
-              }
-            })
-            .catch(function (error) {
-              console.log(error);
-              alert.warning("unknown_error");
-            });
+            request
+              .post("user/register", props.navigation.state.params)
+              .then(function (response) {
+                response = response.data;
+                if (response.success) {
+                  AsyncStorage.setItem("user", response.data.user.url).then(
+                    function (response) {
+                      if (
+                        props.navigation.state.params.authority == "general"
+                      ) {
+                        props.navigation.navigate("RegisterCompletion");
+                      } else if (
+                        props.navigation.state.params.authority == "store"
+                      ) {
+                        props.navigation.navigate("StoreAccountSelection");
+                      }
+                    }
+                  );
+                } else {
+                  alert.warning(response.error);
+                }
+              })
+              .catch(function (error) {
+                if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+                }
+              });
           }}
-        ></SMSButton>
+        >
+          <View style={styles.smsAuthenticateButton}>
+            <Text style={styles.smsAuthenticateButtonText}>
+              {Translate.t("authenticate")}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -97,6 +108,19 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: RFValue(14),
     marginTop: heightPercentageToDP("8%"),
-    marginHorizontal: 35,
+    marginHorizontal: widthPercentageToDP("10%"),
+  },
+  smsAuthenticateButton: {
+    borderRadius: 5,
+    backgroundColor: "#f01d71",
+    paddingVertical: 8,
+    marginHorizontal: heightPercentageToDP("12%"),
+    marginVertical: widthPercentageToDP("23%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  smsAuthenticateButtonText: {
+    color: "white",
+    fontSize: 14,
+    textAlign: "center",
   },
 });

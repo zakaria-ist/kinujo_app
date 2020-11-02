@@ -1,6 +1,14 @@
 import React from "react";
-// import SMS from "./app/screens/LoginScreen";
+// import AccountExamination from "./app/Screens/RegistrationStore";
+import SMS from "./app/Screens/ChatList";
+import CR from "./app/Screens/ProductInformationAddNew";
 import Navigator from "./app/Routes/LoginStack";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "./firebaseConfig";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 export default function App() {
   return <Navigator />;
 }

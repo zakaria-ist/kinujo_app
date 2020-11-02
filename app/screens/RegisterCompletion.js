@@ -1,15 +1,20 @@
 import React from "react";
-import { StyleSheet, SafeAreaView, Text } from "react-native";
+import {
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import OKButton from "../assets/CustomButtons/OKButton";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 
@@ -18,37 +23,40 @@ const alert = new CustomAlert();
 
 import Translate from "../assets/Translates/Translate";
 export default function RegisterCompletion(props) {
-  async function updateProfile(nextPage){
-    AsyncStorage.getItem('user').then(function(url){
-      request.get(url).then(function(response){
-        response = response.data;
-        let payload = response.payload;
-        if(payload){
-          payload = JSON.parse(payload);
-          payload['bank_skipped'] = true;
-          payload = JSON.stringify(payload)
-        } else {
-          payload = JSON.stringify({
-            "bank_skipped" : true
-          })
-        }
-        response.payload = payload;
-        request
-        .patch(url, {
-          payload: payload
-        })
+  async function updateProfile(nextPage) {
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
         .then(function (response) {
-            props.navigation.navigate(nextPage)
+          response = response.data;
+          let payload = response.payload;
+          if (payload) {
+            payload = JSON.parse(payload);
+            payload["bank_skipped"] = true;
+            payload = JSON.stringify(payload);
+          } else {
+            payload = JSON.stringify({
+              bank_skipped: true,
+            });
+          }
+          response.payload = payload;
+          request
+            .patch(url, {
+              payload: payload,
+            })
+            .then(function (response) {
+              props.navigation.navigate(nextPage);
+            })
+            .catch(function (error) {
+              console.log(error);
+              alert.warning(Translate.t("unkownError"));
+            });
         })
         .catch(function (error) {
           console.log(error);
-          alert.warning("unknown_error");
+          alert.warning(Translate.t("unkownError"));
         });
-      }).catch(function(error){
-        console.log(error);
-        alert.warning("unknown_error");
-      })
-    })
+    });
   }
 
   return (
@@ -80,16 +88,22 @@ export default function RegisterCompletion(props) {
             color: "white",
             fontSize: RFValue(14),
             alignSelf: "center",
-            marginTop: 8,
+            marginTop: heightPercentageToDP("1%"),
             textAlign: "center",
             paddingHorizontal: widthPercentageToDP("3%"),
           }}
         >
           {Translate.t("enjoyText")}
         </Text>
-        <OKButton onPress={() => {
-          props.navigation.navigate("Home");
-        }}text="OK"></OKButton>
+        <TouchableOpacity
+          onPress={() => {
+            props.navigation.navigate("Home");
+          }}
+        >
+          <View style={styles.okButton}>
+            <Text style={styles.okButtonText}>OK</Text>
+          </View>
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -101,5 +115,17 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
     marginTop: heightPercentageToDP("16%"),
+  },
+  okButton: {
+    marginTop: heightPercentageToDP("10"),
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("25%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  okButtonText: {
+    color: "white",
+    fontSize: RFValue(16),
+    textAlign: "center",
   },
 });

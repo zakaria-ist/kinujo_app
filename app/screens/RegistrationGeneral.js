@@ -6,13 +6,13 @@ import {
   TextInput,
   Image,
   View,
-  TouchableWithoutFeedback,
+  Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import ButtonInBlack from "../assets/CustomButtons/ButtonInBlack";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
   heightPercentageToDP,
@@ -20,10 +20,11 @@ import {
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
-
+import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 const request = new Request();
 const alert = new CustomAlert();
-
+const win = Dimensions.get("window");
+const ratioTripleDot = win.width / 23 / 15;
 export default function RegistrationGeneral(props) {
   const [nickname, onNicknameChanged] = React.useState("");
   const [password, onPasswordChanged] = React.useState("");
@@ -38,17 +39,7 @@ export default function RegistrationGeneral(props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
-          <Image
-            style={{
-              marginLeft: "5%",
-              marginTop: "10%",
-              width: 20,
-              height: 20,
-            }}
-            source={require("../assets/Images/whiteBackArrow.png")}
-          />
-        </TouchableWithoutFeedback>
+        <WhiteBackArrow onPress={() => props.navigation.pop()} />
         <View
           style={{
             justifyContent: "center",
@@ -68,9 +59,9 @@ export default function RegistrationGeneral(props) {
           </Text>
           <Image
             style={{
-              marginTop: heightPercentageToDP("2%"),
-              width: widthPercentageToDP("4%"),
-              height: heightPercentageToDP("8%"),
+              marginTop: heightPercentageToDP("3%"),
+              width: win.width / 23,
+              height: 52 * ratioTripleDot,
             }}
             source={require("../assets/Images/tripleWhiteDot.png")}
           />
@@ -107,11 +98,12 @@ export default function RegistrationGeneral(props) {
             value={phone}
           ></TextInput>
         </View>
-        <ButtonInBlack
+        <TouchableOpacity
           onPress={() => {
             if (nickname && phone && password && confirm_password) {
               if (password == confirm_password) {
-                request.post("user/register/check", {
+                request
+                  .post("user/register/check", {
                     nickname: nickname,
                     username: phone,
                     password: password,
@@ -139,23 +131,33 @@ export default function RegistrationGeneral(props) {
                   })
                   .catch(function (error) {
                     console.log(error);
-                    alert.warning("unknown_error");
+                    alert.warning(Translate.t("unkownError"));
                   });
               } else {
-                alert.warning("Password and confirm password must be same.");
+                alert.warning(Translate.t("unkownError"));
               }
             } else {
-              alert.warning("All fields must be filled.");
+              alert.warning(Translate.t("passwordAndConfirmPasswordMustSame"));
             }
           }}
-          text={Translate.t("registerAsGeneralUser")}
-        ></ButtonInBlack>
-        <ButtonInBlack
+        >
+          <View style={styles.registerGeneralButton}>
+            <Text style={styles.registerGeneralButtonText}>
+              {Translate.t("registerAsGeneralUser")}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={() => {
             props.navigation.navigate("RegistrationStore");
           }}
-          text={Translate.t("registerAsBeauticianOrSalon")}
-        ></ButtonInBlack>
+        >
+          <View style={styles.registerBeauticianSalonButton}>
+            <Text style={styles.registerBeauticianSalonButtonText}>
+              {Translate.t("registerAsBeauticianOrSalon")}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -164,30 +166,58 @@ export default function RegistrationGeneral(props) {
 const styles = StyleSheet.create({
   ニックネーム: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
     fontSize: RFValue("12"),
     borderBottomColor: Colors.white,
   },
   パスワード: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
     fontSize: RFValue("12"),
     borderBottomColor: Colors.white,
   },
   パスワード確認: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
     fontSize: RFValue("12"),
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
     fontSize: RFValue("12"),
     borderBottomColor: Colors.white,
+  },
+  registerGeneralButton: {
+    marginTop: heightPercentageToDP("5"),
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  registerGeneralButtonText: {
+    color: "white",
+    fontSize: RFValue(16),
+    textAlign: "center",
+  },
+  registerBeauticianSalonButton: {
+    marginTop: heightPercentageToDP("5"),
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  registerBeauticianSalonButtonText: {
+    color: "white",
+    fontSize: RFValue(16),
+    textAlign: "center",
   },
 });

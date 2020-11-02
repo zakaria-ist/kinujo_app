@@ -1,143 +1,225 @@
 import React from "react";
 import {
   StyleSheet,
-  SafeAreaView,
   Text,
   Image,
   View,
+  Dimensions,
+  ImageBackground,
+  Switch,
+  TextInput,
+  TouchableOpacity,
   TouchableWithoutFeedback,
 } from "react-native";
-import AsyncStorage from '@react-native-community/async-storage';
-import Request from "../lib/request";
-import CustomAlert from "../lib/alert";
-import { LinearGradient } from "expo-linear-gradient";
-import { Colors } from "../assets/Colors";
+import { Colors } from "../assets/Colors.js";
+import { SafeAreaView } from "react-navigation";
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
+  widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
-import BankAccountRegisterButton from "../assets/CustomButtons/BankAccountRegisterButton";
-import { RFValue } from "react-native-responsive-fontsize";
-import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import Translate from "../assets/Translates/Translate";
-
+import { RFValue } from "react-native-responsive-fontsize";
+import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
+import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
 const request = new Request();
 const alert = new CustomAlert();
 
+const win = Dimensions.get("window");
 export default function BankAccountRegistration(props) {
-  async function updateProfile(nextPage){
-    AsyncStorage.getItem('user').then(function(url){
-      request.get(url).then(function(response){
-        response = response.data;
-        let payload = response.payload;
-        if(payload){
-          payload = JSON.parse(payload);
-          payload['bank_skipped'] = true;
-          payload = JSON.stringify(payload)
-        } else {
-          payload = JSON.stringify({
-            "bank_skipped" : true
-          })
-        }
-        response.payload = payload;
-        request
-        .patch(url, {
-          payload: payload
-        })
-        .then(function (response) {
-            props.navigation.navigate(nextPage)
-        })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning("unknown_error");
+  const [financialAccount, onFinancialAccountChanged] = React.useState({
+    financial_name: "test",
+  });
+  const [financialName, onFinancialNameChanged] = React.useState("");
+  const [branchName, onBranchNameChanged] = React.useState("");
+  const [accountType, onAccountTypeChanged] = React.useState("");
+  const [accountNumber, onAccountNumberChanged] = React.useState("");
+  const [accountHolder, onAccountHolderChanged] = React.useState("");
+  const [loaded, onLoaded] = React.useState("");
+  const [user, onUserChanged] = React.useState({});
+    React.useEffect(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
         });
-      }).catch(function(error){
-        console.log(error);
-        alert.warning("unknown_error");
-      })
-    })
-  }
-  return (
-    <LinearGradient
-      colors={[Colors.E4DBC0, Colors.C2A059]}
-      start={[0, 0]}
-      end={[1, 0.6]}
-      style={{ flex: 1 }}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <View>
-          <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
-            <Image
-              style={{
-                marginLeft: "5%",
-                marginTop: "10%",
-                width: 20,
-                height: 20,
-              }}
-              source={require("../assets/Images/whiteBackArrow.png")}
-            />
-          </TouchableWithoutFeedback>
-          <CustomKinujoWord />
+        let userId = urls[urls.length - 1];
+  
+        if(!user.url){
+          request
+            .get(url)
+            .then(function (response) {
+              onUserChanged(response.data);
+            })
+            .catch(function (error) {
+              console.log(error);
+              alert.warning(Translate.t("unkownError"));
+            });
+        }
+  
+        if (!loaded) {
+          request
+            .get("financial-account/" + userId + "/")
+            .then(function (response) {
+              onLoaded(true);
+              onFinancialAccountChanged(response.data.financialAccount);
+              onFinancialNameChanged(response.data.financialAccount.financial_name);
+              onBranchNameChanged(response.data.financialAccount.branch_name);
+              onAccountTypeChanged(response.data.financialAccount.account_type);
+              onAccountNumberChanged(response.data.financialAccount.account_number);
+              onAccountHolderChanged(response.data.financialAccount.account_name);
+            })
+            .catch(function (error) {
+              console.log(error);
+              alert.warning(Translate.t("unkownError"));
+            });
+          }
+      });
+    });  
 
-          <Text style={styles.bankAccountRegistrationText}>
-            {Translate.t("bankAccountRegistration")}
-          </Text>
-          <Text
-            style={{
-              color: "white",
-              fontSize: RFValue(14),
-              alignSelf: "center",
-              marginTop: hp("5%"),
-              textAlign: "center",
-            }}
-          >
-            {Translate.t("bankAccountRegistrationIsRequiredText")}
-          </Text>
+  return (
+    <SafeAreaView>
+      <CustomHeader
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
+        onBack={() => {
+          props.navigation.pop();
+        }}
+        onPress={() => {
+          props.navigation.navigate("Cart");
+        }}
+        text={Translate.t("bankAccount")}
+      />
+      <CustomSecondaryHeader 
+        name={user.real_name ? user.real_name : user.nickname} 
+        accountType={props.route.params.is_store ? Translate.t("storeAccount") : ""} 
+      />
+      <View style={styles.textInputContainer}>
+        <TextInput
+          placeholder={Translate.t("financialInstitutionName")}
+          placeholderTextColor={Colors.deepGrey}
+          style={styles.textInput}
+          onChangeText={(text) => onFinancialNameChanged(text)}
+          value={financialName}
+        ></TextInput>
+        <TextInput
+          placeholder={Translate.t("branchName")}
+          placeholderTextColor={Colors.deepGrey}
+          style={styles.textInput}
+          onChangeText={(text) => onBranchNameChanged(text)}
+          value={branchName}
+        ></TextInput>
+        <TextInput
+          placeholder={Translate.t("accountType")}
+          placeholderTextColor={Colors.deepGrey}
+          style={styles.textInput}
+          onChangeText={(text) => onAccountTypeChanged(text)}
+          value={accountType}
+        ></TextInput>
+        <TextInput
+          placeholder={Translate.t("accountNumber")}
+          placeholderTextColor={Colors.deepGrey}
+          style={styles.textInput}
+          onChangeText={(text) => onAccountNumberChanged(text)}
+          value={accountNumber}
+        ></TextInput>
+        <TextInput
+          placeholder={Translate.t("accountHolder")}
+          placeholderTextColor={Colors.deepGrey}
+          style={styles.textInput}
+          onChangeText={(text) => onAccountHolderChanged(text)}
+          value={accountHolder}
+        ></TextInput>
+      </View>
+      <Text style={styles.warningText}>
+        {Translate.t("bankRegistrationWarning")}
+      </Text>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          if (
+            financialName &&
+            branchName &&
+            accountType &&
+            accountNumber &&
+            accountHolder
+          ) {
+            AsyncStorage.getItem("user").then(function (url) {
+              url = url.replace("http://testserver", "http://127.0.0.1:8000");
+              let urls = url.split("/");
+              urls = urls.filter((url) => {
+                return url;
+              });
+              let userId = urls[urls.length - 1];
+              request
+                .post("financial_account/", {
+                  user: url.replace("testserver", "127.0.0.1:8000"),
+                  financial_name: financialName,
+                  account_type: accountType,
+                  branch_code: "123",
+                  branch_name: branchName,
+                  account_number: accountNumber,
+                  account_name: accountHolder,
+                  financial_code: "123",
+                })
+                .then(function (response) {
+                  onAccountHolderChanged("");
+                  onAccountNumberChanged("");
+                  onBranchNameChanged("");
+                  onFinancialNameChanged("");
+                  onAccountTypeChanged("");
+                  props.navigation.pop();
+                })
+                .catch(function (error) {
+                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+                  onLoaded(true);
+                });
+            });
+          } else {
+            alert.warning(Translate.t("fieldNotFilled"));
+          }
+        }}
+      >
+        <View style={styles.saveButtonContainer}>
+          <Text style={styles.saveButtonText}>{Translate.t("save")}</Text>
         </View>
-        <BankAccountRegisterButton
-          text={Translate.t("registerBankAccountNow")}
-        ></BankAccountRegisterButton>
-        <View
-          onPress={() => props.navigation.navigate("AccountExamination")}
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            marginTop: heightPercentageToDP("3%"),
-          }}
-        >
-          <Text
-            onPress={() => updateProfile("AccountExamination")}
-            style={{
-              alignSelf: "center",
-              color: Colors.white,
-              textAlign: "center",
-              fontSize: RFValue(14),
-            }}
-          >
-            {Translate.t("registerLater")}
-          </Text>
-          <Image
-            onPress={() => updateProfile("AccountExamination")}
-            style={{
-              marginLeft: 5,
-              width: 15,
-              height: 15,
-              alignSelf: "center",
-            }}
-            source={require("../assets/Images/whiteNextArrow.png")}
-          />
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
-  bankAccountRegistrationText: {
-    color: "white",
-    textAlign: "center",
+  textInput: {
+    borderWidth: 1,
+    backgroundColor: "white",
+    fontSize: RFValue(14),
+    height: heightPercentageToDP("5%"),
+    paddingLeft: widthPercentageToDP("2%"),
+
+    marginVertical: heightPercentageToDP("1%"),
+  },
+  textInputContainer: {
+    marginTop: heightPercentageToDP("2.5%"),
+    backgroundColor: Colors.F0EEE9,
+    marginHorizontal: widthPercentageToDP("5%"),
+    padding: widthPercentageToDP("4%"),
+    justifyContent: "space-evenly",
+  },
+  warningText: {
+    color: "red",
+    fontSize: RFValue(12),
+    paddingHorizontal: widthPercentageToDP("8%"),
+    marginTop: heightPercentageToDP("5%"),
+  },
+  saveButtonContainer: {
+    backgroundColor: Colors.E6DADE,
+    marginHorizontal: widthPercentageToDP("25%"),
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: heightPercentageToDP("5%"),
+    padding: heightPercentageToDP("1%"),
+  },
+  saveButtonText: {
     fontSize: RFValue(18),
-    alignSelf: "center",
-    marginTop: hp("10%"),
+    color: "white",
   },
 });

@@ -3,10 +3,18 @@ import { Alert } from "react-native";
 
 class CustomAlert {
   async warning(text, func) {
-    Alert.alert("Warning", text, [{ 
-      text: "OK",
-      onPress: () => func()
-    }], { cancelable: false });
+    if(func){
+      Alert.alert("Warning", text, [{ 
+        text: "OK",
+        onPress: () => {
+          func()
+        }
+      }], { cancelable: false });
+    } else {
+      Alert.alert("Warning", text, [{ 
+        text: "OK"
+      }], { cancelable: false });
+    }
   }
 }
 

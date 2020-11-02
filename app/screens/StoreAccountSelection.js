@@ -3,19 +3,16 @@ import {
   StyleSheet,
   SafeAreaView,
   Text,
-  TextInput,
-  Image,
+  TouchableOpacity,
   View,
 } from "react-native";
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import SalonShopButton from "../assets/CustomButtons/SalonShopButton";
-import HairDresserButton from "../assets/CustomButtons/HairDresserButton";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -26,37 +23,42 @@ const alert = new CustomAlert();
 
 import Translate from "../assets/Translates/Translate";
 export default function StoreAccountSelection(props) {
-  async function updateProfile(){
-    AsyncStorage.getItem('user').then(function(url){
-      request.get(url).then(function(response){
-        response = response.data;
-        let payload = response.payload;
-        if(payload){
-          payload = JSON.parse(payload);
-          payload['account_selected'] = true;
-          payload = JSON.stringify(payload)
-        } else {
-          payload = JSON.stringify({
-            "account_selected" : true
-          })
-        }
-        response.payload = payload;
-        request
-        .patch(url, {
-          payload: payload
-        })
+  async function updateProfile() {
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
         .then(function (response) {
-            props.navigation.navigate("BankAccountRegistration")
+          response = response.data;
+          let payload = response.payload;
+          if (payload) {
+            payload = JSON.parse(payload);
+            payload["account_selected"] = true;
+            payload = JSON.stringify(payload);
+          } else {
+            payload = JSON.stringify({
+              account_selected: true,
+            });
+          }
+          response.payload = payload;
+          request
+            .patch(url, {
+              payload: payload,
+            })
+            .then(function (response) {
+              props.navigation.navigate("BankAccountRegistrationOption");
+            })
+            .catch(function (error) {
+              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+              }
+            });
         })
         .catch(function (error) {
-          console.log(error);
-          alert.warning("unknown_error");
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+          }
         });
-      }).catch(function(error){
-        console.log(error);
-        alert.warning("unknown_error");
-      })
-    })
+    });
   }
   return (
     <LinearGradient
@@ -74,7 +76,7 @@ export default function StoreAccountSelection(props) {
           <Text
             style={{
               color: "white",
-              fontSize: RFValue(11),
+              fontSize: RFValue(14),
               marginHorizontal: widthPercentageToDP("3%"),
               alignSelf: "center",
               marginTop: heightPercentageToDP("5%"),
@@ -83,16 +85,28 @@ export default function StoreAccountSelection(props) {
           >
             {Translate.t("selectYourDesiredStoreAccount")}
           </Text>
-          <SalonShopButton
-            text={Translate.t("registerAsSalonShop")}
+          <TouchableOpacity
             onPress={() => {
               updateProfile();
             }}
-          ></SalonShopButton>
-          <HairDresserButton
-            text={Translate.t("registerAsHairDresser")}
-            onPress={() => updateProfile()}
-          ></HairDresserButton>
+          >
+            <View style={styles.registerSalonShopButton}>
+              <Text style={styles.registerSalonShopButtonText}>
+                {Translate.t("registerAsSalonShop")}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              updateProfile();
+            }}
+          >
+            <View style={styles.registerHairDresserButton}>
+              <Text style={styles.registerHairDresserButtonText}>
+                {Translate.t("registerAsHairDresser")}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </LinearGradient>
@@ -101,9 +115,33 @@ export default function StoreAccountSelection(props) {
 const styles = StyleSheet.create({
   storeAccountSelectionText: {
     color: "white",
-    fontSize: RFValue(16),
+    fontSize: RFValue(18),
     alignSelf: "center",
     textAlign: "center",
     marginTop: heightPercentageToDP("15%"),
+  },
+  registerSalonShopButton: {
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1.5%"),
+    marginTop: heightPercentageToDP("18%"),
+    marginHorizontal: widthPercentageToDP("15%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  registerSalonShopButtonText: {
+    color: "white",
+    fontSize: RFValue(14),
+    textAlign: "center",
+  },
+  registerHairDresserButton: {
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1.5%"),
+    marginTop: heightPercentageToDP("5%"),
+    marginHorizontal: widthPercentageToDP("15%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  registerHairDresserButtonText: {
+    color: "white",
+    fontSize: RFValue(14),
+    textAlign: "center",
   },
 });

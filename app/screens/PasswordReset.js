@@ -4,19 +4,16 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  Image,
   View,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors";
-import SendVerificationCodeButton from "../assets/CustomButtons/SendVerificationCodeButton";
 import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
+  widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -26,6 +23,7 @@ import Translate from "../assets/Translates/Translate";
 const request = new Request();
 const alert = new CustomAlert();
 
+import BlackBackArrow from "../assets/CustomComponents/CustomBlackBackArrow";
 export default function PasswordReset(props) {
   const [phone, onPhoneChanged] = React.useState("");
   const [code, onCodeChanged] = React.useState("");
@@ -35,17 +33,7 @@ export default function PasswordReset(props) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View>
-        <TouchableWithoutFeedback onPress={() => props.navigation.pop()}>
-          <Image
-            style={{
-              marginLeft: "5%",
-              marginTop: "10%",
-              width: 20,
-              height: 20,
-            }}
-            source={require("../assets/Images/back.png")}
-          />
-        </TouchableWithoutFeedback>
+        <BlackBackArrow onPress={() => props.navigation.pop()} />
         <CustomKinujoWord />
         <Text style={styles.passwordResetText}>
           {Translate.t("passwordReset")}
@@ -57,13 +45,17 @@ export default function PasswordReset(props) {
           onChangeText={(text) => onPhoneChanged(text)}
           value={phone}
         ></TextInput>
-        <SendVerificationCodeButton
-          text={Translate.t("sendVerificatioCode")}
-        ></SendVerificationCodeButton>
+        <TouchableOpacity>
+          <View style={styles.sendVerificationCodeButton}>
+            <Text style={styles.sendVerificationCodeButtonText}>
+              {Translate.t("sendVerificatioCode")}
+            </Text>
+          </View>
+        </TouchableOpacity>
         <Text
           style={{
             alignSelf: "center",
-            fontSize: RFValue(12),
+            fontSize: RFValue(10),
             marginTop: heightPercentageToDP("3%"),
             color: Colors.deepGrey,
             textAlign: "center",
@@ -74,8 +66,9 @@ export default function PasswordReset(props) {
         <Text
           style={{
             alignSelf: "center",
-            fontSize: RFValue(12),
-            marginTop: 5,
+            fontSize: RFValue(10),
+            marginTop: heightPercentageToDP("2%"),
+            marginHorizontal: widthPercentageToDP("10%"),
             color: Colors.deepGrey,
             textAlign: "center",
             borderBottomWidth: 1,
@@ -118,21 +111,20 @@ export default function PasswordReset(props) {
           onChangeText={(text) => onConfirmPasswordChanged(text)}
           value={confirm_password}
         ></TextInput>
-        <SendVerificationCodeButton
-          text={Translate.t("changePassword")}
+        <TouchableOpacity
           onPress={() => {
             if (password && confirm_password) {
               if (password == confirm_password) {
-                  request
+                request
                   .post("password/reset", {
                     tel: phone,
                     password: password,
-                    confirm_password: confirm_password
+                    confirm_password: confirm_password,
                   })
                   .then(function (response) {
                     response = response.data;
 
-                    if(response.success){
+                    if (response.success) {
                       onCodeChanged("");
                       onConfirmPasswordChanged("");
                       onPasswordChanged("");
@@ -154,7 +146,13 @@ export default function PasswordReset(props) {
               alert.warning("must_filled");
             }
           }}
-        ></SendVerificationCodeButton>
+        >
+          <View style={styles.sendVerificationCodeButton}>
+            <Text style={styles.sendVerificationCodeButtonText}>
+              {Translate.t("changePassword")}
+            </Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -169,33 +167,48 @@ const styles = StyleSheet.create({
   registeredPhoneNumber: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
-    padding: 10,
-
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
     marginTop: heightPercentageToDP("3%"),
-    marginHorizontal: 35,
+    marginHorizontal: widthPercentageToDP("10%"),
     fontSize: RFValue(11),
   },
   verficationCodeInput: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
-    padding: 10,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
     marginTop: heightPercentageToDP("3%"),
-    marginHorizontal: 35,
+    marginHorizontal: widthPercentageToDP("10%"),
     fontSize: RFValue(11),
   },
   newPasswordInput: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
-    padding: 10,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
     marginTop: heightPercentageToDP("3%"),
-    marginHorizontal: 35,
+    marginHorizontal: widthPercentageToDP("10%"),
     fontSize: RFValue(11),
   },
   newPasswordInputReenter: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
-    padding: 10,
-    marginHorizontal: 35,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
+    marginHorizontal: widthPercentageToDP("10%"),
     fontSize: RFValue(11),
+  },
+  sendVerificationCodeButton: {
+    borderRadius: 5,
+    paddingVertical: 8,
+    marginHorizontal: widthPercentageToDP("28%"),
+    marginTop: heightPercentageToDP("5%"),
+    backgroundColor: Colors.D7CCA6,
+  },
+  sendVerificationCodeButtonText: {
+    color: "white",
+    fontSize: RFValue(12),
+    textAlign: "center",
   },
 });

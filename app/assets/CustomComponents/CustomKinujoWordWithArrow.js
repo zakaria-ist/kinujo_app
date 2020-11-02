@@ -15,7 +15,6 @@ export default function CustomKinujoWord() {
         style={{
           width: win.width / 1.6,
           height: 44 * ratio,
-          marginTop: heightPercentageToDP("5%"),
           alignSelf: "center",
         }}
         source={require("../Images/kinujo.png")}

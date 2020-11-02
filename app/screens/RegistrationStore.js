@@ -7,24 +7,28 @@ import {
   Image,
   View,
   TouchableWithoutFeedback,
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
-import ButtonInBlack from "../assets/CustomButtons/ButtonInBlack";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
-
+import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 const request = new Request();
 const alert = new CustomAlert();
 
 export default function RegistrationStore(props) {
+  const win = Dimensions.get("window");
+  const ratio = win.width / 25 / 17;
+  const ratioTripleDot = win.width / 23 / 15;
   const [nickname, onNicknameChanged] = React.useState("");
   const [password, onPasswordChanged] = React.useState("");
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
@@ -38,19 +42,9 @@ export default function RegistrationStore(props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback
+        <WhiteBackArrow
           onPress={() => props.navigation.navigate("TermsOfCondition")}
-        >
-          <Image
-            style={{
-              marginLeft: "5%",
-              marginTop: "10%",
-              width: 20,
-              height: 20,
-            }}
-            source={require("../assets/Images/whiteBackArrow.png")}
-          />
-        </TouchableWithoutFeedback>
+        />
         <View
           style={{
             justifyContent: "center",
@@ -61,7 +55,7 @@ export default function RegistrationStore(props) {
           <CustomKinujoWord />
           <Text
             style={{
-              marginTop: heightPercentageToDP("5%"),
+              marginTop: heightPercentageToDP("3%"),
               color: Colors.white,
               fontSize: RFValue(16),
             }}
@@ -79,9 +73,9 @@ export default function RegistrationStore(props) {
           </Text>
           <Image
             style={{
-              marginTop: heightPercentageToDP("2%"),
-              width: widthPercentageToDP("4%"),
-              height: heightPercentageToDP("8%"),
+              marginTop: heightPercentageToDP("3%"),
+              width: win.width / 23,
+              height: 52 * ratioTripleDot,
             }}
             source={require("../assets/Images/tripleWhiteDot.png")}
           />
@@ -117,7 +111,7 @@ export default function RegistrationStore(props) {
           value={phone}
         ></TextInput>
 
-        <ButtonInBlack
+        <TouchableOpacity
           onPress={() => {
             if (nickname && phone && password && confirm_password) {
               if (password == confirm_password) {
@@ -131,11 +125,11 @@ export default function RegistrationStore(props) {
                   .then(function (response) {
                     response = response.data;
                     if (response.success) {
-                      onConfirmPasswordChanged("")
-                      onNicknameChanged("")
-                      onPasswordChanged("")
-                      onPhoneChanged("")
-                      
+                      onConfirmPasswordChanged("");
+                      onNicknameChanged("");
+                      onPasswordChanged("");
+                      onPhoneChanged("");
+
                       props.navigation.navigate("SMSAuthentication", {
                         nickname: nickname,
                         username: phone,
@@ -143,25 +137,31 @@ export default function RegistrationStore(props) {
                         authority: "store",
                       });
                     } else {
-                      alert.warning(response.error, function(){
-                        props.navigation.popToTop()
+                      alert.warning(response.error, function () {
+                        props.navigation.popToTop();
                       });
                     }
                   })
                   .catch(function (error) {
                     console.log(error);
-                    alert.warning("unknown_error");
+                    alert.warning(Translate.t("unkownError"));
                   });
               } else {
-                alert.warning("Password and confirm password must be same.");
+                alert.warning(
+                  Translate.t("passwordAndConfirmPasswordMustSame")
+                );
               }
             } else {
-              alert.warning("All fields must be filled.");
+              alert.warning(Translate.t("fieldNotFilled"));
             }
           }}
-          text={Translate.t("proceedToSMSAuthentication")}
-        ></ButtonInBlack>
-
+        >
+          <View style={styles.proceedToSMSAuthButton}>
+            <Text style={styles.proceedToSMSAuthButtonText}>
+              {Translate.t("proceedToSMSAuthentication")}
+            </Text>
+          </View>
+        </TouchableOpacity>
         <View
           onPress={() => props.navigation.pop()}
           style={{
@@ -175,7 +175,7 @@ export default function RegistrationStore(props) {
             onPress={() => props.navigation.pop()}
             style={{
               color: Colors.white,
-              fontSize: RFValue(12),
+              fontSize: RFValue(14),
             }}
           >
             {Translate.t("nonBeautician")}
@@ -185,8 +185,8 @@ export default function RegistrationStore(props) {
             style={{
               alignSelf: "center",
               marginLeft: 5,
-              width: widthPercentageToDP("4.1%"),
-              height: heightPercentageToDP("2.2%"),
+              width: win.width / 25,
+              height: 17 * ratio,
             }}
             source={require("../assets/Images/whiteNextArrow.png")}
           />
@@ -199,30 +199,46 @@ export default function RegistrationStore(props) {
 const styles = StyleSheet.create({
   ニックネーム: {
     borderBottomWidth: 1,
-    padding: 10,
-    marginHorizontal: 35,
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
+    marginHorizontal: widthPercentageToDP("10%"),
     borderBottomColor: Colors.white,
-    fontSize: RFValue("12"),
+    fontSize: RFValue(16),
   },
   パスワード: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
     borderBottomColor: Colors.white,
-    fontSize: RFValue("12"),
+    fontSize: RFValue(16),
   },
   パスワード確認: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
-    fontSize: RFValue("12"),
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
+    fontSize: RFValue(16),
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
     borderBottomWidth: 1,
-    marginHorizontal: 35,
-    padding: 10,
-    fontSize: RFValue("12"),
+    marginHorizontal: widthPercentageToDP("10%"),
+    paddingBottom: RFValue(15),
+    paddingTop: RFValue(15),
+    fontSize: RFValue(16),
     borderBottomColor: Colors.white,
+  },
+  proceedToSMSAuthButton: {
+    marginTop: heightPercentageToDP("5"),
+    borderRadius: 5,
+    paddingVertical: heightPercentageToDP("1%"),
+    marginHorizontal: widthPercentageToDP("10%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  proceedToSMSAuthButtonText: {
+    color: "white",
+    fontSize: RFValue(16),
+    textAlign: "center",
   },
 });
