@@ -15,6 +15,7 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../Colors";
 import Translate from "../Translates/Translate";
+import PersonIcon from "../icons/person.svg";
 export default function CustomKinujoWord({
   onPress,
   name,
@@ -33,14 +34,13 @@ export default function CustomKinujoWord({
           height: heightPercentageToDP("10%"),
         }}
       >
-        <Image
+        <PersonIcon
           style={{
-            width: RFValue(40),
-            height: RFValue(40),
             borderRadius: win.width / 2,
             marginLeft: widthPercentageToDP("8%"),
           }}
-          source={require("../icons/person.svg")}
+          width = {RFValue(40)}
+          height = {RFValue(40)}
         />
         <View style={{ marginLeft: widthPercentageToDP("3%") }}>
           <Text

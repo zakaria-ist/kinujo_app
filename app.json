@@ -5,8 +5,8 @@
     "version": "1.0.0",
     "android": {
       "softwareKeyboardLayoutMode": "pan",
-      "package":"com.example.kinujo",
-      "googleServicesFile": "./google-services.json"
+      "package": "com.example.kinujo",
+      "googleServicesFile": "./google-services"
     },
     "orientation": "portrait",
     "icon": "./app/assets/Images/icon.png",
@@ -22,11 +22,28 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.kinujo"
     },
     "web": {
       "favicon": "./app/assets/Images/favicon.png"
     },
-    "description": ""
+    "description": "",
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": [
+        "expo.ts",
+        "expo.tsx",
+        "expo.js",
+        "expo.jsx",
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "json",
+        "wasm",
+        "svg"
+      ]
+    }
   }
 }

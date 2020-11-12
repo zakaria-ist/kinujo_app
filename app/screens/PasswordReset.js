@@ -6,6 +6,9 @@ import {
   TextInput,
   View,
   TouchableOpacity,
+  Dimensions,
+  Image,
+  ScrollView,
 } from "react-native";
 
 import AsyncStorage from "@react-native-community/async-storage";
@@ -22,7 +25,8 @@ import Translate from "../assets/Translates/Translate";
 
 const request = new Request();
 const alert = new CustomAlert();
-
+const win = Dimensions.get("window");
+const ratioKinujo = win.width / 1.6 / 151;
 import BlackBackArrow from "../assets/CustomComponents/CustomBlackBackArrow";
 export default function PasswordReset(props) {
   const [phone, onPhoneChanged] = React.useState("");
@@ -31,10 +35,18 @@ export default function PasswordReset(props) {
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <View>
         <BlackBackArrow onPress={() => props.navigation.pop()} />
-        <CustomKinujoWord />
+        <Image
+          style={{
+            width: win.width / 1.6,
+            height: 44 * ratioKinujo,
+            alignSelf: "center",
+            marginTop: heightPercentageToDP("6%"),
+          }}
+          source={require("../assets/Images/kinujo.png")}
+        />
         <Text style={styles.passwordResetText}>
           {Translate.t("passwordReset")}
         </Text>
@@ -111,56 +123,59 @@ export default function PasswordReset(props) {
           onChangeText={(text) => onConfirmPasswordChanged(text)}
           value={confirm_password}
         ></TextInput>
-        <TouchableOpacity
-          onPress={() => {
-            if (password && confirm_password) {
-              if (password == confirm_password) {
-                request
-                  .post("password/reset", {
-                    tel: phone,
-                    password: password,
-                    confirm_password: confirm_password,
-                  })
-                  .then(function (response) {
-                    response = response.data;
+        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+          <TouchableOpacity
+            onPress={() => {
+              if (password && confirm_password) {
+                if (password == confirm_password) {
+                  request
+                    .post("password/reset", {
+                      tel: phone,
+                      password: password,
+                      confirm_password: confirm_password,
+                    })
+                    .then(function(response) {
+                      response = response.data;
 
-                    if (response.success) {
-                      onCodeChanged("");
-                      onConfirmPasswordChanged("");
-                      onPasswordChanged("");
-                      onPhoneChanged("");
-                      props.navigation.navigate("PasswordResetCompletion");
-                    } else {
-                      alert.warning(response.error);
-                    }
-                    console.log();
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning("unknown_error");
-                  });
+                      if (response.success) {
+                        onCodeChanged("");
+                        onConfirmPasswordChanged("");
+                        onPasswordChanged("");
+                        onPhoneChanged("");
+                        props.navigation.navigate("PasswordResetCompletion");
+                      } else {
+                        alert.warning(response.error);
+                      }
+                      console.log();
+                    })
+                    .catch(function(error) {
+                      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                      }
+                    });
+                } else {
+                  alert.warning("password_mismatch");
+                }
               } else {
-                alert.warning("password_mismatch");
+                alert.warning("must_filled");
               }
-            } else {
-              alert.warning("must_filled");
-            }
-          }}
-        >
-          <View style={styles.sendVerificationCodeButton}>
-            <Text style={styles.sendVerificationCodeButtonText}>
-              {Translate.t("changePassword")}
-            </Text>
-          </View>
-        </TouchableOpacity>
+            }}
+          >
+            <View style={styles.sendVerificationCodeButton}>
+              <Text style={styles.sendVerificationCodeButtonText}>
+                {Translate.t("changePassword")}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
   passwordResetText: {
     color: Colors.deepGrey,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     alignSelf: "center",
     marginTop: heightPercentageToDP("3%"),
   },
@@ -202,8 +217,8 @@ const styles = StyleSheet.create({
   sendVerificationCodeButton: {
     borderRadius: 5,
     paddingVertical: 8,
-    marginHorizontal: widthPercentageToDP("28%"),
-    marginTop: heightPercentageToDP("5%"),
+    marginHorizontal: widthPercentageToDP("20%"),
+    marginTop: heightPercentageToDP("4%"),
     backgroundColor: Colors.D7CCA6,
   },
   sendVerificationCodeButtonText: {

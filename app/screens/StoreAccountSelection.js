@@ -5,6 +5,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
+  Image
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -20,14 +22,15 @@ import {
 
 const request = new Request();
 const alert = new CustomAlert();
-
+const win = Dimensions.get("window");
+const ratioKinujo = win.width / 1.6 / 151;
 import Translate from "../assets/Translates/Translate";
 export default function StoreAccountSelection(props) {
   async function updateProfile() {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           response = response.data;
           let payload = response.payload;
           if (payload) {
@@ -45,17 +48,19 @@ export default function StoreAccountSelection(props) {
               payload: payload,
             })
             .then(function (response) {
-              props.navigation.navigate("BankAccountRegistrationOption");
+              props.navigation.navigate("BankAccountRegistrationOption", {
+                "authority" : props.route.params.authority
+              });
             })
-            .catch(function (error) {
+            .catch(function(error) {
               if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
               }
             });
         })
-        .catch(function (error) {
+        .catch(function(error) {
           if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
           }
         });
     });
@@ -69,14 +74,22 @@ export default function StoreAccountSelection(props) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View>
-          <CustomKinujoWord />
+          <Image
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("6%"),
+            }}
+            source={require("../assets/Images/kinujo.png")}
+          />
           <Text style={styles.storeAccountSelectionText}>
             {Translate.t("storeAccountSelection")}
           </Text>
           <Text
             style={{
               color: "white",
-              fontSize: RFValue(14),
+              fontSize: RFValue(12),
               marginHorizontal: widthPercentageToDP("3%"),
               alignSelf: "center",
               marginTop: heightPercentageToDP("5%"),
@@ -115,7 +128,7 @@ export default function StoreAccountSelection(props) {
 const styles = StyleSheet.create({
   storeAccountSelectionText: {
     color: "white",
-    fontSize: RFValue(18),
+    fontSize: RFValue(16),
     alignSelf: "center",
     textAlign: "center",
     marginTop: heightPercentageToDP("15%"),
@@ -129,7 +142,7 @@ const styles = StyleSheet.create({
   },
   registerSalonShopButtonText: {
     color: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     textAlign: "center",
   },
   registerHairDresserButton: {
@@ -141,7 +154,7 @@ const styles = StyleSheet.create({
   },
   registerHairDresserButtonText: {
     color: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     textAlign: "center",
   },
 });

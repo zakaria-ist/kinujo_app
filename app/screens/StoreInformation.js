@@ -33,7 +33,7 @@ function updateUser(user, field, value){
   .then(function (response) {})
   .catch(function (error) {
     if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
     }
   });
 }
@@ -70,7 +70,7 @@ export default function StoreInformation(props) {
         })
         .catch(function (error) {
           if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
           }
         });
     });

@@ -18,10 +18,49 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
+var kanjidate = require("kanjidate");
+const request = new Request();
+const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioKinujo = win.width / 4 / 151;
 
 export default function ReceiptView(props) {
+  const [user, onUserChanged] = React.useState({});
+  const [order, onOrderChanged] = React.useState({});
+  const [loaded, onLoaded] = React.useState(false);
+
+  if(!loaded){
+    request
+    .get(props.route.params.url)
+    .then(function (response) {
+      onOrderChanged(response.data);
+      onLoaded(true);
+    })
+    .catch(function (error) {
+      onLoaded(true);
+      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      }
+    });
+  }
+
+  if (!user.url) {
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+        })
+        .catch(function (error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
+        });
+    });
+  }
   return (
     <SafeAreaView>
       <CustomHeader
@@ -33,13 +72,13 @@ export default function ReceiptView(props) {
         onBack={() => props.navigation.pop()}
       />
       <CustomSecondaryHeader
-        name="髪長絹子 さん"
+        name={user.real_name ? user.real_name : user.nickname}
         accountType={Translate.t("storeAccount")}
       />
       <View style={styles.receiptEditingContainer}>
         <Text style={{ fontSize: RFValue(16) }}>領収証</Text>
         <View style={styles.invoiceInputContainer}>
-          <Text style={{ fontSize: RFValue(24) }}>髪長絹子</Text>
+          <Text style={{ fontSize: RFValue(24) }}>{user.real_name ? user.real_name : user.nickname}</Text>
           <Text
             style={{
               fontSize: RFValue(18),
@@ -49,7 +88,7 @@ export default function ReceiptView(props) {
             様
           </Text>
         </View>
-        <Text style={styles.receivedMoneyText}>￥18,000 ー</Text>
+        <Text style={styles.receivedMoneyText}>￥{order.total_price} ー</Text>
         <Text
           style={{
             fontSize: RFValue(12),
@@ -63,26 +102,29 @@ export default function ReceiptView(props) {
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("issueDate")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>0000年00月00日</Text>
+            <Text style={styles.receiptEditingDetailsText}>{kanjidate.format("{Y:4}年{M:2}月{D:2}日", new Date(order.created))}</Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("orderDate")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>0000年00月00日</Text>
+            <Text style={styles.receiptEditingDetailsText}>{kanjidate.format("{Y:4}年{M:2}月{D:2}日", new Date(order.created))}</Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("orderNumber")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>A-0000000A</Text>
+            <Text style={styles.receiptEditingDetailsText}>{order ? (order.id) : ""}</Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("productName")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              KINUJO W-world widemodel-
+            {order && order.product_jan_code ? (order.product_jan_code.horizontal ? 
+                  order.product_jan_code.horizontal.product_variety.product.name :
+                  order.product_jan_code.vertical.product_variety.product.name) : ""
+                }
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -90,25 +132,25 @@ export default function ReceiptView(props) {
               {Translate.t("seller")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              KINUJO ONLINE STORE
+            {order && order.order ? (order.order.seller.nickname) : "" }
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("deliveryAddress")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>髪長絹子</Text>
+            <Text style={styles.receiptEditingDetailsText}>{order && order.order ? order.order.name : ""}</Text>
           </View>
-          <Text style={styles.receiptEditingDetailsText}>000-0000</Text>
+          <Text style={styles.receiptEditingDetailsText}>{order && order.order ? order.order.tel : ""}</Text>
           <Text style={styles.receiptEditingDetailsText}>
-            東京都〇〇区△△0-0-0
+          {order && order.order ? order.order.address1 : ""}
           </Text>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("paymentMethod")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              AmericanExpress
+            {order && order.order ? order.order.payment : ""}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
-import DropDownPicker from 'react-native-dropdown-picker';
+import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -41,41 +41,43 @@ export default function BankAccountRegistration(props) {
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   let controller;
 
-  if(!prefectureLoaded){
-    request.get('prefectures/').then(function(response){
-      let tmpPrefectures = response.data.map((prefecture) => {
-        return {
-          label : prefecture.name,
-          value: prefecture.url
+  if (!prefectureLoaded) {
+    request
+      .get("prefectures/")
+      .then(function(response) {
+        let tmpPrefectures = response.data.map((prefecture) => {
+          return {
+            label: prefecture.name,
+            value: prefecture.url,
+          };
+        });
+        onPrefecturesChanged(tmpPrefectures);
+        onPrefectureLoadedChanged(true);
+
+        if (props.route.params && props.route.params.url && !address.url) {
+          request
+            .get(props.route.params.url)
+            .then(function(response) {
+              onAddressChanged(response.data);
+              onNameChanged(response.data.name);
+              onZipcodeChanged(response.data.zip1);
+              onPrefectureChanged(response.data.prefecture);
+              onAddChanged(response.data.address1);
+              onBuildingNameChanged(response.data.address_name);
+              onPhoneNumberChanged(response.data.tel);
+            })
+            .catch(function(error) {
+              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              }
+            });
         }
       })
-      onPrefecturesChanged(tmpPrefectures);
-      onPrefectureLoadedChanged(true);
-
-
-      if(props.route.params && props.route.params.url && !address.url){
-        request
-          .get(props.route.params.url)
-          .then(function (response) {
-            onAddressChanged(response.data);
-            onNameChanged(response.data.name)
-            onZipcodeChanged(response.data.zip1)
-            onPrefectureChanged(response.data.prefecture)
-            onAddChanged(response.data.address1)
-            onBuildingNameChanged(response.data.address_name)
-            onPhoneNumberChanged(response.data.tel)
-          })
-          .catch(function (error) {
-            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-            }
-          });
-      }
-    }).catch(function(error){
-      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-      }
-    })
+      .catch(function(error) {
+        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        }
+      });
   }
 
   return (
@@ -83,13 +85,13 @@ export default function BankAccountRegistration(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          onNameChanged("")
-          onZipcodeChanged("")
-          onPrefectureChanged(null)
-          onAddChanged("")
-          onBuildingNameChanged("")
-          onPhoneNumberChanged("")
-          onPrefecturesChanged([])
+          onNameChanged("");
+          onZipcodeChanged("");
+          onPrefectureChanged(null);
+          onAddChanged("");
+          onBuildingNameChanged("");
+          onPhoneNumberChanged("");
+          onPrefecturesChanged([]);
           onPrefectureLoadedChanged(false);
           controller.reset();
           props.navigation.pop();
@@ -115,23 +117,29 @@ export default function BankAccountRegistration(props) {
           onChangeText={(text) => onZipcodeChanged(text)}
         ></TextInput>
         <DropDownPicker
-              controller={instance => controller = instance}
-              style={styles.textInput}
-              items={prefectures ? prefectures : []}
-              defaultValue={prefecture ? prefecture : null}
-              containerStyle={{height: 40}}
-              // style={{backgroundColor: '#fafafa'}}
-              itemStyle={{
-                  justifyContent: 'flex-start'
-              }}
-              placeholder="都道府県"
-              dropDownStyle={{backgroundColor: '#fafafa'}}
-              onChangeItem={(item) => {
-                if(item){
-                  onPrefectureChanged(item.value)
-                }
-              }}
-          />
+          controller={(instance) => (controller = instance)}
+          style={styles.textInput}
+          items={prefectures ? prefectures : []}
+          defaultValue={prefecture ? prefecture : null}
+          containerStyle={{ height: heightPercentageToDP("8%") }}
+          labelStyle={{
+            fontSize: RFValue(12),
+            color: Colors.F0EEE9,
+          }}
+          itemStyle={{
+            justifyContent: "flex-start",
+          }}
+          selectedtLabelStyle={{
+            color: Colors.F0EEE9,
+          }}
+          placeholder="都道府県"
+          dropDownStyle={{ backgroundColor: "#000000" }}
+          onChangeItem={(item) => {
+            if (item) {
+              onPrefectureChanged(item.value);
+            }
+          }}
+        />
         <TextInput
           placeholder="住所"
           placeholderTextColor={Colors.D7CCA6}
@@ -154,9 +162,9 @@ export default function BankAccountRegistration(props) {
           onChangeText={(text) => onPhoneNumberChanged(text)}
         ></TextInput>
       </View>
-      <TouchableWithoutFeedback onPress = {
-        () => {
-          if(props.route.params && props.route.params.url){
+      <TouchableWithoutFeedback
+        onPress={() => {
+          if (props.route.params && props.route.params.url) {
             request
               .patch(props.route.params.url, {
                 address1: add,
@@ -165,50 +173,49 @@ export default function BankAccountRegistration(props) {
                 name: name,
                 prefecture: prefecture,
                 tel: phoneNumber,
-                zip1: zipcode
+                zip1: zipcode,
               })
-              .then(function (response) {
+              .then(function(response) {
                 props.navigation.pop();
               })
-              .catch(function (error) {
+              .catch(function(error) {
                 if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
                 }
               });
           } else {
-
-            AsyncStorage.getItem("user").then(function (url) {
+            AsyncStorage.getItem("user").then(function(url) {
               request
-              .post("addresses/", {
-                address1: add,
-                address2: add,
-                address_name: buildingName,
-                name: name,
-                prefecture: prefecture,
-                tel: phoneNumber,
-                user: url,
-                zip1: zipcode
-              })
-              .then(function (response) {
-                onNameChanged("")
-                onZipcodeChanged("")
-                onPrefectureChanged(null)
-                onAddChanged("")
-                onBuildingNameChanged("")
-                onPhoneNumberChanged("")
-                onPrefecturesChanged([])
-                onPrefectureLoadedChanged(false);
-                props.navigation.pop();
-              })
-              .catch(function (error) {
-                if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-                }
-              });
+                .post("addresses/", {
+                  address1: add,
+                  address2: add,
+                  address_name: buildingName,
+                  name: name,
+                  prefecture: prefecture,
+                  tel: phoneNumber,
+                  user: url,
+                  zip1: zipcode,
+                })
+                .then(function(response) {
+                  onNameChanged("");
+                  onZipcodeChanged("");
+                  onPrefectureChanged(null);
+                  onAddChanged("");
+                  onBuildingNameChanged("");
+                  onPhoneNumberChanged("");
+                  onPrefecturesChanged([]);
+                  onPrefectureLoadedChanged(false);
+                  props.navigation.pop();
+                })
+                .catch(function(error) {
+                  if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                    alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                  }
+                });
             });
           }
-        }
-      }>
+        }}
+      >
         <View style={styles.buttonContainer}>
           <Text style={styles.buttonText}>登録</Text>
         </View>
@@ -222,8 +229,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderColor: "transparent",
     borderRadius: 0,
-    fontSize: RFValue(14),
-    height: heightPercentageToDP("5%"),
+    fontSize: RFValue(12),
+    height: heightPercentageToDP("5.5%"),
     paddingLeft: widthPercentageToDP("2%"),
     marginVertical: heightPercentageToDP("1%"),
   },

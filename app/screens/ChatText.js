@@ -28,7 +28,7 @@ const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
 
-export default function ChatText({ isSelf, text, date }) {
+export default function ChatText({ isSelf, text, date, seen }) {
   return (
     <SafeAreaView>
       {/*Right Side*/}
@@ -70,7 +70,7 @@ export default function ChatText({ isSelf, text, date }) {
               isSelf ? styles.right_status_text : styles.left_status_text,
             ]}
           >
-            {"Read"}
+            {seen ? "Read" : ""}
           </Text>
           <Text
             style={[

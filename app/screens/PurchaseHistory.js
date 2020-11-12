@@ -48,7 +48,10 @@ function processOrderHtml(props, orders, status = "") {
               marginTop: heightPercentageToDP("1.5%"),
             }}
           >
-            {kanjidate.format("{Y:4}年{M:2}月{D:2}日 ({G:1}) {h:2}:{M:2}", new Date(order.order.created))}
+            {kanjidate.format(
+              "{Y:4}年{M:2}月{D:2}日 ({G:1}) {h:2}:{M:2}",
+              new Date(order.order.created)
+            )}
           </Text>
           <View style={styles.purchaseHistoryProductContainer}>
             <View style={styles.productInformationContainer}>
@@ -61,26 +64,26 @@ function processOrderHtml(props, orders, status = "") {
               />
               <View style={{ marginLeft: widthPercentageToDP("3%") }}>
                 <Text style={styles.productInformationText}>
-                  {order.product_jan_code.horizontal ? 
-                  order.product_jan_code.horizontal.product_variety.product.name :
-                  order.product_jan_code.vertical.product_variety.product.name
-                }
+                  {order.product_jan_code.horizontal
+                    ? order.product_jan_code.horizontal.product_variety.product
+                        .name
+                    : order.product_jan_code.vertical.product_variety.product
+                        .name}
                 </Text>
-                <Text>
-                {order.unit_price}円</Text>
+                <Text>{order.unit_price}円</Text>
               </View>
               <Image
                 style={styles.nextIcon}
                 source={require("../assets/Images/next.png")}
               />
             </View>
-            <TouchableWithoutFeedback onPress = {
-              () => {
+            <TouchableWithoutFeedback
+              onPress={() => {
                 props.navigation.navigate("PurchaseHistoryDetails", {
-                  "url" : order.url
-                })
-              }
-            }>
+                  url: order.url,
+                });
+              }}
+            >
               <View style={styles.productInformationContainer}>
                 <Text style={styles.productInformationText}>詳細</Text>
                 <Image
@@ -110,9 +113,9 @@ function processOrderHtml(props, orders, status = "") {
                   marginLeft: widthPercentageToDP("3%"),
                 }}
               >
-                {order.order.seller.shop_name ? 
-                order.order.seller.shop_name :
-                order.order.seller.nickname}
+                {order.order.seller.shop_name
+                  ? order.order.seller.shop_name
+                  : order.order.seller.nickname}
               </Text>
             </View>
           </View>
@@ -128,102 +131,99 @@ export default function PurchaseHistory(props) {
   const [orderHtml, onOrderHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
-  const [yearHtml, onYearHtmlChanged] = React.useState(<View></View>)
-  const [years, onYearChanged] = React.useState(<View></View>)
+  const [yearHtml, onYearHtmlChanged] = React.useState(<View></View>);
+  const [years, onYearChanged] = React.useState(<View></View>);
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
-  const navigationView = (
-    <View style={styles.navigationContainer}>
-      <Text style={{ margin: 10, fontSize: 15 }}>I'm in the Drawer!</Text>
-    </View>
-  );
 
-  function loadOrder(userId, type){
-    console.log(type)
+  function loadOrder(userId, type) {
     request
-    .get("orderProducts/" + userId + "/")
-    .then(function (response) {
-      onOrdersChanged(response.data.orders);
-      let tmpYears = []
-      response.data.orderProducts.map((order) => {
-        let year = kanjidate.format("{Y:4}", new Date(order.created));
-        if(!tmpYears.includes(year)){
-          tmpYears.push(year);
-        }
+      .get("orderProducts/" + userId + "/")
+      .then(function(response) {
+        onOrdersChanged(response.data.orders);
+        let tmpYears = [];
+        response.data.orderProducts.map((order) => {
+          let year = kanjidate.format("{Y:4}", new Date(order.created));
+          if (!tmpYears.includes(year)) {
+            tmpYears.push(year);
+          }
+        });
+        onYearHtmlChanged(processYearHtml(tmpYears));
+        onOrderHtmlChanged(
+          processOrderHtml(props, response.data.orderProducts, status)
+        );
+        onLoaded(true);
       })
-      onYearHtmlChanged(processYearHtml(tmpYears));
-      onOrderHtmlChanged(processOrderHtml(props, response.data.orderProducts, status));
-      onLoaded(true);
-    })
-    .catch(function (error) {
-      console.log(error);
-      alert.warning(Translate.t("unkownError"));
-      onLoaded(true);
-    });
+      .catch(function(error) {
+        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        }
+        onLoaded(true);
+      });
   }
-  function load(){
-    AsyncStorage.getItem("user").then(function (url) {
+  function load() {
+    AsyncStorage.getItem("user").then(function(url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
-  
+
       if (!user.url) {
         request
           .get(url)
-          .then(function (response) {
+          .then(function(response) {
             onUserChanged(response.data);
           })
-          .catch(function (error) {
-            console.log(error);
-            alert.warning(Translate.t("unkownError"));
+          .catch(function(error) {
+            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+            }
           });
       }
-  
+
       if (!loaded) {
-        loadOrder(userId, 'all')
+        loadOrder(userId, "all");
       }
     });
   }
 
-  function processYearHtml(years){
+  function processYearHtml(years) {
     let tmpYearHtml = [];
     years.map((year) => {
       tmpYearHtml.push(
-        <TouchableWithoutFeedback key={year} onPress = {
-          () => {
-            AsyncStorage.getItem("user").then(function (url) {
+        <TouchableWithoutFeedback
+          key={year}
+          onPress={() => {
+            AsyncStorage.getItem("user").then(function(url) {
               let urls = url.split("/");
               urls = urls.filter((url) => {
                 return url;
               });
               let userId = urls[urls.length - 1];
 
-              loadOrder(userId, year)
-            })
-            Animated.timing(right, {
-              toValue: widthPercentageToDP("-80%"),
-              duration: 500,
-            }).start()
-          }
-        }>
+              loadOrder(userId, year);
+            });
+          }}
+        >
           <View style={styles.dateTabContainer}>
             <Text style={styles.dateTabText}>{year}</Text>
           </View>
-        </TouchableWithoutFeedback>)
-    })
+        </TouchableWithoutFeedback>
+      );
+    });
     return tmpYearHtml;
   }
 
   load();
   return (
     <TouchableWithoutFeedback
-      // onPress={() =>
-      //   Animated.timing(right, {
-      //     toValue: widthPercentageToDP("-80%"),
-      //     duration: 500,
-      //   }).start()
-      // }
+      onPress={() =>
+        Animated.timing(right, {
+          toValue: widthPercentageToDP("-80%"),
+          duration: 500,
+          useNativeDriver: false,
+        }).start()
+      }
     >
       <SafeAreaView>
         <CustomHeader
@@ -340,25 +340,21 @@ export default function PurchaseHistory(props) {
               source={require("../assets/Images/upIcon.png")}
             />
           </View>
-          <TouchableWithoutFeedback onPress = {
-            () => {
+          <TouchableWithoutFeedback
+            onPress={() => {
               onLoaded(false);
 
-              AsyncStorage.getItem("user").then(function (url) {
+              AsyncStorage.getItem("user").then(function(url) {
                 let urls = url.split("/");
                 urls = urls.filter((url) => {
                   return url;
                 });
                 let userId = urls[urls.length - 1];
 
-                loadOrder(userId, 'past_6_months')
-              })
-              Animated.timing(right, {
-                toValue: widthPercentageToDP("-80%"),
-                duration: 500,
-              }).start()
-            }
-          }>
+                loadOrder(userId, "past_6_months");
+              });
+            }}
+          >
             <View style={styles.dateTabContainer}>
               <Text style={styles.dateTabText}>Past 6 Month</Text>
             </View>
@@ -393,7 +389,7 @@ export default function PurchaseHistory(props) {
               marginTop: heightPercentageToDP("30%"),
               marginHorizontal: widthPercentageToDP("1%"),
               justifyContent: "space-between",
-              backgroundColor: "white"
+              backgroundColor: "white",
             }}
           >
             {/* <Image
@@ -438,6 +434,7 @@ export default function PurchaseHistory(props) {
               Animated.timing(right, {
                 toValue: 0,
                 duration: 500,
+                useNativeDriver: false,
               }).start()
             }
           >

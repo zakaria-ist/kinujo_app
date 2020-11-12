@@ -31,15 +31,16 @@ export default function ProductInformationAdd(props) {
   const [user, onUserChanged] = React.useState({});
 
   if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           onUserChanged(response.data);
         })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
         });
     });
   }

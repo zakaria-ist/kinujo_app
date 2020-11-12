@@ -28,6 +28,10 @@ import { ScrollView, TextInput } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+
+const { width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
+
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -36,7 +40,7 @@ const ratioProductAddIcon = win.width / 10 / 28;
 export default function ProductInformationAdd(props) {
   const [user, onUserChanged] = React.useState({});
 
-  const [variant, setVariant] = React.useState('one');
+  const [variant, setVariant] = React.useState("one");
 
   return (
     <SafeAreaView>
@@ -52,7 +56,7 @@ export default function ProductInformationAdd(props) {
         name={user.real_name ? user.real_name : user.nickname}
         accountType={""}
       />
-      <View style={{ paddingBottom: widthPercentageToDP("100%") }}>
+      <View style={{ height: height - heightPercentageToDP("20%")}}>
         <ScrollView>
           <View style={styles.formContainer}>
             <Text style={styles.text}>{"正式商品名"}</Text>
@@ -76,17 +80,33 @@ export default function ProductInformationAdd(props) {
 
             <Text style={styles.text}>{"バリエーション"}</Text>
             <View style={styles.radioGroupContainer}>
-              <RadioButton.Group style={{alignItems:'flex-start'}} onValueChange={variant => setVariant(variant)} value={variant}>
+              <RadioButton.Group
+                style={{ alignItems: "flex-start" }}
+                onValueChange={(variant) => setVariant(variant)}
+                value={variant}
+              >
                 <View style={styles.radionButtonLabel}>
-                  <RadioButton value="one" uncheckedColor="#FFF" color="#BD9848" />
+                  <RadioButton
+                    value="one"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
                   <Text style={styles.radioButtonText}>{"1 項目"}</Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
-                  <RadioButton value="two" uncheckedColor="#FFF" color="#BD9848" />
+                  <RadioButton
+                    value="two"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
                   <Text style={styles.radioButtonText}>{"2 項目"}</Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
-                  <RadioButton value="none" uncheckedColor="#FFF" color="#BD9848" />
+                  <RadioButton
+                    value="none"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
                   <Text style={styles.radioButtonText}>{"なし"}</Text>
                 </View>
               </RadioButton.Group>
@@ -95,16 +115,15 @@ export default function ProductInformationAdd(props) {
             <View style={styles.line} />
 
             {/*1 項目*/}
-            <View style={variant !== "one" ? styles.none : null} >
+            <View style={variant !== "one" ? styles.none : null}>
               <ProductOneVariations />
             </View>
             <View style={variant !== "two" ? styles.none : null}>
               <ProductTwoVariations />
-            </View>            
+            </View>
             <View style={variant !== "none" ? styles.none : null}>
               <ProductNoneVariations />
             </View>
-
 
             <Text style={styles.text}>{Translate.t("publishState")}</Text>
             <View style={styles.radioGroupContainer}>
@@ -145,7 +164,7 @@ export default function ProductInformationAdd(props) {
                 <Text style={styles.radioButtonText}>
                   {Translate.t("allUser")}
                 </Text>
-                <RadioButton/>
+                <RadioButton />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("generalUser")}
                 </Text>
@@ -290,7 +309,7 @@ export default function ProductInformationAdd(props) {
 
 const styles = StyleSheet.create({
   none: {
-    display: "none"
+    display: "none",
   },
   line: {
     marginTop: 5,
@@ -298,15 +317,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#BD9848",
     width: widthPercentageToDP("94%"),
-    marginHorizontal: widthPercentageToDP("-4%")
+    marginHorizontal: widthPercentageToDP("-4%"),
   },
   subframe: {
-    width: "calc(100% + 6px)",
     borderWidth: 1,
     borderColor: "#BD9848",
     marginTop: heightPercentageToDP("2%"),
     padding: 6,
-    marginLeft: -3
+    marginLeft: -3,
   },
   textInput: {
     borderWidth: 0,
@@ -320,7 +338,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: RFValue(14),
-    marginBottom: heightPercentageToDP("2%")
+    marginBottom: heightPercentageToDP("2%"),
   },
   radioButtonText: {
     fontSize: RFValue(10),
@@ -335,7 +353,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
     paddingRight: 10,
-    flexBasis: "auto"
+    flexBasis: "auto",
   },
   releaseDateTextInput: {
     borderWidth: 0,
@@ -376,6 +394,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     height: heightPercentageToDP("10%"),
     marginTop: heightPercentageToDP("3%"),
+    marginBottom:heightPercentageToDP("5%")
   },
   addProductButtonText: {
     fontSize: RFValue("14"),

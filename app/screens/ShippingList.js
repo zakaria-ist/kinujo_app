@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
+import { useIsFocused } from '@react-navigation/native';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -26,7 +27,8 @@ const win = Dimensions.get("window");
 const ratioRemove = win.width / 20 / 16;
 const ratioAdd = win.width / 21 / 14;
 
-function processAddressHtml(addresses) {
+function processAddressHtml(props, addresses, status = "") {
+  alert.warning(JSON.stringify(addresses));
   let tmpAddresses = [];
   for (var i = 0; i < addresses.length; i++) {
     let address = addresses[i];
@@ -52,15 +54,36 @@ function processAddressHtml(addresses) {
                 right: 0,
               }}
             >
-              <TouchableOpacity>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  props.navigation.navigate("AdressManagement", {
+                    url: address.url,
+                  });
+                }}
+              >
                 <View style={styles.buttonContainer}>
                   <Text style={styles.buttonText}>編集</Text>
                 </View>
-              </TouchableOpacity>
-              <Image
-                style={styles.removeIcon}
-                source={require("../assets/Images/removeIcon.png")}
-              />
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  request
+                    .delete(address.url)
+                    .then(function(response) {
+                      load();
+                    })
+                    .catch(function(error) {
+                      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                      }
+                    });
+                }}
+              >
+                <Image
+                  style={styles.removeIcon}
+                  source={require("../assets/Images/removeIcon.png")}
+                />
+              </TouchableWithoutFeedback>
             </View>
           </View>
         </View>
@@ -69,102 +92,98 @@ function processAddressHtml(addresses) {
   }
   return tmpAddresses;
 }
-
 export default function ShippingList(props) {
-  const [addresses, onAddressesChanged] = React.useState({});
+  const [addresses, onAddressesChanged] = React.useState([]);
   const [addressHtml, onAddressHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
-  function load(){
-    AsyncStorage.getItem("user").then(function (url) {
+  
+
+  function load() {
+    AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
-      if (!loaded) {
-        request
-          .get("addressList/" + userId + "/")
-          .then(function (response) {
-            onAddressesChanged(response.data.addresses);
-            onAddressHtmlChanged(
-              processAddressHtml(props, response.data.addresses, status)
+      request
+        .get("addressList/" + userId + "/")
+        .then((response) => {
+          onAddressesChanged(response.data.addresses);
+
+          let tmpAddresses = [];
+          for (var i = 0; i < response.data.addresses.length; i++) {
+            let address = response.data.addresses[i];
+            tmpAddresses.push(
+              <TouchableWithoutFeedback key={i}>
+                <View style={styles.tabContainer}>
+                  <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
+                  <Text style={styles.textInTabContainer}>{address.zip1}</Text>
+                  <Text style={styles.textInTabContainer}>{address.address1}</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Text
+                      style={{
+                        fontSize: RFValue(12),
+                        marginTop: heightPercentageToDP(".5%"),
+                      }}
+                    >
+                      {address.prefecture.name}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row-reverse",
+                        position: "absolute",
+                        right: 0,
+                      }}
+                    >
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          props.navigation.navigate("AdressManagement", {
+                            url: address.url,
+                          });
+                        }}
+                      >
+                        <View style={styles.buttonContainer}>
+                          <Text style={styles.buttonText}>編集</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                      <TouchableWithoutFeedback
+                        onPress={() => {
+                          request
+                            .delete(address.url)
+                            .then(function(response) {
+                              load();
+                            })
+                            .catch(function(error) {
+                              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                              }
+                            });
+                        }}
+                      >
+                        <Image
+                          style={styles.removeIcon}
+                          source={require("../assets/Images/removeIcon.png")}
+                        />
+                      </TouchableWithoutFeedback>
+                    </View>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
             );
-            onLoaded(true);
-          })
-          .catch(function (error) {
-            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-            }
-            onLoaded(true);
-          });
-      }
+          }
+          onAddressHtmlChanged(tmpAddresses);
+        })
+        .catch((error) => {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
+        });
     });
   }
-  function processAddressHtml(props, addresses) {
-    let tmpAddresses = [];
-    for (var i = 0; i < addresses.length; i++) {
-      let address = addresses[i];
-      tmpAddresses.push(
-        <TouchableWithoutFeedback key={i}>
-          <View style={styles.tabContainer}>
-            <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
-            <Text style={styles.textInTabContainer}>{address.zip1}</Text>
-            <Text style={styles.textInTabContainer}>{address.address1}</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                  marginTop: heightPercentageToDP(".5%"),
-                }}
-              >
-                {address.prefecture.name}
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row-reverse",
-                  position: "absolute",
-                  right: 0,
-                }}
-              >
-                <TouchableWithoutFeedback onPress = {
-                  () => {
-                    props.navigation.navigate("AdressManagement", {
-                      "url" : address.url
-                    })
-                  }
-                }>
-                  <View style={styles.buttonContainer}>
-                    <Text style={styles.buttonText}>編集</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress = {
-                  () => {
-                    request
-                    .delete(address.url)
-                    .then(function (response) {
-                      load();
-                    })
-                    .catch(function (error) {
-                      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-                      }
-                    });
-                  }
-                }>
-                  <Image
-                    style={styles.removeIcon}
-                    source={require("../assets/Images/removeIcon.png")}
-                  />
-                </TouchableWithoutFeedback>
-              </View>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      );
-    }
-    return tmpAddresses;
-  }
-  load();
+  const isFocused = useIsFocused();
+  React.useEffect(()=>{
+    load();
+  }, [isFocused])
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -188,15 +207,15 @@ export default function ShippingList(props) {
             style={{ width: win.width / 21, height: 14 * ratioAdd }}
             source={require("../assets/Images/addAddressIcon.png")}
           />
-          <TouchableWithoutFeedback onPress={
-            () => {
-              props.navigation.navigate("AdressManagement")
-            }
-          }>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              props.navigation.navigate("AdressManagement");
+            }}
+          >
             <Text
               style={{
                 fontSize: RFValue(12),
-                marginLeft: widthPercentageToDP("1%"),
+                marginLeft: widthPercentageToDP("2%"),
               }}
             >
               新しい送付先を登録

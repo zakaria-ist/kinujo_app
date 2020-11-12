@@ -71,7 +71,7 @@ export default function AdvanceSetting(props) {
           }
           onFirstLoadedChanged(true);
         } else {
-          onFirebaseUserChanged({displayName : "", secret_mode: false, block: false})
+          onFirebaseUserChanged({memo: "", displayName : "", secret_mode: false, block: false})
           if(!firstLoaded){
             onBlockModeChanged(false);
             onSecretModeChanged(false);
@@ -81,7 +81,7 @@ export default function AdvanceSetting(props) {
         }
       });
     });
-  });
+  }, []);
 
   if(!userId){
   }
@@ -122,7 +122,8 @@ export default function AdvanceSetting(props) {
                   db.collection('users').doc(userId).collection('customers').doc(customerId).set({
                     "blockMode" : blockMode,
                     "secretMode" : secretMode,
-                    "displayName" : displayName
+                    "displayName" : displayName,
+                    "memo": firebaseUser.memo
                   })
                 }}
               />
@@ -169,7 +170,8 @@ export default function AdvanceSetting(props) {
               db.collection('users').doc(userId).collection('customers').doc(customerId).set({
                 "secretMode" : value,
                 "blockMode" : blockMode,
-                "displayName" : displayName
+                "displayName" : displayName,
+                "memo": firebaseUser.memo
               })
               onSecretModeChanged(value);
             }}
@@ -189,7 +191,8 @@ export default function AdvanceSetting(props) {
               db.collection('users').doc(userId).collection('customers').doc(customerId).set({
                 "blockMode" : value,
                 "secretMode" : secretMode,
-                "displayName" : displayName
+                "displayName" : displayName,
+                "memo": firebaseUser.memo
               })
               onBlockModeChanged(value);
             }}

@@ -17,16 +17,32 @@ import {
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+const request = new Request();
+const alert = new CustomAlert();
 const win = Dimensions.get("window");
-export default function Favorite(props) {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <CustomHeader
-        text="お気に入り"
-        onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.pop()}
-      />
-      <View style={{ marginHorizontal: widthPercentageToDP("3%") }}>
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
+function processFavouriteHtml(props, products) {
+  let tmpProductHtml = [];
+  products.map((product) => {
+    tmpProductHtml.push(
+      <TouchableWithoutFeedback
+        key={product.id}
+        onPress={() => {
+          props.navigation.navigate("HomeProducts", {
+            url: product.url,
+          });
+        }}
+      >
         <View style={styles.firstTabContainer}>
           <Image
             style={{
@@ -37,142 +53,64 @@ export default function Favorite(props) {
             source={require("../assets/Images/profileEditingIcon.png")}
           />
           <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>グループ名</Text>
-            <Text style={styles.tabContainerText}>髪長：こんにちは！</Text>
+            <Text style={styles.tabContainerText}>{product.name}</Text>
           </View>
-          <Text style={styles.dateText}>00：00</Text>
         </View>
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>髪長友子</Text>
-            <Text style={styles.tabContainerText}>こんにちは</Text>
-          </View>
-          <Text style={styles.dateText}>00：00</Text>
-        </View>
+      </TouchableWithoutFeedback>
+    );
+  });
+  return tmpProductHtml;
+}
 
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>●●●●●</Text>
-            <Text style={styles.tabContainerText}>
-              よろしくお願いいたします！
-            </Text>
-          </View>
-          <Text style={styles.dateText}>昨日</Text>
-        </View>
+export default function Favorite(props) {
+  const [favouriteHtml, onFavouriteHtmlChanged] = React.useState(<View></View>);
+  const [loaded, onLoaded] = React.useState(false);
 
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>★★★★★</Text>
-            <Text style={styles.tabContainerText}>よろしく～</Text>
-          </View>
-          <Text style={styles.dateText}>〇曜日</Text>
-        </View>
-
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>◇◇◇</Text>
-            <Text style={styles.tabContainerText}>●●：よろしく～</Text>
-          </View>
-          <Text style={styles.dateText}>〇曜日</Text>
-        </View>
-
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>●●●●●</Text>
-            <Text style={styles.tabContainerText}>
-              よろしくお願いいたします！
-            </Text>
-          </View>
-          <Text style={styles.dateText}>9/14</Text>
-        </View>
-
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>■■■■</Text>
-            <Text style={styles.tabContainerText}>よろしく～</Text>
-          </View>
-          <Text style={styles.dateText}>9/14</Text>
-        </View>
-
-        <View style={styles.tabContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabContainerText}>〇〇〇〇〇〇</Text>
-            <Text style={styles.tabContainerText}>よろしく～</Text>
-          </View>
-          <Text style={styles.dateText}>9/14</Text>
-        </View>
-      </View>
-      <Image
-        style={{
-          width: RFValue(45),
-          height: RFValue(45),
-          borderRadius: win.width / 2,
-          backgroundColor: "white",
-          zIndex: 1,
-          position: "absolute",
-          bottom: 0,
-          right: 0,
-          marginBottom: heightPercentageToDP("10%"),
-          marginRight: widthPercentageToDP("5%"),
-        }}
-        source={require("../assets/Images/searchIcon.png")}
+  AsyncStorage.getItem("user").then(function(url) {
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    let userId = urls[urls.length - 1];
+    if (!loaded) {
+      db.collection("users")
+        .doc(userId)
+        .collection("favourite")
+        .get()
+        .then((querySnapshot) => {
+          let ids = [];
+          querySnapshot.forEach((documentSnapshot) => {
+            ids.push(documentSnapshot.id);
+          });
+          request
+            .get("product/byIds/", {
+              ids: ids,
+            })
+            .then(function(response) {
+              onFavouriteHtmlChanged(
+                processFavouriteHtml(props, response.data.products)
+              );
+              onLoaded(true);
+            })
+            .catch(function(error) {
+              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              }
+              onLoaded(true);
+            });
+        });
+    }
+  });
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <CustomHeader
+        text="お気に入り"
+        onPress={() => props.navigation.navigate("Cart")}
+        onBack={() => props.navigation.pop()}
       />
+      <View style={{ marginHorizontal: widthPercentageToDP("3%") }}>
+        {favouriteHtml}
+      </View>
     </SafeAreaView>
   );
 }

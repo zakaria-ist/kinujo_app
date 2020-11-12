@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   View,
+  Dimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
@@ -20,6 +21,8 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 export default function TermsOfCondition(props) {
+  const win = Dimensions.get("window");
+  const ratio = win.width / 1.6 / 151;
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -29,7 +32,15 @@ export default function TermsOfCondition(props) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <WhiteBackArrow onPress={() => props.navigation.pop()} />
-        <CustomKinujoWord />
+        <Image
+          style={{
+            width: win.width / 1.6,
+            height: 44 * ratio,
+            alignSelf: "center",
+            marginTop: heightPercentageToDP("3%"),
+          }}
+          source={require("../assets/Images/kinujo.png")}
+        />
         <Text style={styles.利用規約}>{Translate.t("termsOfService")}</Text>
         <ScrollView style={styles.ScrollView}>
           <Text style={styles.利用規約Content}>
@@ -83,23 +94,24 @@ export default function TermsOfCondition(props) {
 }
 const styles = StyleSheet.create({
   ScrollView: {
-    marginHorizontal: widthPercentageToDP("10%"),
+    marginHorizontal: widthPercentageToDP("7%"),
     marginTop: heightPercentageToDP("3%"),
     height: "30%",
   },
-  利用規約Content: { color: "white" },
+  利用規約Content: { color: "white", fontSize: RFValue(11) },
   利用規約: {
     alignSelf: "center",
     marginTop: heightPercentageToDP("5%"),
     color: "white",
-    fontSize: RFValue(16),
+    fontSize: RFValue(14),
   },
   agreeButton: {
     borderRadius: 5,
     backgroundColor: "#f01d71",
     paddingVertical: heightPercentageToDP("1.5%"),
     marginHorizontal: heightPercentageToDP("12%"),
-    marginVertical: widthPercentageToDP("23%"),
+    marginVertical: widthPercentageToDP("12%"),
+
     backgroundColor: Colors.deepGrey,
   },
   agreeButtonText: {

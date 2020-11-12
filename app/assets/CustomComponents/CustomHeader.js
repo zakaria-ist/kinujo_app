@@ -15,9 +15,12 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
+import CartLogo from "../icons/cart.svg";
+import FavouriteLogo from "../icons/favorite.svg";
+
 export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
   const win = Dimensions.get("window");
-  const ratioKinujo = win.width / 5 / 78;
+  const ratioKinujo = win.width / 4 / 78;
   const ratioFavorite = win.width / 14 / 24;
   const ratioCart = win.width / 14 / 23;
 
@@ -35,7 +38,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
       />
       <Image
         style={{
-          width: win.width / 5,
+          width: win.width / 4,
           height: 22 * ratioKinujo,
           position: "absolute",
           left: 0,
@@ -48,7 +51,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
         style={{
           justifyContent: "center",
           alignSelf: "center",
-          fontSize: RFValue(18),
+          fontSize: RFValue(12),
         }}
       >
         {text}
@@ -62,23 +65,21 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
         }}
       >
         <TouchableWithoutFeedback onPress={onPress}>
-          <Image
+          <CartLogo
             style={{
-              width: win.width / 14,
-              height: 21 * ratioCart,
               marginRight: widthPercentageToDP("5%"),
             }}
-            source={require("../icons/cart.svg")}
+            width={win.width / 14}
+            height={21 * ratioCart}
           />
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={onFavoritePress}>
-          <Image
+          <FavouriteLogo
             style={{
-              width: win.width / 14,
-              height: 21 * ratioFavorite,
-              marginRight: widthPercentageToDP("3%"),
+              marginRight: widthPercentageToDP("5%"),
             }}
-            source={require("../icons/favorite.svg")}
+            width={win.width / 14}
+            height={21 * ratioCart}
           />
         </TouchableWithoutFeedback>
       </View>

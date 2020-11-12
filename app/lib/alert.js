@@ -16,6 +16,10 @@ class CustomAlert {
       }], { cancelable: false });
     }
   }
+
+  async prompt(){
+    Alert.alert("test", <View></View>)
+  }
 }
 
 export default CustomAlert;

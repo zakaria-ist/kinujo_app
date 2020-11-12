@@ -32,8 +32,9 @@ export default function PurchaseHistoryDetails(props) {
     })
     .catch(function (error) {
       onLoaded(true);
-      console.log(error);
-      alert.warning(Translate.t("unkownError"));
+      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      }
     });
   }
   return (
@@ -112,7 +113,9 @@ export default function PurchaseHistoryDetails(props) {
         </View>
         <TouchableWithoutFeedback onPress = {
           () => {
-            props.navigation.navigate("ReceiptView")
+            props.navigation.navigate("ReceiptView", {
+              "url" : props.route.params.url
+            })
           }
         }>
           <View style={styles.productInformationContainer}>

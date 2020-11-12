@@ -14,8 +14,13 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import { SvgUri } from "react-native-svg";
 import { RFValue } from "react-native-responsive-fontsize";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
+import CloseBackLogo from "../icons/close_black.svg";
+import ArrowBackLogo from "../icons/arrow_back.svg";
+import CartIcon from "../icons/cart.svg";
+import FavIcon from "../icons/favorite.svg";
 
 export default function CustomKinujoWord({
   onBack,
@@ -48,13 +53,12 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onBack}>
-          <Image
+          <ArrowBackLogo
             style={{
-              width: win.width / 18,
-              height: 20 * ratioBackArrow,
               marginLeft: widthPercentageToDP("5%"),
             }}
-            source={onClose ? require("../icons/close_black.svg") : require("../icons/arrow_back.svg")}
+            width={win.width / 18}
+            height={20 * ratioBackArrow}
           />
         </TouchableWithoutFeedback>
         <Image
@@ -71,7 +75,7 @@ export default function CustomKinujoWord({
         style={{
           justifyContent: "center",
           alignSelf: "center",
-          fontSize: RFValue(15),
+          fontSize: RFValue(11),
         }}
       >
         {text}
@@ -85,25 +89,23 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onPress}>
-          <Image
+          <CartIcon
             style={{
               width: win.width / 14,
               height: 21 * ratioCart,
               marginRight: widthPercentageToDP("5%"),
             }}
-            source={require("../icons/cart.svg")}
           />
         </TouchableWithoutFeedback>
 
         {onFavoriteChanged == null ? (
           <TouchableWithoutFeedback onPress={onFavoritePress}>
-            <Image
+            <FavIcon
               style={{
                 width: win.width / 14,
                 height: 21 * ratioFavorite,
                 marginRight: widthPercentageToDP("3%"),
               }}
-              source={require("../icons/favorite.svg")}
             />
           </TouchableWithoutFeedback>
         ) : null}

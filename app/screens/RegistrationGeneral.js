@@ -8,6 +8,7 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -21,10 +22,12 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
+import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioTripleDot = win.width / 23 / 15;
+const ratioKinujo = win.width / 1.6 / 151;
 export default function RegistrationGeneral(props) {
   const [nickname, onNicknameChanged] = React.useState("");
   const [password, onPasswordChanged] = React.useState("");
@@ -38,7 +41,11 @@ export default function RegistrationGeneral(props) {
       end={[1, 0.6]}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
+      {/* <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height+999999999999999"}
+        style={{ flex: 1 }}
+      > */}
+      <ScrollView style={{ flex: 1 }}>
         <WhiteBackArrow onPress={() => props.navigation.pop()} />
         <View
           style={{
@@ -47,7 +54,15 @@ export default function RegistrationGeneral(props) {
             alignItems: "center",
           }}
         >
-          <CustomKinujoWord />
+          <Image
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("3%"),
+            }}
+            source={require("../assets/Images/kinujo.png")}
+          />
           <Text
             style={{
               marginTop: heightPercentageToDP("8%"),
@@ -98,67 +113,89 @@ export default function RegistrationGeneral(props) {
             value={phone}
           ></TextInput>
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            if (nickname && phone && password && confirm_password) {
-              if (password == confirm_password) {
-                request
-                  .post("user/register/check", {
-                    nickname: nickname,
-                    username: phone,
-                    password: password,
-                    authority: "general",
-                  })
-                  .then(function (response) {
-                    response = response.data;
-                    if (response.success) {
-                      onConfirmPasswordChanged("")
-                      onNicknameChanged("")
-                      onPasswordChanged("")
-                      onPhoneChanged("")
-                      
-                      props.navigation.navigate("SMSAuthentication", {
-                        nickname: nickname,
-                        username: phone,
-                        password: password,
-                        authority: "general",
-                      });
-                    } else {
-                      alert.warning(response.error, function(){
-                        props.navigation.popToTop()
-                      });
-                    }
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
-                  });
+        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+          <TouchableOpacity
+            onPress={() => {
+              if (nickname && phone && password && confirm_password) {
+                if (password == confirm_password) {
+                  request
+                    .post("user/register/check", {
+                      nickname: nickname,
+                      username: phone,
+                      password: password,
+                      authority: "general",
+                    })
+                    .then(function(response) {
+                      response = response.data;
+                      if (response.success) {
+                        // onConfirmPasswordChanged("")
+                        // onNicknameChanged("")
+                        // onPasswordChanged("")
+                        // onPhoneChanged("")
+
+                        props.navigation.navigate("SMSAuthentication", {
+                          nickname: nickname,
+                          username: phone,
+                          password: password,
+                          authority: "general",
+                        });
+                      } else {
+                        if (
+                          response.errors &&
+                          Object.keys(response.errors).length > 0
+                        ) {
+                          alert.warning(
+                            response.errors[
+                              Object.keys(response.errors)[0]
+                            ][0] +
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")"
+                          );
+                        }
+                      }
+                    })
+                    .catch(function(error) {
+                      alert.warning(JSON.stringify(error));
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0]
+                        );
+                      }
+                    });
               } else {
-                alert.warning(Translate.t("unkownError"));
+                alert.warning(
+                  Translate.t("passwordAndConfirmPasswordMustSame")
+                );
               }
-            } else {
-              alert.warning(Translate.t("passwordAndConfirmPasswordMustSame"));
-            }
-          }}
-        >
-          <View style={styles.registerGeneralButton}>
-            <Text style={styles.registerGeneralButtonText}>
-              {Translate.t("registerAsGeneralUser")}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            props.navigation.navigate("RegistrationStore");
-          }}
-        >
-          <View style={styles.registerBeauticianSalonButton}>
-            <Text style={styles.registerBeauticianSalonButtonText}>
-              {Translate.t("registerAsBeauticianOrSalon")}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </SafeAreaView>
+            }}}>
+            <View style={styles.registerGeneralButton}>
+              <Text style={styles.registerGeneralButtonText}>
+                {Translate.t("registerAsGeneralUser")}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              props.navigation.navigate("RegistrationStore");
+            }}
+          >
+            <View style={styles.registerBeauticianSalonButton}>
+              <Text style={styles.registerBeauticianSalonButtonText}>
+                {Translate.t("registerAsBeauticianOrSalon")}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+      {/* </KeyboardAvoidingView> */}
     </LinearGradient>
   );
 }
@@ -169,15 +206,15 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    fontSize: RFValue("12"),
-    borderBottomColor: Colors.white,
+    fontSize: RFValue(12),
+    borderColor: "white",
   },
   パスワード: {
     borderBottomWidth: 1,
     marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    fontSize: RFValue("12"),
+    fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },
   パスワード確認: {
@@ -185,7 +222,7 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    fontSize: RFValue("12"),
+    fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
@@ -193,11 +230,11 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    fontSize: RFValue("12"),
+    fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },
   registerGeneralButton: {
-    marginTop: heightPercentageToDP("5"),
+    marginTop: heightPercentageToDP("7"),
     borderRadius: 5,
     paddingVertical: heightPercentageToDP("1%"),
     marginHorizontal: widthPercentageToDP("10%"),
@@ -205,7 +242,7 @@ const styles = StyleSheet.create({
   },
   registerGeneralButtonText: {
     color: "white",
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
     textAlign: "center",
   },
   registerBeauticianSalonButton: {
@@ -217,7 +254,7 @@ const styles = StyleSheet.create({
   },
   registerBeauticianSalonButtonText: {
     color: "white",
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
     textAlign: "center",
   },
 });

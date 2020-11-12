@@ -5,6 +5,8 @@ import {
   Image,
   View,
   Dimensions,
+  Modal,
+  TextInput,
   ImageBackground,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -19,29 +21,159 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-
+import AsyncStorage from "@react-native-community/async-storage";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+const chatRef = db.collection("chat");
 const request = new Request();
 const alert = new CustomAlert();
-
 const win = Dimensions.get("window");
 const ratioChatIcon = win.width / 12 / 21;
 const ratioQRIcon = win.width / 13 / 21;
 const ratioNext = win.width / 38 / 8;
 const ratioProfileEditingIcon = win.width / 18 / 22;
+const ratioCameraIconInsideProfilePicture = win.width / 20 / 25;
+let chatPersonID;
+let ownUserID;
+let groupName;
 export default function CustomerInformation(props) {
   const [user, onUserChanged] = React.useState({});
+  const [firebaseUser, onFirebaseUserChanged] = React.useState({});
+  const [userId, onUserIdChanged] = React.useState("");
+  const [customerId, onCustomerIdChanged] = React.useState("");
+  const [memo, onMemoChanged] = React.useState("");
+  const [modal, onModalChanged] = React.useState(false);
 
+  chatPersonID = user.id;
+  groupName = user.real_name ? user.real_name : user.nickname;
+
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function(url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+      onUserIdChanged(userId);
+
+      let customerUrls = props.route.params.url.split("/");
+      customerUrls = customerUrls.filter((url) => {
+        return url;
+      });
+      let customerId = customerUrls[customerUrls.length - 1];
+      onCustomerIdChanged(customerId);
+
+      const subscriber = db
+        .collection("users")
+        .doc(userId)
+        .collection("customers")
+        .doc(customerId)
+        .onSnapshot((documentSnapshot) => {
+          if (documentSnapshot.data()) {
+            onFirebaseUserChanged(documentSnapshot.data());
+            onMemoChanged(firebaseUser.memo);
+          } else {
+            onFirebaseUserChanged({
+              memo: "",
+              displayName: "",
+              secret_mode: false,
+              block: false,
+            });
+          }
+        });
+    });
+  }, []);
   if (!user.url) {
     request
       .get(props.route.params.url)
-      .then(function (response) {
+      .then(function(response) {
         onUserChanged(response.data);
       })
-      .catch(function (error) {
-        console.log(error);
-        alert.warning(Translate.t("unkownError"));
+      .catch(function(error) {
+        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        }
       });
   }
+  const sendMessageHandler = () => {
+    let groupID;
+    let groupName;
+    chatRef
+      .where("users", "array-contains", ownUserID)
+      .get()
+      .then(function(querySnapshot) {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == chatPersonID) {
+              groupID = snapShot.doc.id;
+              groupName = snapShot.doc.data().groupName;
+            }
+          }
+        });
+        if (groupID != null) {
+          props.navigation.navigate("ChatScreen", {
+            groupID: groupID,
+            groupName: groupName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
+          let friendMessageUnseenField = "unseenMessageCount_" + chatPersonID;
+          let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
+          let friendTotalMessageReadField = "totalMessageRead_" + chatPersonID;
+          chatRef
+            .add({
+              groupName: user.real_name ? user.real_name : user.nickname,
+              users: [String(ownUserID), String(chatPersonID)],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function() {
+              navigateToChatScreen();
+            });
+        }
+      });
+  };
+
+  function navigateToChatScreen() {
+    let groupID;
+    let groupName;
+    chatRef
+      .where("users", "array-contains", ownUserID)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == chatPersonID) {
+              groupID = snapShot.doc.id;
+              groupName = snapShot.doc.data().groupName;
+            }
+          }
+          if (groupID != null) {
+            props.navigation.navigate("ChatScreen", {
+              groupID: groupID,
+              groupName: groupName,
+            });
+          }
+        });
+      });
+  }
+  AsyncStorage.getItem("user").then(function(url) {
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    ownUserID = urls[urls.length - 1];
+  });
   return (
     <SafeAreaView>
       <CustomHeader
@@ -112,7 +244,6 @@ export default function CustomerInformation(props) {
                 position: "absolute",
                 bottom: 0,
                 flexDirection: "row",
-                marginBottom: heightPercentageToDP(".5%"),
               }}
             >
               <Text
@@ -142,10 +273,15 @@ export default function CustomerInformation(props) {
         >
           KINUJO ID : {user.user_code}
         </Text>
-        <Text style={styles.notes}>
-          {Translate.t("note")}
-          ：テキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキストテキスト。
-        </Text>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            onModalChanged(true);
+          }}
+        >
+          <Text style={styles.notes}>
+            {Translate.t("note")}：{firebaseUser.memo}
+          </Text>
+        </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           onPress={() => props.navigation.navigate("CreateFolder")}
         >
@@ -168,16 +304,12 @@ export default function CustomerInformation(props) {
             </Text>
             <View
               style={{
-                flexDirection: "row-reverse",
+                flexDirection: "row",
                 position: "absolute",
                 right: 0,
                 alignItems: "center",
               }}
             >
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
               <Text
                 style={{
                   marginRight: widthPercentageToDP("10%"),
@@ -186,13 +318,19 @@ export default function CustomerInformation(props) {
               >
                 QQ
               </Text>
+              <Image
+                style={styles.nextIcon}
+                source={require("../assets/Images/next.png")}
+              />
             </View>
           </View>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
-          onPress={() => props.navigation.navigate("AdvanceSetting", {
-            "url" : props.route.params.url
-          })}
+          onPress={() =>
+            props.navigation.navigate("AdvanceSetting", {
+              url: props.route.params.url,
+            })
+          }
         >
           <View style={styles.tabContainer}>
             <Text style={styles.textInContainer}>
@@ -209,21 +347,23 @@ export default function CustomerInformation(props) {
             flexDirection: "row",
             justifyContent: "space-evenly",
             alignItems: "center",
-            marginTop: heightPercentageToDP("2.5%"),
+            marginTop: heightPercentageToDP("10%"),
           }}
         >
-          <View style={{ alignItems: "center" }}>
-            <Image
-              style={{
-                width: win.width / 12,
-                height: 18 * ratioChatIcon,
-              }}
-              source={require("../assets/Images/chatIcon.png")}
-            />
-            <Text style={styles.textForQRandMessage}>
-              {Translate.t("sendAMessage")}
-            </Text>
-          </View>
+          <TouchableWithoutFeedback onPress={sendMessageHandler}>
+            <View style={{ alignItems: "center" }}>
+              <Image
+                style={{
+                  width: win.width / 12,
+                  height: 18 * ratioChatIcon,
+                }}
+                source={require("../assets/Images/chatIcon.png")}
+              />
+              <Text style={styles.textForQRandMessage}>
+                {Translate.t("sendAMessage")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
           <View style={{ alignItems: "center" }}>
             <Image
               style={{
@@ -238,6 +378,73 @@ export default function CustomerInformation(props) {
           </View>
         </View>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              placeholderTextColor="gray"
+              backgroundColor="white"
+              placeholder="入力してください"
+              maxLength={500}
+              multiline={true}
+              value={memo}
+              onChangeText={(value) => {
+                onMemoChanged(value);
+              }}
+              style={{
+                fontSize: RFValue(16),
+                color: "black",
+                alignSelf: "center",
+                width: widthPercentageToDP("50%"),
+                height: heightPercentageToDP("50%"),
+                marginLeft: widthPercentageToDP("2%"),
+                marginTop: heightPercentageToDP("5%"),
+              }}
+            ></TextInput>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onModalChanged(false);
+                db.collection("users")
+                  .doc(userId)
+                  .collection("customers")
+                  .doc(customerId)
+                  .set({
+                    secretMode: firebaseUser.secretMode,
+                    blockMode: firebaseUser.blockMode,
+                    displayName: firebaseUser.displayName,
+                    memo: memo,
+                  });
+              }}
+            >
+              <View
+                backgroundColor="#E6DADE"
+                style={{
+                  width: widthPercentageToDP("50%"),
+                  alignSelf: "center",
+                  color: "white",
+                  textAlign: "center",
+                  padding: 15,
+                }}
+              >
+                <Text
+                  style={{
+                    alignSelf: "center",
+                  }}
+                >
+                  Save
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -280,5 +487,50 @@ const styles = StyleSheet.create({
   textForQRandMessage: {
     fontSize: RFValue(12),
     marginTop: heightPercentageToDP("2%"),
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  cameraIconInsideProfilePicture: {
+    position: "absolute",
+    left: 0,
+    bottom: 0,
+    marginLeft: widthPercentageToDP("2.5%"),
+    marginBottom: heightPercentageToDP("1%"),
+    width: win.width / 20,
+    height: 23 * ratioCameraIconInsideProfilePicture,
   },
 });

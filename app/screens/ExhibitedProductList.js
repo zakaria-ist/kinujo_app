@@ -99,7 +99,7 @@ export default function ExhibitedProductList(props) {
   const [productHtml, onProductHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
 
-  AsyncStorage.getItem("user").then(function (url) {
+  AsyncStorage.getItem("user").then(function(url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
@@ -108,27 +108,29 @@ export default function ExhibitedProductList(props) {
     if (!user.url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           onUserChanged(response.data);
         })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
         });
     }
     if (!loaded) {
       request
         .get("products/" + userId + "/")
-        .then(function (response) {
+        .then(function(response) {
           onProductsChanged(response.data.products);
           onProductHtmlChanged(
             processProductHtml(response.data.products, status)
           );
           onLoaded(true);
         })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
           onLoaded(true);
         });
     }
@@ -154,7 +156,7 @@ export default function ExhibitedProductList(props) {
       <View
         style={{
           marginTop: heightPercentageToDP("3%"),
-          marginHorizontal: widthPercentageToDP("5%"),
+          marginHorizontal: widthPercentageToDP("3%"),
           paddingBottom: widthPercentageToDP("5%"),
         }}
       >
@@ -230,14 +232,14 @@ export default function ExhibitedProductList(props) {
         <View
           style={{
             backgroundColor: Colors.D7CCA6,
-            marginHorizontal: widthPercentageToDP("5%"),
+            marginHorizontal: widthPercentageToDP("3%"),
             justifyContent: "center",
             alignItems: "center",
+            marginTop: heightPercentageToDP("2%"),
             height: heightPercentageToDP("5%"),
-            borderRadius: 5,
           }}
         >
-          <Text style={{ fontSize: RFValue(14), color: "white" }}>
+          <Text style={{ fontSize: RFValue(12), color: "white" }}>
             + 出品登录
           </Text>
         </View>
@@ -260,7 +262,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentageToDP("8%"),
     paddingVertical: heightPercentageToDP("1%"),
     color: Colors.D7CCA6,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
   },
   nonPublishedProductText: {
     borderWidth: 1,
@@ -269,13 +271,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentageToDP("8%"),
     paddingVertical: heightPercentageToDP("1%"),
     color: Colors.white,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
   },
   productInformationText: {
     fontSize: RFValue(8),
   },
   productInformationContainer: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-evenly",
     borderBottomWidth: 3,
     borderBottomColor: Colors.D7CCA6,
@@ -283,19 +286,18 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("3%"),
   },
   product: {
+    flexDirection: "row",
     position: "absolute",
     left: 0,
-    marginLeft: widthPercentageToDP("15%"),
-    height: "100%",
-    justifyContent: "center",
+    marginLeft: widthPercentageToDP("10%"),
+    alignItems: "center",
   },
   productDetailsContainer: {
     flexDirection: "row",
     position: "absolute",
     right: 0,
-    height: "100%",
     alignItems: "center",
-    width: widthPercentageToDP("47%"),
+    width: widthPercentageToDP("57%"),
     justifyContent: "space-evenly",
   },
   productTabContainer: {

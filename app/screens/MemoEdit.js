@@ -24,7 +24,7 @@ export default function MemoEdit(props) {
     <SafeAreaView
       style={{
         backgroundColor: "black",
-        opacity: "50%",
+        opacity: 0.3,
         flex: 1,
       }}
     >
@@ -59,12 +59,16 @@ export default function MemoEdit(props) {
         <TextInput
           placeholder="入力してください"
           placeholderTextColor="white"
+          backgroundColor="white"
           maxLength={255}
           style={{
             fontSize: RFValue(25),
             color: "white",
             alignSelf: "center",
-            marginTop: heightPercentageToDP("18%"),
+            width:widthPercentageToDP("80%"),
+            height:heightPercentageToDP("80%"),
+            marginLeft: widthPercentageToDP("2%"),
+            marginTop: heightPercentageToDP("5%"),
           }}
         ></TextInput>
       </View>

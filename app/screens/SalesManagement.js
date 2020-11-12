@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, Image, View, Dimensions, TouchableWithoutFeedback } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Image,
+  View,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
 import {
@@ -19,70 +26,90 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
-function processSaleHtml(sales){
+function processSaleHtml(sales) {
   let tmpSaleHtml = [];
-  for(var i=0; i<sales.length; i++){
-    let sale = sales[i]
-    tmpSaleHtml.push(<TouchableWithoutFeedback key={i}><View style={styles.commissionTabContainer}>
-      <Text style={styles.commissionTabText}>{kanjidate.format("{Y:4}/{M:2}/{D:2}", new Date(sale.order.created))}</Text>
-        <View
-          style={{
-            position: "absolute",
-            left: 0,
-            marginLeft: widthPercentageToDP("20%"),
-          }}
-        >
+  for (var i = 0; i < sales.length; i++) {
+    let sale = sales[i];
+    tmpSaleHtml.push(
+      <TouchableWithoutFeedback key={i}>
+        <View style={styles.commissionTabContainer}>
           <Text style={styles.commissionTabText}>
-                  {sale.product_jan_code.horizontal ? 
-                  sale.product_jan_code.horizontal.product_variety.product.name :
-                  sale.product_jan_code.vertical.product_variety.product.name
-                }
+            {kanjidate.format(
+              "{Y:4}/{M:2}/{D:2}",
+              new Date(sale.order.created)
+            )}
+          </Text>
+          <View
+            style={{
+              position: "absolute",
+              left: 0,
+              marginLeft: widthPercentageToDP("20%"),
+            }}
+          >
+            <Text style={styles.commissionTabText}>
+              {sale.product_jan_code.horizontal
+                ? sale.product_jan_code.horizontal.product_variety.product.name
+                : sale.product_jan_code.vertical.product_variety.product.name}
+            </Text>
+          </View>
+          <Text
+            style={{
+              position: "absolute",
+              fontSize: RFValue(12),
+              right: 0,
+            }}
+          >
+            {sale.unit_price}円
           </Text>
         </View>
-      <Text
-        style={{
-          position: "absolute",
-          fontSize: RFValue(12),
-          right: 0,
-        }}
-      >
-        {sale.unit_price }円
-      </Text>
-    </View></TouchableWithoutFeedback>);
+      </TouchableWithoutFeedback>
+    );
   }
   return tmpSaleHtml;
 }
-function processCommissionHtml(commissions){
+function processCommissionHtml(commissions) {
   let tmpCommissionHtml = [];
-  for(var i=0; i<commissions.length; i++){
+  for (var i = 0; i < commissions.length; i++) {
     let commission = commissions[i];
-    tmpCommissionHtml.push(<TouchableWithoutFeedback key={i}><View style={styles.commissionTabContainer}>
-      <Text style={styles.commissionTabText}>{kanjidate.format("{Y:4}/{M:2}/{D:2}", new Date(commission.order_product.order.created))}</Text>
-        <View
-          style={{
-            position: "absolute",
-            left: 0,
-            marginLeft: widthPercentageToDP("20%"),
-          }}
-        >
+    tmpCommissionHtml.push(
+      <TouchableWithoutFeedback key={i}>
+        <View style={styles.commissionTabContainer}>
           <Text style={styles.commissionTabText}>
-                  {commission.order_product.product_jan_code.horizontal ? 
-                  commission.order_product.product_jan_code.horizontal.product_variety.product.name :
-                  commission.order_product.product_jan_code.vertical.product_variety.product.name
-                }
+            {kanjidate.format(
+              "{Y:4}/{M:2}/{D:2}",
+              new Date(commission.order_product.order.created)
+            )}
           </Text>
-          <Text style={styles.commissionTabText}>{commission.order_product.unit_price }円</Text>
+          <View
+            style={{
+              position: "absolute",
+              left: 0,
+              marginLeft: widthPercentageToDP("20%"),
+            }}
+          >
+            <Text style={styles.commissionTabText}>
+              {commission.order_product.product_jan_code.horizontal
+                ? commission.order_product.product_jan_code.horizontal
+                    .product_variety.product.name
+                : commission.order_product.product_jan_code.vertical
+                    .product_variety.product.name}
+            </Text>
+            <Text style={styles.commissionTabText}>
+              {commission.order_product.unit_price}円
+            </Text>
+          </View>
+          <Text
+            style={{
+              position: "absolute",
+              fontSize: RFValue(12),
+              right: 0,
+            }}
+          >
+            {commission.amount}円
+          </Text>
         </View>
-      <Text
-        style={{
-          position: "absolute",
-          fontSize: RFValue(12),
-          right: 0,
-        }}
-      >
-        {commission.amount}円
-      </Text>
-    </View></TouchableWithoutFeedback>);
+      </TouchableWithoutFeedback>
+    );
   }
   return tmpCommissionHtml;
 }
@@ -91,7 +118,9 @@ export default function SalesManagement(props) {
   const [sales, onSalesChanged] = React.useState({});
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
-  const [commissionHtml, onComissionHtmlChanged] = React.useState(<View></View>);
+  const [commissionHtml, onComissionHtmlChanged] = React.useState(
+    <View></View>
+  );
   const [user, onUserChanged] = React.useState({});
   const [saleLoaded, onSaleLoaded] = React.useState(false);
   const [commissionLoaded, onCommissionLoaded] = React.useState(false);
@@ -99,72 +128,72 @@ export default function SalesManagement(props) {
   const [totalSale, onTotalSaleChanged] = React.useState(0);
   const [total, onTotalChanged] = React.useState(0);
 
-  AsyncStorage.getItem("user").then(function (url) {
+  AsyncStorage.getItem("user").then(function(url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
     });
     let userId = urls[urls.length - 1];
 
-    if(!user.url){
+    if (!user.url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           onUserChanged(response.data);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
           }
         });
     }
 
     if (!commissionLoaded) {
       request
-      .get("commissionProducts/" + userId + "/")
-      .then(function (response) {
-        onCommissionsChanged(response.data.commissionProducts);
-        onComissionHtmlChanged(
-          processCommissionHtml(response.data.commissionProducts, status)
-        );
-        let total = 0;
-        response.data.commissionProducts.map((commission) => {
-          total += commission.amount
+        .get("commissionProducts/" + userId + "/")
+        .then(function(response) {
+          onCommissionsChanged(response.data.commissionProducts);
+          onComissionHtmlChanged(
+            processCommissionHtml(response.data.commissionProducts, status)
+          );
+          let total = 0;
+          response.data.commissionProducts.map((commission) => {
+            total += commission.amount;
+          });
+          onTotalCommissionChanged(total);
+          onTotalChanged(totalCommission + totalSale);
+          onCommissionLoaded(true);
         })
-        onTotalCommissionChanged(total);
-        onTotalChanged(totalCommission + totalSale);
-        onCommissionLoaded(true);
-      })
-      .catch(function (error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-        }
-        onCommissionLoaded(true);
-      });
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
+          onCommissionLoaded(true);
+        });
     }
 
     if (!saleLoaded) {
       request
-      .get("saleProducts/" + userId + "/")
-      .then(function (response) {
-        onSalesChanged(response.data.saleProducts);
-        onSaleHtmlChanged(
-          processSaleHtml(response.data.saleProducts, status)
-        );
-        let total = 0;
-        response.data.saleProducts.map((sale) => {
-          total += sale.unit_price
+        .get("saleProducts/" + userId + "/")
+        .then(function(response) {
+          onSalesChanged(response.data.saleProducts);
+          onSaleHtmlChanged(
+            processSaleHtml(response.data.saleProducts, status)
+          );
+          let total = 0;
+          response.data.saleProducts.map((sale) => {
+            total += sale.unit_price;
+          });
+          onTotalSaleChanged(total);
+          onTotalChanged(totalCommission + totalSale);
+          onSaleLoaded(true);
         })
-        onTotalSaleChanged(total);
-        onTotalChanged(totalCommission + totalSale);
-        onSaleLoaded(true);
-      })
-      .catch(function (error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-        }
-        onSaleLoaded(true);
-      });
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
+          onSaleLoaded(true);
+        });
     }
   });
   return (
@@ -181,7 +210,9 @@ export default function SalesManagement(props) {
       />
       <CustomSecondaryHeader
         name={user.real_name ? user.real_name : user.nickname}
-        accountType={props.route.params.is_store ? Translate.t("storeAccount") : ""}
+        accountType={
+          props.route.params.is_store ? Translate.t("storeAccount") : ""
+        }
       />
       <View style={{ marginHorizontal: widthPercentageToDP("3%") }}>
         {/* <View
@@ -215,20 +246,22 @@ export default function SalesManagement(props) {
                 paddingRight: widthPercentageToDP("10%"),
                 borderRightWidth: 1,
                 borderRightColor: Colors.CECECE,
-                marginHorizontal: widthPercentageToDP("8%"),
+                marginLeft: widthPercentageToDP("3%"),
                 marginVertical: heightPercentageToDP("1%"),
                 justifyContent: "center",
               }}
             >
               <Text style={styles.totalSalesContainerText}>総売上</Text>
               <Text style={{ marginTop: heightPercentageToDP(".5%") }}>
-              {totalSale + totalCommission}円
+                {totalSale + totalCommission}円
               </Text>
             </View>
             <View
               style={{
                 marginVertical: heightPercentageToDP("1.5%"),
                 alignItems: "center",
+                justifyContent: "center",
+                marginLeft: widthPercentageToDP("10%"),
                 width: widthPercentageToDP("45%"),
               }}
             >
@@ -246,9 +279,11 @@ export default function SalesManagement(props) {
                     alignItems: "flex-end",
                   }}
                 >
-                  <Text style={styles.totalSalesContainerText}>{totalCommission}円</Text>
                   <Text style={styles.totalSalesContainerText}>
-                  {totalSale}円
+                    {totalCommission}円
+                  </Text>
+                  <Text style={styles.totalSalesContainerText}>
+                    {totalSale}円
                   </Text>
                 </View>
               </View>
@@ -308,7 +343,7 @@ export default function SalesManagement(props) {
               >
                 <Text
                   style={{
-                    fontSize: RFValue(14),
+                    fontSize: RFValue(12),
                     position: "absolute",
                     left: 0,
                   }}
@@ -317,7 +352,7 @@ export default function SalesManagement(props) {
                 </Text>
                 <Text
                   style={{
-                    fontSize: RFValue(14),
+                    fontSize: RFValue(12),
                     position: "absolute",
                     left: 0,
                     marginLeft: widthPercentageToDP("20%"),
@@ -327,7 +362,7 @@ export default function SalesManagement(props) {
                 </Text>
                 <Text
                   style={{
-                    fontSize: RFValue(14),
+                    fontSize: RFValue(12),
                     position: "absolute",
                     right: 0,
                   }}
@@ -341,11 +376,7 @@ export default function SalesManagement(props) {
                   marginTop: heightPercentageToDP("1.5%"),
                 }}
               >
-                {status == "commission" ? (
-                  commissionHtml
-                ) : (
-                  saleHtml
-                )}
+                {status == "commission" ? commissionHtml : saleHtml}
               </View>
             </View>
           </View>
@@ -356,7 +387,7 @@ export default function SalesManagement(props) {
 }
 const styles = StyleSheet.create({
   totalSalesContainerText: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
   },
   commissionText: {
     borderWidth: 1,
@@ -365,7 +396,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentageToDP("8%"),
     paddingVertical: heightPercentageToDP("1%"),
     color: Colors.D7CCA6,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
   },
   salesText: {
     borderWidth: 1,
@@ -374,7 +405,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: widthPercentageToDP("8%"),
     paddingVertical: heightPercentageToDP("1%"),
     color: Colors.white,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
   },
   commissionTabContainer: {
     flexDirection: "row",

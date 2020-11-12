@@ -6,6 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Dimensions,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -13,6 +15,9 @@ import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+import auth from '@react-native-firebase/auth';
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -22,10 +27,46 @@ import { RFValue } from "react-native-responsive-fontsize";
 const request = new Request();
 const alert = new CustomAlert();
 
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
 import Translate from "../assets/Translates/Translate";
 export default function SMSAuthentication(props) {
+  const win = Dimensions.get("window");
+  const ratioKinujo = win.width / 1.6 / 151;
   const [code, onCodeChanged] = React.useState("");
-  const phone = props.navigation.state.params.username
+  const [confirm, setConfirm] = React.useState(null);
+  
+  async function signInWithPhoneNumber(phoneNumber) {
+    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    setConfirm(confirmation);
+  }
+
+  const phone = props.route.params.username
+  React.useEffect(()=> {
+    signInWithPhoneNumber("+" + phone);
+    // auth().onAuthStateChanged( (user) => {
+    //     if (user) {
+    //       if (
+    //         props.route.params.authority == "general"
+    //       ) {
+    //         props.navigation.navigate("RegisterCompletion", {
+    //           "authority" : props.route.params.authority
+    //         });
+    //       } else if (
+    //         props.route.params.authority == "store"
+    //       ) {
+    //         props.navigation.navigate("StoreAccountSelection", {
+    //           "authority" : props.route.params.authority
+    //         });
+    //       }
+    //     } 
+    //     else 
+    //     {
+    //     }
+    // });
+  }, [])
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -34,7 +75,15 @@ export default function SMSAuthentication(props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <CustomKinujoWord />
+        <Image
+          style={{
+            width: win.width / 1.6,
+            height: 44 * ratioKinujo,
+            alignSelf: "center",
+            marginTop: heightPercentageToDP("6%"),
+          }}
+          source={require("../assets/Images/kinujo.png")}
+        />
         <Text style={styles.SMS認証}>{Translate.t("smsVerification")}</Text>
         <Text
           style={{
@@ -45,7 +94,7 @@ export default function SMSAuthentication(props) {
             textAlign: "center",
           }}
         >
-          {Translate.t("sentVerificationCode")}
+          {Translate.t("sentVerificationCode")} +{phone}
         </Text>
         <TextInput
           style={styles.verificationCode}
@@ -56,39 +105,65 @@ export default function SMSAuthentication(props) {
         ></TextInput>
         <TouchableOpacity
           onPress={() => {
-            request
-              .post("user/register", props.navigation.state.params)
-              .then(function (response) {
-                response = response.data;
-                if (response.success) {
-                  AsyncStorage.setItem("user", response.data.user.url).then(
-                    function (response) {
-                      if (
-                        props.navigation.state.params.authority == "general"
-                      ) {
-                        props.navigation.navigate("RegisterCompletion");
-                      } else if (
-                        props.navigation.state.params.authority == "store"
-                      ) {
-                        props.navigation.navigate("StoreAccountSelection");
+            if(!props.route.params.type){
+              confirm.confirm(code).then(() => {
+                auth().signOut().then(() => {
+                  request
+                  .post("user/register", props.route.params)
+                  .then(function (response) {
+                    response = response.data;
+                    if (response.success) {
+                      AsyncStorage.setItem("user", response.data.user.url).then(
+                        function(response) {
+                          if (
+                            props.route.params.authority == "general"
+                          ) {
+                            props.navigation.navigate("RegisterCompletion", {
+                              "authority" : props.route.params.authority
+                            });
+                          } else if (
+                            props.route.params.authority == "store"
+                          ) {
+                            props.navigation.navigate("StoreAccountSelection", {
+                              "authority" : props.route.params.authority
+                            });
+                          }
+                        }
+                      );
+                    } else {
+                      if(response.errors && Object.keys(response.errors).length > 0){
+                        alert.warning(response.errors[Object.keys(response.errors)[0]][0] + "(" + Object.keys(response.errors)[0] + ")")
                       }
                     }
-                  );
-                } else {
-                  alert.warning(response.error);
-                }
+                  })
+                  .catch((error) => {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
+                  });
+                }).catch(function(error) {
+                  // An error happened.
+                });
+                
               })
-              .catch(function (error) {
-                if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-                }
-              });
+            }
           }}
         >
           <View style={styles.smsAuthenticateButton}>
             <Text style={styles.smsAuthenticateButtonText}>
               {Translate.t("authenticate")}
             </Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={
+          ()=>{
+            props.navigation.pop();
+          }
+        }>
+          <View style={styles.smsCancelButton}>
+              <Text style={styles.smsAuthenticateButtonText}>
+                {Translate.t("cancel")}
+              </Text>
           </View>
         </TouchableOpacity>
       </SafeAreaView>
@@ -98,7 +173,7 @@ export default function SMSAuthentication(props) {
 const styles = StyleSheet.create({
   SMS認証: {
     color: "white",
-    fontSize: RFValue(16),
+    fontSize: RFValue(14),
     alignSelf: "center",
     marginTop: heightPercentageToDP("16%"),
   },
@@ -106,7 +181,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "white",
     padding: 10,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     marginTop: heightPercentageToDP("8%"),
     marginHorizontal: widthPercentageToDP("10%"),
   },
@@ -115,12 +190,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f01d71",
     paddingVertical: 8,
     marginHorizontal: heightPercentageToDP("12%"),
-    marginVertical: widthPercentageToDP("23%"),
+    marginTop: widthPercentageToDP("23%"),
+    backgroundColor: Colors.deepGrey,
+  },
+  smsCancelButton: {
+    borderRadius: 5,
+    backgroundColor: "#f01d71",
+    paddingVertical: 8,
+    marginHorizontal: heightPercentageToDP("12%"),
+    marginTop: widthPercentageToDP("2%"),
     backgroundColor: Colors.deepGrey,
   },
   smsAuthenticateButtonText: {
     color: "white",
-    fontSize: 14,
+    fontSize: RFValue(12),
     textAlign: "center",
   },
 });

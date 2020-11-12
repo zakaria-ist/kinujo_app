@@ -22,6 +22,7 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
+import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -29,6 +30,7 @@ export default function RegistrationStore(props) {
   const win = Dimensions.get("window");
   const ratio = win.width / 25 / 17;
   const ratioTripleDot = win.width / 23 / 15;
+  const ratioKinujo = win.width / 1.6 / 151;
   const [nickname, onNicknameChanged] = React.useState("");
   const [password, onPasswordChanged] = React.useState("");
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
@@ -41,7 +43,7 @@ export default function RegistrationStore(props) {
       end={[1, 0.6]}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
         <WhiteBackArrow
           onPress={() => props.navigation.navigate("TermsOfCondition")}
         />
@@ -52,12 +54,20 @@ export default function RegistrationStore(props) {
             alignItems: "center",
           }}
         >
-          <CustomKinujoWord />
+          <Image
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("3%"),
+            }}
+            source={require("../assets/Images/kinujo.png")}
+          />
           <Text
             style={{
-              marginTop: heightPercentageToDP("3%"),
+              marginTop: heightPercentageToDP("8%"),
               color: Colors.white,
-              fontSize: RFValue(16),
+              fontSize: RFValue(14),
             }}
           >
             {Translate.t("storeAccount")}
@@ -110,88 +120,111 @@ export default function RegistrationStore(props) {
           onChangeText={(text) => onPhoneChanged(text)}
           value={phone}
         ></TextInput>
+        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+          <TouchableOpacity
+            onPress={() => {
+              if (nickname && phone && password && confirm_password) {
+                if (password == confirm_password) {
+                  request
+                    .post("user/register/check", {
+                      nickname: nickname,
+                      username: phone,
+                      password: password,
+                      authority: "store",
+                    })
+                    .then(function(response) {
+                      response = response.data;
+                      if (response.success) {
+                        // onConfirmPasswordChanged("");
+                        // onNicknameChanged("");
+                        // onPasswordChanged("");
+                        // onPhoneChanged("");
 
-        <TouchableOpacity
-          onPress={() => {
-            if (nickname && phone && password && confirm_password) {
-              if (password == confirm_password) {
-                request
-                  .post("user/register/check", {
-                    nickname: nickname,
-                    username: phone,
-                    password: password,
-                    authority: "store",
-                  })
-                  .then(function (response) {
-                    response = response.data;
-                    if (response.success) {
-                      onConfirmPasswordChanged("");
-                      onNicknameChanged("");
-                      onPasswordChanged("");
-                      onPhoneChanged("");
-
-                      props.navigation.navigate("SMSAuthentication", {
-                        nickname: nickname,
-                        username: phone,
-                        password: password,
-                        authority: "store",
-                      });
-                    } else {
-                      alert.warning(response.error, function () {
-                        props.navigation.popToTop();
-                      });
-                    }
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
-                  });
+                        props.navigation.navigate("SMSAuthentication", {
+                          nickname: nickname,
+                          username: phone,
+                          password: password,
+                          authority: "store",
+                        });
+                      } else {
+                        if (
+                          response.errors &&
+                          Object.keys(response.errors).length > 0
+                        ) {
+                          alert.warning(
+                            response.errors[
+                              Object.keys(response.errors)[0]
+                            ][0] +
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")"
+                          );
+                        }
+                      }
+                    })
+                    .catch(function(error) {
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0]
+                        );
+                      }
+                    });
+                } else {
+                  alert.warning(
+                    Translate.t("passwordAndConfirmPasswordMustSame")
+                  );
+                }
               } else {
-                alert.warning(
-                  Translate.t("passwordAndConfirmPasswordMustSame")
-                );
+                alert.warning(Translate.t("fieldNotFilled"));
               }
-            } else {
-              alert.warning(Translate.t("fieldNotFilled"));
-            }
-          }}
-        >
-          <View style={styles.proceedToSMSAuthButton}>
-            <Text style={styles.proceedToSMSAuthButtonText}>
-              {Translate.t("proceedToSMSAuthentication")}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <View
-          onPress={() => props.navigation.pop()}
-          style={{
-            flexDirection: "row",
-            justifyContent: "center",
-            alignContent: "center",
-            marginTop: heightPercentageToDP("4%"),
-          }}
-        >
-          <Text
-            onPress={() => props.navigation.pop()}
-            style={{
-              color: Colors.white,
-              fontSize: RFValue(14),
             }}
           >
-            {Translate.t("nonBeautician")}
-          </Text>
-          <Image
+            <View style={styles.proceedToSMSAuthButton}>
+              <Text style={styles.proceedToSMSAuthButtonText}>
+                {Translate.t("proceedToSMSAuthentication")}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <View
             onPress={() => props.navigation.pop()}
             style={{
-              alignSelf: "center",
-              marginLeft: 5,
-              width: win.width / 25,
-              height: 17 * ratio,
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: heightPercentageToDP("4%"),
             }}
-            source={require("../assets/Images/whiteNextArrow.png")}
-          />
+          >
+            <Text
+              onPress={() => props.navigation.pop()}
+              style={{
+                color: Colors.white,
+                fontSize: RFValue(12),
+                alignSelf: "center",
+              }}
+            >
+              {Translate.t("nonBeautician")}
+            </Text>
+            <Image
+              onPress={() => props.navigation.pop()}
+              style={{
+                alignSelf: "center",
+                marginLeft: 5,
+                width: win.width / 25,
+                height: 17 * ratio,
+                alignSelf: "center",
+              }}
+              source={require("../assets/Images/whiteNextArrow.png")}
+            />
+          </View>
         </View>
-      </SafeAreaView>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -203,7 +236,7 @@ const styles = StyleSheet.create({
     paddingTop: RFValue(15),
     marginHorizontal: widthPercentageToDP("10%"),
     borderBottomColor: Colors.white,
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
   },
   パスワード: {
     borderBottomWidth: 1,
@@ -211,14 +244,14 @@ const styles = StyleSheet.create({
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
     borderBottomColor: Colors.white,
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
   },
   パスワード確認: {
     borderBottomWidth: 1,
     marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
@@ -226,7 +259,7 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },
   proceedToSMSAuthButton: {
@@ -238,7 +271,7 @@ const styles = StyleSheet.create({
   },
   proceedToSMSAuthButtonText: {
     color: "white",
-    fontSize: RFValue(16),
+    fontSize: RFValue(12),
     textAlign: "center",
   },
 });

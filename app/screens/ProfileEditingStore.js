@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Modal,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { NavigationEvents, SafeAreaView } from "react-navigation";
@@ -23,10 +24,11 @@ import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import ImagePicker from "react-native-image-picker";
 import { Icon } from "react-native-elements";
+
 const request = new Request();
 const alert = new CustomAlert();
-
 const win = Dimensions.get("window");
 const ratioCameraIcon = win.width / 12 / 25;
 const ratioCameraIconInsideProfilePicture = win.width / 20 / 25;
@@ -36,23 +38,10 @@ const ratioEditIcon = win.width / 24 / 17;
 const ratioApprovedIcon = win.width / 22 / 19;
 const ratioCancelIcon = win.width / 20 / 15;
 
-function updateUser(user, field, value){
-  let obj = {};
-  obj[field] = value;
-  request
-  .patch(user.url, obj)
-  .then(function (response) {})
-  .catch(function (error) {
-    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-    }
-  });
-}
-
 export default function ProfileEditingGeneral(props) {
   const [password, onPasswordChanged] = React.useState("********");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
-  const [email, onEmailChanged] = React.useState("")
+  const [email, onEmailChanged] = React.useState("");
   const [editPassword, onEditPasswordChanged] = React.useState(false);
   const [editPhoneNumber, onEditPhoneNumberChanged] = React.useState(false);
   const [editEmail, onEditEmailChanged] = React.useState(false);
@@ -64,27 +53,85 @@ export default function ProfileEditingGeneral(props) {
   ] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
 
-  if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
+  function loadUser() {
+    AsyncStorage.getItem("user").then(function(url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           onUserChanged(response.data);
-          onPhoneNumberChanged(response.data.tel)
-          onEmailChanged(response.data.email)
+          onPhoneNumberChanged(response.data.tel);
+          onEmailChanged(response.data.email);
           onAddingFriendsByIDChanged(response.data.allowed_by_id);
           onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
         })
-        .catch(function (error) {
+        .catch(function(error) {
           if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
           }
         });
     });
   }
+  if (!user.url) {
+    loadUser();
+  }
+
+  function updateUser(user, field, value) {
+    let obj = {};
+    obj[field] = value;
+    request
+      .patch(user.url, obj)
+      .then(function(response) {
+        loadUser();
+      })
+      .catch(function(error) {
+        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        }
+      });
+  }
+
+  handleChoosePhoto = (type) => {
+    const options = {
+      noData: true,
+    };
+    ImagePicker.launchImageLibrary(options, (response) => {
+      if (response.uri) {
+        const formData = new FormData();
+        formData.append("image", {
+          ...response,
+          uri:
+            Platform.OS === "android"
+              ? response.uri
+              : response.uri.replace("file://", ""),
+          name: "mobile.jpg",
+          type: "image/jpeg", // it may be necessary in Android.
+        });
+        request
+          .post("images/", formData, {
+            "Content-Type": "multipart/form-data",
+          })
+          .then((response) => {
+            updateUser(user, type, response.data.url);
+          })
+          .catch((error) => {
+            alert.warning(JSON.stringify(error));
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0]
+              );
+            }
+          });
+      }
+    });
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       {show == true ? (
         <Modal
           visible={true}
@@ -169,7 +216,7 @@ export default function ProfileEditingGeneral(props) {
           </SafeAreaView>
         </Modal>
       ) : (
-        ""
+        []
       )}
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -183,25 +230,59 @@ export default function ProfileEditingGeneral(props) {
       />
 
       <View>
-        <ImageBackground
-          style={{
-            width: widthPercentageToDP("100%"),
-            height: heightPercentageToDP("30%"),
-          }}
-          source={require("../assets/Images/profileEditingIcon.png")}
-        >
-          <Image
+        {user && user.image && user.image.image ? (
+          <ImageBackground
             style={{
-              position: "absolute",
-              right: 0,
-              marginRight: widthPercentageToDP("5%"),
-              marginTop: heightPercentageToDP("1%"),
-              width: win.width / 12,
-              height: 23 * ratioCameraIcon,
+              width: widthPercentageToDP("100%"),
+              height: heightPercentageToDP("30%"),
             }}
-            source={require("../assets/Images/cameraIcon.png")}
-          />
-        </ImageBackground>
+            source={(uri = user.image)}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                handleChoosePhoto("background");
+              }}
+            >
+              <Image
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("5%"),
+                  marginTop: heightPercentageToDP("1%"),
+                  width: win.width / 12,
+                  height: 23 * ratioCameraIcon,
+                }}
+                source={require("../assets/Images/cameraIcon.png")}
+              />
+            </TouchableWithoutFeedback>
+          </ImageBackground>
+        ) : (
+          <ImageBackground
+            style={{
+              width: widthPercentageToDP("100%"),
+              height: heightPercentageToDP("30%"),
+            }}
+            source={require("../assets/Images/profileEditingIcon.png")}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                handleChoosePhoto("background");
+              }}
+            >
+              <Image
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("5%"),
+                  marginTop: heightPercentageToDP("1%"),
+                  width: win.width / 12,
+                  height: 23 * ratioCameraIcon,
+                }}
+                source={require("../assets/Images/cameraIcon.png")}
+              />
+            </TouchableWithoutFeedback>
+          </ImageBackground>
+        )}
       </View>
       <View
         style={{
@@ -216,25 +297,57 @@ export default function ProfileEditingGeneral(props) {
             marginLeft: widthPercentageToDP("5%"),
           }}
         >
-          <ImageBackground
-            style={{
-              width: widthPercentageToDP("22%"),
-              height: widthPercentageToDP("22%"),
-              borderWidth: 1,
-              borderColor: Colors.E6DADE,
-              backgroundColor: "white",
-            }}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          >
-            <Image
-              style={styles.cameraIconInsideProfilePicture}
-              source={require("../assets/Images/cameraIcon.png")}
-            />
-          </ImageBackground>
+          {user && user.image && user.image.image ? (
+            <ImageBackground
+              resizeMode="contain"
+              style={{
+                width: widthPercentageToDP("22%"),
+                height: widthPercentageToDP("22%"),
+                borderWidth: 1,
+                borderColor: Colors.E6DADE,
+                backgroundColor: "white",
+              }}
+              source={(uri = user.image)}
+            >
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  handleChoosePhoto("image");
+                }}
+              >
+                <Image
+                  style={styles.cameraIconInsideProfilePicture}
+                  source={require("../assets/Images/cameraIcon.png")}
+                />
+              </TouchableWithoutFeedback>
+            </ImageBackground>
+          ) : (
+            <ImageBackground
+              style={{
+                width: widthPercentageToDP("22%"),
+                height: widthPercentageToDP("22%"),
+                borderWidth: 1,
+                borderColor: Colors.E6DADE,
+                backgroundColor: "white",
+              }}
+              source={require("../assets/Images/profileEditingIcon.png")}
+            >
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  handleChoosePhoto("image");
+                }}
+              >
+                <Image
+                  style={styles.cameraIconInsideProfilePicture}
+                  source={require("../assets/Images/cameraIcon.png")}
+                />
+              </TouchableWithoutFeedback>
+            </ImageBackground>
+          )}
           <View
             style={{
               width: "100%",
-              marginLeft: widthPercentageToDP("5%"),
+              marginLeft: widthPercentageToDP("3%"),
+              marginTop: heightPercentageToDP(".3%"),
             }}
           >
             <TouchableWithoutFeedback onPress={() => onShowChanged(true)}>
@@ -260,12 +373,11 @@ export default function ProfileEditingGeneral(props) {
                 position: "absolute",
                 bottom: 0,
                 flexDirection: "row",
-                marginBottom: heightPercentageToDP(".5%"),
               }}
             >
               <Text
                 style={{
-                  fontSize: RFValue(14),
+                  fontSize: RFValue(12),
                 }}
               >
                 {user.real_name ? user.real_name : user.nickname}
@@ -285,7 +397,7 @@ export default function ProfileEditingGeneral(props) {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginTop: heightPercentageToDP("1.5%"),
+            marginTop: heightPercentageToDP("5%"),
           }}
         >
           <Text
@@ -332,266 +444,284 @@ export default function ProfileEditingGeneral(props) {
             source={require("../assets/Images/next.png")}
           />
         </View> */}
-        <View style={styles.tabContainer}>
-          <Text style={styles.textInContainerLeft}>
-            {Translate.t("profileEditPhoneNumber")}
-          </Text>
-          {editPhoneNumber == true ? (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => { 
-                  onEditPhoneNumberChanged(false)
-                  updateUser(user, 'tel', phoneNumber);
-                }}
-              />
-              <TextInput
-                value={phoneNumber}
-                onChangeText={(value) => onPhoneNumberChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditPhoneNumberChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{phoneNumber}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.tabContainer}>
-          <Text style={styles.textInContainerLeft}>
-            {Translate.t("profileEditEmail")}
-          </Text>
-          {editEmail == true ? (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditEmailChanged(false)
-                  updateUser(user, 'email', email);
-                }}
-              />
-              <TextInput
-                value={email}
-                onChangeText={(value) => onEmailChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditEmailChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{email}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.tabContainer}>
-          <Text style={styles.textInContainerLeft}>
-            {Translate.t("profileEditPassword")}
-          </Text>
-          {editPassword == true ? (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditPasswordChanged(false)
-                  updateUser(user, 'password', password);
-                  onPasswordChanged("********");
-                }}
-              />
-              <TextInput
-                value={password}
-                onChangeText={(value) => {
-                  onPasswordChanged(value);
-                }}
-                style={{ borderWidth: 1, borderColor: "black" }}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditPasswordChanged(true);
-                  onPasswordChanged("");
-                }}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{password}</Text>
-            </View>
-          )}
-        </View>
-        <TouchableWithoutFeedback
-          onPress={() =>
-            props.navigation.navigate("ProfileInformation", {
-              is_store: true,
-            })
-          }
-        >
+        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
           <View style={styles.tabContainer}>
             <Text style={styles.textInContainerLeft}>
-              {Translate.t("personalInformation")}
+              {Translate.t("profileEditPhoneNumber")}
             </Text>
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-              }}
-            >
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-              <Text
+            {editPhoneNumber == true ? (
+              <View
                 style={{
-                  marginRight: widthPercentageToDP("5%"),
-                  fontSize: RFValue(9),
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
                 }}
               >
-                {Translate.t("allIdentityInfo")}
-              </Text>
-            </View>
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditPhoneNumberChanged(false);
+                    updateUser(user, "tel", phoneNumber);
+                  }}
+                />
+                <TextInput
+                  value={phoneNumber}
+                  onChangeText={(value) => onPhoneNumberChanged(value)}
+                  style={styles.textInputEdit}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditPhoneNumberChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{phoneNumber}</Text>
+              </View>
+            )}
           </View>
-        </TouchableWithoutFeedback>
-        <View style={styles.tabContainer}>
-          <Text style={styles.textInContainerLeft}>
-            {Translate.t("profileEditAllowAddFriendByID")}
-          </Text>
-          <Switch
-            trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-            thumbColor={Colors.D7CCA6}
-            style={styles.switch}
-            onValueChange={(value) => {
-              onAddingFriendsByIDChanged(value);
-              request
-                .patch(user.url, {
-                  allowed_by_id: value ? 1 : 0,
-                })
-                .then(function (response) {})
-                .catch(function (error) {
-                  if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                    alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-                  }
-                });
-            }}
-            value={addingFriendsByID}
-          />
-        </View>
-        <View style={styles.tabContainer}>
-          <Text style={styles.textInContainerLeft}>
-            {Translate.t("profileEditAllowAddFriendByPhoneNum")}
-          </Text>
-          <Switch
-            trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-            thumbColor={Colors.D7CCA6}
-            style={styles.switch}
-            onValueChange={(value) => {
-              onAllowAddingFriendsByPhoneNumber(value);
-              request
-                .patch(user.url, {
-                  allowed_by_tel: value ? 1 : 0,
-                })
-                .then(function (response) {})
-                .catch(function (error) {
-                  if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                    alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
-                  }
-                });
-            }}
-            value={allowAddingFriendsByPhoneNumber}
-          />
+          <View style={styles.tabContainer}>
+            <Text style={styles.textInContainerLeft}>
+              {Translate.t("profileEditEmail")}
+            </Text>
+            {editEmail == true ? (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditEmailChanged(false);
+                    updateUser(user, "email", email);
+                  }}
+                />
+                <TextInput
+                  value={email}
+                  onChangeText={(value) => onEmailChanged(value)}
+                  style={styles.textInputEdit}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditEmailChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{email}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.tabContainer}>
+            <Text style={styles.textInContainerLeft}>
+              {Translate.t("profileEditPassword")}
+            </Text>
+            {editPassword == true ? (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditPasswordChanged(false);
+                    updateUser(user, "password", password);
+                    onPasswordChanged("********");
+                  }}
+                />
+                <TextInput
+                  value={password}
+                  onChangeText={(value) => {
+                    onPasswordChanged(value);
+                  }}
+                  style={styles.textInputEdit}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditPasswordChanged(true);
+                    onPasswordChanged("");
+                  }}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{password}</Text>
+              </View>
+            )}
+          </View>
+          <TouchableWithoutFeedback
+            onPress={() =>
+              props.navigation.navigate("ProfileInformation", {
+                is_store: true,
+              })
+            }
+          >
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInContainerLeft}>
+                {Translate.t("personalInformation")}
+              </Text>
+              <View
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row",
+                }}
+              >
+                <Text
+                  style={{
+                    marginRight: widthPercentageToDP("5%"),
+                    fontSize: RFValue(7),
+                  }}
+                >
+                  {Translate.t("allIdentityInfo")}
+                </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+          <View style={styles.tabContainer}>
+            <Text style={styles.textInContainerLeft}>
+              {Translate.t("profileEditAllowAddFriendByID")}
+            </Text>
+            <Switch
+              trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
+              thumbColor={Colors.D7CCA6}
+              style={styles.switch}
+              onValueChange={(value) => {
+                onAddingFriendsByIDChanged(value);
+                request
+                  .patch(user.url, {
+                    allowed_by_id: value ? 1 : 0,
+                  })
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0]
+                      );
+                    }
+                  });
+              }}
+              value={addingFriendsByID}
+            />
+          </View>
+          <View style={styles.tabContainer}>
+            <Text style={styles.textInContainerLeft}>
+              {Translate.t("profileEditAllowAddFriendByPhoneNum")}
+            </Text>
+            <Switch
+              trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
+              thumbColor={Colors.D7CCA6}
+              style={styles.switch}
+              onValueChange={(value) => {
+                onAllowAddingFriendsByPhoneNumber(value);
+                request
+                  .patch(user.url, {
+                    allowed_by_tel: value ? 1 : 0,
+                  })
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0]
+                      );
+                    }
+                  });
+              }}
+              value={allowAddingFriendsByPhoneNumber}
+            />
+          </View>
         </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
@@ -620,6 +750,7 @@ const styles = StyleSheet.create({
     height: 15 * ratioNext,
     position: "absolute",
     right: 0,
+    alignSelf: "center",
   },
   textInContainerRight: {
     position: "absolute",
@@ -639,9 +770,16 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     bottom: 0,
-    marginLeft: widthPercentageToDP("1%"),
+    marginLeft: widthPercentageToDP("2.5%"),
     marginBottom: heightPercentageToDP("1%"),
     width: win.width / 20,
     height: 23 * ratioCameraIconInsideProfilePicture,
+  },
+  textInputEdit: {
+    fontSize: RFValue(8),
+    borderWidth: 1,
+    borderColor: "black",
+    height: heightPercentageToDP("4%"),
+    width: widthPercentageToDP("40%"),
   },
 });

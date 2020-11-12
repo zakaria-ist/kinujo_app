@@ -32,11 +32,11 @@ export default function RegisterCompletion(props) {
           let payload = response.payload;
           if (payload) {
             payload = JSON.parse(payload);
-            payload["bank_skipped"] = true;
+            payload["register_completed"] = true;
             payload = JSON.stringify(payload);
           } else {
             payload = JSON.stringify({
-              bank_skipped: true,
+              register_completed: true,
             });
           }
           response.payload = payload;
@@ -48,13 +48,15 @@ export default function RegisterCompletion(props) {
               props.navigation.navigate(nextPage);
             })
             .catch(function (error) {
-              console.log(error);
-              alert.warning(Translate.t("unkownError"));
+              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              }
             });
         })
         .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
         });
     });
   }
@@ -97,7 +99,11 @@ export default function RegisterCompletion(props) {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            props.navigation.navigate("Home");
+            if(props.route.params.authority == "general"){
+              props.navigation.navigate("HomeGeneral");
+            } else {
+              props.navigation.navigate("HomeStore");
+            }
           }}
         >
           <View style={styles.okButton}>

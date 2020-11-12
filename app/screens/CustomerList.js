@@ -26,7 +26,7 @@ import CustomAlert from "../lib/alert";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
-const ratioSearchIcon = win.width / 16 / 19;
+const ratioSearchIcon = win.width / 19 / 19;
 const ratioNext = win.width / 38 / 8;
 
 function processCustomerHtml(props, customers, search = "") {
@@ -91,21 +91,22 @@ export default function CustomerList(props) {
   const [user, onUserChanged] = React.useState({});
 
   if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           onUserChanged(response.data);
         })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
         });
     });
   }
 
   if (!loaded) {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
@@ -113,16 +114,17 @@ export default function CustomerList(props) {
       let userId = urls[urls.length - 1];
       request
         .get("customers/" + userId + "/")
-        .then(function (response) {
+        .then(function(response) {
           onCustomersChanged(response.data.customers);
           onCustomerHtmlChanged(
             processCustomerHtml(props, response.data.customers, "")
           );
           onLoaded(true);
         })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
           onLoaded(true);
         });
     });
@@ -152,7 +154,11 @@ export default function CustomerList(props) {
         <TextInput
           placeholder="髪長"
           placeholderTextColor={Colors.grey}
-          style={{ paddingLeft: widthPercentageToDP("5%") }}
+          style={{
+            flex: 1,
+            paddingLeft: widthPercentageToDP("5%"),
+            fontSize: RFValue(11),
+          }}
           value={search}
           onChangeText={(value) => {
             onSearchChanged(value);
@@ -175,7 +181,7 @@ const styles = StyleSheet.create({
   totalNumberOfCustomer: {
     alignSelf: "center",
     fontSize: RFValue(14),
-    marginTop: heightPercentageToDP("5%"),
+    marginTop: heightPercentageToDP("3%"),
   },
   searchInputContainer: {
     marginHorizontal: widthPercentageToDP("6%"),
@@ -189,7 +195,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("5%"),
   },
   searchIcon: {
-    width: win.width / 16,
+    width: win.width / 19,
     height: 19 * ratioSearchIcon,
     position: "absolute",
     right: 0,

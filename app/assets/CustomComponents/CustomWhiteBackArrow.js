@@ -9,6 +9,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+
 export default function CustomWhiteBackArrow({ onPress }) {
   const win = Dimensions.get("window");
   const ratio = win.width / 20 / 20;

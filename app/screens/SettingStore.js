@@ -21,6 +21,13 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+import auth from '@react-native-firebase/auth';
+ 
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -47,7 +54,7 @@ export default function SettingStore(props) {
         })
         .catch(function (error) {
           if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
           }
         });
     });
@@ -267,6 +274,21 @@ export default function SettingStore(props) {
                 style={styles.nextIcon}
                 source={require("../assets/Images/next.png")}
               />
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() =>
+              {
+                AsyncStorage.removeItem("user").then(() => {
+                  props.navigation.navigate("LoginScreen");
+                })
+              }
+            }
+          >
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInLeftContainer}>
+                Logout
+              </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>

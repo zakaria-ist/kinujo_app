@@ -8,6 +8,7 @@ import {
   Switch,
   TouchableWithoutFeedback,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
@@ -28,23 +29,24 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioNext = win.width / 38 / 8;
 
-function updateUser(user, field, value){
+function updateUser(user, field, value) {
   let obj = {};
   obj[field] = value;
   request
-  .patch(user.url, obj)
-  .then(function (response) {})
-  .catch(function (error) {
-    console.log(error);
-    alert.warning(Translate.t("unkownError"));
-  });
+    .patch(user.url, obj)
+    .then(function(response) {})
+    .catch(function(error) {
+      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      }
+    });
 }
 
 export default function Setting(props) {
   const [editPassword, onEditPasswordChanged] = React.useState(false);
   const [password, onPasswordChanged] = React.useState("********");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
-  const [email, onEmailChanged] = React.useState("")
+  const [email, onEmailChanged] = React.useState("");
   const [editPhoneNumber, onEditPhoneNumberChanged] = React.useState(false);
   const [editEmailAddress, onEditEmailAddressChanged] = React.useState(false);
   const [addingFriendsByID, onAddingFriendsByIDChanged] = React.useState(false);
@@ -71,10 +73,10 @@ export default function Setting(props) {
   const [user, onUserChanged] = React.useState({});
 
   if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           onUserChanged(response.data);
           onEmailChanged(response.data.email);
           onPhoneNumberChanged(response.data.tel);
@@ -93,16 +95,16 @@ export default function Setting(props) {
             response.data.other_notification_phone
           );
         })
-        .catch(function (error) {
+        .catch(function(error) {
           if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0]);
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
           }
         });
     });
   }
 
   return (
-    <SafeAreaView>
+    <ScrollView>
       <CustomHeader
         onFavoriteChanged="noFavorite"
         onBack={() => {
@@ -119,7 +121,7 @@ export default function Setting(props) {
           props.route.params.is_store ? Translate.t("storeAccount") : ""
         }
       />
-      <View>
+      <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
         <View style={styles.firstTabContainer}>
           <Text style={styles.textInContainerLeft}>KINUJO ID</Text>
           <Text style={styles.textInContainerRight}>{user.user_code}</Text>
@@ -148,15 +150,15 @@ export default function Setting(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditPasswordChanged(false)
-                  updateUser(user, 'password', password);
-                  onPasswordChanged("********"); 
+                  onEditPasswordChanged(false);
+                  updateUser(user, "password", password);
+                  onPasswordChanged("********");
                 }}
               />
               <TextInput
                 value={password}
                 onChangeText={(value) => onPasswordChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInputEdit}
               />
             </View>
           ) : (
@@ -212,14 +214,14 @@ export default function Setting(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditPhoneNumberChanged(false)
-                  updateUser(user, 'tel', phoneNumber)
+                  onEditPhoneNumberChanged(false);
+                  updateUser(user, "tel", phoneNumber);
                 }}
               />
               <TextInput
                 value={phoneNumber}
                 onChangeText={(value) => onPhoneNumberChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInputEdit}
               />
             </View>
           ) : (
@@ -271,14 +273,14 @@ export default function Setting(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditEmailAddressChanged(false)
-                  updateUser(user, 'email', email)
+                  onEditEmailAddressChanged(false);
+                  updateUser(user, "email", email);
                 }}
               />
               <TextInput
                 value={email}
                 onChangeText={(value) => onEmailChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInputEdit}
               />
             </View>
           ) : (
@@ -323,22 +325,22 @@ export default function Setting(props) {
               style={{
                 position: "absolute",
                 right: 0,
-                alignItems: "center",
-                flexDirection: "row-reverse",
+                flexDirection: "row",
               }}
             >
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
               <Text
                 style={{
                   marginRight: widthPercentageToDP("5%"),
-                  fontSize: RFValue(10),
+                  fontSize: RFValue(6.5),
+                  alignSelf: "center",
                 }}
               >
                 {Translate.t("storeName,PersonInCharge,Address")}
               </Text>
+              <Image
+                style={styles.nextIcon}
+                source={require("../assets/Images/next.png")}
+              />
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -357,7 +359,7 @@ export default function Setting(props) {
             style={{
               position: "absolute",
               right: 0,
-              fontSize: RFValue(12),
+              fontSize: RFValue(10),
               marginRight: widthPercentageToDP("5%"),
               marginBottom: heightPercentageToDP("1%"),
             }}
@@ -368,8 +370,8 @@ export default function Setting(props) {
             style={{
               position: "absolute",
               right: 0,
-              fontSize: RFValue(12),
-              marginRight: widthPercentageToDP("28%"),
+              fontSize: RFValue(10),
+              marginRight: widthPercentageToDP("22%"),
               marginBottom: heightPercentageToDP("1%"),
             }}
           >
@@ -403,10 +405,11 @@ export default function Setting(props) {
                   .patch(user.url, {
                     message_notification_phone: value ? 1 : 0,
                   })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
                   });
               }}
               value={messagedReceivedMobile}
@@ -414,17 +417,18 @@ export default function Setting(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={Colors.D7CCA6}
-              style={{ marginRight: widthPercentageToDP("25%") }}
+              style={{ marginRight: widthPercentageToDP("17%") }}
               onValueChange={(value) => {
                 onMessagedReceivedEmailChanged(value);
                 request
                   .patch(user.url, {
                     message_notification_mail: value ? 1 : 0,
                   })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
                   });
               }}
               value={messagedReceivedEmail}
@@ -458,10 +462,11 @@ export default function Setting(props) {
                   .patch(user.url, {
                     other_notification_phone: value ? 1 : 0,
                   })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
                   });
               }}
               value={otherNofiticationMobile}
@@ -469,17 +474,18 @@ export default function Setting(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={Colors.D7CCA6}
-              style={{ marginRight: widthPercentageToDP("25%") }}
+              style={{ marginRight: widthPercentageToDP("17%") }}
               onValueChange={(value) => {
                 onOtherNofiticationEmailChanged(value);
                 request
                   .patch(user.url, {
                     other_notification_mail: value ? 1 : 0,
                   })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
                   });
               }}
               value={otherNofiticationEmail}
@@ -513,10 +519,11 @@ export default function Setting(props) {
                   .patch(user.url, {
                     allowed_by_id: value ? 1 : 0,
                   })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
                   });
               }}
               value={addingFriendsByID}
@@ -550,10 +557,11 @@ export default function Setting(props) {
                   .patch(user.url, {
                     allowed_by_tel: value ? 1 : 0,
                   })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    console.log(error);
-                    alert.warning(Translate.t("unkownError"));
+                  .then(function(response) {})
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
                   });
               }}
               value={allowAddingFriendsByPhoneNumber}
@@ -575,7 +583,7 @@ export default function Setting(props) {
           />
         </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
@@ -602,15 +610,22 @@ const styles = StyleSheet.create({
   textInContainerRight: {
     position: "absolute",
     right: 0,
-    fontSize: RFValue(12),
+    fontSize: RFValue(11),
   },
   textInContainerLeft: {
-    fontSize: RFValue(12),
+    fontSize: RFValue(11),
   },
   nextIcon: {
     width: win.width / 38,
     height: 15 * ratioNext,
     position: "absolute",
     right: 0,
+  },
+  textInputEdit: {
+    fontSize: RFValue(8),
+    borderWidth: 1,
+    borderColor: "black",
+    height: heightPercentageToDP("4%"),
+    width: widthPercentageToDP("40%"),
   },
 });

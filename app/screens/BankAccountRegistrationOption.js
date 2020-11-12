@@ -26,12 +26,13 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratio = win.width / 25 / 17;
+const ratioKinujo = win.width / 1.6 / 151;
 export default function BankAccountRegistration(props) {
   async function updateProfile(nextPage) {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           response = response.data;
           let payload = response.payload;
           if (payload) {
@@ -48,17 +49,19 @@ export default function BankAccountRegistration(props) {
             .patch(url, {
               payload: payload,
             })
-            .then(function (response) {
+            .then(function(response) {
               props.navigation.navigate(nextPage);
             })
-            .catch(function (error) {
-              console.log(error);
-              alert.warning(Translate.t("unkownError"));
+            .catch(function(error) {
+              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              }
             });
         })
-        .catch(function (error) {
-          console.log(error);
-          alert.warning(Translate.t("unkownError"));
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
         });
     });
   }
@@ -72,7 +75,15 @@ export default function BankAccountRegistration(props) {
       <SafeAreaView style={{ flex: 1 }}>
         <View>
           <WhiteBackArrow onPress={() => props.navigation.pop()} />
-          <CustomKinujoWord />
+          <Image
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("6%"),
+            }}
+            source={require("../assets/Images/kinujo.png")}
+          />
 
           <Text style={styles.bankAccountRegistrationText}>
             {Translate.t("bankAccountRegistration")}
@@ -98,10 +109,13 @@ export default function BankAccountRegistration(props) {
           </View>
         </TouchableOpacity>
         <View
-          onPress={() => props.navigation.navigate("AccountExamination")}
+          onPress={() => props.navigation.navigate("AccountExamination", {
+            "authority" : props.route.params.authority
+          })}
           style={{
             flexDirection: "row",
             justifyContent: "center",
+            alignItems: "center",
             marginTop: heightPercentageToDP("3%"),
           }}
         >
@@ -111,7 +125,7 @@ export default function BankAccountRegistration(props) {
               alignSelf: "center",
               color: Colors.white,
               textAlign: "center",
-              fontSize: RFValue(16),
+              fontSize: RFValue(12),
             }}
           >
             {Translate.t("registerLater")}
@@ -135,7 +149,7 @@ const styles = StyleSheet.create({
   bankAccountRegistrationText: {
     color: "white",
     textAlign: "center",
-    fontSize: RFValue(18),
+    fontSize: RFValue(16),
     alignSelf: "center",
     marginTop: heightPercentageToDP("10%"),
   },
@@ -149,7 +163,7 @@ const styles = StyleSheet.create({
   },
   registerBankAccountButtonText: {
     color: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     textAlign: "center",
   },
 });

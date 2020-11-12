@@ -17,22 +17,26 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
+const win = Dimensions.get("window");
+import SearchIcon from "../icons/search.svg";
 
 export default function CustomBlackBackArrow({ onPress, icon }) {
   return (
-    <SafeAreaView style={{
-      zIndex: 99
-    }}>
+    <SafeAreaView
+      style={{
+        zIndex: 99,
+      }}
+    >
       <View
         style={{
           width: 50,
           height: 50,
           padding: 10,
-          borderRadius: "50%",
+          borderRadius: win.width / 2,
           backgroundColor: "#FFF",
-          position: "fixed",
-          bottom: 70,
-          right: 10,
+          position: "absolute",
+          bottom: 15,
+          right: 20,
           shadowColor: "#000",
           shadowOffset: {
             width: 1,
@@ -44,10 +48,10 @@ export default function CustomBlackBackArrow({ onPress, icon }) {
         }}
       >
         <TouchableWithoutFeedback>
-          <Image
+          <SearchIcon
             style={{
               width: 30,
-              height: 30
+              height: 30,
             }}
             source={require("../icons/search.svg")}
             resizeMode="contain"

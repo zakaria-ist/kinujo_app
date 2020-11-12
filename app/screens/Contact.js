@@ -21,8 +21,17 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
+
+const request = new Request();
+const alert = new CustomAlert();
 const win = Dimensions.get("window");
-const ratioSearchIcon = win.width / 16 / 19;
+const ratioSearchIcon = win.width / 19 / 19;
 const ratioFolderIcon = win.width / 10 / 31;
 const ratioUpIcon = win.width / 20 / 14;
 const ratioFolderTabIcon = win.width / 23 / 11;
@@ -30,11 +39,116 @@ const ratioNextIcon = win.width / 36 / 8;
 const ratioCustomerList = win.width / 10 / 26;
 const ratioProfile = win.width / 13 / 22;
 const ratioDown = win.width / 30 / 8;
+let userId;
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
 export default function Contact(props) {
+  function redirectToChat(friendID, friendName) {
+    let groupID;
+    let groupName;
+    db.collection("chat")
+      .where("users", "array-contains", userId)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == friendID) {
+              groupID = snapShot.doc.id;
+              groupName = snapShot.doc.data().groupName;
+            }
+          }
+        });
+        if (groupID != null) {
+          props.navigation.navigate("ChatScreen", {
+            groupID: groupID,
+            groupName: groupName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + userId;
+          let friendMessageUnseenField = "unseenMessageCount_" + friendID;
+          let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
+          let friendTotalMessageReadField = "totalMessageRead_" + chatPersonID;
+          db.collection("chat")
+            .add({
+              groupName: friendName,
+              users: [userId, friendID],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function() {
+              navigateToChatScreen(friendID);
+            });
+        }
+      });
+  }
+  function navigateToChatScreen(friendID) {
+    let groupID;
+    let groupName;
+    db.collection("chat")
+      .where("users", "array-contains", userId)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == friendID) {
+              groupID = snapShot.doc.id;
+              groupName = snapShot.doc.data().groupName;
+            }
+          }
+          if (groupID != null) {
+            props.navigation.navigate("ChatScreen", {
+              groupID: groupID,
+              groupName: groupName,
+            });
+          }
+        });
+      });
+  }
+  function processUserHtml(props, users) {
+    let tmpUserHtml = [];
+    users.map((user) => {
+      tmpUserHtml.push(
+        <TouchableWithoutFeedback
+          key={user.id}
+          onPress={() => {
+            redirectToChat(
+              user.id,
+              user.real_name ? user.real_name : user.nickname
+            );
+          }}
+        >
+          <View style={styles.contactTabContainer}>
+            <Image
+              style={{
+                width: win.width / 13,
+                height: ratioProfile * 25,
+                marginLeft: widthPercentageToDP("1%"),
+              }}
+              source={require("../assets/Images/profileEditingIcon.png")}
+            />
+            <Text style={styles.tabLeftText}>
+              {user.real_name ? user.real_name : user.nickname}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    });
+    return tmpUserHtml;
+  }
   const [folderTabsShow, onFolderTabShowChaned] = React.useState(true);
   const [groupTabShow, onGroupTabShowChaned] = React.useState(true);
   const [friendTabShow, onFriendTabShowChaned] = React.useState(true);
+  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
+  const [loaded, onLoaded] = React.useState(false);
+  const [user, onUserChanged] = React.useState({});
   const folderTabOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
@@ -52,6 +166,55 @@ export default function Contact(props) {
   const friendTabHeight = useRef(
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
+
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function(url) {
+      request
+        .get(url)
+        .then(function(response) {
+          onUserChanged(response.data);
+        })
+        .catch(function(error) {
+          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          }
+        });
+
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+      db.collection("users")
+        .doc(userId)
+        .collection("friends")
+        .get()
+        .then((querySnapshot) => {
+          let ids = [];
+          let items = [];
+          querySnapshot.forEach((documentSnapshot) => {
+            let item = documentSnapshot.data();
+            if (item.type == "user") {
+              ids.push(item.id);
+            }
+          });
+          request
+            .get("user/byIds/", {
+              ids: ids,
+            })
+            .then(function(response) {
+              onUserHtmlChanged(processUserHtml(props, response.data.users));
+            })
+            .catch(function(error) {
+              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              }
+            });
+        });
+      onLoaded(true);
+    });
+  }, []);
+
   return (
     <SafeAreaView>
       <CustomHeader
@@ -59,7 +222,10 @@ export default function Contact(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
-      <CustomSecondaryHeader name="髪長絹子 さん" />
+      <CustomSecondaryHeader
+        name={user.real_name ? user.real_name : user.nickname}
+        accountType={user.is_seller ? Translate.t("storeAccount") : ""}
+      />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TouchableWithoutFeedback
@@ -78,7 +244,7 @@ export default function Contact(props) {
         </View>
 
         <View>
-          <TouchableWithoutFeedback
+          {/* <TouchableWithoutFeedback
             onPress={() => {
               folderTabsShow == true
                 ? Animated.parallel([
@@ -144,8 +310,8 @@ export default function Contact(props) {
                 </View>
               </View>
             </View>
-          </TouchableWithoutFeedback>
-          <Animated.View
+          </TouchableWithoutFeedback> */}
+          {/* <Animated.View
             style={{
               justifyContent: "center",
               height: folderTabHeight,
@@ -223,7 +389,7 @@ export default function Contact(props) {
                 <Text style={styles.tabRightText}>100</Text>
               </View>
             </View>
-          </Animated.View>
+          </Animated.View> */}
           <View
             style={{
               borderBottomWidth: 1,
@@ -231,7 +397,7 @@ export default function Contact(props) {
               justifyContent: "center",
             }}
           >
-            <View style={styles.contactTabContainer}>
+            {/* <View style={styles.contactTabContainer}>
               <Image
                 style={{
                   width: win.width / 10,
@@ -252,78 +418,12 @@ export default function Contact(props) {
                 />
                 <Text style={styles.tabRightText}>100</Text>
               </View>
-            </View>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                friendTabShow == true
-                  ? Animated.parallel([
-                      Animated.timing(friendTabHeight, {
-                        toValue: heightPercentageToDP("0%"),
-                        duration: 500,
-                        useNativeDriver: false,
-                      }),
-                      Animated.timing(friendTabOpacity, {
-                        toValue: heightPercentageToDP("0%"),
-                        duration: 100,
-                        useNativeDriver: false,
-                      }),
-                    ]).start(() => {}, onFriendTabShowChaned(false))
-                  : Animated.parallel([
-                      Animated.timing(friendTabHeight, {
-                        toValue: heightPercentageToDP("25%"),
-                        duration: 500,
-                        useNativeDriver: false,
-                      }),
-                      Animated.timing(friendTabOpacity, {
-                        toValue: heightPercentageToDP("100%"),
-                        duration: 100,
-                        useNativeDriver: false,
-                      }),
-                    ]).start(() => {}, onFriendTabShowChaned(true));
-              }}
-            >
-              <View style={styles.contactTabContainer}>
-                <Image
-                  style={{
-                    width: win.width / 13,
-                    height: ratioProfile * 25,
-                    marginLeft: widthPercentageToDP("1%"),
-                  }}
-                  source={require("../assets/Images/profileEditingIcon.png")}
-                />
-                <Text style={styles.tabLeftText}>友だち</Text>
-                <View style={styles.tabRightContainer}>
-                  {friendTabShow == true ? (
-                    <Image
-                      style={{
-                        width: win.width / 20,
-                        height: ratioUpIcon * 8,
-                        position: "absolute",
-                        right: 0,
-                      }}
-                      source={require("../assets/Images/upIcon.png")}
-                    />
-                  ) : (
-                    <Image
-                      style={{
-                        width: win.width / 30,
-                        height: ratioDown * 8,
-                        position: "absolute",
-                        marginRight: widthPercentageToDP("1.5%"),
-                        right: 0,
-                      }}
-                      source={require("../assets/Images/downForMoreIcon.png")}
-                    />
-                  )}
-
-                  <Text style={styles.tabRightText}>100</Text>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
+            </View> */}
+            {userHtml}
           </View>
         </View>
 
-        <Animated.View
+        {/* <Animated.View
           style={{ height: friendTabHeight, opacity: friendTabOpacity }}
         >
           <View
@@ -376,7 +476,7 @@ export default function Contact(props) {
               name
             </Text>
           </View>
-        </Animated.View>
+        </Animated.View> */}
       </View>
     </SafeAreaView>
   );
@@ -408,25 +508,26 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchContactInput: {
+    fontSize: RFValue(11),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,
   },
   searchIcon: {
-    width: win.width / 16,
+    width: win.width / 19,
     height: 19 * ratioSearchIcon,
     position: "absolute",
     right: 0,
     marginRight: widthPercentageToDP("5%"),
   },
   searchInputContainer: {
-    marginTop: heightPercentageToDP("1.5%"),
+    marginTop: heightPercentageToDP("3%"),
     borderWidth: 1,
     borderColor: "white",
     backgroundColor: Colors.F6F6F6,
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("4%"),
+    height: heightPercentageToDP("5%"),
   },
 });
