@@ -6,6 +6,9 @@
 # Node artifact files
 node_modules/
 dist/
+.expo
+Pods/
+Podfile.lock
 
 # Compiled Java class files
 *.class
@@ -47,4 +50,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
