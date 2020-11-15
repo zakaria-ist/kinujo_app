@@ -62,7 +62,7 @@ function processAddressHtml(props, addresses, status = "") {
                 }}
               >
                 <View style={styles.buttonContainer}>
-                  <Text style={styles.buttonText}>編集</Text>
+                  <Text style={styles.buttonText}>{Translate.t("edit")}</Text>
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
@@ -96,7 +96,7 @@ export default function ShippingList(props) {
   const [addresses, onAddressesChanged] = React.useState([]);
   const [addressHtml, onAddressHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
-  
+
 
   function load() {
     AsyncStorage.getItem("user").then((url) => {
@@ -143,7 +143,7 @@ export default function ShippingList(props) {
                         }}
                       >
                         <View style={styles.buttonContainer}>
-                          <Text style={styles.buttonText}>編集</Text>
+                          <Text style={styles.buttonText}>{Translate.t("edit")}</Text>
                         </View>
                       </TouchableWithoutFeedback>
                       <TouchableWithoutFeedback
@@ -187,7 +187,7 @@ export default function ShippingList(props) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
-        text="お届け先"
+        text={Translate.t("addressee")}
         onBack={() => {
           props.navigation.pop();
         }}
@@ -218,7 +218,7 @@ export default function ShippingList(props) {
                 marginLeft: widthPercentageToDP("2%"),
               }}
             >
-              新しい送付先を登録
+              {Translate.t("registerNewAddress")}
             </Text>
           </TouchableWithoutFeedback>
         </View>

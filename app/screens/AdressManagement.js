@@ -27,7 +27,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 const request = new Request();
 const alert = new CustomAlert();
-
+import postal_code from 'japan-postal-code-oasis';
 const win = Dimensions.get("window");
 export default function BankAccountRegistration(props) {
   const [prefectures, onPrefecturesChanged] = React.useState([]);
@@ -80,6 +80,9 @@ export default function BankAccountRegistration(props) {
       });
   }
 
+  React.useEffect(() => {
+    postal_code.configure("https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/");
+  }, [])
   return (
     <SafeAreaView>
       <CustomHeader
@@ -114,7 +117,20 @@ export default function BankAccountRegistration(props) {
           placeholderTextColor={Colors.D7CCA6}
           style={styles.textInput}
           value={zipcode}
-          onChangeText={(text) => onZipcodeChanged(text)}
+          onChangeText={(text) => {
+            onZipcodeChanged(text)
+            postal_code(text).then((address) => {
+              if(address && address.prefecture){
+                let tmpPrefectures = prefectures.filter((prefecture)=>{
+                  return prefecture.label == address.prefecture;
+                })
+  
+                if(tmpPrefectures.length > 0){
+                  onPrefectureChanged(tmpPrefectures[0].value)
+                }
+              }
+            });
+          }}
         ></TextInput>
         <DropDownPicker
           controller={(instance) => (controller = instance)}

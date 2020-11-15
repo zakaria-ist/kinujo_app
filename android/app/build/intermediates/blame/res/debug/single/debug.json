@@ -28,16 +28,16 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_btn_radio_off_mtrl.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/btn_radio_off_mtrl.xml"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_text_select_handle_middle_mtrl_dark.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_middle_mtrl_dark.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_text_select_handle_left_mtrl_dark.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_text_select_handle_left_mtrl_dark.png"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_btn_radio_off_mtrl.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/btn_radio_off_mtrl.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color-v23_abc_tint_spinner.xml.flat",
@@ -152,12 +152,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/abc_ic_ab_back_material.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_checkbox_themeable_attribute_color.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/checkbox_themeable_attribute_color.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_checkbox_themeable_attribute_color.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/checkbox_themeable_attribute_color.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_material_on_background_emphasis_medium.xml.flat",
@@ -204,12 +204,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_menu_selectall_mtrl_alpha.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/anim_abc_popup_enter.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/anim/abc_popup_enter.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_btn_check_to_on_mtrl_015.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
@@ -240,12 +240,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_scrubber_track_mtrl_alpha.9.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl_light.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_abc_cascading_menu_item_layout.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/abc_cascading_menu_item_layout.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_text_select_handle_right_mtrl_light.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_right_mtrl_light.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/anim_fragment_open_exit.xml.flat",
@@ -256,16 +256,16 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/layout/mtrl_calendar_vertical.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_ic_star_half_black_16dp.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_16dp.png"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_48dp.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi_app_assets_images_cameraicon.png.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/drawable-mdpi/app_assets_images_cameraicon.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_ic_star_half_black_48dp.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_48dp.png"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_ic_star_half_black_16dp.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_half_black_16dp.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_textfield_default_mtrl_alpha.9.png.flat",
@@ -312,12 +312,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/animator/mtrl_extended_fab_show_motion_spec.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_popup_background_mtrl_mult.9.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_text_select_handle_middle_mtrl_light.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_popup_background_mtrl_mult.9.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_popup_background_mtrl_mult.9.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_tabs_ripple_color.xml.flat",
@@ -376,20 +376,20 @@
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_glyphmaps_simplelineicons.json"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_design_navigation_item_separator.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/layout/design_navigation_item_separator.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_notify_panel_notification_icon_bg.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_switch_thumb_material_light.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/color/switch_thumb_material_light.xml"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_design_navigation_item_separator.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/layout/design_navigation_item_separator.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout-v26_mtrl_calendar_month.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/layout-v26/mtrl_calendar_month.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_switch_thumb_material_light.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/color/switch_thumb_material_light.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_fontawesome.ttf.flat",
@@ -424,12 +424,12 @@
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_support_simple_spinner_dropdown_item.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/support_simple_spinner_dropdown_item.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi_app_assets_images_creditcardicon.png.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/drawable-mdpi/app_assets_images_creditcardicon.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_support_simple_spinner_dropdown_item.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/support_simple_spinner_dropdown_item.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_common_google_signin_btn_icon_dark_focused.xml.flat",
@@ -440,12 +440,12 @@
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/drawable-mdpi/node_modules_reactnativeratings_src_images_rocket.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher.png.flat",
-        "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_mtrl_dialog_background.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/drawable/mtrl_dialog_background.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_fonts_materialicons.ttf.flat",
@@ -516,12 +516,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/abc_select_dialog_material.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_chip_surface_color.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/mtrl_chip_surface_color.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_app_assets_icons_up_whitearrow.svg.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/app_assets_icons_up_whitearrow.svg"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_chip_surface_color.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/mtrl_chip_surface_color.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/animator_mtrl_fab_transformation_sheet_collapse_spec.xml.flat",
@@ -556,12 +556,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_ic_star_black_48dp.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_half_black_48dp.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_spinner_mtrl_am_alpha.9.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_ic_star_half_black_48dp.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xxxhdpi-v4_abc_ic_menu_selectall_mtrl_alpha.png.flat",
@@ -592,12 +592,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/0066f4fcc5abb1cb6e71d7ce9a438877/jetified-react-native-0.63.3/res/anim/catalyst_slide_up.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher.png.flat",
-        "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_node_modules_mdndata_css_atrules.json.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/node_modules_mdndata_css_atrules.json"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_ic_mtrl_chip_checked_black.xml.flat",
@@ -608,12 +608,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_spinner_mtrl_am_alpha.9.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/xml_standalone_badge.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/xml/standalone_badge.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/anim_abc_fade_out.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/anim/abc_fade_out.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/xml_standalone_badge.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/xml/standalone_badge.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_choice_chip_background_color.xml.flat",
@@ -816,12 +816,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3275b265d3d71d2b69326901901ce0f2/play-services-base-17.1.0/res/drawable-hdpi-v4/common_full_open_on_phone.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi_app_assets_images_foldertabicon.png.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/drawable-mdpi/app_assets_images_foldertabicon.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_ab_share_pack_mtrl_alpha.9.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xxhdpi-v4/abc_ab_share_pack_mtrl_alpha.9.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_text_select_handle_left_mtrl_light.png.flat",
@@ -944,20 +944,20 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_ic_menu_cut_mtrl_alpha.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png"
-    },
-    {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_abc_activity_chooser_view.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/abc_activity_chooser_view.xml"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_design_ic_visibility.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/drawable-mdpi-v4/design_ic_visibility.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_btn_checkbox_checked_to_unchecked_mtrl_animation.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/btn_checkbox_checked_to_unchecked_mtrl_animation.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_design_ic_visibility.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/drawable-mdpi-v4/design_ic_visibility.png"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_abc_activity_chooser_view.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/abc_activity_chooser_view.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_textfield_search_default_mtrl_alpha.9.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_textfield_search_default_mtrl_alpha.9.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_btn_text_btn_bg_color_selector.xml.flat",
@@ -1072,16 +1072,16 @@
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/drawable-mdpi/node_modules_reactnativeratings_src_images_heart.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_common_google_signin_btn_text_dark_normal_background.9.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3275b265d3d71d2b69326901901ce0f2/play-services-base-17.1.0/res/drawable-hdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout-v21_notification_template_custom_big.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/layout-v21/notification_template_custom_big.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_common_google_signin_btn_text_dark_normal_background.9.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3275b265d3d71d2b69326901901ce0f2/play-services-base-17.1.0/res/drawable-hdpi-v4/common_google_signin_btn_text_dark_normal_background.9.png"
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-hdpi-v4/abc_switch_track_mtrl_alpha.9.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_outlined_stroke_color.xml.flat",
@@ -1100,12 +1100,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/abc_textfield_search_material.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_btn_radio_on_to_off_mtrl_animation.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/btn_radio_on_to_off_mtrl_animation.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-ldrtl-hdpi-v17_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-ldrtl-hdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_btn_radio_on_to_off_mtrl_animation.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/btn_radio_on_to_off_mtrl_animation.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
@@ -1132,12 +1132,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable/btn_checkbox_unchecked_to_checked_mtrl_animation.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_notification_bg_low.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/drawable/notification_bg_low.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi_app_assets_images_addaddressicon.png.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/drawable-mdpi/app_assets_images_addaddressicon.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_notification_bg_low.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/drawable/notification_bg_low.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_btn_radio_to_on_mtrl_000.png.flat",
@@ -1152,12 +1152,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_filled_stroke_color.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/mtrl_filled_stroke_color.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-v21_avd_hide_password.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/drawable-v21/avd_hide_password.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_filled_stroke_color.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/mtrl_filled_stroke_color.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_ic_menu_paste_mtrl_am_alpha.png.flat",
@@ -1192,12 +1192,12 @@
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_glyphmaps_fontisto.json"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_glyphmaps_fontawesome5free_meta.json.flat",
-        "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_glyphmaps_fontawesome5free_meta.json"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/layout_abc_expanded_menu_layout.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/abc_expanded_menu_layout.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_glyphmaps_fontawesome5free_meta.json.flat",
+        "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/node_modules_expo_vectoricons_build_vendor_reactnativevectoricons_glyphmaps_fontawesome5free_meta.json"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_material_on_background_disabled.xml.flat",
@@ -1208,12 +1208,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/color/abc_hint_foreground_material_light.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_btn_check_to_on_mtrl_015.png.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_btn_check_to_on_mtrl_015.png"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-mdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable-mdpi-v4_abc_ic_menu_copy_mtrl_am_alpha.png.flat",
@@ -1404,12 +1404,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/drawable-xhdpi-v4/abc_text_select_handle_middle_mtrl_light.png"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_ic_mtrl_chip_close_circle.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/drawable/ic_mtrl_chip_close_circle.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/color_mtrl_indicator_text_color.xml.flat",
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/color/mtrl_indicator_text_color.xml"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_ic_mtrl_chip_close_circle.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/res/drawable/ic_mtrl_chip_close_circle.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_common_google_signin_btn_text_disabled.xml.flat",
@@ -1920,12 +1920,12 @@
         "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/86476cb31dfd74d5ebdbf4b9f7575edf/appcompat-1.1.0/res/layout/abc_action_menu_layout.xml"
     },
     {
-        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_notification_icon_background.xml.flat",
-        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/drawable/notification_icon_background.xml"
-    },
-    {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/raw_node_modules_cssselect_lib_procedure.json.flat",
         "source": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/res/raw/node_modules_cssselect_lib_procedure.json"
+    },
+    {
+        "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_notification_icon_background.xml.flat",
+        "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/res/drawable/notification_icon_background.xml"
     },
     {
         "merged": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/res/merged/debug/drawable_btn_checkbox_unchecked_mtrl.xml.flat",

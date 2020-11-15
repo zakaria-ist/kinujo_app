@@ -575,5 +575,6 @@ const styles = StyleSheet.create({
     borderColor: "black",
     height: heightPercentageToDP("4%"),
     width: widthPercentageToDP("50%"),
+    borderRadius: 7
   },
 });

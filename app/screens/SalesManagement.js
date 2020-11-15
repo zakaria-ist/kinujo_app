@@ -199,7 +199,7 @@ export default function SalesManagement(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="売上管理"
+        text={Translate.t("salesManagement")}
         onFavoriteChanged="favorite"
         onBack={() => {
           props.navigation.pop();
@@ -251,7 +251,7 @@ export default function SalesManagement(props) {
                 justifyContent: "center",
               }}
             >
-              <Text style={styles.totalSalesContainerText}>総売上</Text>
+              <Text style={styles.totalSalesContainerText}>{Translate.t("totalSale")}</Text>
               <Text style={{ marginTop: heightPercentageToDP(".5%") }}>
                 {totalSale + totalCommission}円
               </Text>
@@ -265,13 +265,15 @@ export default function SalesManagement(props) {
                 width: widthPercentageToDP("45%"),
               }}
             >
-              <Text style={styles.totalSalesContainerText}>【内訳】</Text>
+              <Text style={styles.totalSalesContainerText}>【{Translate.t("breakdown")}】</Text>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ marginTop: heightPercentageToDP("1%") }}>
                   <Text style={styles.totalSalesContainerText}>
-                    Commission :
+                    {Translate.t("commission")} :
                   </Text>
-                  <Text style={styles.totalSalesContainerText}>Sales : </Text>
+                  <Text style={styles.totalSalesContainerText}>
+                    {Translate.t("sales")} :
+                  </Text>
                 </View>
                 <View
                   style={{
@@ -309,7 +311,7 @@ export default function SalesManagement(props) {
                     : styles.commissionText
                 }
               >
-                Commission
+                {Translate.t("commission")}
               </Text>
               <Text
                 onPress={() => {
@@ -320,7 +322,7 @@ export default function SalesManagement(props) {
                   status == "sales" ? styles.salesText : styles.commissionText
                 }
               >
-                Sales
+                {Translate.t("sales")}
               </Text>
             </View>
             <View
@@ -348,7 +350,7 @@ export default function SalesManagement(props) {
                     left: 0,
                   }}
                 >
-                  Date
+                  {Translate.t("date")}
                 </Text>
                 <Text
                   style={{
@@ -358,7 +360,7 @@ export default function SalesManagement(props) {
                     marginLeft: widthPercentageToDP("20%"),
                   }}
                 >
-                  {status == "commission" ? "Product / Price" : " Product"}
+                  {status == "commission" ? Translate.t("product")+" / "+Translate.t("price") : " "+Translate.t("product")}
                 </Text>
                 <Text
                   style={{
@@ -367,7 +369,7 @@ export default function SalesManagement(props) {
                     right: 0,
                   }}
                 >
-                  {status == "commission" ? "Commission" : " Amount"}
+                  {status == "commission" ? Translate.t("commissionAmt") : " "+Translate.t("salesAmt")}
                 </Text>
               </View>
               <View

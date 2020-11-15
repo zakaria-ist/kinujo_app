@@ -45,6 +45,34 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
+function getID(url){
+  let urls = url.split("/");
+  urls = urls.filter((url) => {
+    return url;
+  });
+  userId = urls[urls.length - 1];
+  return userId
+}
+function addFriend(firstUserId, secondUserId){
+  firestore()
+  .collection("users")
+  .doc(firstUserId)
+  .collection("friends")
+  .where("id", "==", secondUserId)
+  .get()
+  .then((querySnapshot) => {
+    if (querySnapshot.size > 0) {
+    } else {
+      db.collection("users")
+        .doc(firstUserId)
+        .collection("friends")
+        .add({
+          type: "user",
+          id: secondUserId,
+        });
+    }
+  });
+}
 export default function Contact(props) {
   function redirectToChat(friendID, friendName) {
     let groupID;
@@ -171,10 +199,16 @@ export default function Contact(props) {
 
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function(url) {
+
+      let userId = getID(url);
       request
         .get(url)
         .then(function(response) {
           onUserChanged(response.data);
+          if(response.data.introducer){
+            let introducerId = getID(response.data.introducer);
+            addFriend(userId, introducerId)
+          }
         })
         .catch(function(error) {
           if (
@@ -192,11 +226,6 @@ export default function Contact(props) {
           }
         });
 
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
       db.collection("users")
         .doc(userId)
         .collection("friends")

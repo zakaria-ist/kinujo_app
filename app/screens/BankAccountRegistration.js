@@ -27,6 +27,7 @@ import CustomAlert from "../lib/alert";
 import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
 const alert = new CustomAlert();
+import zenginCode from 'zengin-code';
 
 const win = Dimensions.get("window");
 export default function BankAccountRegistration(props) {
@@ -180,16 +181,17 @@ export default function BankAccountRegistration(props) {
                 urls = urls.filter((url) => {
                   return url;
                 });
+
                 request
                   .post("financial_account/", {
                     user: url.replace("testserver", "127.0.0.1:8000"),
                     financial_name: financialName,
                     account_type: accountType,
-                    branch_code: "123",
+                    branch_code: "000",
                     branch_name: branchName,
                     account_number: accountNumber,
                     account_name: accountHolder,
-                    financial_code: "123",
+                    financial_code: "0000",
                   })
                   .then(function(response) {
                     onAccountHolderChanged("");

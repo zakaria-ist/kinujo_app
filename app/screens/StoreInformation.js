@@ -124,7 +124,7 @@ export default function StoreInformation(props) {
               <TextInput
                 value={corporateName}
                 onChangeText={(value) => onCorporateNameChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInput}
               />
             </View>
           ) : (
@@ -183,7 +183,7 @@ export default function StoreInformation(props) {
               <TextInput
                 value={representativeName}
                 onChangeText={(value) => onRepresentativeNameChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInput}
               />
             </View>
           ) : (
@@ -242,7 +242,7 @@ export default function StoreInformation(props) {
               <TextInput
                 value={postalCode}
                 onChangeText={(value) => onPostalCodeChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInput}
               />
             </View>
           ) : (
@@ -301,7 +301,7 @@ export default function StoreInformation(props) {
               <TextInput
                 value={prefecture}
                 onChangeText={(value) => onPrefectureChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInput}
               />
             </View>
           ) : (
@@ -360,7 +360,7 @@ export default function StoreInformation(props) {
               <TextInput
                 value={address1}
                 onChangeText={(value) => onAddress1Changed(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInput}
               />
             </View>
           ) : (
@@ -419,7 +419,7 @@ export default function StoreInformation(props) {
               <TextInput
                 value={address2}
                 onChangeText={(value) => onAddress2Changed(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInput}
               />
             </View>
           ) : (
@@ -468,5 +468,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
     fontSize: RFValue(12),
+  },
+  textInput: {
+    fontSize: RFValue(8),
+    borderWidth: 1,
+    borderColor: "black",
+    height: heightPercentageToDP("4%"),
+    width: widthPercentageToDP("50%"),
+    borderRadius: 7
   },
 });

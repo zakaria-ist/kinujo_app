@@ -21,6 +21,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import CustomAlert from "../lib/alert";
+import Translate from "../assets/Translates/Translate";
 import jsQR from "jsqr";
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -110,10 +111,10 @@ export default function QRCode(props) {
                 id: code,
               });
           }
-          alert.warning("Friend Added");
+          alert.warning(Translate.t("friendAdded"));
         });
     } else {
-      alert.warning("Invalid QR Code");
+      alert.warning(Translate.t("invalidQRcode"));
     }
   };
 
@@ -163,7 +164,7 @@ export default function QRCode(props) {
                   fontSize: RFValue(15),
                 }}
               >
-                {inviteShow ? "App invitation QR code" : "QR Code"}
+                {inviteShow ? Translate.t("appInviteQR") : Translate.t("QRCode")}
               </Text>
             </View>
             <View style={styles.qrcode_frame}>
@@ -195,12 +196,15 @@ export default function QRCode(props) {
               ]}
               onPress={() => setPopupQR(true)}
             >
-              <Text style={styles.submitText}>My QR code</Text>
+              <Text style={styles.submitText}>{Translate.t("myQR")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
             <TouchableOpacity
               onPress={() => {
+                const options = {
+                  noData: true,
+                };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   var i = new Image();
                   i.onload = function() {
@@ -226,10 +230,10 @@ export default function QRCode(props) {
                                 id: code,
                               });
                           }
-                          alert.warning("Friend Added");
+                          alert.warning(Translate.t("friendAdded"));
                         });
                     } else {
-                      alert.warning("Invalid QR Code.");
+                      alert.warning(Translate.t("invalidQRcode"));
                     }
                   };
 
@@ -243,7 +247,7 @@ export default function QRCode(props) {
                 },
               ]}
             >
-              <Text style={styles.submitText}>Read from photo</Text>
+              <Text style={styles.submitText}>{Translate.t("readFromPhoto")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -256,7 +260,7 @@ export default function QRCode(props) {
                 },
               ]}
             >
-              <Text style={styles.submitText}>Search friend by ID</Text>
+              <Text style={styles.submitText}>{Translate.t("searchFriend")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -269,7 +273,7 @@ export default function QRCode(props) {
               ]}
               onPress={() => setInviteShow(true)}
             >
-              <Text style={styles.submitText}>App invitation QR code</Text>
+              <Text style={styles.submitText}>{Translate.t("appInviteQR")}</Text>
             </TouchableOpacity>
           </View>
           <View
@@ -279,8 +283,8 @@ export default function QRCode(props) {
               paddingTop: 20,
             }}
           >
-            <Text>Scan the QR code</Text>
-            <Text>You can use functions such as adding friends</Text>
+            <Text>{Translate.t("scanQR")}</Text>
+            <Text>{Translate.t("qrDescription")}</Text>
           </View>
         </View>
 
@@ -295,7 +299,7 @@ export default function QRCode(props) {
               ]}
               onPress={() => setPopupQR(true)}
             >
-              <Text style={styles.submitText}>Generate user invitation</Text>
+              <Text style={styles.submitText}>{Translate.t("generalUserInvite")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -311,7 +315,7 @@ export default function QRCode(props) {
                 setPopupQR(true);
               }}
             >
-              <Text style={styles.submitText}>Store account invitation</Text>
+              <Text style={styles.submitText}>{Translate.t("storeAccInvite")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -324,7 +328,7 @@ export default function QRCode(props) {
               ]}
               onPress={() => setInviteShow(false)}
             >
-              <Text style={styles.submitText}>My QR code</Text>
+              <Text style={styles.submitText}>{Translate.t("myQR")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -374,12 +378,12 @@ export default function QRCode(props) {
             }}
           >
             <View style={[styles.qr_image]}>
-              {/* <QRCodeIcon
+              <QRCodeIcon
                 size={widthPercentageToDP(60)}
                 value={
-                  store ? (storeLink ? storeLink : "") : (userLink ? userLink : "")
+                  store ? (storeLink ? storeLink : "waiting") : (userLink ? userLink : "waiting")
                 }
-              /> */}
+              />
               {/* <Image
                 source={{
                   uri:

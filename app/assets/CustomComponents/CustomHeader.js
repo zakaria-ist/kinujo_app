@@ -29,7 +29,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
       style={{
         flexDirection: "row",
         alignItems: "center",
-        height: heightPercentageToDP("10%"),
+        height: heightPercentageToDP("7%"),
         justifyContent: "space-evenly",
       }}
     >
