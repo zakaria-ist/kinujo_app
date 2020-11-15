@@ -6,6 +6,18 @@
 # Node artifact files
 node_modules/
 dist/
+.expo
+Pods/
+build/
+app/build/
+app/build/intermediates/
+gradle
+.gradle
+Podfile.lock
+local.properties
+gradlew
+gradlew.bat
+package-lock.json
 
 # Compiled Java class files
 *.class
@@ -47,4 +59,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
