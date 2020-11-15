@@ -21,28 +21,56 @@ import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import _ from "lodash";
+import { useIsFocused } from "@react-navigation/native";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { block } from "react-native-reanimated";
+import CustomAlert from "../lib/alert";
+
+const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
 const chatRef = db.collection("chat");
 const win = Dimensions.get("window");
-let tmpChatHtml = [];
 let groupID = [];
 let today = new Date().getDate();
 let lastReadDateField;
 let unseenMessageCountField;
 let ownUserID;
-let lastReadDate;
 let totalUnseenMessage = 0;
 let unseenObj = [];
+let tmpChatHtml = [];
+let year = new Date().getFullYear();
+let month = new Date().getMonth() + 1;
+let day = new Date().getDate();
+let hour = new Date().getHours();
+let minute = ("0" + new Date().getMinutes()).slice(-2);
+let seconds = new Date().getSeconds();
+let tmpCreatedAt = year +
+                ":" +
+                month +
+                ":" +
+                day +
+                ":" +
+                hour +
+                ":" +
+                minute +
+                ":" +
+                seconds;
+
+function getDate(string){
+  let items = string.split(":");
+  return (new Date(items[0], items[1]-1, items[2], items[3], items[4], items[5]));
+}
 export default function ChatList(props) {
+  const isFocused = useIsFocused();
   const [show, onShowChanged] = React.useState(false);
-  const [loaded, onLoadedChanged] = useState(false);
-  const [chatHtml, onChatHtmlChanged] = React.useState(<View></View>);
+  const [loaded, onLoadedChanged] = React.useState(false);
+  const [chatHtml, onChatHtmlChanged] = React.useState([]);
+  const [longPressObj, onLongPressObjChanged] = React.useState({});
+
   function getUnseenMessageCount(groupID, userID) {
     let userTotalMessageReadField = "totalMessageRead_" + userID;
     let userTotalMessageReadCount;
@@ -63,207 +91,266 @@ export default function ChatList(props) {
         });
       });
   }
-  React.useEffect(() => {
-    //where change
-    AsyncStorage.getItem("user")
-      .then(function(url) {
-        let urls = url.split("/");
-        urls = urls.filter((url) => {
-          return url;
-        });
-        ownUserID = urls[urls.length - 1];
-      })
-      .then((res) => {
-        if (!loaded) {
-          lastReadDateField = "lastReadDate_" + ownUserID;
-          unseenMessageCountField = "unseenMessageCount_" + ownUserID;
-          chatRef
-            .where("users", "array-contains", String(ownUserID))
-            .onSnapshot((querySnapShot) => {
-              querySnapShot.docChanges().forEach((snapShot) => {
-                totalUnseenMessage = 0;
-                totalUnseenMessage =
-                  snapShot.doc.data()[unseenMessageCountField] +
-                  totalUnseenMessage;
-                unseenObj[snapShot.doc.id] = totalUnseenMessage;
 
-                chatRef
-                  .doc(snapShot.doc.id)
-                  .collection("messages")
-                  .orderBy("timeStamp", "asc")
-                  .onSnapshot((querySnapShot1) => {
-                    querySnapShot1.docChanges().forEach((snapShot1) => {
-                      let tmpGroupID = groupID.filter((item) => {
-                        return item == snapShot.doc.id;
-                      });
-                      if (tmpGroupID.length >= 1) {
-                        for (var i = 0; i < tmpChatHtml.length; i++) {
-                          if (tmpChatHtml[i].key == snapShot.doc.id) {
-                            tmpChatHtml.splice(i, 1); //find poisition delete
-                          }
-                        }
-                        tmpChatHtml = _.without(tmpChatHtml, snapShot.doc.id);
-                      }
-                      getUnseenMessageCount(snapShot.doc.id, ownUserID);
-                      let date = snapShot1.doc.data().createdAt.split(":");
-                      let tmpMonth = date[1];
-                      let tmpDay = date[2]; //message created at
-                      let tmpHours = date[3];
-                      let tmpMinutes = date[4];
-                      lastReadDate = snapShot.doc.data()[lastReadDateField];
-                      if (tmpDay == today) {
-                        tmpChatHtml.unshift(
-                          <TouchableWithoutFeedback
-                            key={snapShot.doc.id}
-                            onPress={() =>
-                              props.navigation.navigate("ChatScreen", {
-                                groupID: snapShot.doc.id,
-                                groupName: snapShot.doc.data().groupName,
-                              })
-                            }
-                            onLongPress={() => onShowChanged(true)}
-                          >
-                            <View style={styles.tabContainer}>
-                              <Image style={styles.tabImage} />
-                              <View style={styles.descriptionContainer}>
-                                <Text style={styles.tabText}>
-                                  {snapShot.doc.data().groupName}
-                                </Text>
-                                <Text style={styles.tabText}>
-                                  {snapShot1.doc.data().message}
-                                </Text>
-                              </View>
-                              <View style={styles.tabRightContainer}>
-                                {tmpDay == today ? (
-                                  <Text style={styles.tabText}>
-                                    {tmpHours + ":" + tmpMinutes}
-                                  </Text>
-                                ) : (
-                                  <Text style={styles.tabText}>
-                                    {tmpMonth + "/" + tmpDay}
-                                  </Text>
-                                )}
-                                <View
-                                  style={styles.notificationNumberContainer}
-                                >
-                                  <Text style={styles.notificationNumberText}>
-                                    {
-                                      snapShot.doc.data()[
-                                        unseenMessageCountField
-                                      ]
-                                    }
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </TouchableWithoutFeedback>
-                        );
-                      } else if (tmpDay == today - 1) {
-                        tmpChatHtml.unshift(
-                          <TouchableWithoutFeedback
-                            key={snapShot.doc.id}
-                            onPress={() =>
-                              props.navigation.navigate("ChatScreen", {
-                                groupID: snapShot.doc.id,
-                                groupName: snapShot.doc.data().groupName,
-                              })
-                            }
-                            onLongPress={() => onShowChanged(true)}
-                          >
-                            <View style={styles.tabContainer}>
-                              <Image style={styles.tabImage} />
-                              <View style={styles.descriptionContainer}>
-                                <Text style={styles.tabText}>
-                                  {snapShot.doc.data().groupName}
-                                </Text>
-                                <Text style={styles.tabText}>
-                                  {snapShot1.doc.data().message}
-                                </Text>
-                              </View>
-                              <View style={styles.tabRightContainer}>
-                                {tmpDay == today - 1 ? (
-                                  <Text style={styles.tabText}>
-                                    {"Yesterday"}
-                                  </Text>
-                                ) : (
-                                  <Text style={styles.tabText}>
-                                    {tmpMonth + "/" + tmpDay}
-                                  </Text>
-                                )}
-                                <View
-                                  style={styles.notificationNumberContainer}
-                                >
-                                  <Text style={styles.notificationNumberText}>
-                                    {
-                                      snapShot.doc.data()[
-                                        unseenMessageCountField
-                                      ]
-                                    }
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </TouchableWithoutFeedback>
-                        );
-                      } else {
-                        tmpChatHtml.unshift(
-                          <TouchableWithoutFeedback
-                            key={snapShot.doc.id}
-                            onPress={() =>
-                              props.navigation.navigate("ChatScreen", {
-                                groupID: snapShot.doc.id,
-                                groupName: snapShot.doc.data().groupName,
-                              })
-                            }
-                            onLongPress={() => onShowChanged(true)}
-                          >
-                            <View style={styles.tabContainer}>
-                              <Image style={styles.tabImage} />
-                              <View style={styles.descriptionContainer}>
-                                <Text style={styles.tabText}>
-                                  {snapShot.doc.data().groupName}
-                                </Text>
-                                <Text style={styles.tabText}>
-                                  {snapShot1.doc.data().message}
-                                </Text>
-                              </View>
-                              <View style={styles.tabRightContainer}>
-                                <Text style={styles.tabText}>
-                                  {tmpMonth + "/" + tmpDay}
-                                </Text>
-                                <View
-                                  style={styles.notificationNumberContainer}
-                                >
-                                  <Text style={styles.notificationNumberText}>
-                                    {
-                                      snapShot.doc.data()[
-                                        unseenMessageCountField
-                                      ]
-                                    }
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </TouchableWithoutFeedback>
-                        );
-                      }
-                      groupID.push(snapShot.doc.id);
-                    });
-                    onChatHtmlChanged(tmpChatHtml);
-                  });
-
-                totalUnseenMessage = 0;
-                for (var i in unseenObj) {
-                  totalUnseenMessage += unseenObj[i];
-                }
-              });
+  async function firstLoad(){
+    let url = await AsyncStorage.getItem("user");
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    ownUserID = urls[urls.length - 1];
+    lastReadDateField = "lastReadDate_" + ownUserID;
+    unseenMessageCountField = "unseenMessageCount_" + ownUserID;
+    const unsubscribe = chatRef
+      .where("users", "array-contains", String(ownUserID))
+      .onSnapshot((querySnapShot) => {
+        querySnapShot.forEach((snapShot) => {
+          if(snapShot && snapShot.exists){
+            totalUnseenMessage = 0;
+            totalUnseenMessage =
+              snapShot.data()[unseenMessageCountField] +
+              totalUnseenMessage;
+            unseenObj[snapShot.id] = totalUnseenMessage;
+            let tmpGroupID = groupID.filter((item) => {
+              return item == snapShot.id;
             });
+            if (tmpGroupID.length >= 1) {
+              for (var i = 0; i < tmpChatHtml.length; i++) {
+                if (tmpChatHtml[i].key == snapShot.id) {
+                  tmpChatHtml.splice(i, 1); //find poisition delete
+                }
+              }
+              tmpChatHtml = _.without(tmpChatHtml, snapShot.id);
+            }
+            getUnseenMessageCount(snapShot.id, ownUserID);
+            let date = snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime.split(":") : tmpCreatedAt.split(":");
+            let tmpMonth = date[1];
+            let tmpDay = date[2]; //message created at
+            let tmpHours = date[3];
+            let tmpMinutes = date[4];
+            lastReadDate = snapShot.data()[lastReadDateField];
+            if (tmpDay == today) {
+              tmpChatHtml.unshift(
+                <TouchableWithoutFeedback
+                  key={snapShot.id}
+                  date={snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime : tmpCreatedAt}
+                  pinned={snapShot.data()['pinned_' + ownUserID] ? true : false}
+                  hide={snapShot.data()['hide_' + ownUserID] ? true : false}
+                  delete={snapShot.data()['delete_' + ownUserID] ? true : false}
+                  onPress={() =>
+                    props.navigation.navigate("ChatScreen", {
+                      groupID: snapShot.id,
+                      groupName: snapShot.data().groupName,
+                    })
+                  }
+                  onLongPress={() => {
+                    onLongPressObjChanged({
+                      "id" : snapShot.id,
+                      "data" : snapShot.data()
+                    })
+                    onShowChanged(true);
+                  }}
+                >
+                  <View style={styles.tabContainer}>
+                    <Image style={styles.tabImage} />
+                    <View style={styles.descriptionContainer}>
+                      <Text style={styles.tabText}>
+                        {snapShot.data().groupName}
+                      </Text>
+                      <Text style={styles.tabText}>
+                        {snapShot.data().message}
+                      </Text>
+                    </View>
+                    <View style={styles.tabRightContainer}>
+                      {tmpDay == today ? (
+                        <Text style={styles.tabText}>
+                          {tmpHours + ":" + tmpMinutes}
+                        </Text>
+                      ) : (
+                        <Text style={styles.tabText}>
+                          {tmpMonth + "/" + tmpDay}
+                        </Text>
+                      )}
+                      {snapShot.data()[
+                              unseenMessageCountField
+                            ] && snapShot.data()[
+                              unseenMessageCountField
+                            ] > 0 ? (<View
+                              style={styles.notificationNumberContainer}
+                            >
+                              <Text style={styles.notificationNumberText}>
+                                {
+                                  snapShot.data()[
+                                    unseenMessageCountField
+                                  ]
+                                }
+                              </Text>
+                            </View>) : (<View></View>)}
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
+            } else if (tmpDay == today - 1) {
+              tmpChatHtml.unshift(
+                <TouchableWithoutFeedback
+                  key={snapShot.id}
+                  date={snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime : tmpCreatedAt}
+                  pinned={snapShot.data()['pinned_' + ownUserID] ? true : false}
+                  hide={snapShot.data()['hide_' + ownUserID] ? true : false}
+                  delete={snapShot.data()['delete_' + ownUserID] ? true : false}
+                  onPress={() =>
+                    props.navigation.navigate("ChatScreen", {
+                      groupID: snapShot.id,
+                      groupName: snapShot.data().groupName,
+                    })
+                  }
+                  onLongPress={() => onShowChanged(true)}
+                >
+                  <View style={styles.tabContainer}>
+                    <Image style={styles.tabImage} />
+                    <View style={styles.descriptionContainer}>
+                      <Text style={styles.tabText}>
+                        {snapShot.data().groupName}
+                      </Text>
+                      <Text style={styles.tabText}>
+                        {snapShot.data().message}
+                      </Text>
+                    </View>
+                    <View style={styles.tabRightContainer}>
+                      {tmpDay == today - 1 ? (
+                        <Text style={styles.tabText}>
+                          {"Yesterday"}
+                        </Text>
+                      ) : (
+                        <Text style={styles.tabText}>
+                          {tmpMonth + "/" + tmpDay}
+                        </Text>
+                      )}
+                      {snapShot.data()[
+                              unseenMessageCountField
+                            ] && snapShot.data()[
+                              unseenMessageCountField
+                            ] > 0 ? (<View
+                              style={styles.notificationNumberContainer}
+                            >
+                              <Text style={styles.notificationNumberText}>
+                                {
+                                  snapShot.data()[
+                                    unseenMessageCountField
+                                  ]
+                                }
+                              </Text>
+                            </View>) : (<View></View>)}
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
+            } else {
+              tmpChatHtml.unshift(
+                <TouchableWithoutFeedback
+                  key={snapShot.id}
+                  date={snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime : tmpCreatedAt}
+                  pinned={snapShot.data()['pinned_' + ownUserID] ? true : false}
+                  hide={snapShot.data()['hide_' + ownUserID] ? true : false}
+                  delete={snapShot.data()['delete_' + ownUserID] ? true : false}
+                  onPress={() =>
+                    props.navigation.navigate("ChatScreen", {
+                      groupID: snapShot.id,
+                      groupName: snapShot.data().groupName,
+                    })
+                  }
+                  onLongPress={() => onShowChanged(true)}
+                >
+                  <View style={styles.tabContainer}>
+                    <Image style={styles.tabImage} />
+                    <View style={styles.descriptionContainer}>
+                      <Text style={styles.tabText}>
+                        {snapShot.data().groupName}
+                      </Text>
+                      <Text style={styles.tabText}>
+                        {snapShot.data().message}
+                      </Text>
+                    </View>
+                    <View style={styles.tabRightContainer}>
+                      <Text style={styles.tabText}>
+                        {tmpMonth + "/" + tmpDay}
+                      </Text>
+                      {snapShot.data()[
+                              unseenMessageCountField
+                            ] && snapShot.data()[
+                              unseenMessageCountField
+                            ] > 0 ? (<View
+                              style={styles.notificationNumberContainer}
+                            >
+                              <Text style={styles.notificationNumberText}>
+                                {
+                                  snapShot.data()[
+                                    unseenMessageCountField
+                                  ]
+                                }
+                              </Text>
+                            </View>) : (<View></View>)}
+                    </View>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
+            }
+            groupID.push(snapShot.id);
+  
+            totalUnseenMessage = 0;
+            for (var i in unseenObj) {
+              totalUnseenMessage += unseenObj[i];
+            }
+          }
+        });
 
-          onLoadedChanged(true);
-        }
+        tmpChatHtml.sort((html1, html2) => {
+          if(html1.props['pinned'] && html2.props['pinned']){
+            let date1 = getDate(html1.props['date']);
+            let date2 = getDate(html2.props['date']);
+
+            if(date1 > date2){
+              return 1;
+            }
+            if(date1 < date2){
+              return -1;
+            }
+          }
+
+          if(!html1.props['pinned'] && !html2.props['pinned']){
+            let date1 = getDate(html1.props['date']);
+            let date2 = getDate(html2.props['date']);
+
+            if(date1 > date2){
+              return 1;
+            }
+            if(date1 < date2){
+              return -1;
+            }
+          }
+
+          if(html1.props['pinned'] && !html2.props['pinned']){
+            return -1;
+          }
+
+          if(!html1.props['pinned'] && html2.props['pinned']){
+            return 1;
+          }
+        })
+        const resultChatHtml = tmpChatHtml.filter((html) => {
+          return !html.props['hide'] && !html.props['delete']
+        })
+        onChatHtmlChanged(resultChatHtml)
       });
-  });
+  }
 
+  React.useEffect(()=>{
+    firstLoad();
+
+    return function(){
+
+    }
+  }, [])
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <View style={{ flex: 1 }}>
@@ -284,7 +371,7 @@ export default function ChatList(props) {
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(14) }}>髪長友子</Text>
+              <Text style={{ fontSize: RFValue(14) }}>{longPressObj && longPressObj.data ? longPressObj.data.groupName : ""}</Text>
               <View
                 style={{
                   marginTop: heightPercentageToDP("2%"),
@@ -292,19 +379,75 @@ export default function ChatList(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <Text style={styles.longPressText}>上部固定（or解除）</Text>
-                <Text style={styles.longPressText}>通知OFF</Text>
-                <Text style={styles.longPressText}>非表示</Text>
-                <Text style={styles.longPressText}>削除</Text>
-                <TouchableWithoutFeedback
-                  onPress={() => props.navigation.navigate("GroupChatCreation")}
-                >
-                  <Text style={styles.longPressText}>グルチャ作成</Text>
+                <TouchableWithoutFeedback onPress={
+                  () => {
+                    let update = {};
+                    update['pinned_' + ownUserID] = (longPressObj.data['pinned_' + ownUserID] == "" || longPressObj.data['pinned_' + ownUserID]) ? false : true
+                    db.collection('chat').doc(longPressObj.id).set(update, {
+                      "merge" : true
+                    })
+                    onShowChanged(false);
+                  }
+                }>
+                  <Text style={styles.longPressText}>{Translate.t("upperFixed")}</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={
+                  () => {
+                    let update = {};
+                    update['notify_' + ownUserID] = (longPressObj.data['notify_' + ownUserID] == "" || longPressObj.data['notify_' + ownUserID]) ? false : true
+                    db.collection('chat').doc(longPressObj.id).set(update, {
+                      "merge" : true
+                    })
+                    onShowChanged(false);
+                  }
+                }>
+                  <Text style={styles.longPressText}>{Translate.t("notification")} OFF</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={
+                  () => {
+                    let update = {};
+                    update['hide_' + ownUserID] = (longPressObj.data['hide_' + ownUserID] == "" || longPressObj.data['hide_' + ownUserID]) ? false : true
+                    db.collection('chat').doc(longPressObj.id).set(update, {
+                      "merge" : true
+                    })
+                    onShowChanged(false);
+                  }
+                }>
+                  <Text style={styles.longPressText}>{Translate.t("nonRepresent")}</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={
+                  () => {
+                    let update = {};
+                    update['delete_' + ownUserID] = (longPressObj.data['delete_' + ownUserID] == "" || longPressObj.data['delete_' + ownUserID]) ? false : true
+                    db.collection('chat').doc(longPressObj.id).set(update, {
+                      "merge" : true
+                    })
+                    onShowChanged(false);
+                  }
+                }>
+                  <Text style={styles.longPressText}>{Translate.t("remove")}</Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
-                  onPress={() => props.navigation.navigate("CreateFolder")}
+                  onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    onShowChanged(false)
+                    props.navigation.navigate("GroupChatCreation")
+                  }}
                 >
-                  <Text style={styles.longPressText}>フォルダ作成</Text>
+                  <Text style={styles.longPressText}>
+                    {Translate.t("groupChatCreate")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    onShowChanged(false)
+                    props.navigation.navigate("CreateFolder")
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("createFolder")}
+                  </Text>
                 </TouchableWithoutFeedback>
               </View>
             </View>
@@ -325,13 +468,14 @@ export default function ChatList(props) {
             >
               チャット
             </Text>
+            {totalUnseenMessage ? (
             <View style={styles.notificationNumberContainer}>
               <Text style={styles.notificationNumberText}>
                 {totalUnseenMessage}
               </Text>
-            </View>
+            </View>) : (<View></View>)}
           </View>
-          <View>{chatHtml}</View>
+          {chatHtml}
         </View>
       </View>
     </TouchableWithoutFeedback>

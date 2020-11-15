@@ -42,7 +42,10 @@ function updateUser(user, field, value) {
         Object.keys(error.response.data).length > 0
       ) {
         alert.warning(
-          error.response.data[Object.keys(error.response.data)[0]][0]
+          error.response.data[Object.keys(error.response.data)[0]][0] +
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
         );
       }
     });
@@ -87,7 +90,10 @@ export default function ProfileInformation(props) {
             Object.keys(error.response.data).length > 0
           ) {
             alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0]
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
             );
           }
         });

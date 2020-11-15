@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -17,10 +17,10 @@ import {
   ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+import { useIsFocused } from '@react-navigation/native';
 import RNFetchBlob from "rn-fetch-blob";
 import { SafeAreaView } from "react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
-import storage from "@react-native-firebase/storage";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -44,6 +44,7 @@ import GalleryLogo from "../assets/icons/gallery.svg";
 import ContactLogo from "../assets/icons/contact.svg";
 import _ from "lodash";
 import CustomAlert from "../lib/alert";
+import storage from "@react-native-firebase/storage";
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 var uuid = require("react-native-uuid");
@@ -56,7 +57,7 @@ let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
 let hour = new Date().getHours();
-let minute = new Date().getMinutes();
+let minute = ("0" + new Date().getMinutes()).slice(-2);
 let seconds = new Date().getSeconds();
 let userId;
 let groupID;
@@ -70,14 +71,359 @@ let previousMessageDateToday;
 let previousMessageDateYesterday;
 let previousMessageDateElse;
 let smallestSeenCount = 0;
+let seenMessageCount = [];
+let updateFriend = false;
+let unsubscribe;
+function checkUpdateFriend(user1, user2){
+  if(!updateFriend && user1 && user2 && user1 != user2){
+    db
+    .collection("users")
+    .doc(user1)
+    .collection("friends")
+    .where("id", "==", user2)
+    .get()
+    .then((querySnapshot) => {
+      if (querySnapshot.size > 0) {
+      } else {
+        db.collection("users")
+          .doc(user1)
+          .collection("friends")
+          .add({
+            type: "user",
+            id: user2,
+          });
+      }
+    });
+    updateFriend = true;
+  }
+}
 export default function ChatScreen(props) {
-  const [shouldShow, setShouldShow] = useState(false);
-  const [loaded, onLoadedChanged] = useState(false);
+  const [shouldShow, setShouldShow] = React.useState(false);
+  const [loaded, onLoadedChanged] = React.useState(false);
+  const [chatHtml, onChatHtmlChanged] = React.useState([])
   const [messages, setMessages] = React.useState("");
-  const [chatHtml, onChatHtmlChanged] = React.useState(<View></View>);
+  const scrollViewReference = useRef();
+  const isFocused = useIsFocused();
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
+
   const handleBack = () => {
+    props.navigation.pop();
+  };
+
+  async function firstLoad(){
+    const updateHtml = [];
+    onChatHtmlChanged(updateHtml);
+    let url = await AsyncStorage.getItem("user")
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    userId = urls[urls.length - 1];
+    userTotalReadMessageField = "totalMessageRead_" + userId;
+
+    let documentSnapshot = await chatsRef.doc(groupID).get();
+    if(documentSnapshot && documentSnapshot.data()){
+      let users = documentSnapshot.data().users;
+      if(users.length == 2){
+        checkUpdateFriend(userId, users[0]);
+        checkUpdateFriend(userId, users[1]);
+      }
+      totalMessageCount = documentSnapshot.data().totalMessage;
+      for (var i = 0; i < users.length; i++) {
+        totalMessageSeenCount = "totalMessageRead_" + users[i];
+        seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
+      }
+      smallestSeenCount = seenMessageCount[0];
+      for (var i = 1; i < seenMessageCount.length; i++) {
+        if (smallestSeenCount > seenMessageCount[i]) {
+          smallestSeenCount = seenMessageCount[i];
+        }
+      }
+
+      previousMessageDateToday = null;
+      previousMessageDateYesterday = null;
+      previousMessageDateElse = null;
+      tmpMessageCount = 0;
+
+      unsubscribe = chatsRef
+      .doc(groupID)
+      .collection("messages")
+      .orderBy("timeStamp", "asc")
+      .onSnapshot((querySnapShot) => {
+        querySnapShot.forEach((snapShot) => {
+          if(snapShot && snapShot.exists){
+            const updateHtml = [];
+            onChatHtmlChanged(updateHtml);
+            let date = snapShot.data().createdAt.split(":");
+            let tmpMonth = date[1];
+            let tmpDay = date[2]; //message created at
+            let tmpHours = date[3];
+            let tmpMinutes = date[4];
+            let tmpMessageID = messageID.filter((item) => {
+              return item == snapShot.id;
+            });
+
+            if (tmpMessageID.length >= 1) {
+              // tmpChatHtml = tmpChatHtml.filter((html) => {
+              //   return html.key != snapShot.id;
+              // })
+              // tmpChatHtml = _.without(tmpChatHtml, snapShot.id);
+            }
+            ++tmpMessageCount;
+            let found = tmpChatHtml.filter((html) => {
+              return html.key == snapShot.id;
+            }).length > 0;
+
+            if(!found){
+              if (tmpDay == day) {
+                tmpChatHtml.push(
+                  <View key={snapShot.id}>
+                    {previousMessageDateToday == null ? (
+                      <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
+                    ) : (
+                      <Text style={[styles.chat_date]}>{""}</Text>
+                    )}
+                    {/*///////////////////////////////////////*/}
+                    {tmpMessageCount <= smallestSeenCount ? (
+                      //seen area
+                      snapShot.data().userID == userId ? (
+                        snapShot.data().image == null ? (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            seen="true"
+                            text={snapShot.data().message}
+                          />
+                        ) : (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            seen="true"
+                            imageURL={snapShot.data().image}
+                          />
+                        )
+                      ) : snapShot.data().image == null ? (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          seen="true"
+                          text={snapShot.data().message}
+                        />
+                      ) : (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          seen="true"
+                          imageURL={snapShot.data().image}
+                        />
+                      )
+                    ) : //unseen area
+                    snapShot.data().userID == userId ? (
+                      snapShot.data().image == null ? (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          isSelf="true"
+                          text={snapShot.data().message}
+                        />
+                      ) : (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          isSelf="true"
+                          imageURL={snapShot.data().image}
+                        />
+                      )
+                    ) : snapShot.data().image == null ? (
+                      <ChatText
+                        date={tmpHours + ":" + tmpMinutes}
+                        text={snapShot.data().message}
+                      />
+                    ) : (
+                      <ChatText
+                        date={tmpHours + ":" + tmpMinutes}
+                        imageURL={snapShot.data().image}
+                      />
+                    )}
+                    {/*///////////////////////////////////////*/}
+                  </View>
+                );
+                previousMessageDateToday = tmpDay;
+              } else if (tmpDay == day - 1) {
+                tmpChatHtml.push(
+                  <View key={snapShot.id}>
+                    {previousMessageDateYesterday == null ? (
+                      <Text style={[styles.chat_date]}>{Translate.t("yesterday")}</Text>
+                    ) : (
+                      <Text style={[styles.chat_date]}>{""}</Text>
+                    )}
+                    {/*///////////////////////////////////////*/}
+                    {tmpMessageCount <= smallestSeenCount ? (
+                      //seen area
+                      snapShot.data().userID == userId ? (
+                        snapShot.data().image == null ? (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            seen="true"
+                            text={snapShot.data().message}
+                          />
+                        ) : (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            seen="true"
+                            imageURL={snapShot.data().image}
+                          />
+                        )
+                      ) : snapShot.data().image == null ? (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          seen="true"
+                          text={snapShot.data().message}
+                        />
+                      ) : (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          seen="true"
+                          imageURL={snapShot.data().image}
+                        />
+                      )
+                    ) : //unseen area
+                    snapShot.data().userID == userId ? (
+                      snapShot.data().image == null ? (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          isSelf="true"
+                          text={snapShot.data().message}
+                        />
+                      ) : (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          isSelf="true"
+                          imageURL={snapShot.data().image}
+                        />
+                      )
+                    ) : snapShot.data().image == null ? (
+                      <ChatText
+                        date={tmpHours + ":" + tmpMinutes}
+                        text={snapShot.data().message}
+                      />
+                    ) : (
+                      <ChatText
+                        date={tmpHours + ":" + tmpMinutes}
+                        imageURL={snapShot.data().image}
+                      />
+                    )}
+                    {/*///////////////////////////////////////*/}
+                  </View>
+                );
+                previousMessageDateYesterday = tmpDay;
+              } else if (tmpDay != day && tmpDay != day - 1) {
+                tmpChatHtml.push(
+                  <View key={snapShot.id}>
+                    {previousMessageDateElse ==
+                    snapShot
+                      .data()
+                      .timeStamp.toDate()
+                      .toDateString() ? (
+                      <Text style={[styles.chat_date]}>{""}</Text>
+                    ) : (
+                      <Text style={[styles.chat_date]}>
+                        {tmpMonth + "/" + tmpDay}
+                      </Text>
+                    )}
+                    {/*///////////////////////////////////////*/}
+                    {tmpMessageCount <= smallestSeenCount ? (
+                      //seen area
+                      snapShot.data().userID == userId ? (
+                        snapShot.data().image == null ? (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            seen="true"
+                            text={snapShot.data().message}
+                          />
+                        ) : (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            seen="true"
+                            imageURL={snapShot.data().image}
+                          />
+                        )
+                      ) : snapShot.data().image == null ? (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          seen="true"
+                          text={snapShot.data().message}
+                        />
+                      ) : (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          seen="true"
+                          imageURL={snapShot.data().image}
+                        />
+                      )
+                    ) : //unseen area
+                    snapShot.data().userID == userId ? (
+                      snapShot.data().image == null ? (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          isSelf="true"
+                          text={snapShot.data().message}
+                        />
+                      ) : (
+                        <ChatText
+                          date={tmpHours + ":" + tmpMinutes}
+                          isSelf="true"
+                          imageURL={snapShot.data().image}
+                        />
+                      )
+                    ) : snapShot.data().image == null ? (
+                      <ChatText
+                        date={tmpHours + ":" + tmpMinutes}
+                        text={snapShot.data().message}
+                      />
+                    ) : (
+                      <ChatText
+                        date={tmpHours + ":" + tmpMinutes}
+                        imageURL={snapShot.data().image}
+                      />
+                    )}
+                    {/*///////////////////////////////////////*/}
+                  </View>
+                );
+
+                previousMessageDateElse = snapShot
+                  .data()
+                  .timeStamp.toDate()
+                  .toDateString();
+              }
+            }
+            messageID.push(snapShot.id);
+            onChatHtmlChanged(tmpChatHtml);
+          }
+        });
+      });
+    }
+  }
+
+  React.useEffect(() => {
+    firstLoad();
+    chatsRef
+    .doc(groupID)
+    .get()
+    .then(function(doc) {
+      if (doc.exists) {
+        if (doc.id == groupID) {
+          totalMessageCount = doc.data().totalMessage;
+        }
+      }
+    })
+    .then(function() {
+      chatsRef.doc(groupID).update({
+        [userTotalReadMessageField]: totalMessageCount,
+      });
+    });
+
     chatsRef
       .doc(groupID)
       .get()
@@ -93,219 +439,31 @@ export default function ChatScreen(props) {
           [userTotalReadMessageField]: totalMessageCount,
         });
       });
-    props.navigation.pop();
-  };
-  chatsRef
-    .doc(groupID)
-    .get()
-    .then(function(doc) {
-      if (doc.exists) {
-        if (doc.id == groupID) {
-          totalMessageCount = doc.data().totalMessage;
-        }
-      }
-    })
-    .then(function() {
-      chatsRef.doc(groupID).update({
-        [userTotalReadMessageField]: totalMessageCount,
-      });
-    });
-  AsyncStorage.getItem("user")
-    .then(function(url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
-    })
-    .then(function() {
-      userTotalReadMessageField = "totalMessageRead_" + userId;
-    });
-  React.useEffect(() => {
-    if (!loaded) {
-      chatsRef.onSnapshot((querySnapShot) => {
-        let seenMessageCount = [];
-        querySnapShot.docChanges().forEach((snapShot) => {
-          if (groupID == snapShot.doc.id) {
-            let users = snapShot.doc.data().users;
-            totalMessageCount = snapShot.doc.data().totalMessage;
-            for (var i = 0; i < users.length; i++) {
-              totalMessageSeenCount = "totalMessageRead_" + users[i];
-              seenMessageCount.push(snapShot.doc.data()[totalMessageSeenCount]);
-            }
-            smallestSeenCount = seenMessageCount[0];
-            for (var i = 1; i < seenMessageCount.length; i++) {
-              if (smallestSeenCount > seenMessageCount[i]) {
-                smallestSeenCount = seenMessageCount[i];
-              }
+
+    return function(){
+      if(unsubscribe){
+        chatsRef
+        .doc(groupID)
+        .get()
+        .then(function(doc) {
+          if (doc.exists) {
+            if (doc.id == groupID) {
+              totalMessageCount = doc.data().totalMessage;
             }
           }
-        });
-        tmpMessageCount = 0;
-        chatsRef
-          .doc(groupID)
-          .collection("messages")
-          .orderBy("timeStamp", "asc")
-          .onSnapshot((querySnapShot) => {
-            querySnapShot.docChanges().forEach((snapShot) => {
-              let date = snapShot.doc.data().createdAt.split(":");
-              let tmpMonth = date[1];
-              let tmpDay = date[2]; //message created at
-              let tmpHours = date[3];
-              let tmpMinutes = date[4];
-              let tmpMessageID = messageID.filter((item) => {
-                return item == snapShot.doc.id;
-              });
-              if (tmpMessageID.length >= 1) {
-                previousMessageDateToday = null;
-                previousMessageDateYesterday = null;
-                previousMessageDateElse = null;
-                for (var i = 0; i < tmpChatHtml.length; i++) {
-                  if (tmpChatHtml[i].key == snapShot.doc.id) {
-                    tmpChatHtml.splice(i, 1); //find poisition delete
-                  }
-                }
-                tmpChatHtml = _.without(tmpChatHtml, snapShot.doc.id);
-              }
-              ++tmpMessageCount;
-              if (tmpDay == day) {
-                tmpChatHtml.push(
-                  <View key={snapShot.doc.id}>
-                    {previousMessageDateToday == null ? (
-                      <Text style={[styles.chat_date]}>{"Today"}</Text>
-                    ) : (
-                      <Text style={[styles.chat_date]}>{""}</Text>
-                    )}
-                    {/*///////////////////////////////////////*/}
-                    {tmpMessageCount <= smallestSeenCount ? (
-                      //seen area
-                      snapShot.doc.data().userID == userId ? (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          isSelf="true"
-                          seen="true"
-                          text={snapShot.doc.data().message}
-                        />
-                      ) : (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          seen="true"
-                          text={snapShot.doc.data().message}
-                        />
-                      )
-                    ) : //unseen area
-                    snapShot.doc.data().userID == userId ? (
-                      <ChatText
-                        date={tmpHours + ":" + tmpMinutes}
-                        isSelf="true"
-                        text={snapShot.doc.data().message}
-                      />
-                    ) : (
-                      <ChatText
-                        date={tmpHours + ":" + tmpMinutes}
-                        text={snapShot.doc.data().message}
-                      />
-                    )}
-                    {/*///////////////////////////////////////*/}
-                  </View>
-                );
-                previousMessageDateToday = tmpDay;
-              } else if (tmpDay == day - 1) {
-                tmpChatHtml.push(
-                  <View key={snapShot.doc.id}>
-                    {previousMessageDateYesterday == null ? (
-                      <Text style={[styles.chat_date]}>{"Yesterday"}</Text>
-                    ) : (
-                      <Text style={[styles.chat_date]}>{""}</Text>
-                    )}
-                    {/*///////////////////////////////////////*/}
-                    {tmpMessageCount <= smallestSeenCount ? (
-                      //seen area
-                      snapShot.doc.data().userID == userId ? (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          isSelf="true"
-                          seen="true"
-                          text={snapShot.doc.data().message}
-                        />
-                      ) : (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          seen="true"
-                          text={snapShot.doc.data().message}
-                        />
-                      )
-                    ) : //unseen area
-                    snapShot.doc.data().userID == userId ? (
-                      <ChatText
-                        date={tmpHours + ":" + tmpMinutes}
-                        isSelf="true"
-                        text={snapShot.doc.data().message}
-                      />
-                    ) : (
-                      <ChatText
-                        date={tmpHours + ":" + tmpMinutes}
-                        text={snapShot.doc.data().message}
-                      />
-                    )}
-                    {/*///////////////////////////////////////*/}
-                  </View>
-                );
-                previousMessageDateYesterday = tmpDay;
-              } else if (tmpDay != day && tmpDay != day - 1) {
-                tmpChatHtml.push(
-                  <View key={snapShot.doc.id}>
-                    {previousMessageDateElse == null ? (
-                      <Text style={[styles.chat_date]}>
-                        {tmpMonth + "/" + tmpDay}
-                      </Text>
-                    ) : (
-                      <Text style={[styles.chat_date]}>{""}</Text>
-                    )}
-                    {/*///////////////////////////////////////*/}
-                    {tmpMessageCount <= smallestSeenCount ? (
-                      //seen area
-                      snapShot.doc.data().userID == userId ? (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          isSelf="true"
-                          seen="true"
-                          text={snapShot.doc.data().message}
-                        />
-                      ) : (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          seen="true"
-                          text={snapShot.doc.data().message}
-                        />
-                      )
-                    ) : //unseen area
-                    snapShot.doc.data().userID == userId ? (
-                      <ChatText
-                        date={tmpHours + ":" + tmpMinutes}
-                        isSelf="true"
-                        text={snapShot.doc.data().message}
-                      />
-                    ) : (
-                      <ChatText
-                        date={tmpHours + ":" + tmpMinutes}
-                        text={snapShot.doc.data().message}
-                      />
-                    )}
-                    {/*///////////////////////////////////////*/}
-                  </View>
-                );
-                previousMessageDateElse = tmpDay;
-              }
-
-              messageID.push(snapShot.doc.id);
-            });
-            onChatHtmlChanged(tmpChatHtml);
+        })
+        .then(function() {
+          chatsRef.doc(groupID).update({
+            [userTotalReadMessageField]: totalMessageCount,
           });
-      });
-      onLoadedChanged(false);
+        });
+        unsubscribe();
+        onChatHtmlChanged([])
+        tmpChatHtml = []
+      }
     }
   }, []);
+  
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
@@ -325,10 +483,14 @@ export default function ChatScreen(props) {
           style={{ flex: 1 }}
         >
           <ScrollView
+            ref={scrollViewReference}
+            onContentSizeChange={() =>
+              scrollViewReference.current.scrollToEnd({ animated: true })
+            }
             style={{
               width: "100%",
-              paddingTop: 15,
-              paddingBottom: heightPercentageToDP("3%"),
+              paddingTop: heightPercentageToDP("1%"),
+              paddingBottom: heightPercentageToDP("5%"),
             }}
           >
             {chatHtml}
@@ -388,6 +550,18 @@ export default function ChatScreen(props) {
               onPress={() => {
                 let tmpMessage = messages;
                 setMessages("");
+                let createdAt = year +
+                ":" +
+                month +
+                ":" +
+                day +
+                ":" +
+                hour +
+                ":" +
+                minute +
+                ":" +
+                seconds;
+
                 tmpMessage != ""
                   ? db
                       .collection("chat")
@@ -395,23 +569,18 @@ export default function ChatScreen(props) {
                       .collection("messages")
                       .add({
                         userID: userId,
-                        createdAt:
-                          year +
-                          ":" +
-                          month +
-                          ":" +
-                          day +
-                          ":" +
-                          hour +
-                          ":" +
-                          minute +
-                          ":" +
-                          seconds,
-
+                        createdAt: createdAt,
                         timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                         message: tmpMessage,
                       })
                       .then(function() {
+                        db.collection('chat').doc(groupID).set({
+                          "message" : tmpMessage,
+                          "lastMessageTime" : createdAt
+                        }, {
+                          "merge" : true
+                        })
+
                         chatsRef
                           .doc(groupID)
                           .get()
@@ -449,24 +618,120 @@ export default function ChatScreen(props) {
                   if (response.uri) {
                     const reference = storage().ref(uuid.v4() + ".png");
                     if (Platform.OS === "android") {
-                      RNFetchBlob.fs.stat(response.uri).then((stat) => {
+                      RNFetchBlob.fs.stat(response.path).then((stat) => {
                         reference
                           .putFile(stat.path)
                           .then((response) => {
-                            alert.warning(JSON.stringify(response));
+                            reference.getDownloadURL().then((url) => {
+                              let createdAt = year +
+                              ":" +
+                              month +
+                              ":" +
+                              day +
+                              ":" +
+                              hour +
+                              ":" +
+                              minute +
+                              ":" +
+                              seconds;
+
+                              chatsRef
+                                .doc(groupID)
+                                .collection("messages")
+                                .add({
+                                  userID: userId,
+                                  createdAt: createdAt,
+                                  message: "Photo",
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                  image: url,
+                                })
+                                .then(function() {
+                                  db.collection('chat').doc(groupID).set({
+                                    "message" : "Photo",
+                                    "lastMessageTime" : createdAt
+                                  }, {
+                                    "merge" : true
+                                  })
+
+                                  chatsRef
+                                    .doc(groupID)
+                                    .get()
+                                    .then(function(doc) {
+                                      if (doc.exists) {
+                                        if (doc.id == groupID) {
+                                          totalMessageCount = doc.data()
+                                            .totalMessage;
+                                        }
+                                      }
+                                    })
+                                    .then(function() {
+                                      chatsRef.doc(groupID).update({
+                                        totalMessage: totalMessageCount + 1,
+                                      });
+                                    });
+                                });
+                            });
                           })
                           .catch((error) => {
-                            alert.warning(JSON.stringify(error));
+                            console.log(error);
                           });
                       });
                     } else {
                       reference
-                        .putFile(response.uri.replace("file://", ""))
+                        .putFile(response.path.replace("file://", ""))
                         .then((response) => {
-                          alert.warning(response);
+                          reference.getDownloadURL().then((url) => {
+                            let createdAt = year +
+                            ":" +
+                            month +
+                            ":" +
+                            day +
+                            ":" +
+                            hour +
+                            ":" +
+                            minute +
+                            ":" +
+                            seconds;
+
+                            chatsRef
+                              .doc(groupID)
+                              .collection("messages")
+                              .add({
+                                userID: userId,
+                                createdAt: createdAt,
+                                message: "Photo",
+                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                image: url,
+                              })
+                              .then(function() {
+                                db.collection('chat').doc(groupID).set({
+                                  "message" : "Photo",
+                                  "lastMessageTime" : createdAt
+                                }, {
+                                  "merge" : true
+                                })
+                                chatsRef
+                                  .doc(groupID)
+                                  .get()
+                                  .then(function(doc) {
+                                    if (doc.exists) {
+                                      if (doc.id == groupID) {
+                                        totalMessageCount = doc.data()
+                                          .totalMessage;
+                                      }
+                                    }
+                                  })
+                                  .then(function() {
+                                    chatsRef.doc(groupID).update({
+                                      totalMessage: totalMessageCount + 1,
+                                    });
+                                  });
+                              });
+                          });
                         })
                         .catch((error) => {
-                          alert.warning(error);
+                          console.log(error);
+                          //alert.warning(error);
                         });
                     }
                   }
@@ -475,7 +740,7 @@ export default function ChatScreen(props) {
             >
               <View style={styles.widget_box}>
                 <CameraLogo style={styles.widget_icon} resizeMode="contain" />
-                <Text>{"Camera"}</Text>
+                <Text style={{ fontSize: RFValue(11) }}>{Translate.t("camera")}</Text>
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
@@ -491,20 +756,115 @@ export default function ChatScreen(props) {
                         reference
                           .putFile(stat.path)
                           .then((response) => {
-                            alert.warning(JSON.stringify(response));
+                            reference.getDownloadURL().then((url) => {
+                              let createdAt = year +
+                              ":" +
+                              month +
+                              ":" +
+                              day +
+                              ":" +
+                              hour +
+                              ":" +
+                              minute +
+                              ":" +
+                              seconds;
+
+                              chatsRef
+                                .doc(groupID)
+                                .collection("messages")
+                                .add({
+                                  userID: userId,
+                                  createdAt:createdAt,
+                                  message: "Photo",
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                  image: url,
+                                })
+                                .then(function() {
+                                  db.collection('chat').doc(groupID).set({
+                                    "message" : "Photo",
+                                    "lastMessageTime" : createdAt
+                                  }, {
+                                    "merge" : true
+                                  })
+                                  chatsRef
+                                    .doc(groupID)
+                                    .get()
+                                    .then(function(doc) {
+                                      if (doc.exists) {
+                                        if (doc.id == groupID) {
+                                          totalMessageCount = doc.data()
+                                            .totalMessage;
+                                        }
+                                      }
+                                    })
+                                    .then(function() {
+                                      chatsRef.doc(groupID).update({
+                                        totalMessage: totalMessageCount + 1,
+                                      });
+                                    });
+                                });
+                            });
                           })
                           .catch((error) => {
-                            alert.warning(JSON.stringify(error));
+                            console.log(error);
                           });
                       });
                     } else {
                       reference
                         .putFile(response.uri.replace("file://", ""))
                         .then((response) => {
-                          alert.warning(response);
+                          reference.getDownloadURL().then((url) => {
+                            let createdAt = year +
+                            ":" +
+                            month +
+                            ":" +
+                            day +
+                            ":" +
+                            hour +
+                            ":" +
+                            minute +
+                            ":" +
+                            seconds;
+
+                            chatsRef
+                              .doc(groupID)
+                              .collection("messages")
+                              .add({
+                                userID: userId,
+                                createdAt: createdAt,
+                                message: "Photo",
+                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                image: url,
+                              })
+                              .then(function() {
+                                db.collection('chat').doc(groupID).set({
+                                  "message" : "Photo",
+                                  "lastMessageTime" : createdAt
+                                }, {
+                                  "merge" : true
+                                })
+
+                                chatsRef
+                                  .doc(groupID)
+                                  .get()
+                                  .then(function(doc) {
+                                    if (doc.exists) {
+                                      if (doc.id == groupID) {
+                                        totalMessageCount = doc.data()
+                                          .totalMessage;
+                                      }
+                                    }
+                                  })
+                                  .then(function() {
+                                    chatsRef.doc(groupID).update({
+                                      totalMessage: totalMessageCount + 1,
+                                    });
+                                  });
+                              });
+                          });
                         })
                         .catch((error) => {
-                          alert.warning(error);
+                          console.log(error);
                         });
                     }
                   }
@@ -513,13 +873,17 @@ export default function ChatScreen(props) {
             >
               <View style={styles.widget_box}>
                 <GalleryLogo style={styles.widget_icon} resizeMode="contain" />
-                <Text>{"Gallery"}</Text>
+                <Text style={{ fontSize: RFValue(11) }}>{Translate.t("gallery")}</Text>
               </View>
             </TouchableWithoutFeedback>
-            {/* <View style={styles.widget_box}>
-              <ContactLogo style={styles.widget_icon} resizeMode="contain" />
-              <Text>{"Contact"}</Text>
-            </View> */}
+            <TouchableWithoutFeedback
+              onPress={() => props.navigation.navigate("ContactShare")}
+            >
+              <View style={styles.widget_box}>
+                <ContactLogo style={styles.widget_icon} resizeMode="contain" />
+                <Text style={{ fontSize: RFValue(11) }}>{Translate.t("contact")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
           </Animated.View>
         </View>
       </SafeAreaView>
@@ -554,7 +918,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(10),
   },
   input_bar: {
-    height: heightPercentageToDP("8%"),
+    height: heightPercentageToDP("7%"),
     backgroundColor: "#F0EEE9",
     flexDirection: "row",
     alignItems: "center",
@@ -608,6 +972,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   widget_box: {
+    alignItems: "center",
     height: heightPercentageToDP("8%"),
     width: heightPercentageToDP("10%"),
     padding: 10,

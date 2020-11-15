@@ -55,8 +55,18 @@ export default function BankAccountRegistration(props) {
             onUserChanged(response.data);
           })
           .catch(function(error) {
-            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
             }
           });
       }
@@ -78,8 +88,18 @@ export default function BankAccountRegistration(props) {
             onAccountHolderChanged(response.data.financialAccount.account_name);
           })
           .catch(function(error) {
-            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
             }
           });
       }
@@ -144,46 +164,21 @@ export default function BankAccountRegistration(props) {
       <Text style={styles.warningText}>
         {Translate.t("bankRegistrationWarning")}
       </Text>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          if (
-            financialName &&
-            branchName &&
-            accountType &&
-            accountNumber &&
-            accountHolder
-          ) {
-            AsyncStorage.getItem("user").then(function(url) {
-              url = url.replace("http://testserver", "http://127.0.0.1:8000");
-              let urls = url.split("/");
-              urls = urls.filter((url) => {
-                return url;
-              });
-              let userId = urls[urls.length - 1];
-              request
-                .post("financial_account/", {
-                  user: url.replace("testserver", "127.0.0.1:8000"),
-                  financial_name: financialName,
-                  account_type: accountType,
-                  branch_code: "123",
-                  branch_name: branchName,
-                  account_number: accountNumber,
-                  account_name: accountHolder,
-                  financial_code: "123",
-                })
-                .then(function(response) {
-                  onAccountHolderChanged("");
-                  onAccountNumberChanged("");
-                  onBranchNameChanged("");
-                  onFinancialNameChanged("");
-                  onAccountTypeChanged("");
-                  props.navigation.pop();
-                })
-                .catch(function(error) {
-                  if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                    alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-                  }
-                  onLoaded(true);
+      <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (
+              financialName &&
+              branchName &&
+              accountType &&
+              accountNumber &&
+              accountHolder
+            ) {
+              AsyncStorage.getItem("user").then(function(url) {
+                url = url.replace("http://testserver", "http://127.0.0.1:8000");
+                let urls = url.split("/");
+                urls = urls.filter((url) => {
+                  return url;
                 });
                 request
                   .post("financial_account/", {
@@ -221,7 +216,8 @@ export default function BankAccountRegistration(props) {
           <View style={styles.saveButtonContainer}>
             <Text style={styles.saveButtonText}>{Translate.t("save")}</Text>
           </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </View>
     </ScrollView>
   );
 }

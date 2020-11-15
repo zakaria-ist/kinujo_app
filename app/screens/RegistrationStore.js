@@ -13,6 +13,7 @@ import {
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
+import AsyncStorage from "@react-native-community/async-storage";
 import { Colors } from "../assets/Colors";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
@@ -139,12 +140,16 @@ export default function RegistrationStore(props) {
                         // onNicknameChanged("");
                         // onPasswordChanged("");
                         // onPhoneChanged("");
-
-                        props.navigation.navigate("SMSAuthentication", {
-                          nickname: nickname,
-                          username: phone,
-                          password: password,
-                          authority: "store",
+                        AsyncStorage.getItem("referUser").then((item) => {
+                          props.navigation.navigate("SMSAuthentication", {
+                            nickname: nickname,
+                            username: phone,
+                            password: password,
+                            authority: "store",
+                            introducer: item
+                          });
+                        }).catch(function(error){
+                          alert.warning(JSON.stringify(error));
                         });
                       } else {
                         if (

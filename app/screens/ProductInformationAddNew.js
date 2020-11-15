@@ -59,26 +59,26 @@ export default function ProductInformationAdd(props) {
       <View style={{ height: height - heightPercentageToDP("20%")}}>
         <ScrollView>
           <View style={styles.formContainer}>
-            <Text style={styles.text}>{"正式商品名"}</Text>
+            <Text style={styles.text}>{Translate.t("productName")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"ブランド名orメーカー名"}</Text>
+            <Text style={styles.text}>{Translate.t("brandName")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"PR文"}</Text>
+            <Text style={styles.text}>{Translate.t("prStatement")}</Text>
             <TextInput
               multiline={true}
               numberOfLines={4}
               style={styles.textInput}
             ></TextInput>
 
-            <Text style={styles.text}>{"商品ID（URL）"}</Text>
+            <Text style={styles.text}>{Translate.t("productIDURL")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"商品カテゴリ"}</Text>
+            <Text style={styles.text}>{Translate.t("productCategory")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"バリエーション"}</Text>
+            <Text style={styles.text}>{Translate.t("variation")}</Text>
             <View style={styles.radioGroupContainer}>
               <RadioButton.Group
                 style={{ alignItems: "flex-start" }}
@@ -91,7 +91,7 @@ export default function ProductInformationAdd(props) {
                     uncheckedColor="#FFF"
                     color="#BD9848"
                   />
-                  <Text style={styles.radioButtonText}>{"1 項目"}</Text>
+                  <Text style={styles.radioButtonText}>{"1 "}{Translate.t("item")}</Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
                   <RadioButton
@@ -99,7 +99,7 @@ export default function ProductInformationAdd(props) {
                     uncheckedColor="#FFF"
                     color="#BD9848"
                   />
-                  <Text style={styles.radioButtonText}>{"2 項目"}</Text>
+                  <Text style={styles.radioButtonText}>{"2 "}{Translate.t("item")}</Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
                   <RadioButton
@@ -107,7 +107,7 @@ export default function ProductInformationAdd(props) {
                     uncheckedColor="#FFF"
                     color="#BD9848"
                   />
-                  <Text style={styles.radioButtonText}>{"なし"}</Text>
+                  <Text style={styles.radioButtonText}>{Translate.t("none")}</Text>
                 </View>
               </RadioButton.Group>
             </View>

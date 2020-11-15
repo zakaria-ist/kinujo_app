@@ -53,56 +53,65 @@ function findParams(data, param) {
   }
   return "";
 }
-async function buildLink() {
-  const link = await dynamicLinks().buildLink({
-    link: 'https://kinujo.page.link?id=1234',
-    // domainUriPrefix is created in your Firebase console
-    domainUriPrefix: 'https://kinujo.page.link',
-    // optional set up which updates Firebase analytics campaign
-    // "banner". This also needs setting up before hand
-    analytics: {
-      campaign: 'banner',
-    },
-  });
 
-  return link;
+async function performUrl(props, link){
+  let userId = findParams(link, "userId");
+  let store = findParams(link, "is_store");
+  await AsyncStorage.setItem("referUser", userId);
+  if(store){
+    props.navigation.navigate("RegistrationStore");
+  } else {
+    props.navigation.navigate("RegistrationGeneral");
+  }
 }
+
+async function init(props, foreground){
+  let url = await AsyncStorage.getItem("user");
+  if (url) {
+    request
+      .get(url)
+      .then(function(response) {
+        if (response.data.is_seller) {
+          props.navigation.navigate("HomeStore");
+        } else {
+          props.navigation.navigate("HomeGeneral");
+        }
+      })
+      .catch(function(error) {
+        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        }
+      });
+  } else {
+    let link = await dynamicLinks().getInitialLink()
+    if(link) {
+      await performUrl(props, link.url);
+    } else {
+      if(foreground){
+        foreground();
+      }
+    }
+  }
+}
+
 export default function LoginScreen(props) {
   const [password, onPasswordChanged] = React.useState("");
   const [phone, onPhoneChanged] = React.useState("");
 
-  // function App() {
-  //   const handleDynamicLink = link => {
-  //     findParams(link, "store")
-  //   };
+  React.useEffect(() => {
+    let unsubscribe
+    init(props, () => {
+      unsubscribe = dynamicLinks().onLink(link => {
+        performUrl(props, link.url);
+      });
+    })
+    return () => {
+      if(unsubscribe){
+        unsubscribe()
+      }
+    };
+  }, [])
 
-  //   useEffect(() => {
-  //     const unsubscribe = dynamicLinks().onLink(handleDynamicLink);
-  //     // When the is component unmounted, remove the listener
-  //     return () => unsubscribe();
-  //   }, []);
-
-  //   return null;
-  // }
-
-  AsyncStorage.getItem("user").then(function(url) {
-    if (url) {
-      request
-        .get(url)
-        .then(function(response) {
-          if (response.data.is_seller) {
-            props.navigation.navigate("HomeStore");
-          } else {
-            props.navigation.navigate("HomeGeneral");
-          }
-        })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-          }
-        });
-    }
-  });
   return (
     <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
       <ImageBackground

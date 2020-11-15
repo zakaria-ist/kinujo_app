@@ -46,26 +46,46 @@ export default function SMSAuthentication(props) {
   const phone = props.route.params.username
   React.useEffect(()=> {
     signInWithPhoneNumber("+" + phone);
-    // auth().onAuthStateChanged( (user) => {
-    //     if (user) {
-    //       if (
-    //         props.route.params.authority == "general"
-    //       ) {
-    //         props.navigation.navigate("RegisterCompletion", {
-    //           "authority" : props.route.params.authority
-    //         });
-    //       } else if (
-    //         props.route.params.authority == "store"
-    //       ) {
-    //         props.navigation.navigate("StoreAccountSelection", {
-    //           "authority" : props.route.params.authority
-    //         });
-    //       }
-    //     } 
-    //     else 
-    //     {
-    //     }
-    // });
+    auth().onAuthStateChanged( (user) => {
+        if (user) {
+          request
+          .post("user/register", props.route.params)
+          .then(function (response) {
+            response = response.data;
+            if (response.success) {
+              AsyncStorage.setItem("user", response.data.user.url).then(
+                function(response) {
+                  if (
+                    props.route.params.authority == "general"
+                  ) {
+                    props.navigation.navigate("RegisterCompletion", {
+                      "authority" : props.route.params.authority
+                    });
+                  } else if (
+                    props.route.params.authority == "store"
+                  ) {
+                    props.navigation.navigate("StoreAccountSelection", {
+                      "authority" : props.route.params.authority
+                    });
+                  }
+                }
+              );
+            } else {
+              if(response.errors && Object.keys(response.errors).length > 0){
+                alert.warning(response.errors[Object.keys(response.errors)[0]][0] + "(" + Object.keys(response.errors)[0] + ")")
+              }
+            }
+          })
+          .catch((error) => {
+            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+            }
+          });
+        } 
+        else 
+        {
+        }
+    });
   }, [])
   return (
     <LinearGradient

@@ -34,7 +34,7 @@ export default function ProductOneVariations({ props }) {
       {/*項目名*/}
       <View style={{ width: "100%" }}>
         <View style={styles.icon_title_wrapper}>
-          <Text style={styles.text}>{"項目名"}</Text>
+          <Text style={styles.text}>{Translate.t("itemName")}</Text>
           <TouchableOpacity
             onPress={() => hideItem(!item)}>
             {item ? <ArrowDownIcon
@@ -51,25 +51,25 @@ export default function ProductOneVariations({ props }) {
 
           <View style={styles.subframe}>
             <Text style={{ fontSize: RFValue(14) }}>{"1"}</Text>
-            <Text style={styles.text}>{"選択肢"}</Text>
+            <Text style={styles.text}>{Translate.t("choices")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"JANコード"}</Text>
+            <Text style={styles.text}>{Translate.t("janCode")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"在庫"}</Text>
+            <Text style={styles.text}>{Translate.t("inStock")}</Text>
             <TextInput style={styles.textInput}></TextInput>
           </View>
 
           <View style={styles.subframe}>
             <Text style={{ fontSize: RFValue(14) }}>{"2"}</Text>
-            <Text style={styles.text}>{"選択肢"}</Text>
+            <Text style={styles.text}>{Translate.t("choices")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"JANコード"}</Text>
+            <Text style={styles.text}>{Translate.t("janCode")}</Text>
             <TextInput style={styles.textInput}></TextInput>
 
-            <Text style={styles.text}>{"在庫"}</Text>
+            <Text style={styles.text}>{Translate.t("inStock")}</Text>
             <TextInput style={styles.textInput}></TextInput>
           </View>
 
@@ -91,7 +91,7 @@ export default function ProductOneVariations({ props }) {
                   color: "#FFF",
                 }}
               >
-                +{"追加"}
+                +{Translate.t("add")}
               </Text>
             </View>
           </TouchableOpacity>
@@ -102,7 +102,7 @@ export default function ProductOneVariations({ props }) {
       <View style={{ width: "100%" }}>
         {/*在庫*/}
         <View style={styles.icon_title_wrapper}>
-          <Text style={styles.text}>{"在庫編集"}</Text>
+          <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
           <TouchableOpacity
             onPress={() => hideInvt(!invt)}>
             {invt ? <ArrowDownIcon
@@ -116,18 +116,16 @@ export default function ProductOneVariations({ props }) {
         </View>
         <View style={invt ? styles.none : null}>
           <Text style={{ fontSize: RFValue(14) }}>
-            {"在庫数は編集中にも変動します。"}
+            {Translate.t("stockEditWarning")}
           </Text>
           <Text style={{ fontSize: RFValue(14), marginBottom: 20 }}>
-            {
-              "変更する場合は増減を「+1」「-1」などの絶対値で入力してください(在庫数全体を変更する場合は、数値で「100」などと入力してください)在庫数欄が空欄の場合は、在庫数は変更されません。"
-            }
+            {Translate.t("stockEditDescription")}
           </Text>
         </View>
       </View>
 
       <View style={styles.variantTitle}>
-        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>{"サイズ"}</Text>
+        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>{Translate.t("size")}</Text>
       </View>
 
       <View style={{ width: "100%" }}>
@@ -147,11 +145,11 @@ export default function ProductOneVariations({ props }) {
           <View style={styles.subline} />
           <View style={styles.variantContainer}>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"在庫"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
           </View>
           <View style={styles.variantContainer}>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"JANコード"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
           </View>
           <View
             style={[
@@ -159,7 +157,7 @@ export default function ProductOneVariations({ props }) {
               { paddingBottom: heightPercentageToDP("1.5%") },
             ]}
           >
-            <Text style={styles.variantText}>{"削除"}</Text>
+            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
             <DustBinIcon
               style={styles.widget_icon}
               resizeMode="contain"
@@ -186,11 +184,11 @@ export default function ProductOneVariations({ props }) {
           <View style={styles.subline} />
           <View style={styles.variantContainer}>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"在庫"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
           </View>
           <View style={styles.variantContainer}>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"JANコード"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
           </View>
           <View
             style={[
@@ -198,7 +196,7 @@ export default function ProductOneVariations({ props }) {
               { paddingBottom: heightPercentageToDP("1.5%") },
             ]}
           >
-            <Text style={styles.variantText}>{"削除"}</Text>
+            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
             <DustBinIcon
               style={styles.widget_icon}
               resizeMode="contain"
@@ -225,11 +223,11 @@ export default function ProductOneVariations({ props }) {
           <View style={styles.subline} />
           <View style={styles.variantContainer}>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"在庫"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
           </View>
           <View style={styles.variantContainer}>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"JANコード"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
           </View>
           <View
             style={[
@@ -237,7 +235,7 @@ export default function ProductOneVariations({ props }) {
               { paddingBottom: heightPercentageToDP("1.5%") },
             ]}
           >
-            <Text style={styles.variantText}>{"削除"}</Text>
+            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
             <DustBinIcon
               style={styles.widget_icon}
               resizeMode="contain"
@@ -265,7 +263,7 @@ export default function ProductOneVariations({ props }) {
               color: "#FFF",
             }}
           >
-            {"在庫登録"}
+            {Translate.t("stockRegister")}
           </Text>
         </View>
       </TouchableOpacity>

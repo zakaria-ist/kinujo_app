@@ -36,6 +36,7 @@
     "popup-ui": "^1.2.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-inverted-scrollview": "^1.0.7",
     "react-native": "~0.63.3",
     "react-native-camera": "^3.40.0",
     "react-native-customisable-switch": "^0.1.0",

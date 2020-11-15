@@ -20,10 +20,12 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import CustomAlert from "../lib/alert";
 import jsQR from "jsqr";
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import AsyncStorage from "@react-native-community/async-storage";
+import dynamicLinks from '@react-native-firebase/dynamic-links';
 
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { RNCamera } from "react-native-camera";
@@ -41,6 +43,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+const alert = new CustomAlert();
 const db = firebase.firestore();
 
 const ratioBackArrow = width / 18 / 20;
@@ -63,11 +66,30 @@ function findParams(data, param) {
   }
   return "";
 }
+
+async function buildLink(userId, is_store) {
+  const link = await dynamicLinks().buildLink({
+    link: 'https://kinujo.page.link?userId=' + userId + "&is_store=" + is_store,
+    // domainUriPrefix is created in your Firebase console
+    domainUriPrefix: 'https://kinujo.page.link',
+    android: {
+      packageName: "com.example.kinujo"
+    },
+    ios:{
+      appStoreId: "123123123",
+      bundleId: "com.example.kinujo"
+    }
+  }, dynamicLinks.ShortLinkType.UNGUESSABLE);
+  return link + "&kinujoId=" + userId;
+}
+
 export default function QRCode(props) {
   const [inviteShow, setInviteShow] = useState(false);
   const [popupQR, setPopupQR] = useState(false);
   const [userId, onUserIDChanged] = useState(false);
   const [store, onStoreChanged] = useState(0);
+  const [storeLink, onStoreLinkChanged] = useState("");
+  const [userLink, onUserLinkChanged] = useState("");
   const onSuccess = (e) => {
     const code = findParams(e.data, "kinujoId");
     if (code) {
@@ -78,7 +100,7 @@ export default function QRCode(props) {
         .where("id", "==", code)
         .get()
         .then((querySnapshot) => {
-          if (querySnapshot && querySnapshot.data()) {
+          if (querySnapshot.size > 0) {
           } else {
             db.collection("users")
               .doc(userId)
@@ -102,8 +124,19 @@ export default function QRCode(props) {
         return url;
       });
       let userId = urls[urls.length - 1];
+
+      buildLink(userId, "1").then(function(link){
+        console.log(link);
+        onStoreLinkChanged(link);
+      })
+      buildLink(userId, "0").then(function(link){
+        console.log(link);
+        onUserLinkChanged(link);
+      })
       onUserIDChanged(userId);
     });
+
+    return () => {};
   }, []);
 
   return (
@@ -341,12 +374,12 @@ export default function QRCode(props) {
             }}
           >
             <View style={[styles.qr_image]}>
-              <QRCodeIcon
+              {/* <QRCodeIcon
                 size={widthPercentageToDP(60)}
                 value={
-                  "shortlink://kinujo?kinujoId=" + userId + "&is_store=" + store
+                  store ? (storeLink ? storeLink : "") : (userLink ? userLink : "")
                 }
-              />
+              /> */}
               {/* <Image
                 source={{
                   uri:

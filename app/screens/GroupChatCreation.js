@@ -16,7 +16,7 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
-import CustomHeader from "../assets/CustomComponents/CustomHeader";
+import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -31,7 +31,7 @@ export default function CreateFolder(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="フォルダ作成"
+        text={Translate.t("groupChatCreate")}
         onPress={() => props.navigation.navigate("Cart")}
       />
       <TouchableWithoutFeedback
@@ -46,7 +46,7 @@ export default function CreateFolder(props) {
             marginRight: widthPercentageToDP("8%"),
           }}
         >
-          作成
+          {Translate.t(create)}
         </Text>
       </TouchableWithoutFeedback>
       <View
@@ -64,7 +64,7 @@ export default function CreateFolder(props) {
               backgroundColor: Colors.DCDCDC,
             }}
           />
-          <Text style={styles.folderText}>グループ名</Text>
+          <Text style={styles.folderText}> {Translate.t("groupName")}</Text>
         </View>
         <View>
           <View
@@ -73,7 +73,9 @@ export default function CreateFolder(props) {
               marginTop: heightPercentageToDP("3%"),
             }}
           >
-            <Text style={{ fontSize: RFValue(12) }}>メンバー</Text>
+            <Text style={{ fontSize: RFValue(12) }}>
+              {Translate.t("member")}
+            </Text>
             <Text style={{ fontSize: RFValue(12) }}>（ 2 ）</Text>
           </View>
           <TouchableWithoutFeedback
@@ -89,7 +91,7 @@ export default function CreateFolder(props) {
                 }}
                 source={require("../assets/Images/addMemberIcon.png")}
               />
-              <Text style={styles.folderText}>メンバー追加</Text>
+              <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <View style={styles.memberTabsContainer}>

@@ -8,9 +8,10 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
-  KeyboardAvoidingView,
+  KeyboardAvoidingView
 } from "react-native";
 import Request from "../lib/request";
+import AsyncStorage from "@react-native-community/async-storage";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
@@ -132,12 +133,14 @@ export default function RegistrationGeneral(props) {
                         // onNicknameChanged("")
                         // onPasswordChanged("")
                         // onPhoneChanged("")
-
-                        props.navigation.navigate("SMSAuthentication", {
-                          nickname: nickname,
-                          username: phone,
-                          password: password,
-                          authority: "general",
+                        AsyncStorage.getItem("referUser", function(item){
+                          props.navigation.navigate("SMSAuthentication", {
+                            nickname: nickname,
+                            username: phone,
+                            password: password,
+                            authority: "general",
+                            introducer: item
+                          });
                         });
                       } else {
                         if (

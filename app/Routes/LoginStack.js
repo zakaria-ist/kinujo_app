@@ -45,6 +45,7 @@ import FriendSearch from "../Screens/FriendSearch";
 import CreateFolder from "../Screens/CreateFolder";
 import FolderMemberSelection from "../Screens/FolderMemberSelection";
 import GroupFolderCreateCompletion from "../Screens/GroupFolderCreateCompletion";
+import ContactShare from "../Screens/ContactShare";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
@@ -73,12 +74,7 @@ function BottomNavigationGeneral() {
         component={HomeGeneral}
         options={{
           tabBarLabel: "Home",
-          tabBarIcon: () => (
-            <HomeLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <HomeLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -86,12 +82,7 @@ function BottomNavigationGeneral() {
         component={Contact}
         options={{
           tabBarLabel: "Contact",
-          tabBarIcon: () => (
-            <PersonLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <PersonLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -99,12 +90,7 @@ function BottomNavigationGeneral() {
         component={ChatList}
         options={{
           tabBarLabel: "Chat",
-          tabBarIcon: () => (
-            <ChatLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <ChatLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -112,12 +98,7 @@ function BottomNavigationGeneral() {
         component={QRCode}
         options={{
           tabBarLabel: "QRCode",
-          tabBarIcon: () => (
-            <QRCodeLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -125,12 +106,7 @@ function BottomNavigationGeneral() {
         component={SettingGeneral}
         options={{
           tabBarLabel: "Setting",
-          tabBarIcon: () => (
-            <SettingLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <SettingLogo width={25} height={25} />,
         }}
       />
     </Tab.Navigator>
@@ -151,12 +127,7 @@ function BottomNavigationStore() {
         component={HomeGeneral}
         options={{
           tabBarLabel: "Home",
-          tabBarIcon: () => (
-            <HomeLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <HomeLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -164,12 +135,7 @@ function BottomNavigationStore() {
         component={Contact}
         options={{
           tabBarLabel: "Contact",
-          tabBarIcon: () => (
-            <PersonLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <PersonLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -177,12 +143,7 @@ function BottomNavigationStore() {
         component={ChatList}
         options={{
           tabBarLabel: "Chat",
-          tabBarIcon: () => (
-            <ChatLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <ChatLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -190,12 +151,7 @@ function BottomNavigationStore() {
         component={QRCode}
         options={{
           tabBarLabel: "QRCode",
-          tabBarIcon: () => (
-            <QRCodeLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -203,12 +159,7 @@ function BottomNavigationStore() {
         component={SettingStore}
         options={{
           tabBarLabel: "Setting",
-          tabBarIcon: () => (
-            <SettingLogo
-              width={25}
-              height={25}
-            />
-          ),
+          tabBarIcon: () => <SettingLogo width={25} height={25} />,
         }}
       />
     </Tab.Navigator>
@@ -298,7 +249,10 @@ export default function LoginStack() {
           component={ProductInformationAdd}
         />
         <Stack.Screen name="ChatList" component={BottomNavigationGeneral} />
-        <Stack.Screen name="ContactGeneral" component={BottomNavigationGeneral} />
+        <Stack.Screen
+          name="ContactGeneral"
+          component={BottomNavigationGeneral}
+        />
         <Stack.Screen name="ContactStore" component={BottomNavigationStore} />
         <Stack.Screen name="ContactSearch" component={ContactSearch} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
@@ -308,6 +262,7 @@ export default function LoginStack() {
         <Stack.Screen name="GroupChatMember" component={GroupChatMember} />
         <Stack.Screen name="AdressManagement" component={AdressManagement} />
         <Stack.Screen name="ReceiptView" component={ReceiptView} />
+        <Stack.Screen name="ContactShare" component={ContactShare} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

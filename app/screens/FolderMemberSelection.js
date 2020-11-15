@@ -66,7 +66,7 @@ export default function FolderMemberSelection(props) {
             marginRight: widthPercentageToDP("8%"),
           }}
         >
-          次へ
+          {Translate.t("next")}
         </Text>
       </TouchableWithoutFeedback>
       <View
@@ -140,7 +140,7 @@ export default function FolderMemberSelection(props) {
               }}
               source={require("../assets/Images/customerListIcon.png")}
             />
-            <Text style={styles.tabText}>グルチャ</Text>
+            <Text style={styles.tabText}> {Translate.t("groupChat")}</Text>
             {groupChatShow == true ? (
               <Image
                 style={{
@@ -276,7 +276,7 @@ export default function FolderMemberSelection(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.tabText}>友だち</Text>
+            <Text style={styles.tabText}> {Translate.t("friend")}</Text>
             {friendChatShow == true ? (
               <Image
                 style={{

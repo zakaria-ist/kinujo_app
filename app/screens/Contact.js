@@ -117,6 +117,7 @@ export default function Contact(props) {
     users.map((user) => {
       tmpUserHtml.push(
         <TouchableWithoutFeedback
+          onLongPress={() => onShowChanged(true)}
           key={user.id}
           onPress={() => {
             redirectToChat(
@@ -149,6 +150,7 @@ export default function Contact(props) {
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
+  const [show, onShowChanged] = React.useState(false);
   const folderTabOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
@@ -175,8 +177,18 @@ export default function Contact(props) {
           onUserChanged(response.data);
         })
         .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
 
@@ -206,8 +218,18 @@ export default function Contact(props) {
               onUserHtmlChanged(processUserHtml(props, response.data.users));
             })
             .catch(function(error) {
-              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
               }
             });
         });
@@ -216,35 +238,72 @@ export default function Contact(props) {
   }, []);
 
   return (
-    <SafeAreaView>
-      <CustomHeader
-        text="連絡先"
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onPress={() => props.navigation.navigate("Cart")}
-      />
-      <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
-        accountType={user.is_seller ? Translate.t("storeAccount") : ""}
-      />
-      <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
-        <View style={styles.searchInputContainer}>
-          <TouchableWithoutFeedback
-            onPress={() => props.navigation.navigate("ContactSearch")}
-          >
-            <TextInput
-              placeholder="検索"
-              placeholderTextColor={Colors.grey}
-              style={styles.searchContactInput}
-            ></TextInput>
-          </TouchableWithoutFeedback>
-          <Image
-            style={styles.searchIcon}
-            source={require("../assets/Images/searchIcon.png")}
-          />
-        </View>
-
-        <View>
-          {/* <TouchableWithoutFeedback
+    <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
+      <SafeAreaView>
+        <CustomHeader
+          text="連絡先"
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onPress={() => props.navigation.navigate("Cart")}
+        />
+        <CustomSecondaryHeader
+          name={user.real_name ? user.real_name : user.nickname}
+          accountType={user.is_seller ? Translate.t("storeAccount") : ""}
+        />
+        <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+          <View style={styles.searchInputContainer}>
+            <TouchableWithoutFeedback
+              onPress={() => props.navigation.navigate("ContactSearch")}
+            >
+              <TextInput
+                placeholder="検索"
+                placeholderTextColor={Colors.grey}
+                style={styles.searchContactInput}
+              ></TextInput>
+            </TouchableWithoutFeedback>
+            <Image
+              style={styles.searchIcon}
+              source={require("../assets/Images/searchIcon.png")}
+            />
+          </View>
+          <View style={show == true ? styles.popUp : styles.none}>
+            <View
+              style={{
+                marginTop: heightPercentageToDP("3%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(14) }}>髪長友子</Text>
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("2%"),
+                  justifyContent: "space-evenly",
+                  height: heightPercentageToDP("35%"),
+                }}
+              >
+                <Text style={styles.longPressText}>上部固定（or解除）</Text>
+                <Text style={styles.longPressText}>通知OFF</Text>
+                <Text style={styles.longPressText}>非表示</Text>
+                <Text style={styles.longPressText}>削除</Text>
+                <TouchableWithoutFeedback
+                  onPressIn={() => onShowChanged(false)}
+                  onPress={() => props.navigation.navigate("GroupChatCreation")}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("groupChatCreate")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPressIn={() => onShowChanged(false)}
+                  onPress={() => props.navigation.navigate("CreateFolder")}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("createFolder")}
+                  </Text>
+                </TouchableWithoutFeedback>
+              </View>
+            </View>
+          </View>
+          <View>
+            {/* <TouchableWithoutFeedback
             onPress={() => {
               folderTabsShow == true
                 ? Animated.parallel([
@@ -311,7 +370,7 @@ export default function Contact(props) {
               </View>
             </View>
           </TouchableWithoutFeedback> */}
-          {/* <Animated.View
+            {/* <Animated.View
             style={{
               justifyContent: "center",
               height: folderTabHeight,
@@ -390,14 +449,14 @@ export default function Contact(props) {
               </View>
             </View>
           </Animated.View> */}
-          <View
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.F0EEE9,
-              justifyContent: "center",
-            }}
-          >
-            {/* <View style={styles.contactTabContainer}>
+            <View
+              style={{
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.F0EEE9,
+                justifyContent: "center",
+              }}
+            >
+              {/* <View style={styles.contactTabContainer}>
               <Image
                 style={{
                   width: win.width / 10,
@@ -419,11 +478,11 @@ export default function Contact(props) {
                 <Text style={styles.tabRightText}>100</Text>
               </View>
             </View> */}
-            {userHtml}
+              {userHtml}
+            </View>
           </View>
-        </View>
 
-        {/* <Animated.View
+          {/* <Animated.View
           style={{ height: friendTabHeight, opacity: friendTabOpacity }}
         >
           <View
@@ -477,8 +536,9 @@ export default function Contact(props) {
             </Text>
           </View>
         </Animated.View> */}
-      </View>
-    </SafeAreaView>
+        </View>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -529,5 +589,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: win.width / 2,
     height: heightPercentageToDP("5%"),
+  },
+  none: {
+    display: "none",
+  },
+  popUp: {
+    position: "absolute",
+    zIndex: 1,
+    borderWidth: 1,
+    backgroundColor: "white",
+    alignSelf: "center",
+    marginTop: heightPercentageToDP("15%"),
+    borderColor: Colors.D7CCA6,
+    alignItems: "flex-start",
+    paddingLeft: widthPercentageToDP("5%"),
+    paddingRight: widthPercentageToDP("25%"),
   },
 });

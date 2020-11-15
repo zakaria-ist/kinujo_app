@@ -27,8 +27,8 @@ const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
-
-export default function ChatText({ isSelf, text, date, seen }) {
+const ratioSeenTick = width / 35 / 13;
+export default function ChatText({ isSelf, text, date, seen, imageURL }) {
   return (
     <SafeAreaView>
       {/*Right Side*/}
@@ -55,30 +55,97 @@ export default function ChatText({ isSelf, text, date, seen }) {
             // this.props.onMessagePress('text', parseInt(this.props.rowId), changeEmojiText(this.props.message.content, 'en').join(''), message)
           }}
         >
-          <View
-            style={[
-              styles.container,
-              isSelf ? styles.right_chatbox : styles.left_chatbox,
-            ]}
-          >
-            <Text>{text}</Text>
-          </View>
+          {text ? (
+            <View
+              style={[
+                styles.container,
+                isSelf ? styles.right_chatbox : styles.left_chatbox,
+              ]}
+            >
+              <Text>{text}</Text>
+            </View>
+          ) : (
+            <View
+              style={[
+                styles.nonae,
+                isSelf ? styles.right_chatbox : styles.left_chatbox,
+              ]}
+            >
+              <Text>{text}</Text>
+            </View>
+          )}
         </TouchableHighlight>
         <View style={[isSelf ? styles.right_status : styles.left_status]}>
-          <Text
-            style={[
-              isSelf ? styles.right_status_text : styles.left_status_text,
-            ]}
-          >
-            {seen ? "Read" : ""}
-          </Text>
-          <Text
-            style={[
-              isSelf ? styles.right_status_time : styles.left_status_time,
-            ]}
-          >
-            {date}
-          </Text>
+          {imageURL ? (
+            <Text
+              style={[
+                isSelf
+                  ? styles.right_status_text_image
+                  : styles.left_status_text_image,
+              ]}
+            >
+              {seen ? (
+                <Image
+                  source={require("../assets/Images/seenTick.png")}
+                  style={{
+                    width: width / 35,
+                    height: ratioSeenTick * 10,
+                  }}
+                />
+              ) : (
+                ""
+              )}
+            </Text>
+          ) : (
+            <Text
+              style={[
+                isSelf ? styles.right_status_text : styles.left_status_text,
+              ]}
+            >
+              {seen ? (
+                <Image
+                  source={require("../assets/Images/seenTick.png")}
+                  style={{
+                    width: width / 35,
+                    height: ratioSeenTick * 10,
+                  }}
+                />
+              ) : (
+                ""
+              )}
+            </Text>
+          )}
+
+          {imageURL ? (
+            <Image
+              source={{ uri: imageURL }}
+              style={{
+                width: widthPercentageToDP("30%"),
+                height: heightPercentageToDP("15%"),
+                resizeMode: "stretch",
+              }}
+            />
+          ) : null}
+
+          {imageURL ? (
+            <Text
+              style={[
+                isSelf
+                  ? styles.right_status_time_image
+                  : styles.left_status_time_image,
+              ]}
+            >
+              {date}
+            </Text>
+          ) : (
+            <Text
+              style={[
+                isSelf ? styles.right_status_time : styles.left_status_time,
+              ]}
+            >
+              {date}
+            </Text>
+          )}
         </View>
       </View>
     </SafeAreaView>
@@ -180,6 +247,28 @@ const styles = StyleSheet.create({
     right: 0,
     marginBottom: heightPercentageToDP("2%"),
   },
+  left_status_text_image: {
+    position: "absolute",
+    textAlign: "left",
+    width: 60,
+    paddingLeft: 10,
+    fontSize: RFValue(8),
+    bottom: 12,
+    left: 0,
+    marginBottom: heightPercentageToDP("2%"),
+    marginLeft: widthPercentageToDP("30%"),
+  },
+  right_status_text_image: {
+    position: "absolute",
+    textAlign: "right",
+    width: 60,
+    paddingRight: 10,
+    fontSize: RFValue(8),
+    bottom: 12,
+    right: 0,
+    marginBottom: heightPercentageToDP("2%"),
+    marginRight: widthPercentageToDP("30%"),
+  },
   left_status_time: {
     position: "absolute",
     textAlign: "left",
@@ -197,6 +286,26 @@ const styles = StyleSheet.create({
     fontSize: RFValue(8),
     bottom: 12,
     right: 0,
+  },
+  left_status_time_image: {
+    position: "absolute",
+    textAlign: "left",
+    width: 60,
+    paddingLeft: 10,
+    fontSize: RFValue(8),
+    bottom: 12,
+    left: 0,
+    marginLeft: widthPercentageToDP("30%"),
+  },
+  right_status_time_image: {
+    position: "absolute",
+    textAlign: "right",
+    width: 60,
+    paddingRight: 10,
+    fontSize: RFValue(8),
+    bottom: 12,
+    right: 0,
+    marginRight: widthPercentageToDP("30%"),
   },
   right: {
     flexDirection: "row-reverse",

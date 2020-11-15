@@ -100,9 +100,9 @@ export default function RegisterCompletion(props) {
         <TouchableOpacity
           onPress={() => {
             if(props.route.params.authority == "general"){
-              props.navigation.navigate("HomeGeneral");
+              updateProfile("HomeGeneral")
             } else {
-              props.navigation.navigate("HomeStore");
+              updateProfile("HomeStore")
             }
           }}
         >

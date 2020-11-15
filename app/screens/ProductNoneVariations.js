@@ -31,10 +31,10 @@ export default function ProductNoneVariations({ props }) {
     <SafeAreaView>
       {/*項目名*/}
       <View style={{ width: "100%" }}>
-        <Text style={styles.text}>{"JANコード"}</Text>
+        <Text style={styles.text}>{Translate.t("janCode")}</Text>
         <TextInput style={styles.textInput}></TextInput>
 
-        <Text style={styles.text}>{"在庫"}</Text>
+        <Text style={styles.text}>{Translate.t("inStock")}</Text>
         <TextInput style={styles.textInput}></TextInput>
 
         <View style={styles.line} />
@@ -43,7 +43,7 @@ export default function ProductNoneVariations({ props }) {
       <View style={{ width: "100%" }}>
         {/*在庫*/}
         <View style={styles.icon_title_wrapper}>
-          <Text style={styles.text}>{"在庫編集"}</Text>
+          <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
           <TouchableOpacity
             onPress={() => hideInvt(!invt)}>
             {invt ? <ArrowDownIcon
@@ -57,12 +57,10 @@ export default function ProductNoneVariations({ props }) {
         </View>
         <View style={invt ? styles.none : null}>
           <Text style={{ fontSize: RFValue(14) }}>
-            {"在庫数は編集中にも変動します。"}
+            {Translate.t("stockEditWarning")}
           </Text>
           <Text style={{ fontSize: RFValue(14), marginBottom: 20 }}>
-            {
-              "変更する場合は増減を「+1」「-1」などの絶対値で入力してください(在庫数全体を変更する場合は、数値で「100」などと入力してください)在庫数欄が空欄の場合は、在庫数は変更されません。"
-            }
+            {Translate.t("stockEditDescription")}
           </Text>
 
           <View style={styles.variantContainer}>
@@ -85,12 +83,12 @@ export default function ProductNoneVariations({ props }) {
                     color: "#FFF",
                   }}
                 >
-                  {"在庫登録"}
+                  {Translate.t("stockRegister")}
                 </Text>
               </View>
             </TouchableOpacity>
             <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{"在庫"} :</Text>
+            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
           </View>
         </View>
         <View style={styles.line} />
