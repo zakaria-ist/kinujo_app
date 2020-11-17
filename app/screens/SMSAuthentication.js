@@ -17,7 +17,7 @@ import { Colors } from "../assets/Colors";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
-import auth from '@react-native-firebase/auth';
+import auth from "@react-native-firebase/auth";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -37,58 +37,74 @@ export default function SMSAuthentication(props) {
   const ratioKinujo = win.width / 1.6 / 151;
   const [code, onCodeChanged] = React.useState("");
   const [confirm, setConfirm] = React.useState(null);
-  
+
   async function signInWithPhoneNumber(phoneNumber) {
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
 
-  const phone = props.route.params.username
-  React.useEffect(()=> {
-    auth().signOut().then(() => {
-      signInWithPhoneNumber("+" + phone);
-      auth().onAuthStateChanged( (user) => {
+  const phone = props.route.params.username;
+  React.useEffect(() => {
+    auth()
+      .signOut()
+      .then(() => {
+        signInWithPhoneNumber("+" + phone);
+        auth().onAuthStateChanged((user) => {
           if (user) {
             request
-            .post("user/register", props.route.params)
-            .then(function (response) {
-              response = response.data;
-              if (response.success) {
-                AsyncStorage.setItem("user", response.data.user.url).then(
-                  function(response) {
-                    if (
-                      props.route.params.authority == "general"
-                    ) {
-                      props.navigation.navigate("RegisterCompletion", {
-                        "authority" : props.route.params.authority
-                      });
-                    } else if (
-                      props.route.params.authority == "store"
-                    ) {
-                      props.navigation.navigate("StoreAccountSelection", {
-                        "authority" : props.route.params.authority
-                      });
+              .post("user/register", props.route.params)
+              .then(function(response) {
+                response = response.data;
+                if (response.success) {
+                  AsyncStorage.setItem("user", response.data.user.url).then(
+                    function(response) {
+                      if (props.route.params.authority == "general") {
+                        props.navigation.navigate("RegisterCompletion", {
+                          authority: props.route.params.authority,
+                        });
+                      } else if (props.route.params.authority == "store") {
+                        props.navigation.navigate("StoreAccountSelection", {
+                          authority: props.route.params.authority,
+                        });
+                      }
                     }
+                  );
+                } else {
+                  if (
+                    response.errors &&
+                    Object.keys(response.errors).length > 0
+                  ) {
+                    alert.warning(
+                      response.errors[Object.keys(response.errors)[0]][0] +
+                        "(" +
+                        Object.keys(response.errors)[0] +
+                        ")"
+                    );
                   }
-                );
-              } else {
-                if(response.errors && Object.keys(response.errors).length > 0){
-                  alert.warning(response.errors[Object.keys(response.errors)[0]][0] + "(" + Object.keys(response.errors)[0] + ")")
                 }
-              }
-            })
-            .catch((error) => {
-              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-              }
-            });
-          } 
-          else 
-          {
+              })
+              .catch((error) => {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[
+                      Object.keys(error.response.data)[0]
+                    ][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
+          } else {
           }
+        });
       });
-    });
-  }, [])
+  }, []);
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -127,47 +143,73 @@ export default function SMSAuthentication(props) {
         ></TextInput>
         <TouchableOpacity
           onPress={() => {
-            if(!props.route.params.type){
+            if (!props.route.params.type) {
               confirm.confirm(code).then(() => {
-                auth().signOut().then(() => {
-                  request
-                  .post("user/register", props.route.params)
-                  .then(function (response) {
-                    response = response.data;
-                    if (response.success) {
-                      AsyncStorage.setItem("user", response.data.user.url).then(
-                        function(response) {
+                auth()
+                  .signOut()
+                  .then(() => {
+                    request
+                      .post("user/register", props.route.params)
+                      .then(function(response) {
+                        response = response.data;
+                        if (response.success) {
+                          AsyncStorage.setItem(
+                            "user",
+                            response.data.user.url
+                          ).then(function(response) {
+                            if (props.route.params.authority == "general") {
+                              props.navigation.navigate("RegisterCompletion", {
+                                authority: props.route.params.authority,
+                              });
+                            } else if (
+                              props.route.params.authority == "store"
+                            ) {
+                              props.navigation.navigate(
+                                "StoreAccountSelection",
+                                {
+                                  authority: props.route.params.authority,
+                                }
+                              );
+                            }
+                          });
+                        } else {
                           if (
-                            props.route.params.authority == "general"
+                            response.errors &&
+                            Object.keys(response.errors).length > 0
                           ) {
-                            props.navigation.navigate("RegisterCompletion", {
-                              "authority" : props.route.params.authority
-                            });
-                          } else if (
-                            props.route.params.authority == "store"
-                          ) {
-                            props.navigation.navigate("StoreAccountSelection", {
-                              "authority" : props.route.params.authority
-                            });
+                            alert.warning(
+                              response.errors[
+                                Object.keys(response.errors)[0]
+                              ][0] +
+                                "(" +
+                                Object.keys(response.errors)[0] +
+                                ")"
+                            );
                           }
                         }
-                      );
-                    } else {
-                      if(response.errors && Object.keys(response.errors).length > 0){
-                        alert.warning(response.errors[Object.keys(response.errors)[0]][0] + "(" + Object.keys(response.errors)[0] + ")")
-                      }
-                    }
+                      })
+                      .catch((error) => {
+                        if (
+                          error &&
+                          error.response &&
+                          error.response.data &&
+                          Object.keys(error.response.data).length > 0
+                        ) {
+                          alert.warning(
+                            error.response.data[
+                              Object.keys(error.response.data)[0]
+                            ][0] +
+                              "(" +
+                              Object.keys(error.response.data)[0] +
+                              ")"
+                          );
+                        }
+                      });
                   })
-                  .catch((error) => {
-                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-                    }
+                  .catch(function(error) {
+                    // An error happened.
                   });
-                }).catch(function(error) {
-                  // An error happened.
-                });
-                
-              })
+              });
             }
           }}
         >
@@ -177,15 +219,15 @@ export default function SMSAuthentication(props) {
             </Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={
-          ()=>{
+        <TouchableOpacity
+          onPress={() => {
             props.navigation.pop();
-          }
-        }>
+          }}
+        >
           <View style={styles.smsCancelButton}>
-              <Text style={styles.smsAuthenticateButtonText}>
-                {Translate.t("cancel")}
-              </Text>
+            <Text style={styles.smsAuthenticateButtonText}>
+              {Translate.t("cancel")}
+            </Text>
           </View>
         </TouchableOpacity>
       </SafeAreaView>

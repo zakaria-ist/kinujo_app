@@ -1,5 +1,7 @@
-#Sun Nov 15 22:56:20 MYT 2020
+#Tue Nov 17 08:21:26 MYT 2020
+base.53=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeLibDexDebug/out/classes_48.dex
 renamed.9=classes10.dex
+base.52=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeLibDexDebug/out/classes_47.dex
 renamed.8=classes9.dex
 base.51=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes2.dex
 renamed.7=classes8.dex
@@ -11,6 +13,8 @@ renamed.3=classes4.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
+path.53=classes_48.dex
+path.52=classes_47.dex
 path.51=classes2.dex
 path.50=classes_9.dex
 base.49=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeLibDexDebug/out/classes_8.dex
@@ -40,7 +44,9 @@ base.0=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/int
 path.45=classes_46.dex
 path.44=classes_45.dex
 path.43=classes_44.dex
+renamed.53=classes54.dex
 path.42=classes_43.dex
+renamed.52=classes53.dex
 path.41=classes_42.dex
 renamed.51=classes52.dex
 path.40=classes_41.dex

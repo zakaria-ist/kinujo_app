@@ -48,21 +48,19 @@ let day = new Date().getDate();
 let hour = new Date().getHours();
 let minute = ("0" + new Date().getMinutes()).slice(-2);
 let seconds = new Date().getSeconds();
-let tmpCreatedAt = year +
-                ":" +
-                month +
-                ":" +
-                day +
-                ":" +
-                hour +
-                ":" +
-                minute +
-                ":" +
-                seconds;
+let tmpCreatedAt =
+  year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds;
 
-function getDate(string){
+function getDate(string) {
   let items = string.split(":");
-  return (new Date(items[0], items[1]-1, items[2], items[3], items[4], items[5]));
+  return new Date(
+    items[0],
+    items[1] - 1,
+    items[2],
+    items[3],
+    items[4],
+    items[5]
+  );
 }
 export default function ChatList(props) {
   const isFocused = useIsFocused();
@@ -92,7 +90,7 @@ export default function ChatList(props) {
       });
   }
 
-  async function firstLoad(){
+  async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
     let urls = url.split("/");
     urls = urls.filter((url) => {
@@ -105,11 +103,10 @@ export default function ChatList(props) {
       .where("users", "array-contains", String(ownUserID))
       .onSnapshot((querySnapShot) => {
         querySnapShot.forEach((snapShot) => {
-          if(snapShot && snapShot.exists){
+          if (snapShot && snapShot.exists) {
             totalUnseenMessage = 0;
             totalUnseenMessage =
-              snapShot.data()[unseenMessageCountField] +
-              totalUnseenMessage;
+              snapShot.data()[unseenMessageCountField] + totalUnseenMessage;
             unseenObj[snapShot.id] = totalUnseenMessage;
             let tmpGroupID = groupID.filter((item) => {
               return item == snapShot.id;
@@ -123,7 +120,9 @@ export default function ChatList(props) {
               tmpChatHtml = _.without(tmpChatHtml, snapShot.id);
             }
             getUnseenMessageCount(snapShot.id, ownUserID);
-            let date = snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime.split(":") : tmpCreatedAt.split(":");
+            let date = snapShot.data().lastMessageTime
+              ? snapShot.data().lastMessageTime.split(":")
+              : tmpCreatedAt.split(":");
             let tmpMonth = date[1];
             let tmpDay = date[2]; //message created at
             let tmpHours = date[3];
@@ -133,10 +132,14 @@ export default function ChatList(props) {
               tmpChatHtml.unshift(
                 <TouchableWithoutFeedback
                   key={snapShot.id}
-                  date={snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime : tmpCreatedAt}
-                  pinned={snapShot.data()['pinned_' + ownUserID] ? true : false}
-                  hide={snapShot.data()['hide_' + ownUserID] ? true : false}
-                  delete={snapShot.data()['delete_' + ownUserID] ? true : false}
+                  date={
+                    snapShot.data().lastMessageTime
+                      ? snapShot.data().lastMessageTime
+                      : tmpCreatedAt
+                  }
+                  pinned={snapShot.data()["pinned_" + ownUserID] ? true : false}
+                  hide={snapShot.data()["hide_" + ownUserID] ? true : false}
+                  delete={snapShot.data()["delete_" + ownUserID] ? true : false}
                   onPress={() =>
                     props.navigation.navigate("ChatScreen", {
                       groupID: snapShot.id,
@@ -145,9 +148,9 @@ export default function ChatList(props) {
                   }
                   onLongPress={() => {
                     onLongPressObjChanged({
-                      "id" : snapShot.id,
-                      "data" : snapShot.data()
-                    })
+                      id: snapShot.id,
+                      data: snapShot.data(),
+                    });
                     onShowChanged(true);
                   }}
                 >
@@ -171,21 +174,16 @@ export default function ChatList(props) {
                           {tmpMonth + "/" + tmpDay}
                         </Text>
                       )}
-                      {snapShot.data()[
-                              unseenMessageCountField
-                            ] && snapShot.data()[
-                              unseenMessageCountField
-                            ] > 0 ? (<View
-                              style={styles.notificationNumberContainer}
-                            >
-                              <Text style={styles.notificationNumberText}>
-                                {
-                                  snapShot.data()[
-                                    unseenMessageCountField
-                                  ]
-                                }
-                              </Text>
-                            </View>) : (<View></View>)}
+                      {snapShot.data()[unseenMessageCountField] &&
+                      snapShot.data()[unseenMessageCountField] > 0 ? (
+                        <View style={styles.notificationNumberContainer}>
+                          <Text style={styles.notificationNumberText}>
+                            {snapShot.data()[unseenMessageCountField]}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View></View>
+                      )}
                     </View>
                   </View>
                 </TouchableWithoutFeedback>
@@ -194,10 +192,14 @@ export default function ChatList(props) {
               tmpChatHtml.unshift(
                 <TouchableWithoutFeedback
                   key={snapShot.id}
-                  date={snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime : tmpCreatedAt}
-                  pinned={snapShot.data()['pinned_' + ownUserID] ? true : false}
-                  hide={snapShot.data()['hide_' + ownUserID] ? true : false}
-                  delete={snapShot.data()['delete_' + ownUserID] ? true : false}
+                  date={
+                    snapShot.data().lastMessageTime
+                      ? snapShot.data().lastMessageTime
+                      : tmpCreatedAt
+                  }
+                  pinned={snapShot.data()["pinned_" + ownUserID] ? true : false}
+                  hide={snapShot.data()["hide_" + ownUserID] ? true : false}
+                  delete={snapShot.data()["delete_" + ownUserID] ? true : false}
                   onPress={() =>
                     props.navigation.navigate("ChatScreen", {
                       groupID: snapShot.id,
@@ -218,29 +220,22 @@ export default function ChatList(props) {
                     </View>
                     <View style={styles.tabRightContainer}>
                       {tmpDay == today - 1 ? (
-                        <Text style={styles.tabText}>
-                          {"Yesterday"}
-                        </Text>
+                        <Text style={styles.tabText}>{"Yesterday"}</Text>
                       ) : (
                         <Text style={styles.tabText}>
                           {tmpMonth + "/" + tmpDay}
                         </Text>
                       )}
-                      {snapShot.data()[
-                              unseenMessageCountField
-                            ] && snapShot.data()[
-                              unseenMessageCountField
-                            ] > 0 ? (<View
-                              style={styles.notificationNumberContainer}
-                            >
-                              <Text style={styles.notificationNumberText}>
-                                {
-                                  snapShot.data()[
-                                    unseenMessageCountField
-                                  ]
-                                }
-                              </Text>
-                            </View>) : (<View></View>)}
+                      {snapShot.data()[unseenMessageCountField] &&
+                      snapShot.data()[unseenMessageCountField] > 0 ? (
+                        <View style={styles.notificationNumberContainer}>
+                          <Text style={styles.notificationNumberText}>
+                            {snapShot.data()[unseenMessageCountField]}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View></View>
+                      )}
                     </View>
                   </View>
                 </TouchableWithoutFeedback>
@@ -249,10 +244,14 @@ export default function ChatList(props) {
               tmpChatHtml.unshift(
                 <TouchableWithoutFeedback
                   key={snapShot.id}
-                  date={snapShot.data().lastMessageTime ? snapShot.data().lastMessageTime : tmpCreatedAt}
-                  pinned={snapShot.data()['pinned_' + ownUserID] ? true : false}
-                  hide={snapShot.data()['hide_' + ownUserID] ? true : false}
-                  delete={snapShot.data()['delete_' + ownUserID] ? true : false}
+                  date={
+                    snapShot.data().lastMessageTime
+                      ? snapShot.data().lastMessageTime
+                      : tmpCreatedAt
+                  }
+                  pinned={snapShot.data()["pinned_" + ownUserID] ? true : false}
+                  hide={snapShot.data()["hide_" + ownUserID] ? true : false}
+                  delete={snapShot.data()["delete_" + ownUserID] ? true : false}
                   onPress={() =>
                     props.navigation.navigate("ChatScreen", {
                       groupID: snapShot.id,
@@ -275,28 +274,23 @@ export default function ChatList(props) {
                       <Text style={styles.tabText}>
                         {tmpMonth + "/" + tmpDay}
                       </Text>
-                      {snapShot.data()[
-                              unseenMessageCountField
-                            ] && snapShot.data()[
-                              unseenMessageCountField
-                            ] > 0 ? (<View
-                              style={styles.notificationNumberContainer}
-                            >
-                              <Text style={styles.notificationNumberText}>
-                                {
-                                  snapShot.data()[
-                                    unseenMessageCountField
-                                  ]
-                                }
-                              </Text>
-                            </View>) : (<View></View>)}
+                      {snapShot.data()[unseenMessageCountField] &&
+                      snapShot.data()[unseenMessageCountField] > 0 ? (
+                        <View style={styles.notificationNumberContainer}>
+                          <Text style={styles.notificationNumberText}>
+                            {snapShot.data()[unseenMessageCountField]}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View></View>
+                      )}
                     </View>
                   </View>
                 </TouchableWithoutFeedback>
               );
             }
             groupID.push(snapShot.id);
-  
+
             totalUnseenMessage = 0;
             for (var i in unseenObj) {
               totalUnseenMessage += unseenObj[i];
@@ -305,52 +299,50 @@ export default function ChatList(props) {
         });
 
         tmpChatHtml.sort((html1, html2) => {
-          if(html1.props['pinned'] && html2.props['pinned']){
-            let date1 = getDate(html1.props['date']);
-            let date2 = getDate(html2.props['date']);
+          if (html1.props["pinned"] && html2.props["pinned"]) {
+            let date1 = getDate(html1.props["date"]);
+            let date2 = getDate(html2.props["date"]);
 
-            if(date1 > date2){
+            if (date1 > date2) {
               return 1;
             }
-            if(date1 < date2){
+            if (date1 < date2) {
               return -1;
             }
           }
 
-          if(!html1.props['pinned'] && !html2.props['pinned']){
-            let date1 = getDate(html1.props['date']);
-            let date2 = getDate(html2.props['date']);
+          if (!html1.props["pinned"] && !html2.props["pinned"]) {
+            let date1 = getDate(html1.props["date"]);
+            let date2 = getDate(html2.props["date"]);
 
-            if(date1 > date2){
+            if (date1 > date2) {
               return 1;
             }
-            if(date1 < date2){
+            if (date1 < date2) {
               return -1;
             }
           }
 
-          if(html1.props['pinned'] && !html2.props['pinned']){
+          if (html1.props["pinned"] && !html2.props["pinned"]) {
             return -1;
           }
 
-          if(!html1.props['pinned'] && html2.props['pinned']){
+          if (!html1.props["pinned"] && html2.props["pinned"]) {
             return 1;
           }
-        })
+        });
         const resultChatHtml = tmpChatHtml.filter((html) => {
-          return !html.props['hide'] && !html.props['delete']
-        })
-        onChatHtmlChanged(resultChatHtml)
+          return !html.props["hide"] && !html.props["delete"];
+        });
+        onChatHtmlChanged(resultChatHtml);
       });
   }
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     firstLoad();
 
-    return function(){
-
-    }
-  }, [])
+    return function() {};
+  }, []);
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <View style={{ flex: 1 }}>
@@ -371,7 +363,11 @@ export default function ChatList(props) {
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(14) }}>{longPressObj && longPressObj.data ? longPressObj.data.groupName : ""}</Text>
+              <Text style={{ fontSize: RFValue(14) }}>
+                {longPressObj && longPressObj.data
+                  ? longPressObj.data.groupName
+                  : ""}
+              </Text>
               <View
                 style={{
                   marginTop: heightPercentageToDP("2%"),
@@ -379,59 +375,91 @@ export default function ChatList(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <TouchableWithoutFeedback onPress={
-                  () => {
+                <TouchableWithoutFeedback
+                  onPress={() => {
                     let update = {};
-                    update['pinned_' + ownUserID] = (longPressObj.data['pinned_' + ownUserID] == "" || longPressObj.data['pinned_' + ownUserID]) ? false : true
-                    db.collection('chat').doc(longPressObj.id).set(update, {
-                      "merge" : true
-                    })
+                    update["pinned_" + ownUserID] =
+                      longPressObj.data["pinned_" + ownUserID] == "" ||
+                      longPressObj.data["pinned_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat")
+                      .doc(longPressObj.id)
+                      .set(update, {
+                        merge: true,
+                      });
                     onShowChanged(false);
-                  }
-                }>
-                  <Text style={styles.longPressText}>{Translate.t("upperFixed")}</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={
-                  () => {
-                    let update = {};
-                    update['notify_' + ownUserID] = (longPressObj.data['notify_' + ownUserID] == "" || longPressObj.data['notify_' + ownUserID]) ? false : true
-                    db.collection('chat').doc(longPressObj.id).set(update, {
-                      "merge" : true
-                    })
-                    onShowChanged(false);
-                  }
-                }>
-                  <Text style={styles.longPressText}>{Translate.t("notification")} OFF</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={
-                  () => {
-                    let update = {};
-                    update['hide_' + ownUserID] = (longPressObj.data['hide_' + ownUserID] == "" || longPressObj.data['hide_' + ownUserID]) ? false : true
-                    db.collection('chat').doc(longPressObj.id).set(update, {
-                      "merge" : true
-                    })
-                    onShowChanged(false);
-                  }
-                }>
-                  <Text style={styles.longPressText}>{Translate.t("nonRepresent")}</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={
-                  () => {
-                    let update = {};
-                    update['delete_' + ownUserID] = (longPressObj.data['delete_' + ownUserID] == "" || longPressObj.data['delete_' + ownUserID]) ? false : true
-                    db.collection('chat').doc(longPressObj.id).set(update, {
-                      "merge" : true
-                    })
-                    onShowChanged(false);
-                  }
-                }>
-                  <Text style={styles.longPressText}>{Translate.t("remove")}</Text>
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("upperFixed")}
+                  </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
-                  onPressIn={() => onShowChanged(false)}
                   onPress={() => {
-                    onShowChanged(false)
-                    props.navigation.navigate("GroupChatCreation")
+                    let update = {};
+                    update["notify_" + ownUserID] =
+                      longPressObj.data["notify_" + ownUserID] == "" ||
+                      longPressObj.data["notify_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat")
+                      .doc(longPressObj.id)
+                      .set(update, {
+                        merge: true,
+                      });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("notification")} OFF
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["hide_" + ownUserID] =
+                      longPressObj.data["hide_" + ownUserID] == "" ||
+                      longPressObj.data["hide_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat")
+                      .doc(longPressObj.id)
+                      .set(update, {
+                        merge: true,
+                      });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("nonRepresent")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["delete_" + ownUserID] =
+                      longPressObj.data["delete_" + ownUserID] == "" ||
+                      longPressObj.data["delete_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat")
+                      .doc(longPressObj.id)
+                      .set(update, {
+                        merge: true,
+                      });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("remove")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  // onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    onShowChanged(false);
+                    props.navigation.navigate("GroupChatCreation");
                   }}
                 >
                   <Text style={styles.longPressText}>
@@ -439,10 +467,10 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
-                  onPressIn={() => onShowChanged(false)}
+                  // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
-                    onShowChanged(false)
-                    props.navigation.navigate("CreateFolder")
+                    onShowChanged(false);
+                    props.navigation.navigate("CreateFolder");
                   }}
                 >
                   <Text style={styles.longPressText}>
@@ -469,11 +497,14 @@ export default function ChatList(props) {
               チャット
             </Text>
             {totalUnseenMessage ? (
-            <View style={styles.notificationNumberContainer}>
-              <Text style={styles.notificationNumberText}>
-                {totalUnseenMessage}
-              </Text>
-            </View>) : (<View></View>)}
+              <View style={styles.notificationNumberContainer}>
+                <Text style={styles.notificationNumberText}>
+                  {totalUnseenMessage}
+                </Text>
+              </View>
+            ) : (
+              <View></View>
+            )}
           </View>
           {chatHtml}
         </View>

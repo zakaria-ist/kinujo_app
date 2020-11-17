@@ -21,15 +21,110 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+let groupName;
+let friendIds;
+let friendNames;
+let ownUserID;
+let friendMessageUnseenField;
+let friendTotalMessageReadField;
+let dbFriendIds;
 const request = new Request();
-const alert = new CustomAlert();
-
 const win = Dimensions.get("window");
 const ratioCancel = win.width / 20 / 15;
 const ratioChat = win.width / 7 / 21;
-
+let chatObj;
+let documentID;
 export default function GroupFolderCreateCompletion(props) {
+  console.log({ friendIds });
+  const [userListHtml, onUserListHtml] = React.useState(<View></View>);
+  const [loaded, onLoaded] = React.useState(false);
+  groupName = props.route.params.groupName;
+  friendIds = props.route.params.friendIds;
+  friendNames = props.route.params.friendNames;
+  ownUserID = props.route.params.ownUserID;
+  function redirectToChat() {
+    friendIds.push(ownUserID);
+    let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
+    let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
+    for (var i = 0; i < friendIds.length; i++) {
+      friendMessageUnseenField = "unseenMessageCount_" + friendIds[i];
+      friendTotalMessageReadField = "totalMessageRead_" + friendIds[i];
+    }
+    db.collection("chat")
+      .add({
+        [ownMessageUnseenField]: 0,
+        [ownTotalMessageReadField]: 0,
+        groupName: groupName,
+        users: friendIds,
+        totalMessage: 0,
+      })
+      .then(function() {
+        db.collection("chat")
+          .get()
+          .then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+              if (
+                doc.data().users.length === friendIds.length &&
+                doc
+                  .data()
+                  .users.every((value, index) => value === friendIds[index]) &&
+                doc.data().lastMessageTime == null &&
+                doc.data().message == null
+              ) {
+                documentID = doc.id;
+                for (var i = 0; i < friendIds.length; i++) {
+                  friendMessageUnseenField =
+                    "unseenMessageCount_" + friendIds[i];
+                  friendTotalMessageReadField =
+                    "totalMessageRead_" + friendIds[i];
+                  db.collection("chat")
+                    .doc(documentID)
+                    .update({
+                      [friendTotalMessageReadField]: 0,
+                      [friendMessageUnseenField]: 0,
+                    });
+                }
+              }
+            });
+            props.navigation.replace("ChatScreen", {
+              groupName: groupName,
+              groupID: documentID,
+            });
+          });
+      });
+  }
+
+  if (!loaded) {
+    let tmpUserListHtml = [];
+    for (var i = 0; i < friendIds.length; i++) {
+      tmpUserListHtml.push(
+        <View
+          key={friendIds[i]}
+          style={{
+            alignItems: "center",
+          }}
+        >
+          <Image
+            style={{
+              width: RFValue(50),
+              height: RFValue(50),
+              borderRadius: win.width / 2,
+            }}
+            source={require("../assets/Images/profileEditingIcon.png")}
+          />
+          <Text style={styles.textForIcon}>{friendNames[i]}</Text>
+        </View>
+      );
+    }
+    onUserListHtml(tmpUserListHtml);
+    onLoaded(true);
+  }
   return (
     <SafeAreaView>
       <CustomHeader onPress={() => props.navigation.navigate("Cart")} />
@@ -71,30 +166,30 @@ export default function GroupFolderCreateCompletion(props) {
               alignItems: "center",
             }}
           >
-            <Text style={styles.text}>フォルダ名またはグループ名</Text>
+            <Text style={styles.text}>{groupName}</Text>
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
               }}
             >
-              <Text style={styles.text}>メンバー</Text>
-              <Text style={styles.text}>（ 2 ）</Text>
+              <Text style={styles.text}>メンバー </Text>
+              <Text style={styles.text}>( {friendIds.length} )</Text>
             </View>
           </View>
         </View>
         <View>
+          {/* /////////////////////////////////////////////////////////////*/}
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "center",
+              justifyContent: "space-evenly",
               marginTop: heightPercentageToDP("8%"),
             }}
           >
             <View
               style={{
                 alignItems: "center",
-                marginRight: widthPercentageToDP("10%"),
               }}
             >
               <Image
@@ -106,47 +201,25 @@ export default function GroupFolderCreateCompletion(props) {
                 }}
                 source={require("../assets/Images/addMemberIcon.png")}
               />
-              <Text style={styles.textForIcon}>メンバー追加</Text>
+              <Text style={styles.textForIcon}>Add</Text>
             </View>
-            <View style={{ alignItems: "center" }}>
-              <Image
-                style={{
-                  width: RFValue(50),
-                  height: RFValue(50),
-                  borderRadius: win.width / 2,
-                }}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
-              <Text style={styles.textForIcon}>髪長絹代</Text>
-            </View>
-            <View
-              style={{
-                alignItems: "center",
-                marginLeft: widthPercentageToDP("10%"),
-              }}
-            >
-              <Image
-                style={{
-                  width: RFValue(50),
-                  height: RFValue(50),
-                  borderRadius: win.width / 2,
-                }}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
-              <Text style={styles.textForIcon}>髪長友子</Text>
-            </View>
+            {userListHtml}
           </View>
-          <Image
-            style={{
-              width: win.width / 7,
-              height: 18 * ratioChat,
-
-              alignSelf: "center",
-              marginTop: heightPercentageToDP("5%"),
-            }}
-            source={require("../assets/Images/chatIcon.png")}
-          />
-          <Text style={styles.textForIcon}>トーク</Text>
+          {/* /////////////////////////////////////////////////////////////*/}
+          <TouchableWithoutFeedback onPress={() => redirectToChat()}>
+            <View>
+              <Image
+                style={{
+                  width: win.width / 7,
+                  height: 18 * ratioChat,
+                  alignSelf: "center",
+                  marginTop: heightPercentageToDP("5%"),
+                }}
+                source={require("../assets/Images/chatIcon.png")}
+              />
+              <Text style={styles.textForIcon}>トーク</Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </View>
     </SafeAreaView>
@@ -158,7 +231,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   textForIcon: {
-    fontSize: RFValue(12),
+    fontSize: RFValue(11),
     marginTop: heightPercentageToDP("1.5%"),
     alignSelf: "center",
   },

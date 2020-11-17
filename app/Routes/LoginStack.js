@@ -1,5 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "../Screens/LoginScreen";
+import SearchProducts from "../Screens/SearchProducts";
 import RegistrationGeneral from "../Screens/RegistrationGeneral";
 import RegistrationStore from "../Screens/RegistrationStore";
 import SMSAuthentication from "../Screens/SMSAuthentication";
@@ -11,7 +12,7 @@ import StoreAccountSelection from "../Screens/StoreAccountSelection";
 import BankAccountRegistrationOption from "../Screens/BankAccountRegistrationOption";
 import RegisterCompletion from "../Screens/RegisterCompletion";
 import HomeGeneral from "../Screens/HomeGeneral";
-import HomeStore from "../Screens/HomeStore";
+import HomeStoreList from "../Screens/HomeStoreList";
 import ChatScreen from "../Screens/ChatScreen";
 import ReceiptView from "../Screens/ReceiptView";
 import QRCode from "../Screens/QRCode";
@@ -206,6 +207,7 @@ export default function LoginStack() {
         />
         <Stack.Screen name="HomeGeneral" component={BottomNavigationGeneral} />
         <Stack.Screen name="HomeStore" component={BottomNavigationStore} />
+        <Stack.Screen name="HomeStoreList" component={HomeStoreList} />
         <Stack.Screen
           name="ProfileEditingGeneral"
           component={ProfileEditingGeneral}
@@ -263,6 +265,7 @@ export default function LoginStack() {
         <Stack.Screen name="AdressManagement" component={AdressManagement} />
         <Stack.Screen name="ReceiptView" component={ReceiptView} />
         <Stack.Screen name="ContactShare" component={ContactShare} />
+        <Stack.Screen name="SearchProducts" component={SearchProducts} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

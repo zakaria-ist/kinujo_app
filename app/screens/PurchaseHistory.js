@@ -85,7 +85,7 @@ function processOrderHtml(props, orders, status = "") {
               }}
             >
               <View style={styles.productInformationContainer}>
-                <Text style={styles.productInformationText}>詳細</Text>
+                <Text style={styles.productInformationText}>{Translate.t("detail")}</Text>
                 <Image
                   style={styles.nextIcon}
                   source={require("../assets/Images/next.png")}
@@ -93,7 +93,7 @@ function processOrderHtml(props, orders, status = "") {
               </View>
             </TouchableWithoutFeedback>
             <View style={styles.productInformationContainer}>
-              <Text style={styles.productInformationText}>問い合わせ</Text>
+              <Text style={styles.productInformationText}>{Translate.t("inquiry")}</Text>
               <Image
                 style={styles.nextIcon}
                 source={require("../assets/Images/next.png")}
@@ -268,7 +268,7 @@ export default function PurchaseHistory(props) {
                 paddingBottom: heightPercentageToDP("2%"),
               }}
             >
-              絞り込み
+              {Translate.t("narrowDown")}
             </Text>
           </View>
           <View

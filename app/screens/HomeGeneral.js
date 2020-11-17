@@ -14,25 +14,136 @@ import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import CustomFloatingButton from "../assets/CustomComponents/CustomFloatingButton";
 import HomeProducts from "./HomeProducts";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
+import { useIsFocused } from '@react-navigation/native';
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+
+const request = new Request();
+const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 export default function Home(props) {
+  const [user, onUserChanged] = React.useState({});
+  const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
+  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
+
+  React.useEffect(()=>{
+    AsyncStorage.getItem("user").then(function(url) {
+      request
+        .get(url)
+        .then(function(response) {
+          onUserChanged(response.data);
+        })
+        .catch(function(error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
+
+    request.get("products/").then(function(response){
+      let products = response.data;
+
+      let kinujoProducts = products.filter((product) => {
+        return product.user.authority.id == 1;
+      })
+      let featuredProducts = products.filter((product) => {
+        return product.user.authority.id != 1;
+      })
+
+      let tmpKinujoHtml = []
+      kinujoProducts.map((product) => {
+        tmpKinujoHtml.push(<HomeProducts
+          key={product.id}
+          onPress={
+            ()=>{
+              props.navigation.navigate("HomeStoreList", {
+                "url" : product.url
+              })
+            }
+          }
+          idx={product.id}
+          image={product.productImages.length > 0 ? product.productImages[0].image.image : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"}
+          office={product.brand_name}
+          name={product.name}
+          seller={product.user.real_name ? product.user.real_name : product.user.nickname}
+          price={(user.is_seller ? product.store_price : product.price) + " Yen"}
+          category={product.category.name}
+          shipping={product.shipping_fee ? product.shipping_fee  : "Free Shipping"}
+        />)
+      })
+      onKinujoHtmlChanged(tmpKinujoHtml);
+
+      let tmpFeaturedHtml = []
+      featuredProducts.map((product) => {
+        tmpFeaturedHtml.push(<HomeProducts
+          key={product.id}
+          onPress={
+            ()=>{
+              props.navigation.navigate("HomeStoreList", {
+                "url" : product.url
+              })
+            }
+          }
+          idx={product.id}
+          image={product.productImages.length > 0 ? product.productImages[0].image.image : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"}
+          office={product.brand_name}
+          name={product.name}
+          seller={product.user.real_name ? product.user.real_name : product.user.nickname}
+          price={(user.is_seller ? product.store_price : product.price) + " Yen"}
+          category={product.category.name}
+          shipping={product.shipping_fee ? product.shipping_fee  : "Free Shipping"}
+        />)
+      })
+      onFeaturedHtmlChanged(tmpFeaturedHtml);
+    }).catch(function(error){
+      if (
+        error &&
+        error.response &&
+        error.response.data &&
+        Object.keys(error.response.data).length > 0
+      ) {
+        alert.warning(
+          error.response.data[Object.keys(error.response.data)[0]][0] +
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
+        );
+      }
+    })
+  }, [useIsFocused])
+
   return (
     <SafeAreaView>
       <CustomHeader />
-      <CustomSecondaryHeader name="髪長絹子 さん" />
+
+      <CustomSecondaryHeader
+        name={user.real_name ? user.real_name : user.nickname}
+        accountType={user.is_seller ? Translate.t("storeAccount") : ""}
+      />
       <View style={styles.discription_header}>
         <View>
-          <Text style={styles.disc_title_text}>
+          {/* <Text style={styles.disc_title_text}>
             {"Seller: KINUJO Offical Product"}
-          </Text>
+          </Text> */}
         </View>
         <View style={{ position: "absolute", right: 0, paddingRight: 15 }}>
           <Button title="Category" color="#E6DADE" />
@@ -40,82 +151,35 @@ export default function Home(props) {
       </View>
 
       <ScrollView style={styles.home_product_view}>
-        <View style={styles.section_header}>
-          <Text style={styles.section_header_text}>
-            {"KINUJO official product"}
-          </Text>
-        </View>
-        <View style={styles.section_product}>
-          <HomeProducts
-            props={props}
-            idx="0"
-            image="https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-            office="KINUJO"
-            name="KINUJO W-worldwide model-"
-            seller="KINUJO"
-            price="12,000Yen"
-            category="Hair Iron"
-            shipping="Free Shipping"
-          />
-          <HomeProducts
-            props={props}
-            idx="1"
-            image="https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-            office="KINUJO"
-            name="KINUJO W-worldwide model-"
-            seller="KINUJO"
-            price="12,000Yen"
-            category="Hair Iron"
-            shipping="Free Shipping"
-          />
-        </View>
-        <View style={styles.section_header}>
-          <Text style={styles.section_header_text}>{"Featured Products"}</Text>
-        </View>
-        <View style={styles.section_product}>
-          <HomeProducts
-            idx="0"
-            image="https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-            office="KINUJO"
-            name="KINUJO W-worldwide model-"
-            seller="KINUJO"
-            price="12,000Yen"
-            category="Hair Iron"
-            shipping="Free Shipping"
-          />
-          <HomeProducts
-            idx="1"
-            image="https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-            office="KINUJO"
-            name="KINUJO -"
-            seller="KINUJO"
-            price="12,000Yen"
-            category="Hair Iron"
-            shipping="Free Shipping"
-          />
-          <HomeProducts
-            idx="2"
-            image="https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-            office="KINUJO"
-            name="KINUJO W-worldwide model-"
-            seller="KINUJO"
-            price="12,000Yen"
-            category="Hair Iron"
-            shipping="Free Shipping"
-          />
-          <HomeProducts
-            idx="3"
-            image="https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-            office="KINUJO"
-            name="KINUJO W-worldwide model-"
-            seller="KINUJO"
-            price="12,000Yen"
-            category="Hair Iron"
-            shipping="Free Shipping"
-          />
-        </View>
+        {kinujoHtml.length > 0 ? (
+          <View style={styles.section_header}>
+            <Text style={styles.section_header_text}>
+              {"KINUJO official product"}
+            </Text>
+          </View>
+        ) : (<View></View>)}
+        {kinujoHtml.length > 0 ? (
+          <View style={styles.section_product}>
+            {kinujoHtml}
+          </View>
+        ) : (<View></View>)}
+
+        {featuredHtml.length > 0 ? (
+          <View style={styles.section_header}>
+            <Text style={styles.section_header_text}>{"Featured Products"}</Text>
+          </View>
+        ) : (<View></View>)}
+        {featuredHtml.length > 0 ? (
+          <View style={styles.section_product}>
+            {featuredHtml}
+          </View>
+        ) : (<View></View>)}
       </ScrollView>
-      <CustomFloatingButton />
+      <CustomFloatingButton onPress={
+        () => {
+          props.navigation.navigate("SearchProducts")
+        }
+      }/>
     </SafeAreaView>
   );
 }
@@ -139,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
   },
   home_product_view: {
-    height: height - 48 - heightPercentageToDP("26%"),
+    height: height - 48 - heightPercentageToDP("17%"),
     padding: 15,
     paddingTop: 0,
     backgroundColor: "#FFF",

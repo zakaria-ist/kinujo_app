@@ -27,9 +27,9 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 const request = new Request();
 const alert = new CustomAlert();
-import postal_code from 'japan-postal-code-oasis';
+import postal_code from "japan-postal-code-oasis";
 const win = Dimensions.get("window");
-export default function BankAccountRegistration(props) {
+export default function AddressManagement(props) {
   const [prefectures, onPrefecturesChanged] = React.useState([]);
   const [prefectureLoaded, onPrefectureLoadedChanged] = React.useState(false);
   const [address, onAddressChanged] = React.useState({});
@@ -67,22 +67,44 @@ export default function BankAccountRegistration(props) {
               onPhoneNumberChanged(response.data.tel);
             })
             .catch(function(error) {
-              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
               }
             });
         }
       })
       .catch(function(error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
         }
       });
   }
 
   React.useEffect(() => {
-    postal_code.configure("https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/");
-  }, [])
+    postal_code.configure(
+      "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
+    );
+  }, []);
   return (
     <SafeAreaView>
       <CustomHeader
@@ -118,15 +140,15 @@ export default function BankAccountRegistration(props) {
           style={styles.textInput}
           value={zipcode}
           onChangeText={(text) => {
-            onZipcodeChanged(text)
+            onZipcodeChanged(text);
             postal_code(text).then((address) => {
-              if(address && address.prefecture){
-                let tmpPrefectures = prefectures.filter((prefecture)=>{
+              if (address && address.prefecture) {
+                let tmpPrefectures = prefectures.filter((prefecture) => {
                   return prefecture.label == address.prefecture;
-                })
-  
-                if(tmpPrefectures.length > 0){
-                  onPrefectureChanged(tmpPrefectures[0].value)
+                });
+
+                if (tmpPrefectures.length > 0) {
+                  onPrefectureChanged(tmpPrefectures[0].value);
                 }
               }
             });
@@ -195,8 +217,20 @@ export default function BankAccountRegistration(props) {
                 props.navigation.pop();
               })
               .catch(function(error) {
-                if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[
+                      Object.keys(error.response.data)[0]
+                    ][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
                 }
               });
           } else {
@@ -224,8 +258,20 @@ export default function BankAccountRegistration(props) {
                   props.navigation.pop();
                 })
                 .catch(function(error) {
-                  if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                    alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                  if (
+                    error &&
+                    error.response &&
+                    error.response.data &&
+                    Object.keys(error.response.data).length > 0
+                  ) {
+                    alert.warning(
+                      error.response.data[
+                        Object.keys(error.response.data)[0]
+                      ][0] +
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
+                    );
                   }
                 });
             });

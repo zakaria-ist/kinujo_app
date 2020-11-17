@@ -1,10 +1,10 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
-INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
-INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
-INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
-MERGED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
+INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
+INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
+INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
+MERGED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
 MERGED from [hermes-debug.aar] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/ae839385101c095883240b9b8d0d0004/hermes-debug/AndroidManifest.xml:2:1-7:12
 MERGED from [com.facebook.flipper:flipper:0.54.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3cc8dd0b7ac3ffbe5705cd28f19f4644/flipper-0.54.0/AndroidManifest.xml:8:1-18:12
 MERGED from [com.facebook.flipper:flipper-network-plugin:0.54.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/c0a6ace0d03d956934fd193e797f6b8f/flipper-network-plugin-0.54.0/AndroidManifest.xml:8:1-15:12
@@ -15,6 +15,7 @@ MERGED from [:unimodules-react-native-adapter] /Users/guanchuan/Documents/projec
 MERGED from [:expo-splash-screen] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/expo-splash-screen/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:expo-updates] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/expo-updates/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-13:12
 MERGED from [:react-native-community_async-storage] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/async-storage/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [:react-native-community_checkbox] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/checkbox/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-community_masked-view] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/masked-view/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-community_viewpager] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/viewpager/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-firebase_auth] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-firebase/auth/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-15:12
@@ -24,6 +25,7 @@ MERGED from [:react-native-firebase_storage] /Users/guanchuan/Documents/projects
 MERGED from [:react-native-firebase_app] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-firebase/app/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-picker_picker] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-picker/picker/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [:react-native-camera] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-camera/android/build/intermediates/library_manifest/generalDebug/AndroidManifest.xml:2:1-18:12
+MERGED from [:react-native-fast-image] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-fast-image/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-gesture-handler] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-gesture-handler/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-image-picker] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-image-picker/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-21:12
 MERGED from [:react-native-localize] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-localize/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
@@ -84,7 +86,8 @@ MERGED from [com.google.firebase:firebase-auth:19.3.2] /Users/guanchuan/.gradle/
 MERGED from [com.facebook.fresco:middleware:2.3.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/9f4ce2261363201ff8b86c39ad3410a5/middleware-2.3.0/AndroidManifest.xml:2:1-9:12
 MERGED from [com.facebook.fresco:ui-common:2.3.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/872e86e11fb0b55114c862c47332ad93/ui-common-2.3.0/AndroidManifest.xml:2:1-9:12
 MERGED from [com.facebook.fresco:fbcore:2.3.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/c709fe5fbbec46151421912cab668998/jetified-fbcore-2.3.0/AndroidManifest.xml:2:1-9:12
-MERGED from [com.github.bumptech.glide:glide:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3d23c7f75d0d144fbc6a536713969a85/jetified-glide-4.9.0/AndroidManifest.xml:2:1-12:12
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:2:1-16:12
+MERGED from [com.github.bumptech.glide:glide:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/9693960e2023b47c4d21e57d5f473f35/glide-4.11.0/AndroidManifest.xml:2:1-12:12
 MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/8c2339125abd3809444db0d6bf0702e0/appcompat-resources-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/da6855480bd13abf4f9d3a7b15658d6c/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/92805e6ab9f3728b750a01ec26acbe43/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -138,9 +141,9 @@ MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/guanchuan/.gra
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/46c83fea9113fed6020abf84acd3e3e5/asynclayoutinflater-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/AndroidManifest.xml:17:1-26:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/01bd32fc75fd339c2b14d4a2a6f4a24d/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [com.github.bumptech.glide:gifdecoder:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/de3f3d8d5e46f9437237f162acea9a37/jetified-gifdecoder-4.9.0/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.sqlite:sqlite-framework:2.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f8813d41dc45a0037b80c46171111aa4/sqlite-framework-2.0.1/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.sqlite:sqlite:2.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/121cc25b1e2e2edb4d3ddc4e5a739ec1/sqlite-2.0.1/AndroidManifest.xml:17:1-22:12
+MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/bbb2a7b04158afa472cb82b4f0bbf98a/gifdecoder-4.11.0/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/b991ecd12c788a6e4985978379cf4bb6/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/4dd4f0dc729dc78a106b94a2d08980c9/lifecycle-viewmodel-savedstate-2.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.2.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/6ac692d5885dabf7cd9544ad0134bb31/lifecycle-viewmodel-2.2.0/AndroidManifest.xml:17:1-24:12
@@ -166,13 +169,13 @@ INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/sr
 		INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/debug/AndroidManifest.xml
 	android:versionName
 		INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
 		INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/debug/AndroidManifest.xml
 	xmlns:tools
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/debug/AndroidManifest.xml:2:5-51
 	android:versionCode
 		INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-60:12
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:1-62:12
 		INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/debug/AndroidManifest.xml
 	xmlns:android
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:1:11-69
@@ -367,9 +370,9 @@ ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/m
 	android:name
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:23:20-77
 application
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:24:3-59:17
-MERGED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:24:3-59:17
-MERGED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:24:3-59:17
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:24:3-61:17
+MERGED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:24:3-61:17
+MERGED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:24:3-61:17
 MERGED from [:unimodules-react-native-adapter] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@unimodules/react-native-adapter/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-15:19
 MERGED from [:unimodules-react-native-adapter] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@unimodules/react-native-adapter/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:11:5-15:19
 MERGED from [:react-native-image-picker] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-image-picker/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:9:5-19:19
@@ -390,8 +393,10 @@ MERGED from [com.google.android.material:material:1.1.0] /Users/guanchuan/.gradl
 MERGED from [com.google.android.material:material:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/227297b9a7e14de84f5f58fb8b80ae2d/material-1.1.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.firebase:firebase-auth:19.3.2] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/6e7de1e89e49a37711a6cec0ad813f85/firebase-auth-19.3.2/AndroidManifest.xml:23:5-40:19
 MERGED from [com.google.firebase:firebase-auth:19.3.2] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/6e7de1e89e49a37711a6cec0ad813f85/firebase-auth-19.3.2/AndroidManifest.xml:23:5-40:19
-MERGED from [com.github.bumptech.glide:glide:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3d23c7f75d0d144fbc6a536713969a85/jetified-glide-4.9.0/AndroidManifest.xml:10:5-20
-MERGED from [com.github.bumptech.glide:glide:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3d23c7f75d0d144fbc6a536713969a85/jetified-glide-4.9.0/AndroidManifest.xml:10:5-20
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:10:5-14:19
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:10:5-14:19
+MERGED from [com.github.bumptech.glide:glide:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/9693960e2023b47c4d21e57d5f473f35/glide-4.11.0/AndroidManifest.xml:10:5-20
+MERGED from [com.github.bumptech.glide:glide:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/9693960e2023b47c4d21e57d5f473f35/glide-4.11.0/AndroidManifest.xml:10:5-20
 MERGED from [com.google.android.gms:play-services-location:16.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/1fddbc804b7252e94e47502fe9da4e21/jetified-play-services-location-16.0.0/AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-location:16.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/1fddbc804b7252e94e47502fe9da4e21/jetified-play-services-location-16.0.0/AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-auth:16.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/4d9cafcbf04a5d5625aa62c14947dbb4/jetified-play-services-auth-16.0.1/AndroidManifest.xml:22:5-37:19
@@ -446,8 +451,8 @@ MERGED from [androidx.room:room-runtime:2.1.0] /Users/guanchuan/.gradle/caches/t
 MERGED from [androidx.room:room-runtime:2.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/8bda340c65b85d34a7d49e32ac5bc9d3/room-runtime-2.1.0/AndroidManifest.xml:24:5-28:19
 MERGED from [androidx.core:core:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/AndroidManifest.xml:24:5-89
 MERGED from [androidx.core:core:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/AndroidManifest.xml:24:5-89
-MERGED from [com.github.bumptech.glide:gifdecoder:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/de3f3d8d5e46f9437237f162acea9a37/jetified-gifdecoder-4.9.0/AndroidManifest.xml:9:5-20
-MERGED from [com.github.bumptech.glide:gifdecoder:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/de3f3d8d5e46f9437237f162acea9a37/jetified-gifdecoder-4.9.0/AndroidManifest.xml:9:5-20
+MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/bbb2a7b04158afa472cb82b4f0bbf98a/gifdecoder-4.11.0/AndroidManifest.xml:9:5-20
+MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/bbb2a7b04158afa472cb82b4f0bbf98a/gifdecoder-4.11.0/AndroidManifest.xml:9:5-20
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/b991ecd12c788a6e4985978379cf4bb6/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/b991ecd12c788a6e4985978379cf4bb6/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
 MERGED from [io.nlopez.smartlocation:library:3.2.11] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/96ab62de1a36ef623dc2501bdc28b794/jetified-library-3.2.11/AndroidManifest.xml:18:5-28:19
@@ -457,6 +462,9 @@ MERGED from [io.nlopez.smartlocation:library:3.2.11] /Users/guanchuan/.gradle/ca
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:31:5-48
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/AndroidManifest.xml:24:18-86
+	android:supportsRtl
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:32:5-31
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:32:5-31
 	android:label
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:26:5-37
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:26:5-37
@@ -477,88 +485,88 @@ MERGED from [io.nlopez.smartlocation:library:3.2.11] /Users/guanchuan/.gradle/ca
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:30:5-36
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:30:5-36
 	android:usesCleartextTraffic
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/debug/AndroidManifest.xml:7:18-53
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:33:5-40
 	android:name
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:25:5-36
 		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:25:5-36
 meta-data#expo.modules.updates.EXPO_UPDATE_URL
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:33:5-122
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:35:5-122
 	android:value
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:33:68-120
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:35:68-120
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:33:16-67
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:35:16-67
 meta-data#expo.modules.updates.EXPO_SDK_VERSION
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:34:5-93
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:36:5-93
 	android:value
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:34:69-91
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:36:69-91
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:34:16-68
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:36:16-68
 meta-data#expo.modules.updates.ENABLED
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:35:5-82
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:37:5-82
 	android:value
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:35:60-80
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:37:60-80
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:35:16-59
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:37:16-59
 meta-data#expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:36:5-105
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:38:5-105
 	android:value
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:36:81-103
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:38:81-103
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:36:16-80
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:38:16-80
 meta-data#expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:37:5-99
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:39:5-99
 	android:value
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:37:80-97
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:39:80-97
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:37:16-79
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:39:16-79
 activity#com.example.kinujo.MainActivity
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:38:5-57:16
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:40:5-59:16
 	android:screenOrientation
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:45:7-43
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:47:7-43
 	android:label
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:40:7-39
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:42:7-39
 	android:launchMode
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:42:7-38
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:44:7-38
 	android:windowSoftInputMode
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:43:7-49
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:45:7-49
 	android:configChanges
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:41:7-84
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:43:7-84
 	android:theme
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:44:7-52
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:46:7-52
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:39:7-35
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:41:7-35
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:47:7-50:23
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:49:7-52:23
 action#android.intent.action.MAIN
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:48:9-60
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:50:9-60
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:48:17-58
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:50:17-58
 category#android.intent.category.LAUNCHER
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:49:9-68
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:51:9-68
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:49:19-66
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:51:19-66
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:com.example.kinujo
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:51:7-56:23
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:53:7-58:23
 action#android.intent.action.VIEW
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:52:9-60
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:54:9-60
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:52:17-58
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:54:17-58
 category#android.intent.category.DEFAULT
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:53:9-67
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:55:9-67
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:53:19-65
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:55:19-65
 category#android.intent.category.BROWSABLE
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:54:9-69
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:56:9-69
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:54:19-67
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:56:19-67
 data
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:55:9-52
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:57:9-52
 	android:scheme
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:55:15-50
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:57:15-50
 activity#com.facebook.react.devsupport.DevSettingsActivity
-ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:58:5-81
+ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:60:5-81
 	android:name
-		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:58:15-79
+		ADDED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml:60:15-79
 uses-sdk
 INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/guanchuan/Documents/projects/kinujo_frontend/android/app/src/main/AndroidManifest.xml
@@ -583,6 +591,8 @@ MERGED from [:expo-updates] /Users/guanchuan/Documents/projects/kinujo_frontend/
 MERGED from [:expo-updates] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/expo-updates/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-community_async-storage] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/async-storage/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-community_async-storage] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/async-storage/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-community_checkbox] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/checkbox/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-community_checkbox] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/checkbox/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-community_masked-view] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/masked-view/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-community_masked-view] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/masked-view/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-community_viewpager] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-community/viewpager/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
@@ -601,6 +611,8 @@ MERGED from [:react-native-picker_picker] /Users/guanchuan/Documents/projects/ki
 MERGED from [:react-native-picker_picker] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/@react-native-picker/picker/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-camera] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-camera/android/build/intermediates/library_manifest/generalDebug/AndroidManifest.xml:5:5-7:41
 MERGED from [:react-native-camera] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-camera/android/build/intermediates/library_manifest/generalDebug/AndroidManifest.xml:5:5-7:41
+MERGED from [:react-native-fast-image] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-fast-image/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:react-native-fast-image] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-fast-image/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-gesture-handler] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-gesture-handler/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-gesture-handler] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-gesture-handler/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:react-native-image-picker] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-image-picker/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
@@ -721,8 +733,10 @@ MERGED from [com.facebook.fresco:ui-common:2.3.0] /Users/guanchuan/.gradle/cache
 MERGED from [com.facebook.fresco:ui-common:2.3.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/872e86e11fb0b55114c862c47332ad93/ui-common-2.3.0/AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.fresco:fbcore:2.3.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/c709fe5fbbec46151421912cab668998/jetified-fbcore-2.3.0/AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.fresco:fbcore:2.3.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/c709fe5fbbec46151421912cab668998/jetified-fbcore-2.3.0/AndroidManifest.xml:5:5-7:41
-MERGED from [com.github.bumptech.glide:glide:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3d23c7f75d0d144fbc6a536713969a85/jetified-glide-4.9.0/AndroidManifest.xml:6:5-8:41
-MERGED from [com.github.bumptech.glide:glide:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3d23c7f75d0d144fbc6a536713969a85/jetified-glide-4.9.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.bumptech.glide:glide:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/9693960e2023b47c4d21e57d5f473f35/glide-4.11.0/AndroidManifest.xml:6:5-8:41
+MERGED from [com.github.bumptech.glide:glide:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/9693960e2023b47c4d21e57d5f473f35/glide-4.11.0/AndroidManifest.xml:6:5-8:41
 MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/8c2339125abd3809444db0d6bf0702e0/appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/8c2339125abd3809444db0d6bf0702e0/appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/da6855480bd13abf4f9d3a7b15658d6c/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
@@ -829,12 +843,12 @@ MERGED from [androidx.core:core:1.1.0] /Users/guanchuan/.gradle/caches/transform
 MERGED from [androidx.core:core:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/09a5b304abc5a83d5f96ea23c0aa9345/core-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/01bd32fc75fd339c2b14d4a2a6f4a24d/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/01bd32fc75fd339c2b14d4a2a6f4a24d/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [com.github.bumptech.glide:gifdecoder:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/de3f3d8d5e46f9437237f162acea9a37/jetified-gifdecoder-4.9.0/AndroidManifest.xml:5:5-7:41
-MERGED from [com.github.bumptech.glide:gifdecoder:4.9.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/de3f3d8d5e46f9437237f162acea9a37/jetified-gifdecoder-4.9.0/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.sqlite:sqlite-framework:2.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f8813d41dc45a0037b80c46171111aa4/sqlite-framework-2.0.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.sqlite:sqlite-framework:2.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f8813d41dc45a0037b80c46171111aa4/sqlite-framework-2.0.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.sqlite:sqlite:2.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/121cc25b1e2e2edb4d3ddc4e5a739ec1/sqlite-2.0.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.sqlite:sqlite:2.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/121cc25b1e2e2edb4d3ddc4e5a739ec1/sqlite-2.0.1/AndroidManifest.xml:20:5-44
+MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/bbb2a7b04158afa472cb82b4f0bbf98a/gifdecoder-4.11.0/AndroidManifest.xml:5:5-7:41
+MERGED from [com.github.bumptech.glide:gifdecoder:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/bbb2a7b04158afa472cb82b4f0bbf98a/gifdecoder-4.11.0/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/b991ecd12c788a6e4985978379cf4bb6/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/b991ecd12c788a6e4985978379cf4bb6/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/4dd4f0dc729dc78a106b94a2d08980c9/lifecycle-viewmodel-savedstate-2.2.0/AndroidManifest.xml:20:5-22:41
@@ -1005,6 +1019,12 @@ ADDED from [com.google.firebase:firebase-auth:19.3.2] /Users/guanchuan/.gradle/c
 		ADDED from [com.google.firebase:firebase-auth:19.3.2] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/6e7de1e89e49a37711a6cec0ad813f85/firebase-auth-19.3.2/AndroidManifest.xml:38:17-82
 	android:name
 		ADDED from [com.google.firebase:firebase-auth:19.3.2] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/6e7de1e89e49a37711a6cec0ad813f85/firebase-auth-19.3.2/AndroidManifest.xml:37:17-109
+meta-data#com.bumptech.glide.integration.okhttp3.OkHttpGlideModule
+ADDED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:11:9-13:43
+	android:value
+		ADDED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:13:13-40
+	android:name
+		ADDED from [com.github.bumptech.glide:okhttp3-integration:4.11.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/f1523765febf40e83d044d6f06e28a2a/okhttp3-integration-4.11.0/AndroidManifest.xml:12:13-84
 activity#com.google.android.gms.auth.api.signin.internal.SignInHubActivity
 ADDED from [com.google.android.gms:play-services-auth:16.0.1] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/4d9cafcbf04a5d5625aa62c14947dbb4/jetified-play-services-auth-16.0.1/AndroidManifest.xml:23:9-27:75
 	android:excludeFromRecents

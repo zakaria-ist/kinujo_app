@@ -281,7 +281,6 @@ expo/modules/splashscreen/R.java
 com/bumptech/glide/R.java
  com.bumptech.glide.R
  com.bumptech.glide.R$attr
- com.bumptech.glide.R$bool
  com.bumptech.glide.R$color
  com.bumptech.glide.R$dimen
  com.bumptech.glide.R$drawable
@@ -582,6 +581,21 @@ io/invertase/firebase/R.java
  io.invertase.firebase.R$style
  io.invertase.firebase.R$styleable
  io.invertase.firebase.R$xml
+com/reactnativecommunity/checkbox/R.java
+ com.reactnativecommunity.checkbox.R
+ com.reactnativecommunity.checkbox.R$anim
+ com.reactnativecommunity.checkbox.R$attr
+ com.reactnativecommunity.checkbox.R$bool
+ com.reactnativecommunity.checkbox.R$color
+ com.reactnativecommunity.checkbox.R$dimen
+ com.reactnativecommunity.checkbox.R$drawable
+ com.reactnativecommunity.checkbox.R$id
+ com.reactnativecommunity.checkbox.R$integer
+ com.reactnativecommunity.checkbox.R$layout
+ com.reactnativecommunity.checkbox.R$string
+ com.reactnativecommunity.checkbox.R$style
+ com.reactnativecommunity.checkbox.R$styleable
+ com.reactnativecommunity.checkbox.R$xml
 org/unimodules/interfaces/font/R.java
  org.unimodules.interfaces.font.R
 com/google/android/gms/measurement/api/R.java
@@ -876,6 +890,18 @@ com/facebook/imagepipeline/nativecode/R.java
  com.facebook.imagepipeline.nativecode.R
 androidx/lifecycle/livedata/R.java
  androidx.lifecycle.livedata.R
+com/bumptech/glide/integration/okhttp/R.java
+ com.bumptech.glide.integration.okhttp.R
+ com.bumptech.glide.integration.okhttp.R$attr
+ com.bumptech.glide.integration.okhttp.R$color
+ com.bumptech.glide.integration.okhttp.R$dimen
+ com.bumptech.glide.integration.okhttp.R$drawable
+ com.bumptech.glide.integration.okhttp.R$id
+ com.bumptech.glide.integration.okhttp.R$integer
+ com.bumptech.glide.integration.okhttp.R$layout
+ com.bumptech.glide.integration.okhttp.R$string
+ com.bumptech.glide.integration.okhttp.R$style
+ com.bumptech.glide.integration.okhttp.R$styleable
 com/reactnativecommunity/asyncstorage/R.java
  com.reactnativecommunity.asyncstorage.R
  com.reactnativecommunity.asyncstorage.R$anim
@@ -1021,6 +1047,21 @@ androidx/slidingpanelayout/R.java
  androidx.slidingpanelayout.R$styleable
 com/facebook/nativeimagetranscoder/R.java
  com.facebook.nativeimagetranscoder.R
+com/dylanvann/fastimage/R.java
+ com.dylanvann.fastimage.R
+ com.dylanvann.fastimage.R$anim
+ com.dylanvann.fastimage.R$attr
+ com.dylanvann.fastimage.R$bool
+ com.dylanvann.fastimage.R$color
+ com.dylanvann.fastimage.R$dimen
+ com.dylanvann.fastimage.R$drawable
+ com.dylanvann.fastimage.R$id
+ com.dylanvann.fastimage.R$integer
+ com.dylanvann.fastimage.R$layout
+ com.dylanvann.fastimage.R$string
+ com.dylanvann.fastimage.R$style
+ com.dylanvann.fastimage.R$styleable
+ com.dylanvann.fastimage.R$xml
 com/google/firebase/measurement/R.java
  com.google.firebase.measurement.R
 com/reactnativecommunity/viewpager/R.java

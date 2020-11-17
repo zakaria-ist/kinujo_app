@@ -24,10 +24,11 @@ const alert = new CustomAlert();
 import Translate from "../assets/Translates/Translate";
 export default function RegisterCompletion(props) {
   async function updateProfile(nextPage) {
-    AsyncStorage.getItem("user").then(function (url) {
+    AsyncStorage.getItem("user").then(function(url) {
+      console.log(url);
       request
         .get(url)
-        .then(function (response) {
+        .then(function(response) {
           response = response.data;
           let payload = response.payload;
           if (payload) {
@@ -40,22 +41,44 @@ export default function RegisterCompletion(props) {
             });
           }
           response.payload = payload;
+
           request
             .patch(url, {
               payload: payload,
             })
-            .then(function (response) {
+            .then(function(response) {
+              console.log("1");
               props.navigation.navigate(nextPage);
             })
-            .catch(function (error) {
-              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+            .catch(function(error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
               }
             });
         })
-        .catch(function (error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function(error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });
@@ -99,10 +122,11 @@ export default function RegisterCompletion(props) {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            if(props.route.params.authority == "general"){
-              updateProfile("HomeGeneral")
+            console.log(props.route.params.authority);
+            if (props.route.params.authority == "general") {
+              updateProfile("HomeGeneral");
             } else {
-              updateProfile("HomeStore")
+              updateProfile("HomeStore");
             }
           }}
         >

@@ -76,7 +76,7 @@ export default function ReceiptView(props) {
         accountType={Translate.t("storeAccount")}
       />
       <View style={styles.receiptEditingContainer}>
-        <Text style={{ fontSize: RFValue(16) }}>領収証</Text>
+        <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}</Text>
         <View style={styles.invoiceInputContainer}>
           <Text style={{ fontSize: RFValue(24) }}>{user.real_name ? user.real_name : user.nickname}</Text>
           <Text
@@ -85,7 +85,7 @@ export default function ReceiptView(props) {
               marginLeft: widthPercentageToDP("3%"),
             }}
           >
-            様
+            {Translate.t("nameTitle")}
           </Text>
         </View>
         <Text style={styles.receivedMoneyText}>￥{order.total_price} ー</Text>
@@ -95,7 +95,7 @@ export default function ReceiptView(props) {
             paddingVertical: heightPercentageToDP("1%"),
           }}
         >
-          上記正に領収いたしました
+          {Translate.t("justReceivedAbove")}
         </Text>
         <View style={{ width: "100%", marginTop: heightPercentageToDP("5%") }}>
           <View style={{ flexDirection: "row" }}>
@@ -121,7 +121,7 @@ export default function ReceiptView(props) {
               {Translate.t("productName")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-            {order && order.product_jan_code ? (order.product_jan_code.horizontal ? 
+            {order && order.product_jan_code ? (order.product_jan_code.horizontal ?
                   order.product_jan_code.horizontal.product_variety.product.name :
                   order.product_jan_code.vertical.product_variety.product.name) : ""
                 }

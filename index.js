@@ -1,6 +1,6 @@
-import { registerRootComponent } from 'expo';
+import { registerRootComponent } from "expo";
 
-import App from './App';
+import App from "./App";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "./firebaseConfig";

@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 // @react-native-community/async-storage
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+// @react-native-community/checkbox
+import com.reactnativecommunity.checkbox.ReactCheckBoxPackage;
 // @react-native-community/masked-view
 import org.reactnative.maskedview.RNCMaskedViewPackage;
 // @react-native-community/viewpager
@@ -31,6 +33,8 @@ import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 import com.reactnativecommunity.picker.RNCPickerPackage;
 // react-native-camera
 import org.reactnative.camera.RNCameraPackage;
+// react-native-fast-image
+import com.dylanvann.fastimage.FastImageViewPackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 // react-native-image-picker
@@ -99,6 +103,7 @@ public class PackageList {
     return new ArrayList<>(Arrays.<ReactPackage>asList(
       new MainReactPackage(mConfig),
       new AsyncStoragePackage(),
+      new ReactCheckBoxPackage(),
       new RNCMaskedViewPackage(),
       new RNCViewPagerPackage(),
       new ReactNativeFirebaseAppPackage(),
@@ -108,6 +113,7 @@ public class PackageList {
       new ReactNativeFirebaseStoragePackage(),
       new RNCPickerPackage(),
       new RNCameraPackage(),
+      new FastImageViewPackage(),
       new RNGestureHandlerPackage(),
       new ImagePickerPackage(),
       new RNLocalizePackage(),

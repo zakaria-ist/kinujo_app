@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
+import DatePicker from "react-native-datepicker";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -134,6 +135,7 @@ export default function ProfileInformation(props) {
                 alignItems: "center",
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
+                paddingBottom: heightPercentageToDP("2%"),
               }}
             >
               <Icon
@@ -164,6 +166,7 @@ export default function ProfileInformation(props) {
                 alignItems: "center",
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
+                paddingBottom: heightPercentageToDP("2%"),
               }}
             >
               <Icon
@@ -187,6 +190,7 @@ export default function ProfileInformation(props) {
           {editGender == true ? (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -217,6 +221,7 @@ export default function ProfileInformation(props) {
           ) : (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -246,6 +251,7 @@ export default function ProfileInformation(props) {
           {editBirthday == true ? (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -254,7 +260,7 @@ export default function ProfileInformation(props) {
                 marginRight: widthPercentageToDP("-3%"),
               }}
             >
-              <Icon
+              {/* <Icon
                 reverse
                 name="check"
                 type="font-awesome"
@@ -271,30 +277,43 @@ export default function ProfileInformation(props) {
                 value={birthday}
                 onChangeText={(value) => onBirthdayChanged(value)}
                 style={styles.textInput}
-              />
+              /> */}
             </View>
           ) : (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
                 alignItems: "center",
                 justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
+                marginRight: widthPercentageToDP("-2%"),
               }}
             >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditBirthdayChanged(true)}
+              <DatePicker
+                style={{ width: widthPercentageToDP("50%") }}
+                date={birthday}
+                mode="date"
+                format="YYYY-MM-DD"
+                confirmBtnText="Confirm"
+                cancelBtnText="Cancel"
+                customStyles={{
+                  // dateIcon: {
+                  //   position: "absolute",
+                  //   left: 0,
+                  //   top: 4,
+                  //   marginLeft: 0,
+                  // },
+                  dateInput: {
+                    marginRight: widthPercentageToDP("3%"),
+                  },
+                }}
+                onDateChange={(date) => {
+                  onBirthdayChanged(date);
+                }}
               />
-              <Text style={{ fontSize: RFValue(12) }}>{birthday}</Text>
+              {/* <Text style={{ fontSize: RFValue(12) }}>{birthday}</Text> */}
             </View>
           )}
         </View>
@@ -305,6 +324,7 @@ export default function ProfileInformation(props) {
           {editPostalCode == true ? (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -335,6 +355,7 @@ export default function ProfileInformation(props) {
           ) : (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -364,6 +385,7 @@ export default function ProfileInformation(props) {
           {editPrefecture == true ? (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -394,6 +416,7 @@ export default function ProfileInformation(props) {
           ) : (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -423,6 +446,7 @@ export default function ProfileInformation(props) {
           {editAddress1 == true ? (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -453,6 +477,7 @@ export default function ProfileInformation(props) {
           ) : (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -482,6 +507,7 @@ export default function ProfileInformation(props) {
           {editAddress2 == true ? (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -512,6 +538,7 @@ export default function ProfileInformation(props) {
           ) : (
             <View
               style={{
+                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
@@ -548,11 +575,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
     paddingBottom: heightPercentageToDP("2%"),
+    // backgroundColor: "orange",
   },
   productInformationTitle: {
+    alignSelf: "center",
     fontSize: RFValue(12),
   },
   productInformationDetails: {
+    paddingBottom: heightPercentageToDP("2%"),
     position: "absolute",
     right: 0,
     fontSize: RFValue(12),
@@ -575,6 +605,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     height: heightPercentageToDP("4%"),
     width: widthPercentageToDP("50%"),
-    borderRadius: 7
+    borderRadius: 7,
+    alignSelf: "center",
   },
 });

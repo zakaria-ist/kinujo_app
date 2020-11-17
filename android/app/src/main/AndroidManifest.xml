@@ -29,6 +29,8 @@
     android:allowBackup="true"
     android:theme="@style/AppTheme"
     android:requestLegacyExternalStorage="true"
+    android:supportsRtl="true"
+    android:usesCleartextTraffic="true"
   >
     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@guanchuan93/kinujo"/>
     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="39.0.0"/>

@@ -796,6 +796,7 @@ const styles = StyleSheet.create({
     height: 23 * ratioCameraIconInsideProfilePicture,
   },
   textInputEdit: {
+    borderRadius: 10,
     fontSize: RFValue(8),
     borderWidth: 1,
     borderColor: "black",

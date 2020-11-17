@@ -18,11 +18,11 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
-export default function HomeProducts({props, idx, image, office, name, seller, price, category, shipping}) {
+export default function HomeProducts({onPress, idx, image, office, name, seller, price, category, shipping}) {
   return (
     <SafeAreaView>
       <TouchableWithoutFeedback
-        onPress={() => props.navigation.navigate("HomeStore")}
+        onPress={onPress}
       >
         <View style={idx % 2 == 0 ? styles.products_left : styles.products_right}>
           <Image

@@ -33,18 +33,92 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 19 / 19;
 const ratioProfile = win.width / 13 / 22;
+let year = new Date().getFullYear();
+let month = new Date().getMonth() + 1;
+let day = new Date().getDate();
+let hour = new Date().getHours();
+let minute = ("0" + new Date().getMinutes()).slice(-2);
+let seconds = new Date().getSeconds();
 let userId;
+let groupID;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
 
-export default function Contact(props) {
+export default function ContactShare(props) {
+  groupID = props.route.params.groupID;
+  function storeShareContact(contactID, contactName) {
+    let contactObj = {
+      contactName: contactName,
+      contactID: contactID,
+      userID: userId,
+      timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+      createdAt:
+        year +
+        ":" +
+        month +
+        ":" +
+        day +
+        ":" +
+        hour +
+        ":" +
+        minute +
+        ":" +
+        seconds,
+      message: "Contact",
+    };
+
+    db.collection("chat")
+      .doc(groupID)
+      .collection("messages")
+      .add(contactObj)
+      .then(function() {
+        db.collection("chat")
+          .doc(groupID)
+          .set(
+            {
+              message: "Contact",
+              lastMessageTime:
+                year +
+                ":" +
+                month +
+                ":" +
+                day +
+                ":" +
+                hour +
+                ":" +
+                minute +
+                ":" +
+                seconds,
+            },
+            {
+              merge: true,
+            }
+          );
+        db.collection("chat").doc(groupID).get().then(function(doc) {
+            totalMessageCount = doc.data().totalMessage;
+          }).then(function() {
+          db.collection("chat").doc(groupID).update({
+              totalMessage: totalMessageCount + 1,
+            });
+        });
+        props.navigation.pop();
+      });
+  }
   function processUserHtml(props, users) {
     let tmpUserHtml = [];
     users.map((user) => {
       tmpUserHtml.push(
-        <TouchableWithoutFeedback key={user.id} onPress={() => {}}>
+        <TouchableWithoutFeedback
+          key={user.id}
+          onPress={() => {
+            storeShareContact(
+              user.id,
+              user.real_name ? user.real_name : user.nickname
+            );
+          }}
+        >
           <View style={styles.contactTabContainer}>
             <Image
               style={{

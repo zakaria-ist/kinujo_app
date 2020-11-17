@@ -167,8 +167,20 @@ export default function FriendSearch(props) {
                   onFriendHtmlChanged(processFriendHtml(props, response.data));
                 })
                 .catch(function(error) {
-                  if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                    alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                  if (
+                    error &&
+                    error.response &&
+                    error.response.data &&
+                    Object.keys(error.response.data).length > 0
+                  ) {
+                    alert.warning(
+                      error.response.data[
+                        Object.keys(error.response.data)[0]
+                      ][0] +
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
+                    );
                   }
                 });
             }}

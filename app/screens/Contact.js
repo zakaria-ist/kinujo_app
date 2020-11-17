@@ -32,13 +32,7 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 19 / 19;
-const ratioFolderIcon = win.width / 10 / 31;
-const ratioUpIcon = win.width / 20 / 14;
-const ratioFolderTabIcon = win.width / 23 / 11;
-const ratioNextIcon = win.width / 36 / 8;
-const ratioCustomerList = win.width / 10 / 26;
 const ratioProfile = win.width / 13 / 22;
-const ratioDown = win.width / 30 / 8;
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -145,7 +139,10 @@ export default function Contact(props) {
     users.map((user) => {
       tmpUserHtml.push(
         <TouchableWithoutFeedback
-          onLongPress={() => onShowChanged(true)}
+          onLongPress={() => {
+            onLongPressObjChanged(user);
+            onShowChanged(true);
+          }}
           key={user.id}
           onPress={() => {
             redirectToChat(
@@ -172,34 +169,14 @@ export default function Contact(props) {
     });
     return tmpUserHtml;
   }
-  const [folderTabsShow, onFolderTabShowChaned] = React.useState(true);
-  const [groupTabShow, onGroupTabShowChaned] = React.useState(true);
-  const [friendTabShow, onFriendTabShowChaned] = React.useState(true);
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [show, onShowChanged] = React.useState(false);
-  const folderTabOpacity = useRef(
-    new Animated.Value(heightPercentageToDP("100%"))
-  ).current;
-  const groupTabOpacity = useRef(
-    new Animated.Value(heightPercentageToDP("100%"))
-  ).current;
-  const friendTabOpacity = useRef(
-    new Animated.Value(heightPercentageToDP("100%"))
-  ).current;
-  const folderTabHeight = useRef(
-    new Animated.Value(heightPercentageToDP("25%"))
-  ).current;
-  const groupTabHeight = useRef(new Animated.Value(heightPercentageToDP("25%")))
-    .current;
-  const friendTabHeight = useRef(
-    new Animated.Value(heightPercentageToDP("25%"))
-  ).current;
+  const [longPressObj, onLongPressObjChanged] = React.useState({});
 
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function(url) {
-
       let userId = getID(url);
       request
         .get(url)
@@ -268,7 +245,7 @@ export default function Contact(props) {
 
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <CustomHeader
           text="連絡先"
           onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -294,13 +271,14 @@ export default function Contact(props) {
               source={require("../assets/Images/searchIcon.png")}
             />
           </View>
+          {console.log(show)}
           <View style={show == true ? styles.popUp : styles.none}>
             <View
               style={{
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(14) }}>髪長友子</Text>
+              <Text style={{ fontSize: RFValue(14) }}>{longPressObj.real_name ? longPressObj.real_name : longPressObj.nickname}</Text>
               <View
                 style={{
                   marginTop: heightPercentageToDP("2%"),
@@ -308,10 +286,122 @@ export default function Contact(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <Text style={styles.longPressText}>上部固定（or解除）</Text>
-                <Text style={styles.longPressText}>通知OFF</Text>
-                <Text style={styles.longPressText}>非表示</Text>
-                <Text style={styles.longPressText}>削除</Text>
+                <TouchableWithoutFeedback 
+                  onPress={() => {
+                    db
+                    .collection("users")
+                    .doc(String(user.id))
+                    .collection("friends")
+                    .where("id", "==", String(longPressObj.id))
+                    .get()
+                    .then((querySnapshot) => {  
+                      if(querySnapshot.size > 0){
+                        querySnapshot.forEach((documentSnapshot) => {
+                          db
+                          .collection("users")
+                          .doc(String(user.id))
+                          .collection("friends")
+                          .doc(documentSnapshot.id)
+                          .set({"pinned" : (longPressObj["pinned"] == "" ||
+                          longPressObj["pinned"])
+                            ? false
+                            : true}, {
+                            merge: true,
+                          });
+                        })
+                      }
+                    });
+                    onShowChanged(false);
+                  }}>
+                  <Text style={styles.longPressText}>上部固定（or解除）</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback 
+                  onPress={() => {
+                    db
+                    .collection("users")
+                    .doc(String(user.id))
+                    .collection("friends")
+                    .where("id", "==", String(longPressObj.id))
+                    .get()
+                    .then((querySnapshot) => {  
+                      if(querySnapshot.size > 0){
+                        querySnapshot.forEach((documentSnapshot) => {
+                          db
+                          .collection("users")
+                          .doc(String(user.id))
+                          .collection("friends")
+                          .doc(documentSnapshot.id)
+                          .set({"notify" : (longPressObj["notify"] == "" ||
+                          longPressObj["notify"])
+                            ? false
+                            : true}, {
+                            merge: true,
+                          });
+                        })
+                      }
+                    });
+                    onShowChanged(false);
+                  }}>
+                  <Text style={styles.longPressText}>通知OFF</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback 
+                  onPress={() => {
+                    db
+                    .collection("users")
+                    .doc(String(user.id))
+                    .collection("friends")
+                    .where("id", "==", String(longPressObj.id))
+                    .get()
+                    .then((querySnapshot) => {  
+                      if(querySnapshot.size > 0){
+                        querySnapshot.forEach((documentSnapshot) => {
+                          db
+                          .collection("users")
+                          .doc(String(user.id))
+                          .collection("friends")
+                          .doc(documentSnapshot.id)
+                          .set({"hide" : (longPressObj["hide"] == "" ||
+                          longPressObj["hide"])
+                            ? false
+                            : true}, {
+                            merge: true,
+                          });
+                        })
+                      }
+                    });
+                    onShowChanged(false);
+                  }}>
+                  <Text style={styles.longPressText}>非表示</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback 
+                  onPress={() => {
+                    db
+                    .collection("users")
+                    .doc(String(user.id))
+                    .collection("friends")
+                    .where("id", "==", String(longPressObj.id))
+                    .get()
+                    .then((querySnapshot) => {  
+                      if(querySnapshot.size > 0){
+                        querySnapshot.forEach((documentSnapshot) => {
+                          db
+                          .collection("users")
+                          .doc(String(user.id))
+                          .collection("friends")
+                          .doc(documentSnapshot.id)
+                          .set({"delete" : (longPressObj["delete"] == "" ||
+                          longPressObj["delete"])
+                            ? false
+                            : true}, {
+                            merge: true,
+                          });
+                        })
+                      }
+                    });
+                    onShowChanged(false);
+                  }}>
+                  <Text style={styles.longPressText}>削除</Text>
+                </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
                   onPressIn={() => onShowChanged(false)}
                   onPress={() => props.navigation.navigate("GroupChatCreation")}
@@ -332,152 +422,6 @@ export default function Contact(props) {
             </View>
           </View>
           <View>
-            {/* <TouchableWithoutFeedback
-            onPress={() => {
-              folderTabsShow == true
-                ? Animated.parallel([
-                    Animated.timing(folderTabHeight, {
-                      toValue: heightPercentageToDP("0%"),
-                      duration: 500,
-                      useNativeDriver: false,
-                    }),
-                    Animated.timing(folderTabOpacity, {
-                      toValue: heightPercentageToDP("0%"),
-                      duration: 100,
-                      useNativeDriver: false,
-                    }),
-                  ]).start(() => {}, onFolderTabShowChaned(false))
-                : Animated.parallel([
-                    Animated.timing(folderTabHeight, {
-                      toValue: heightPercentageToDP("25%"),
-                      duration: 500,
-                      useNativeDriver: false,
-                    }),
-                    Animated.timing(folderTabOpacity, {
-                      toValue: heightPercentageToDP("100%"),
-                      duration: 100,
-                      useNativeDriver: false,
-                    }),
-                  ]).start(() => {}, onFolderTabShowChaned(true));
-            }}
-          >
-            <View>
-              <View style={styles.contactTabContainer}>
-                <Image
-                  style={{
-                    width: win.width / 10,
-                    height: ratioFolderIcon * 23,
-                  }}
-                  source={require("../assets/Images/folderIcon.png")}
-                />
-                <Text style={styles.tabLeftText}>フォルダ</Text>
-                <View style={styles.tabRightContainer}>
-                  {folderTabsShow == true ? (
-                    <Image
-                      style={{
-                        width: win.width / 20,
-                        height: ratioUpIcon * 8,
-                        position: "absolute",
-                        right: 0,
-                      }}
-                      source={require("../assets/Images/upIcon.png")}
-                    />
-                  ) : (
-                    <Image
-                      style={{
-                        width: win.width / 30,
-                        height: ratioDown * 8,
-                        position: "absolute",
-                        marginRight: widthPercentageToDP("1.5%"),
-                        right: 0,
-                      }}
-                      source={require("../assets/Images/downForMoreIcon.png")}
-                    />
-                  )}
-                  <Text style={styles.tabRightText}>100</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableWithoutFeedback> */}
-            {/* <Animated.View
-            style={{
-              justifyContent: "center",
-              height: folderTabHeight,
-              opacity: folderTabOpacity,
-            }}
-          >
-            <View style={styles.contactTabContainer}>
-              <Image
-                style={{
-                  marginLeft: widthPercentageToDP("5%"),
-                  width: win.width / 23,
-                  height: ratioFolderTabIcon * 13,
-                }}
-                source={require("../assets/Images/folderTabIcon.png")}
-              />
-              <Text style={styles.tabLeftText}>仕事</Text>
-              <View style={styles.tabRightContainer}>
-                <Image
-                  style={{
-                    width: win.width / 36,
-                    height: ratioNextIcon * 15,
-                    position: "absolute",
-                    right: 0,
-                  }}
-                  source={require("../assets/Images/next.png")}
-                />
-                <Text style={styles.tabRightText}>100</Text>
-              </View>
-            </View>
-
-            <View style={styles.contactTabContainer}>
-              <Image
-                style={{
-                  marginLeft: widthPercentageToDP("5%"),
-                  width: win.width / 23,
-                  height: ratioFolderTabIcon * 13,
-                }}
-                source={require("../assets/Images/folderTabIcon.png")}
-              />
-              <Text style={styles.tabLeftText}>家族</Text>
-              <View style={styles.tabRightContainer}>
-                <Image
-                  style={{
-                    width: win.width / 36,
-                    height: ratioNextIcon * 15,
-                    position: "absolute",
-                    right: 0,
-                  }}
-                  source={require("../assets/Images/next.png")}
-                />
-                <Text style={styles.tabRightText}>100</Text>
-              </View>
-            </View>
-
-            <View style={styles.contactTabContainer}>
-              <Image
-                style={{
-                  marginLeft: widthPercentageToDP("5%"),
-                  width: win.width / 23,
-                  height: ratioFolderTabIcon * 13,
-                }}
-                source={require("../assets/Images/folderTabIcon.png")}
-              />
-              <Text style={styles.tabLeftText}>同級生</Text>
-              <View style={styles.tabRightContainer}>
-                <Image
-                  style={{
-                    width: win.width / 36,
-                    height: ratioNextIcon * 15,
-                    position: "absolute",
-                    right: 0,
-                  }}
-                  source={require("../assets/Images/next.png")}
-                />
-                <Text style={styles.tabRightText}>100</Text>
-              </View>
-            </View>
-          </Animated.View> */}
             <View
               style={{
                 borderBottomWidth: 1,

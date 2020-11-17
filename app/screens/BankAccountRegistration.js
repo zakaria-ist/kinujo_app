@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  StatusBar,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
@@ -27,7 +28,7 @@ import CustomAlert from "../lib/alert";
 import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
 const alert = new CustomAlert();
-import zenginCode from 'zengin-code';
+import zenginCode from "zengin-code";
 
 const win = Dimensions.get("window");
 export default function BankAccountRegistration(props) {

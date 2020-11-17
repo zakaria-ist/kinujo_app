@@ -46,7 +46,7 @@ export default function ReceiptEditing(props) {
               marginLeft: widthPercentageToDP("3%"),
             }}
           >
-            {Translate.t("Mr/Ms")}
+            {Translate.t("nameTitle")}
           </Text>
         </View>
         <Text style={styles.receivedMoneyText}>￥18,000 ー</Text>
