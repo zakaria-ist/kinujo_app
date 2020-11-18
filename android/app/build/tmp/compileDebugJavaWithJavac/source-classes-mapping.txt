@@ -165,8 +165,6 @@ org/unimodules/interfaces/taskManager/R.java
  org.unimodules.interfaces.taskManager.R
 androidx/interpolator/R.java
  androidx.interpolator.R
-com/google/android/gms/maps/R.java
- com.google.android.gms.maps.R
 androidx/core/R.java
  androidx.core.R
  androidx.core.R$attr
@@ -224,25 +222,6 @@ com/google/firebase/installations/R.java
  com.google.firebase.installations.R$styleable
 com/google/android/gms/flags/R.java
  com.google.android.gms.flags.R
-com/fitpassu/stripepayments/R.java
- com.fitpassu.stripepayments.R
- com.fitpassu.stripepayments.R$anim
- com.fitpassu.stripepayments.R$animator
- com.fitpassu.stripepayments.R$attr
- com.fitpassu.stripepayments.R$bool
- com.fitpassu.stripepayments.R$color
- com.fitpassu.stripepayments.R$dimen
- com.fitpassu.stripepayments.R$drawable
- com.fitpassu.stripepayments.R$id
- com.fitpassu.stripepayments.R$integer
- com.fitpassu.stripepayments.R$interpolator
- com.fitpassu.stripepayments.R$layout
- com.fitpassu.stripepayments.R$menu
- com.fitpassu.stripepayments.R$plurals
- com.fitpassu.stripepayments.R$string
- com.fitpassu.stripepayments.R$style
- com.fitpassu.stripepayments.R$styleable
- com.fitpassu.stripepayments.R$xml
 com/facebook/soloader/R.java
  com.facebook.soloader.R
 com/facebook/imagepipeline/backends/okhttp3/R.java
@@ -251,7 +230,6 @@ com/example/kinujo/R.java
  com.example.kinujo.R
  com.example.kinujo.R$anim
  com.example.kinujo.R$animator
- com.example.kinujo.R$array
  com.example.kinujo.R$attr
  com.example.kinujo.R$bool
  com.example.kinujo.R$color
@@ -261,7 +239,6 @@ com/example/kinujo/R.java
  com.example.kinujo.R$integer
  com.example.kinujo.R$interpolator
  com.example.kinujo.R$layout
- com.example.kinujo.R$menu
  com.example.kinujo.R$mipmap
  com.example.kinujo.R$plurals
  com.example.kinujo.R$raw
@@ -285,24 +262,6 @@ org/unimodules/interfaces/barcodescanner/R.java
  org.unimodules.interfaces.barcodescanner.R
 com/google/android/gms/auth/api/phone/R.java
  com.google.android.gms.auth.api.phone.R
-com/stripe/android/stripe3ds2/R.java
- com.stripe.android.stripe3ds2.R
- com.stripe.android.stripe3ds2.R$anim
- com.stripe.android.stripe3ds2.R$animator
- com.stripe.android.stripe3ds2.R$attr
- com.stripe.android.stripe3ds2.R$bool
- com.stripe.android.stripe3ds2.R$color
- com.stripe.android.stripe3ds2.R$dimen
- com.stripe.android.stripe3ds2.R$drawable
- com.stripe.android.stripe3ds2.R$id
- com.stripe.android.stripe3ds2.R$integer
- com.stripe.android.stripe3ds2.R$interpolator
- com.stripe.android.stripe3ds2.R$layout
- com.stripe.android.stripe3ds2.R$plurals
- com.stripe.android.stripe3ds2.R$string
- com.stripe.android.stripe3ds2.R$style
- com.stripe.android.stripe3ds2.R$styleable
- com.stripe.android.stripe3ds2.R$xml
 expo/modules/splashscreen/R.java
  expo.modules.splashscreen.R
  expo.modules.splashscreen.R$anim
@@ -501,12 +460,8 @@ com/google/firebase/storage/R.java
  com.google.firebase.storage.R$string
  com.google.firebase.storage.R$style
  com.google.firebase.storage.R$styleable
-com/google/android/gms/maps/license/R.java
- com.google.android.gms.maps.license.R
 androidx/sqlite/db/R.java
  androidx.sqlite.db.R
-androidx/viewbinding/R.java
- androidx.viewbinding.R
 androidx/localbroadcastmanager/R.java
  androidx.localbroadcastmanager.R
 org/unimodules/interfaces/permissions/R.java
@@ -589,8 +544,6 @@ androidx/viewpager2/R.java
  androidx.viewpager2.R$styleable
 com/google/android/gms/ads_identifier/R.java
  com.google.android.gms.ads_identifier.R
-com/google/android/gms/identity/license/R.java
- com.google.android.gms.identity.license.R
 com/google/android/gms/vision_common/R.java
  com.google.android.gms.vision_common.R
 com/facebook/fbcore/R.java
@@ -722,25 +675,6 @@ org/reactnative/maskedview/R.java
  org.reactnative.maskedview.R$style
  org.reactnative.maskedview.R$styleable
  org.reactnative.maskedview.R$xml
-com/stripe/android/R.java
- com.stripe.android.R
- com.stripe.android.R$anim
- com.stripe.android.R$animator
- com.stripe.android.R$attr
- com.stripe.android.R$bool
- com.stripe.android.R$color
- com.stripe.android.R$dimen
- com.stripe.android.R$drawable
- com.stripe.android.R$id
- com.stripe.android.R$integer
- com.stripe.android.R$interpolator
- com.stripe.android.R$layout
- com.stripe.android.R$menu
- com.stripe.android.R$plurals
- com.stripe.android.R$string
- com.stripe.android.R$style
- com.stripe.android.R$styleable
- com.stripe.android.R$xml
 org/reactnative/camera/R.java
  org.reactnative.camera.R
  org.reactnative.camera.R$anim
@@ -900,24 +834,6 @@ androidx/legacy/v4/R.java
  androidx.legacy.v4.R$string
  androidx.legacy.v4.R$style
  androidx.legacy.v4.R$styleable
-com/gettipsi/stripe/R.java
- com.gettipsi.stripe.R
- com.gettipsi.stripe.R$anim
- com.gettipsi.stripe.R$animator
- com.gettipsi.stripe.R$array
- com.gettipsi.stripe.R$attr
- com.gettipsi.stripe.R$bool
- com.gettipsi.stripe.R$color
- com.gettipsi.stripe.R$dimen
- com.gettipsi.stripe.R$drawable
- com.gettipsi.stripe.R$id
- com.gettipsi.stripe.R$integer
- com.gettipsi.stripe.R$interpolator
- com.gettipsi.stripe.R$layout
- com.gettipsi.stripe.R$string
- com.gettipsi.stripe.R$style
- com.gettipsi.stripe.R$styleable
- com.gettipsi.stripe.R$xml
 com/swmansion/rnscreens/R.java
  com.swmansion.rnscreens.R
  com.swmansion.rnscreens.R$anim
@@ -945,16 +861,6 @@ androidx/cardview/R.java
  androidx.cardview.R$dimen
  androidx.cardview.R$style
  androidx.cardview.R$styleable
-com/devmarvel/creditcardentry/R.java
- com.devmarvel.creditcardentry.R
- com.devmarvel.creditcardentry.R$anim
- com.devmarvel.creditcardentry.R$attr
- com.devmarvel.creditcardentry.R$color
- com.devmarvel.creditcardentry.R$drawable
- com.devmarvel.creditcardentry.R$id
- com.devmarvel.creditcardentry.R$string
- com.devmarvel.creditcardentry.R$style
- com.devmarvel.creditcardentry.R$styleable
 androidx/coordinatorlayout/R.java
  androidx.coordinatorlayout.R
  androidx.coordinatorlayout.R$attr
@@ -1056,8 +962,6 @@ com/example/kinujo/BuildConfig.java
  com.example.kinujo.BuildConfig
 expo/modules/keepawake/R.java
  expo.modules.keepawake.R
-com/google/android/gms/identity/R.java
- com.google.android.gms.identity.R
 com/swmansion/reanimated/R.java
  com.swmansion.reanimated.R
  com.swmansion.reanimated.R$anim
@@ -1141,23 +1045,6 @@ androidx/slidingpanelayout/R.java
  androidx.slidingpanelayout.R$string
  androidx.slidingpanelayout.R$style
  androidx.slidingpanelayout.R$styleable
-com/google/android/gms/wallet/R.java
- com.google.android.gms.wallet.R
-com/reactnativecommunity/webview/R.java
- com.reactnativecommunity.webview.R
- com.reactnativecommunity.webview.R$anim
- com.reactnativecommunity.webview.R$attr
- com.reactnativecommunity.webview.R$bool
- com.reactnativecommunity.webview.R$color
- com.reactnativecommunity.webview.R$dimen
- com.reactnativecommunity.webview.R$drawable
- com.reactnativecommunity.webview.R$id
- com.reactnativecommunity.webview.R$integer
- com.reactnativecommunity.webview.R$layout
- com.reactnativecommunity.webview.R$string
- com.reactnativecommunity.webview.R$style
- com.reactnativecommunity.webview.R$styleable
- com.reactnativecommunity.webview.R$xml
 com/facebook/nativeimagetranscoder/R.java
  com.facebook.nativeimagetranscoder.R
 com/dylanvann/fastimage/R.java
@@ -1192,8 +1079,6 @@ com/reactnativecommunity/viewpager/R.java
  com.reactnativecommunity.viewpager.R$style
  com.reactnativecommunity.viewpager.R$styleable
  com.reactnativecommunity.viewpager.R$xml
-com/google/android/gms/wallet/license/R.java
- com.google.android.gms.wallet.license.R
 io/invertase/firebase/storage/R.java
  io.invertase.firebase.storage.R
  io.invertase.firebase.storage.R$anim
