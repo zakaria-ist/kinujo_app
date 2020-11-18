@@ -1,4 +1,4 @@
-#Wed Nov 18 13:38:52 MYT 2020
+#Wed Nov 18 13:42:05 MYT 2020
 base.53=/Users/admin/Projects/kinujo_app/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes2.dex
 renamed.9=classes10.dex
 base.52=/Users/admin/Projects/kinujo_app/android/app/build/intermediates/dex/debug/mergeLibDexDebug/out/classes_9.dex
