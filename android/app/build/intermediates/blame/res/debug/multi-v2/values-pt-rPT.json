@@ -38,6 +38,40 @@
                     }
                 },
                 {
+                    "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/840ead4ea274ff5d0e0aea4d48e21f5f/jetified-play-services-wallet-11.8.0/res/values-pt-rPT/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "242",
+                        "endColumns": "104",
+                        "endOffsets": "346"
+                    },
+                    "to": {
+                        "startLines": "60",
+                        "startColumns": "4",
+                        "startOffsets": "6674",
+                        "endColumns": "108",
+                        "endOffsets": "6778"
+                    }
+                },
+                {
+                    "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/4ae8325d4dd8875cc51117911902a9d8/stripe-3ds2-android-2.7.2/res/values-pt-rPT/values-pt-rPT.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,123,187,255,311,408,516,583,651,717,803",
+                        "endColumns": "67,63,67,55,96,107,66,67,65,85,68",
+                        "endOffsets": "118,182,250,306,403,511,578,646,712,798,867"
+                    },
+                    "to": {
+                        "startLines": "49,50,51,52,53,54,55,56,57,58,59",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "5857,5925,5989,6057,6113,6210,6318,6385,6453,6519,6605",
+                        "endColumns": "67,63,67,55,96,107,66,67,65,85,68",
+                        "endOffsets": "5920,5984,6052,6108,6205,6313,6380,6448,6514,6600,6669"
+                    }
+                },
+                {
                     "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/e343f28f158b195f328fb0bd623e3b2d/jetified-play-services-basement-17.0.0/res/values-pt-rPT/values.xml",
                     "from": {
                         "startLines": "4",

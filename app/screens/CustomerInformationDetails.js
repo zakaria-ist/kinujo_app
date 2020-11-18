@@ -21,6 +21,10 @@ export default function CustomerInformationDetails(props) {
         onBack={() => {
           props.navigation.pop();
         }}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
+        onPress={() => {
+          props.navigation.navigate("Cart");
+        }}
         text={Translate.t("setting")}
       />
       <CustomSecondaryHeader

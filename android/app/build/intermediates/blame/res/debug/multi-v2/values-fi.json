@@ -70,6 +70,23 @@
                         "endColumns": "208",
                         "endOffsets": "4130"
                     }
+                },
+                {
+                    "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/840ead4ea274ff5d0e0aea4d48e21f5f/jetified-play-services-wallet-11.8.0/res/values-fi/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "238",
+                        "endColumns": "104",
+                        "endOffsets": "342"
+                    },
+                    "to": {
+                        "startLines": "49",
+                        "startColumns": "4",
+                        "startOffsets": "5616",
+                        "endColumns": "108",
+                        "endOffsets": "5720"
+                    }
                 }
             ]
         }

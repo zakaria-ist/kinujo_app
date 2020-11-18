@@ -45,6 +45,13 @@ export default function SearchProducts(props) {
     const [searchTerm, onSearchTermChanged] = React.useState([]);
 
     function performProductHtml(products){
+      products = products.sort((p1, p2) => {
+        if(p1.created > p2.created){
+          return -1;
+        }
+        return 1;
+      });
+
       let kinujoProducts = products.filter((product) => {
         return product.user.authority.id == 1;
         })
@@ -54,7 +61,6 @@ export default function SearchProducts(props) {
 
         let tmpKinujoHtml = []
         kinujoProducts.map((product) => {
-          console.log(product);
           tmpKinujoHtml.push(<HomeProducts
               onPress={
                 ()=>{

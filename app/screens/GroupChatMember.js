@@ -207,6 +207,7 @@ export default function FolderMemberSelection(props) {
     <SafeAreaView>
       <CustomHeader
         text="フォルダメンバー選択"
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
       <TouchableWithoutFeedback onPress={() => finishSelect()}>

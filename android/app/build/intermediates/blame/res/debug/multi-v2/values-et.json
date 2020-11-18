@@ -55,6 +55,23 @@
                     }
                 },
                 {
+                    "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/840ead4ea274ff5d0e0aea4d48e21f5f/jetified-play-services-wallet-11.8.0/res/values-et/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "238",
+                        "endColumns": "100",
+                        "endOffsets": "338"
+                    },
+                    "to": {
+                        "startLines": "49",
+                        "startColumns": "4",
+                        "startOffsets": "5717",
+                        "endColumns": "104",
+                        "endOffsets": "5817"
+                    }
+                },
+                {
                     "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/e343f28f158b195f328fb0bd623e3b2d/jetified-play-services-basement-17.0.0/res/values-et/values.xml",
                     "from": {
                         "startLines": "4",

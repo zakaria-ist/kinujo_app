@@ -105,6 +105,7 @@ export default function Favorite(props) {
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         text="お気に入り"
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => props.navigation.pop()}
       />

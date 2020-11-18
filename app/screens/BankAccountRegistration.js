@@ -118,6 +118,7 @@ export default function BankAccountRegistration(props) {
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         text={Translate.t("bankAccount")}
       />
       <CustomSecondaryHeader

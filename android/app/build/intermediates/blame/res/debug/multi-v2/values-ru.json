@@ -4,6 +4,23 @@
             "outputFile": "/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-ru/values-ru.xml",
             "map": [
                 {
+                    "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/4ae8325d4dd8875cc51117911902a9d8/stripe-3ds2-android-2.7.2/res/values-ru/values-ru.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,123,189,257,313,399,502,569,636,700,787",
+                        "endColumns": "67,65,67,55,85,102,66,66,63,86,71",
+                        "endOffsets": "118,184,252,308,394,497,564,631,695,782,854"
+                    },
+                    "to": {
+                        "startLines": "49,50,51,52,53,54,55,56,57,58,59",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "5766,5834,5900,5968,6024,6110,6213,6280,6347,6411,6498",
+                        "endColumns": "67,65,67,55,85,102,66,66,63,86,71",
+                        "endOffsets": "5829,5895,5963,6019,6105,6208,6275,6342,6406,6493,6565"
+                    }
+                },
+                {
                     "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/3275b265d3d71d2b69326901901ce0f2/play-services-base-17.1.0/res/values-ru/values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
@@ -18,6 +35,23 @@
                         "startOffsets": "2822,2931,3129,3257,3369,3570,3701,3846,4195,4435,4544,4738,4866,5092,5280,5379,5469",
                         "endColumns": "108,197,127,111,200,130,144,132,239,108,193,127,225,187,98,89,114",
                         "endOffsets": "2926,3124,3252,3364,3565,3696,3841,3974,4430,4539,4733,4861,5087,5275,5374,5464,5579"
+                    }
+                },
+                {
+                    "source": "/Users/guanchuan/.gradle/caches/transforms-2/files-2.1/840ead4ea274ff5d0e0aea4d48e21f5f/jetified-play-services-wallet-11.8.0/res/values-ru/values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "238",
+                        "endColumns": "103",
+                        "endOffsets": "341"
+                    },
+                    "to": {
+                        "startLines": "60",
+                        "startColumns": "4",
+                        "startOffsets": "6570",
+                        "endColumns": "107",
+                        "endOffsets": "6673"
                     }
                 },
                 {

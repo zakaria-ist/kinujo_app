@@ -126,6 +126,7 @@ export default function GroupChatCreation(props) {
     <SafeAreaView>
       <CustomHeader
         text={Translate.t("groupChatCreate")}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => props.navigation.pop()}
       />

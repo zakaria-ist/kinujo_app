@@ -5,6 +5,7 @@ import RegistrationGeneral from "../Screens/RegistrationGeneral";
 import RegistrationStore from "../Screens/RegistrationStore";
 import SMSAuthentication from "../Screens/SMSAuthentication";
 import AccountExamination from "../Screens/AccountExamination";
+import Payment from "../Screens/Payment";
 import PasswordReset from "../Screens/PasswordReset";
 import PasswordResetCompletion from "../Screens/PasswordResetCompletion";
 import TermsOfCondition from "../Screens/TermsOfCondition";
@@ -266,6 +267,7 @@ export default function LoginStack() {
         <Stack.Screen name="ReceiptView" component={ReceiptView} />
         <Stack.Screen name="ContactShare" component={ContactShare} />
         <Stack.Screen name="SearchProducts" component={SearchProducts} />
+        <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

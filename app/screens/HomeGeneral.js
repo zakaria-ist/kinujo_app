@@ -61,6 +61,12 @@ export default function Home(props) {
 
     request.get("products/").then(function(response){
       let products = response.data;
+      products = products.sort((p1, p2) => {
+        if(p1.created > p2.created){
+          return -1;
+        }
+        return 1;
+      });
 
       let kinujoProducts = products.filter((product) => {
         return product.user.authority.id == 1;
@@ -133,7 +139,11 @@ export default function Home(props) {
 
   return (
     <SafeAreaView>
-      <CustomHeader />
+      <CustomHeader 
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
+        onPress={() => {
+          props.navigation.navigate("Cart");
+        }}/>
 
       <CustomSecondaryHeader
         name={user.real_name ? user.real_name : user.nickname}

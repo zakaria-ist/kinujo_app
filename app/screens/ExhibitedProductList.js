@@ -119,7 +119,7 @@ export default function ExhibitedProductList(props) {
     }
     if (!loaded) {
       request
-        .get("products/" + userId + "/")
+        .get("sellerProducts/" + userId + "/")
         .then(function(response) {
           onProductsChanged(response.data.products);
           onProductHtmlChanged(

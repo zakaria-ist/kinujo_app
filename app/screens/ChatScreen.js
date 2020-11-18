@@ -476,7 +476,7 @@ export default function ChatScreen(props) {
       <SafeAreaView style={{ flex: 1 }}>
         <CustomHeader
           onBack={() => handleBack()}
-          onFavoriteChanged="1"
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => props.navigation.navigate("Cart")}
         />
         <CustomSecondaryHeader name={groupName} />

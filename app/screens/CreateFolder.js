@@ -131,6 +131,7 @@ export default function CreateFolder(props) {
     <SafeAreaView>
       <CustomHeader
         text="フォルダ作成"
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => {
           props.navigation.pop();

@@ -27,6 +27,7 @@ import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import DropDownPicker from "react-native-dropdown-picker";
+
 const request = new Request();
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
@@ -220,6 +221,10 @@ export default function Cart(props) {
         onBack={() => {
           props.navigation.pop();
         }}
+        onPress={() => {
+          props.navigation.navigate("Cart");
+        }}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         text="カート"
       />
       <ScrollView>
@@ -421,7 +426,11 @@ export default function Cart(props) {
               {subtotal + tax + shipping}円
             </Text>
           </View>
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={
+            () => {
+              props.navigation.navigate("Payment")
+            }
+          }>
             <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
               <View style={styles.orderConfirmButtonContainer}>
                 <Text style={styles.orderConfirmButtonText}>注文確定</Text>

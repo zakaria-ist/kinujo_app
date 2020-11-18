@@ -11,122 +11,191 @@ import {
 } from "react-native";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { SliderBox } from "react-native-image-slider-box";
+import { ScrollView } from "react-native-gesture-handler";
 import FastImage from 'react-native-fast-image';
 import { RFValue } from "react-native-responsive-fontsize";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
+import CartFloating from "../assets/CustomComponents/CartFloating";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+const request = new Request();
+const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 
-const images = [
-  "https://source.unsplash.com/1024x768/?nature",
-  "https://source.unsplash.com/1024x768/?water",
-  "https://source.unsplash.com/1024x768/?girl",
-  "https://source.unsplash.com/1024x768/?tree",
-];
 export default function HomeStoreList(props) {
+  const [user, onUserChanged] = React.useState({});
+  const [product, onProductChanged] = React.useState({});
+  const [images, onImagesChanged] = React.useState({});
+
+  React.useEffect(()=>{
+    AsyncStorage.getItem("user").then(function(url) {
+      request
+        .get(url)
+        .then(function(response) {
+          onUserChanged(response.data);
+        })
+        .catch(function(error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
+
+    request
+      .get(props.route.params.url)
+      .then(function(response) {
+        onProductChanged(response.data);
+
+        if(response.data.productImages.length > 0){
+          onImagesChanged(response.data.productImages.map((productImage) => {
+            return productImage.image.image;
+          }));
+        } else {
+          onImagesChanged(['https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg'])
+        }
+      })
+      .catch(function(error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
+  }, [])
+
   return (
     <SafeAreaView>
       <CustomHeader
+        onPress={() => {
+          props.navigation.navigate("Cart");
+        }}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
           props.navigation.pop();
         }} />
       <View style={styles.product_content}>
-        <View style={{width:"100%",height:width / 1.4 + 100}}>
-          {/* Need Find Image Slider */}
-          <SliderBox
-            ImageComponent={FastImage}
-            images={images}
-            sliderBoxHeight={width / 1.4 + 20}
-            parentWidth={width - 30}
-            onCurrentImagePressed={index => console.warn(`image ${index} pressed`)}
-            dotColor="#D8CDA7"
-            inactiveDotColor="#90A4AE"
-            resizeMethod={'resize'}
-            resizeMode={'cover'}
-            autoplay={true}
-            circleLoop={true}
-            paginationBoxStyle={{
-              position: "absolute",
-              bottom: 0,
-              padding: 0,
-              alignItems: "center",
-              alignSelf: "center",
-              justifyContent: "center",
-              marginBottom: -60
+        <ScrollView>
+          <View style={{width:"100%",height:width / 1.4 + 100}}>
+            {/* Need Find Image Slider */}
+            <SliderBox
+              ImageComponent={FastImage}
+              images={images}
+              sliderBoxHeight={width / 1.4 + 20}
+              parentWidth={width - 30}
+              onCurrentImagePressed={index => console.warn(`image ${index} pressed`)}
+              dotColor="#D8CDA7"
+              inactiveDotColor="#90A4AE"
+              resizeMethod={'resize'}
+              resizeMode={'cover'}
+              autoplay={true}
+              circleLoop={true}
+              paginationBoxStyle={{
+                position: "absolute",
+                bottom: 0,
+                padding: 0,
+                alignItems: "center",
+                alignSelf: "center",
+                justifyContent: "center",
+                marginBottom: -60
+              }}
+            />
+          </View>
+          <View
+            style={{
+              width: "100%",
             }}
-          />
-        </View>
-        <View
-          style={{
-            width: "100%",
-          }}
-        >
-          <Text style={styles.font_small}>{"KINUJO W"}</Text>
-          <Text style={styles.font_medium}>
-            {"KINUJO W - worldwide model -"}
-          </Text>
-          <Text style={styles.font_small}>{"Seller: KINUJO"}</Text>
-          <Text
-            style={[
-              styles.font_small,
-              {
-                padding: 10,
-              },
-            ]}
           >
-            {"Hair Iron"}
-          </Text>
-          <Text style={styles.font_medium}>
-            {"12,000Yen (Tax Not Included)"}
-          </Text>
-          <Text style={styles.font_small}>{"Free Shipping"}</Text>
-        </View>
+            <Text style={styles.font_small}>{product.brand_name}</Text>
+            <Text style={styles.font_medium}>
+              {product ? product.name : ""}
+            </Text>
+            <Text style={styles.font_small}>{"Seller: " + (product && product.user ? (product.user.real_name ? product.user.real_name : product.user.nickname) : "")}</Text>
+            <Text
+              style={[
+                styles.font_small,
+                {
+                  padding: 10,
+                },
+              ]}
+            >
+              {product && product.category ? product.category.name : ""}
+            </Text>
+            <Text style={styles.font_medium}>
+              {(user.is_seller ? product.store_price : product.price) + " Yen (Tax Not Included)"}
+            </Text>
+            <Text style={styles.font_small}>{product.shipping_fee ? ("Shipping: " + product.shipping_fee)  : "Free Shipping"}</Text>
+          </View>
 
-        <View
-          style={{
-            width: "100%",
-            paddingTop: 20,
-          }}
-        >
-          <Text style={styles.product_title}>{"Product Featured"}</Text>
-          <Text style={styles.product_description}>
-            {
-              'The ultimate overseas straight iron that uses the new common sense of hair irons, "Silk Plate ®. Silk Plate ® made from a special material realizes an overwhelmingly smooth plate. Minimizes damage to hair. "Silk Plate ®" is the best plate for people who do not want to damage their hair but want to use a curling iron because it has a moisturizing power that does not evaporate immediately even if it is sprinkled with water at a high temperature of 200 ° C. The temperature rises to 180 ° C in about 35 seconds after turning on the power! It keeps a high temperature even during use and can be used at a uniform temperature throughout the hair, enabling styling that does not crumble easily. The curl cushion function keeps the curls on the ends of the hair neatly organized. It can be set from 140 ° C to 220 ° C in 20 ° C increments. A safe design that automatically turns off 60 minutes after the power is turned on. Since the connector part of the cord is a 360-degree rotation type, the cord does not get entangled. It comes with a '
-            }
-          </Text>
-        </View>
+          <View
+            style={{
+              width: "100%",
+              paddingTop: 20,
+            }}
+          >
+            <Text style={styles.product_title}>{"Product Featured"}</Text>
+            <Text style={styles.product_description}>
+              {
+                product.pr
+              }
+            </Text>
+          </View>
 
-        <View
-          style={{
-            width: "100%",
-            paddingTop: 20,
-          }}
-        >
-          <Text style={styles.product_title}>{"Product Details"}</Text>
-          <Text style={styles.product_description}>
-            {"Model Number：EK001"}
-          </Text>
-          <Text style={styles.product_description}>
-            {"Power Supply：AC100～240V （Domestic and overseas use possible）"}
-          </Text>
-          <Text style={styles.product_description}>{"Frequency：50/60Hz"}</Text>
-          <Text style={styles.product_description}>
-            {"Actual Size：approx.289(W) x 40(D) x 31(H) mm"}
-          </Text>
-          <Text style={styles.product_description}>
-            {"Plate Size：approx.24 x 90mm"}
-          </Text>
-          <Text style={styles.product_description}>
-            {"Weigth：approx.346g"}
-          </Text>
-          <Text style={styles.product_description}>
-            {"Humidity adjustment：approx.140,160,180,200,220℃"}
-          </Text>
-        </View>
+          <View
+            style={{
+              width: "100%",
+              paddingTop: 20,
+            }}
+          >
+            <Text style={styles.product_title}>{"Product Details"}</Text>
+            <Text style={styles.product_description}>
+              {product.pr}
+            </Text>
+          </View>
+        </ScrollView>
       </View>
+      <CartFloating onPress={
+        () => {
+          db.collection("users")
+            .doc(user.id.toString())
+            .collection("carts")
+            .doc(product.id.toString())
+            .set({
+              quantity: 1,
+            });
+          alert.warning("Added to cart.");
+        }
+      }/>
     </SafeAreaView>
   );
 }
@@ -168,7 +237,7 @@ const styles = StyleSheet.create({
     height: width / 1.4 - 30,
   },
   product_content: {
-    height: height - heightPercentageToDP(10) - 48,
+    height: height - heightPercentageToDP(10),
     overflow: "scroll",
     width: "100%",
     padding: 15,

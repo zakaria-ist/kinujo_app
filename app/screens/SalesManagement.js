@@ -200,7 +200,7 @@ export default function SalesManagement(props) {
     <SafeAreaView>
       <CustomHeader
         text={Translate.t("salesManagement")}
-        onFavoriteChanged="favorite"
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
           props.navigation.pop();
         }}
