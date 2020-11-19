@@ -55,6 +55,7 @@
     "react-native-image-slider-box": "^1.0.12",
     "react-native-input-credit-card": "^0.5.5",
     "react-native-invertible-scroll-view": "^2.0.0",
+    "react-native-loading-spinner-overlay": "^2.0.0",
     "react-native-localize": "^1.4.2",
     "react-native-paper": "^4.2.0",
     "react-native-permissions": "^2.2.2",

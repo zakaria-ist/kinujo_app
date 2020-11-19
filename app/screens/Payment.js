@@ -29,6 +29,7 @@ import Request from "../lib/request";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -39,11 +40,17 @@ const db = firebase.firestore();
 
 export default function Payment(props) {
   const [card, onCardChanged] = React.useState({});
+  const [spinner, onSpinnerChanged] = React.useState(false);
 
   React.useEffect(() => {
   }, [])
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Spinner
+          visible={spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
       <CustomHeader
         onBack={() => {
           props.navigation.pop();
@@ -68,13 +75,16 @@ export default function Payment(props) {
                 userId = urls[urls.length - 1];
 
                 if(card && card.valid){
+                  onSpinnerChanged(true);
                   request.post("pay/" + userId + "/", {
                     card : card.values,
                     products: props.route.params.products,
                     address: props.route.params.address,
                     tax: props.route.params.tax
                   }).then(function(response){
-                    if (response.data.success) {
+                    onSpinnerChanged(false);
+                    response = response.data
+                    if (response.success) {
                       db.collection("users")
                       .doc(userId)
                       .collection("carts")
@@ -104,9 +114,12 @@ export default function Payment(props) {
                             Object.keys(response.errors)[0] +
                             ")"
                         );
+                      } else if(response.error){
+                        alert.warning(response.error);
                       }
                     }
                   }).catch(function(error){
+                    onSpinnerChanged(false);
                     if (
                       error &&
                       error.response &&
@@ -154,5 +167,8 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentageToDP(".3%"),
     paddingHorizontal: widthPercentageToDP("2%"),
     alignSelf: "center",
+  },
+  spinnerTextStyle: {
+    color: '#FFF'
   },
 });

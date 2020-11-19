@@ -28,6 +28,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
+import RemoveLogo from "../assets/icons/removeIcon.svg";
 
 import CheckBox from "@react-native-community/checkbox";
 const request = new Request();
@@ -133,7 +134,7 @@ export default function Cart(props) {
     let tmpCartHtml = [];
     products.map((product) => {
       let item = maps.filter((tmp) => {
-        return tmp.product_id == product.id;
+        return tmp.id == product.id;
       });
       item = item[0];
       tmpCartHtml.push(
@@ -193,10 +194,30 @@ export default function Cart(props) {
               >
                 <Text style={styles.buttonText}>変更</Text>
               </TouchableWithoutFeedback>
-              <Image
-                source={require("../assets/icons/removeIcon.svg")}
-                style={styles.removeIcon}
-              />
+              <TouchableWithoutFeedback onPress={
+                () => {
+                    firebaseProducts = firebaseProducts.filter((firebaseProduct) => {
+                      return firebaseProduct.id != product.id
+                    })
+                    console.log(product.id);
+                    console.log(firebaseProducts);
+                    let tmpIds = ids.filter((id) => {
+                      return id != product.id
+                    })
+                    ids = tmpIds;
+                    onUpdate(tmpIds, firebaseProducts, false)
+                    // db.collection("users")
+                    //   .doc(userId)
+                    //   .collection("carts")
+                    //   .doc(product.product_id)
+                    //   .delete()
+                }
+              }>
+                <RemoveLogo
+                  source={require("../assets/icons/removeIcon.svg")}
+                  style={styles.removeIcon}
+                />
+              </TouchableWithoutFeedback>
             </View>
           </View>
         </View>
@@ -333,7 +354,7 @@ export default function Cart(props) {
           }
         });
     });
-  }, []);
+  }, [isFocused]);
 
   return (
     <View style={{ paddingBottom: heightPercentageToDP("10%"), flexGrow: 1 }}>
