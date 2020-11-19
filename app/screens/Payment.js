@@ -24,33 +24,21 @@ import stripe from 'tipsi-stripe'
 import CustomAlert from "../lib/alert";
 import Translate from "../assets/Translates/Translate";
 import { CreditCardInput, LiteCreditCardInput } from "react-native-input-credit-card";
-const alert = new CustomAlert();
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+import "firebase/firestore";
 
-async function card(){
-  const params = {
-    // mandatory
-    number: '4242424242424242',
-    expMonth: 11,
-    expYear: 17,
-    cvc: '223',
-    // optional
-    name: 'Test User',
-    currency: 'usd',
-    addressLine1: '123 Test Street',
-    addressLine2: 'Apt. 5',
-    addressCity: 'Test City',
-    addressState: 'Test State',
-    addressCountry: 'Test Country',
-    addressZip: '55555',
-  }
-  
-  const token = await stripe.createTokenWithCard(params)
-  // alert.warning(token);
+const request = new Request();
+const alert = new CustomAlert();
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
 }
+const db = firebase.firestore();
+
 export default function Payment(props) {
-  stripe.setOptions({
-    publishableKey: 'pk_test_LhIqls6lfDYI60OM3UzpXPT6',
-  })
+  const [card, onCardChanged] = React.useState({});
 
   React.useEffect(() => {
   }, [])
@@ -67,11 +55,75 @@ export default function Payment(props) {
         text={Translate.t("payment")}
       />
       <View>
-        <CreditCardInput onChange={()=>{
-
+        <CreditCardInput onChange={(form)=>{
+          onCardChanged(form);
         }} />
         <TouchableWithoutFeedback onPress={
             () => {
+              AsyncStorage.getItem("user").then((url) => {
+                let urls = url.split("/");
+                urls = urls.filter((url) => {
+                  return url;
+                });
+                userId = urls[urls.length - 1];
+
+                if(card && card.valid){
+                  request.post("pay/" + userId + "/", {
+                    card : card.values,
+                    products: props.route.params.products,
+                    address: props.route.params.address,
+                    tax: props.route.params.tax
+                  }).then(function(response){
+                    if (response.data.success) {
+                      db.collection("users")
+                      .doc(userId)
+                      .collection("carts")
+                      .get()
+                      .then((querySnapshot) => {
+                        querySnapshot.forEach((documentSnapshot) => {
+                          db.collection("users")
+                          .doc(userId)
+                          .collection("carts")
+                          .doc(documentSnapshot.id).delete()
+                          .then(() => {
+                          });
+                        });
+
+                        props.navigation.pop();
+                      });
+                    } else {
+                      if (
+                        response.errors &&
+                        Object.keys(response.errors).length > 0
+                      ) {
+                        alert.warning(
+                          response.errors[
+                            Object.keys(response.errors)[0]
+                          ][0] +
+                            "(" +
+                            Object.keys(response.errors)[0] +
+                            ")"
+                        );
+                      }
+                    }
+                  }).catch(function(error){
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0]
+                      );
+                    }
+                  })
+                } else {
+                  alert.warning("Card not complete");
+                }
+              });
             }
           }>
           <View style={{ paddingBottom: heightPercentageToDP("10%") }}>

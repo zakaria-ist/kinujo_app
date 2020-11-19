@@ -11,10 +11,10 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+import { useIsFocused } from '@react-navigation/native';
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { Colors } from "../assets/Colors.js";
 import { Picker } from "@react-native-picker/picker";
-import HomeProducts from "./HomeProducts";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -26,20 +26,25 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
+import "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 
+import CheckBox from "@react-native-community/checkbox";
 const request = new Request();
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
-const { height } = Dimensions.get("window");
 const ratioUpWhiteArrow = width / 24 / 15;
 const ratioRemoveIcon = width / 19 / 16;
-
+let firebaseProducts = [];
+let ids = [];
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-
+const win = Dimensions.get("window");
+const ratioAdd = win.width / 21 / 14;
+const ratioRemove = win.width / 20 / 16;
+let taxObj = {};
 export default function Cart(props) {
   const [cartItemShow, onCartItemShowChanged] = React.useState(true);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
@@ -61,13 +66,62 @@ export default function Cart(props) {
   const [subtotal, onSubTotalChanged] = React.useState(0);
   const [shipping, onShippingChanged] = React.useState(0);
   const [tax, onTaxChanged] = React.useState(0);
+  
   let userId = 0;
-  let ids = [];
-  let firebaseProducts = [];
+  const isFocused = useIsFocused();
+  const [selected, onSelectedChanged] = React.useState("");
+  const [addressHtml, onAddressHtmlChanged] = React.useState([]);
 
+  function getAddressHtml(pAddresses, pSelected){
+    let tmpAddresses = [];
+    pAddresses.map((address) => {
+      tmpAddresses.push(
+        <TouchableWithoutFeedback key={address.id}>
+          <View>
+          <View style={styles.tabContainer}>
+            <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
+            <Text style={styles.textInTabContainer}>{address.zip1}</Text>
+            <Text style={styles.textInTabContainer}>
+              {address.address1}
+            </Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  marginTop: heightPercentageToDP(".5%"),
+                }}
+              >
+                {address.prefecture.name}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.checkBoxContainer}>
+            <CheckBox
+              color={Colors.E6DADE}
+              uncheckedColor={Colors.E6DADE}
+              disabled={false}
+              value={pSelected == address['id']}
+              onPress={() => {
+                alert.warning("PRESS");
+              }}
+              onValueChange={(value) => {
+                if(value){
+                  onSelectedChanged(address['id'])
+                  onAddressHtmlChanged(getAddressHtml(pAddresses, address['id']))
+                }
+              }}
+            />
+          </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    })
+    return tmpAddresses;
+  }
+  
   function onValueChanged(id, itemValue, is_store) {
     firebaseProducts = firebaseProducts.map((product) => {
-      if (product.id == id) {
+      if (product.product_id == id) {
         product.quantity = itemValue;
       }
       return product;
@@ -79,11 +133,11 @@ export default function Cart(props) {
     let tmpCartHtml = [];
     products.map((product) => {
       let item = maps.filter((tmp) => {
-        return tmp.id == product.id;
+        return tmp.product_id == product.id;
       });
       item = item[0];
       tmpCartHtml.push(
-        <View key={product.id} style={styles.cartFirstTabContainer}>
+        <View key={product.product_id} style={styles.cartFirstTabContainer}>
           <View>
             <Text style={styles.cartTabText}>{product.name}</Text>
             <Text style={styles.cartTabText}>
@@ -97,7 +151,7 @@ export default function Cart(props) {
               selectedValue={item.quantity}
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => {
-                onValueChanged(product.id, itemValue, is_store);
+                onValueChanged(product.product_id, itemValue, is_store);
               }}
               mode="dropdown"
             >
@@ -123,14 +177,14 @@ export default function Cart(props) {
                 onPress={() => {
                   let tmpFirebaseProducts = firebaseProducts.filter(
                     (tmpProduct) => {
-                      return product.id == tmpProduct.id;
+                      return product.product_id == tmpProduct.product_id;
                     }
                   );
                   let firebaseProduct = tmpFirebaseProducts[0];
                   db.collection("users")
                     .doc(userId)
                     .collection("carts")
-                    .doc(product.id)
+                    .doc(product.product_id)
                     .set({
                       quantity: firebaseProduct.quantity,
                     });
@@ -156,7 +210,7 @@ export default function Cart(props) {
       .get("product/byIds/", {
         ids: ids,
       })
-      .then(function(response) {
+      .then(function (response) {
         onCartHtmlChanged(
           processCartHtml(props, response.data.products, items, is_store)
         );
@@ -164,11 +218,11 @@ export default function Cart(props) {
         let tmpProducts = response.data.products;
         ids.map((id) => {
           let tmpQuantities = firebaseProducts.filter((product) => {
-            return (product.id = id);
+            return (product.product_id = id);
           });
           let quantity = tmpQuantities[0].quantity;
           let tmpProduct = tmpProducts.filter((product) => {
-            return (product.id = id);
+            return (product.product_id = id);
           });
           tmpProduct = tmpProduct[0];
           onSubTotalChanged(
@@ -176,9 +230,19 @@ export default function Cart(props) {
           );
         });
       })
-      .catch(function(error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
         }
       });
   }
@@ -191,27 +255,83 @@ export default function Cart(props) {
       });
       userId = urls[urls.length - 1];
 
-      if (!loaded) {
-        db.collection("users")
-          .doc(userId)
-          .collection("carts")
-          .get()
-          .then((querySnapshot) => {
-            let tmpIds = [];
-            let items = [];
-            querySnapshot.forEach((documentSnapshot) => {
-              tmpIds = tmpIds.concat(documentSnapshot.id);
-              items.push({
-                id: documentSnapshot.id,
-                quantity: documentSnapshot.data().quantity,
-              });
+      db.collection("users")
+        .doc(userId)
+        .collection("carts")
+        .get()
+        .then((querySnapshot) => {
+          let tmpIds = [];
+          let items = [];
+          querySnapshot.forEach((documentSnapshot) => {
+            tmpIds = tmpIds.concat(documentSnapshot.id);
+            items.push({
+              product_id: documentSnapshot.id.toString(),
+              id: documentSnapshot.id.toString(),
+              quantity: documentSnapshot.data().quantity,
             });
-            ids = tmpIds;
-            firebaseProducts = items;
-            onUpdate(tmpIds, items, false);
           });
-        onLoaded(true);
-      }
+          ids = tmpIds;
+          firebaseProducts = items;
+          onUpdate(tmpIds, items, false);
+        });
+
+        request
+        .get("addressList/" + userId + "/")
+        .then((response) => {
+          onAddressHtmlChanged(getAddressHtml(response.data.addresses, ""))
+        })
+        .catch((error) => {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+
+        request
+        .get("tax_rates/")
+        .then((response) => {
+          let taxes = response.data.filter((item)=>{
+            let nowDate = new Date();
+            if(item.start_date && item.end_date){
+              if(nowDate >= new Date(item.start_date) && nowDate <= new Date(item.end_date)){
+                return true;
+              }
+            } else if(item.start_date){
+              if(nowDate >= new Date(item.start_date)){
+                return true;
+              }
+            }
+            return false;
+          })
+
+          if(taxes.length > 0){
+            taxObj = taxes[0]
+          }
+        })
+        .catch((error) => {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
     });
   }, []);
 
@@ -280,6 +400,7 @@ export default function Cart(props) {
             />
           </View>
         </TouchableWithoutFeedback>
+
         <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
           <Animated.View
             style={{
@@ -291,97 +412,36 @@ export default function Cart(props) {
           >
             {cartHtml}
           </Animated.View>
-          {/* <TouchableWithoutFeedback
-            onPress={() => {
-              paymentMethodShow == true
-                ? Animated.parallel([
-                    Animated.timing(paymentItemHeight, {
-                      toValue: heightPercentageToDP("0%"),
-                      duration: 500,
-                      useNativeDriver: false,
-                    }),
-                    Animated.timing(paymentItemOpacity, {
-                      toValue: heightPercentageToDP("0%"),
-                      duration: 100,
-                      useNativeDriver: false,
-                    }),
-                  ]).start(() => {}, onPaymentMethodShow(false))
-                : Animated.parallel([
-                    Animated.timing(paymentItemHeight, {
-                      toValue: heightPercentageToDP("28%"),
-                      duration: 500,
-                      useNativeDriver: false,
-                    }),
-                    Animated.timing(paymentItemOpacity, {
-                      toValue: heightPercentageToDP("100%"),
-                      duration: 30000,
-                      useNativeDriver: false,
-                    }),
-                  ]).start(() => {}, onPaymentMethodShow(true));
-            }}
-          >
-            <View style={styles.paymentMethodHeader}>
-              <Text style={{ fontSize: RFValue(14), color: "white" }}>
-                送付先・お支払い方法
-              </Text>
+          <View style={styles.allTabsContainer}>
+            {addressHtml}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: heightPercentageToDP("2%"),
+              }}
+            >
               <Image
-                source={require("../assets/icons/up_whiteArrow.svg")}
-                style={styles.upWhiteArrow}
+                style={{ width: win.width / 21, height: 14 * ratioAdd }}
+                source={require("../assets/Images/addAddressIcon.png")}
               />
-            </View>
-          </TouchableWithoutFeedback>
-          <Animated.View
-            style={{
-              opacity: paymentItemOpacity,
-              height: paymentItemHeight,
-            }}
-          >
-            <View style={styles.deliveryTabContainer}>
-              <View
-                style={{
-                  flexDirection: "row",
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  props.navigation.navigate("AdressManagement");
                 }}
               >
-                <View style={{ marginTop: heightPercentageToDP("3%") }}>
-                  <Text style={{ fontSize: RFValue(11) }}>送付先</Text>
-                  <TouchableWithoutFeedback>
-                    <View style={styles.paymentButtonContainer}>
-                      <Text style={styles.paymentButtonText}>変更</Text>
-                    </View>
-                  </TouchableWithoutFeedback>
-                </View>
-                <View style={styles.deliveryRightTab}>
-                  <Text style={styles.deliveryTabText}>田中太郎</Text>
-                  <Text style={styles.deliveryTabText}>田中太郎〒123-4567</Text>
-                  <Text style={styles.deliveryTabText}>東京都○○区△□0-0-0</Text>
-                </View>
-              </View>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    marginLeft: widthPercentageToDP("2%"),
+                  }}
+                >
+                  {Translate.t("registerNewAddress")}
+                </Text>
+              </TouchableWithoutFeedback>
             </View>
-            <View style={styles.paymentTabContainer}>
-              <View
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <View style={{ marginTop: heightPercentageToDP("3%") }}>
-                  <Text style={{ fontSize: RFValue(11) }}>お支払い方法</Text>
-                  <TouchableWithoutFeedback>
-                    <View style={styles.paymentButtonContainer}>
-                      <Text style={styles.paymentButtonText}>変更</Text>
-                    </View>
-                  </TouchableWithoutFeedback>
-                </View>
-                <View style={styles.paymentRightTab}>
-                  <Text style={styles.paymentTabText}>クレジットカード</Text>
-                  <Text style={styles.paymentTabText}>
-                    AMEX*****************
-                  </Text>
-                  <Text style={styles.paymentTabText}>00/00</Text>
-                  <Text style={styles.paymentTabText}>TANAKA TARO</Text>
-                </View>
-              </View>
-            </View>
-          </Animated.View> */}
+          </View>
+
           <View>
             <View
               style={{
@@ -402,7 +462,7 @@ export default function Cart(props) {
               </View>
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.totalText}>{subtotal}円</Text>
-                <Text style={styles.totalText}>{tax}円</Text>
+                <Text style={styles.totalText}>{(taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0)}円</Text>
                 <Text style={styles.totalText}>{shipping}円</Text>
               </View>
             </View>
@@ -423,14 +483,22 @@ export default function Cart(props) {
               小計
             </Text>
             <Text style={{ fontSize: RFValue(14) }}>
-              {subtotal + tax + shipping}円
+              {subtotal + (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) + shipping}円
             </Text>
           </View>
-          <TouchableWithoutFeedback onPress={
-            () => {
-              props.navigation.navigate("Payment")
-            }
-          }>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if(firebaseProducts.length > 0 && selected){
+                props.navigation.navigate("Payment", {
+                  products: firebaseProducts,
+                  address: selected,
+                  tax: taxObj.id
+                });
+              } else {
+                alert.warning("You must have items in cart and select an address.");
+              }
+            }}
+          >
             <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
               <View style={styles.orderConfirmButtonContainer}>
                 <Text style={styles.orderConfirmButtonText}>注文確定</Text>
@@ -578,8 +646,44 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("5%"),
     fontSize: 12,
     backgroundColor: "white",
-
     marginTop: heightPercentageToDP("1%"),
     borderColor: "transparent",
+  },
+
+  textInTabContainer: {
+    fontSize: RFValue(12),
+    marginTop: heightPercentageToDP(".5%"),
+  },
+  allTabsContainer: {
+    marginTop: heightPercentageToDP("3%"),
+  },
+  tabContainer: {
+    backgroundColor: Colors.F0EEE9,
+    padding: widthPercentageToDP("3%"),
+    marginRight: widthPercentageToDP("10%"),
+    marginTop: heightPercentageToDP("1%"),
+  },
+  buttonContainer: {
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: Colors.deepGrey,
+    justifyContent: "center",
+    alignItems: "center",
+    width: widthPercentageToDP("13%"),
+    padding: widthPercentageToDP(".5%"),
+  },
+  buttonText: {
+    fontSize: RFValue(12),
+    color: "white",
+  },
+  removeIcon: {
+    width: win.width / 20,
+    height: 19 * ratioRemove,
+    marginRight: widthPercentageToDP("3%"),
+  },
+  checkBoxContainer: {
+    position: "absolute",
+    right: 0,
+    alignSelf: "center",
   },
 });
