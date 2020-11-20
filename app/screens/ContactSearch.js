@@ -26,7 +26,7 @@ export default function ContactSearch(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="連絡先"
+        text={Translate.t("contact")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />

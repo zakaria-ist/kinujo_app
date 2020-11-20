@@ -17,13 +17,16 @@ import HomeProducts from "./HomeProducts";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+import { Colors } from "../assets/Colors";
+import Format from "../lib/format";
+const format = new Format();
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -35,14 +38,14 @@ export default function Home(props) {
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
 
-  React.useEffect(()=>{
-    AsyncStorage.getItem("user").then(function(url) {
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&
@@ -59,94 +62,130 @@ export default function Home(props) {
         });
     });
 
-    request.get("products/").then(function(response){
-      let products = response.data;
-      products = products.sort((p1, p2) => {
-        if(p1.created > p2.created){
-          return -1;
+    request
+      .get("products/")
+      .then(function (response) {
+        let products = response.data;
+        products = products.sort((p1, p2) => {
+          if (p1.created > p2.created) {
+            return -1;
+          }
+          return 1;
+        });
+
+        let kinujoProducts = products.filter((product) => {
+          return product.user.authority.id == 1;
+        });
+        let featuredProducts = products.filter((product) => {
+          return product.user.authority.id != 1;
+        });
+
+        let tmpKinujoHtml = [];
+        kinujoProducts.map((product) => {
+          tmpKinujoHtml.push(
+            <HomeProducts
+              key={product.id}
+              onPress={() => {
+                props.navigation.navigate("HomeStoreList", {
+                  url: product.url,
+                });
+              }}
+              idx={product.id}
+              image={
+                product.productImages.length > 0
+                  ? product.productImages[0].image.image
+                  : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+              }
+              office={product.brand_name}
+              name={product.name}
+              seller={
+                product.user.real_name
+                  ? product.user.real_name
+                  : product.user.nickname
+              }
+              price={
+                (user.is_seller
+                  ? format.separator(product.store_price)
+                  : format.separator(product.price)) + " 円"
+              }
+              category={product.category.name}
+              shipping={
+                product.shipping_fee
+                  ? "Shipping: " + format.separator(product.shipping_fee)
+                  : "Free Shipping"
+              }
+            />
+          );
+        });
+        onKinujoHtmlChanged(tmpKinujoHtml);
+
+        let tmpFeaturedHtml = [];
+        featuredProducts.map((product) => {
+          tmpFeaturedHtml.push(
+            <HomeProducts
+              key={product.id}
+              onPress={() => {
+                props.navigation.navigate("HomeStoreList", {
+                  url: product.url,
+                });
+              }}
+              idx={product.id}
+              image={
+                product.productImages.length > 0
+                  ? product.productImages[0].image.image
+                  : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+              }
+              office={product.brand_name}
+              name={product.name}
+              seller={
+                product.user.real_name
+                  ? product.user.real_name
+                  : product.user.nickname
+              }
+              price={
+                (user.is_seller
+                  ? format.separator(product.store_price)
+                  : format.separator(product.price)) + " 円"
+              }
+              category={product.category.name}
+              shipping={
+                product.shipping_fee
+                  ? "Shipping: " + format.separator(product.shipping_fee)
+                  : "Free Shipping"
+              }
+            />
+          );
+        });
+        onFeaturedHtmlChanged(tmpFeaturedHtml);
+      })
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
         }
-        return 1;
       });
-
-      let kinujoProducts = products.filter((product) => {
-        return product.user.authority.id == 1;
-      })
-      let featuredProducts = products.filter((product) => {
-        return product.user.authority.id != 1;
-      })
-
-      let tmpKinujoHtml = []
-      kinujoProducts.map((product) => {
-        tmpKinujoHtml.push(<HomeProducts
-          key={product.id}
-          onPress={
-            ()=>{
-              props.navigation.navigate("HomeStoreList", {
-                "url" : product.url
-              })
-            }
-          }
-          idx={product.id}
-          image={product.productImages.length > 0 ? product.productImages[0].image.image : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"}
-          office={product.brand_name}
-          name={product.name}
-          seller={product.user.real_name ? product.user.real_name : product.user.nickname}
-          price={(user.is_seller ? product.store_price : product.price) + " Yen"}
-          category={product.category.name}
-          shipping={product.shipping_fee ? product.shipping_fee  : "Free Shipping"}
-        />)
-      })
-      onKinujoHtmlChanged(tmpKinujoHtml);
-
-      let tmpFeaturedHtml = []
-      featuredProducts.map((product) => {
-        tmpFeaturedHtml.push(<HomeProducts
-          key={product.id}
-          onPress={
-            ()=>{
-              props.navigation.navigate("HomeStoreList", {
-                "url" : product.url
-              })
-            }
-          }
-          idx={product.id}
-          image={product.productImages.length > 0 ? product.productImages[0].image.image : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"}
-          office={product.brand_name}
-          name={product.name}
-          seller={product.user.real_name ? product.user.real_name : product.user.nickname}
-          price={(user.is_seller ? product.store_price : product.price) + " Yen"}
-          category={product.category.name}
-          shipping={product.shipping_fee ? product.shipping_fee  : "Free Shipping"}
-        />)
-      })
-      onFeaturedHtmlChanged(tmpFeaturedHtml);
-    }).catch(function(error){
-      if (
-        error &&
-        error.response &&
-        error.response.data &&
-        Object.keys(error.response.data).length > 0
-      ) {
-        alert.warning(
-          error.response.data[Object.keys(error.response.data)[0]][0] +
-            "(" +
-            Object.keys(error.response.data)[0] +
-            ")"
-        );
-      }
-    })
-  }, [useIsFocused])
+  }, [useIsFocused]);
 
   return (
     <SafeAreaView>
-      <CustomHeader 
+      <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => {
           props.navigation.navigate("Cart");
-        }}/>
+        }}
+      />
 
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={user.is_seller ? Translate.t("storeAccount") : ""}
       />
       <View style={styles.discription_header}>
@@ -156,7 +195,7 @@ export default function Home(props) {
           </Text> */}
         </View>
         <View style={{ position: "absolute", right: 0, paddingRight: 15 }}>
-          <Button title="Category" color="#E6DADE" />
+          <Button title={Translate.t("category")} color="#E6DADE" />
         </View>
       </View>
 
@@ -167,29 +206,35 @@ export default function Home(props) {
               {"KINUJO official product"}
             </Text>
           </View>
-        ) : (<View></View>)}
+        ) : (
+          <View></View>
+        )}
         {kinujoHtml.length > 0 ? (
-          <View style={styles.section_product}>
-            {kinujoHtml}
-          </View>
-        ) : (<View></View>)}
+          <View style={styles.section_product}>{kinujoHtml}</View>
+        ) : (
+          <View></View>
+        )}
 
         {featuredHtml.length > 0 ? (
           <View style={styles.section_header}>
-            <Text style={styles.section_header_text}>{"Featured Products"}</Text>
+            <Text style={styles.section_header_text}>
+              {Translate.t("featuredProduct")}
+            </Text>
           </View>
-        ) : (<View></View>)}
+        ) : (
+          <View></View>
+        )}
         {featuredHtml.length > 0 ? (
-          <View style={styles.section_product}>
-            {featuredHtml}
-          </View>
-        ) : (<View></View>)}
+          <View style={styles.section_product}>{featuredHtml}</View>
+        ) : (
+          <View></View>
+        )}
       </ScrollView>
-      <CustomFloatingButton onPress={
-        () => {
-          props.navigation.navigate("SearchProducts")
-        }
-      }/>
+      <CustomFloatingButton
+        onPress={() => {
+          props.navigation.navigate("SearchProducts");
+        }}
+      />
     </SafeAreaView>
   );
 }

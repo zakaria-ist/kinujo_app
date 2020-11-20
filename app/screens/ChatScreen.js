@@ -84,13 +84,10 @@ function checkUpdateFriend(user1, user2) {
       .then((querySnapshot) => {
         if (querySnapshot.size > 0) {
         } else {
-          db.collection("users")
-            .doc(user1)
-            .collection("friends")
-            .add({
-              type: "user",
-              id: user2,
-            });
+          db.collection("users").doc(user1).collection("friends").add({
+            type: "user",
+            id: user2,
+          });
         }
       });
     updateFriend = true;
@@ -324,10 +321,7 @@ export default function ChatScreen(props) {
                   tmpChatHtml.push(
                     <View key={snapShot.id}>
                       {previousMessageDateElse ==
-                      snapShot
-                        .data()
-                        .timeStamp.toDate()
-                        .toDateString() ? (
+                      snapShot.data().timeStamp.toDate().toDateString() ? (
                         <Text style={[styles.chat_date]}>{""}</Text>
                       ) : (
                         <Text style={[styles.chat_date]}>
@@ -415,14 +409,14 @@ export default function ChatScreen(props) {
     chatsRef
       .doc(groupID)
       .get()
-      .then(function(doc) {
+      .then(function (doc) {
         if (doc.exists) {
           if (doc.id == groupID) {
             totalMessageCount = doc.data().totalMessage;
           }
         }
       })
-      .then(function() {
+      .then(function () {
         chatsRef.doc(groupID).update({
           [userTotalReadMessageField]: totalMessageCount,
         });
@@ -431,32 +425,32 @@ export default function ChatScreen(props) {
     chatsRef
       .doc(groupID)
       .get()
-      .then(function(doc) {
+      .then(function (doc) {
         if (doc.exists) {
           if (doc.id == groupID) {
             totalMessageCount = doc.data().totalMessage;
           }
         }
       })
-      .then(function() {
+      .then(function () {
         chatsRef.doc(groupID).update({
           [userTotalReadMessageField]: totalMessageCount,
         });
       });
 
-    return function() {
+    return function () {
       if (unsubscribe) {
         chatsRef
           .doc(groupID)
           .get()
-          .then(function(doc) {
+          .then(function (doc) {
             if (doc.exists) {
               if (doc.id == groupID) {
                 totalMessageCount = doc.data().totalMessage;
               }
             }
           })
-          .then(function() {
+          .then(function () {
             chatsRef.doc(groupID).update({
               [userTotalReadMessageField]: totalMessageCount,
             });
@@ -475,6 +469,7 @@ export default function ChatScreen(props) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <CustomHeader
+          text={Translate.t("chat")}
           onBack={() => handleBack()}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => props.navigation.navigate("Cart")}
@@ -578,26 +573,24 @@ export default function ChatScreen(props) {
                         timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                         message: tmpMessage,
                       })
-                      .then(function() {
-                        db.collection("chat")
-                          .doc(groupID)
-                          .set(
-                            {
-                              message: tmpMessage,
-                              lastMessageTime: createdAt,
-                            },
-                            {
-                              merge: true,
-                            }
-                          );
+                      .then(function () {
+                        db.collection("chat").doc(groupID).set(
+                          {
+                            message: tmpMessage,
+                            lastMessageTime: createdAt,
+                          },
+                          {
+                            merge: true,
+                          }
+                        );
 
                         chatsRef
                           .doc(groupID)
                           .get()
-                          .then(function(doc) {
+                          .then(function (doc) {
                             totalMessageCount = doc.data().totalMessage;
                           })
-                          .then(function() {
+                          .then(function () {
                             chatsRef.doc(groupID).update({
                               totalMessage: totalMessageCount + 1,
                             });
@@ -652,27 +645,25 @@ export default function ChatScreen(props) {
                                   timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                   image: url,
                                 })
-                                .then(function() {
-                                  db.collection("chat")
-                                    .doc(groupID)
-                                    .set(
-                                      {
-                                        message: "Photo",
-                                        lastMessageTime: createdAt,
-                                      },
-                                      {
-                                        merge: true,
-                                      }
-                                    );
+                                .then(function () {
+                                  db.collection("chat").doc(groupID).set(
+                                    {
+                                      message: "Photo",
+                                      lastMessageTime: createdAt,
+                                    },
+                                    {
+                                      merge: true,
+                                    }
+                                  );
 
                                   chatsRef
                                     .doc(groupID)
                                     .get()
-                                    .then(function(doc) {
+                                    .then(function (doc) {
                                       totalMessageCount = doc.data()
                                         .totalMessage;
                                     })
-                                    .then(function() {
+                                    .then(function () {
                                       chatsRef.doc(groupID).update({
                                         totalMessage: totalMessageCount + 1,
                                       });
@@ -712,25 +703,23 @@ export default function ChatScreen(props) {
                                 timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                 image: url,
                               })
-                              .then(function() {
-                                db.collection("chat")
-                                  .doc(groupID)
-                                  .set(
-                                    {
-                                      message: "Photo",
-                                      lastMessageTime: createdAt,
-                                    },
-                                    {
-                                      merge: true,
-                                    }
-                                  );
+                              .then(function () {
+                                db.collection("chat").doc(groupID).set(
+                                  {
+                                    message: "Photo",
+                                    lastMessageTime: createdAt,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                );
                                 chatsRef
                                   .doc(groupID)
                                   .get()
-                                  .then(function(doc) {
+                                  .then(function (doc) {
                                     totalMessageCount = doc.data().totalMessage;
                                   })
-                                  .then(function() {
+                                  .then(function () {
                                     chatsRef.doc(groupID).update({
                                       totalMessage: totalMessageCount + 1,
                                     });
@@ -790,26 +779,24 @@ export default function ChatScreen(props) {
                                   timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                   image: url,
                                 })
-                                .then(function() {
-                                  db.collection("chat")
-                                    .doc(groupID)
-                                    .set(
-                                      {
-                                        message: "Photo",
-                                        lastMessageTime: createdAt,
-                                      },
-                                      {
-                                        merge: true,
-                                      }
-                                    );
+                                .then(function () {
+                                  db.collection("chat").doc(groupID).set(
+                                    {
+                                      message: "Photo",
+                                      lastMessageTime: createdAt,
+                                    },
+                                    {
+                                      merge: true,
+                                    }
+                                  );
                                   chatsRef
                                     .doc(groupID)
                                     .get()
-                                    .then(function(doc) {
+                                    .then(function (doc) {
                                       totalMessageCount = doc.data()
                                         .totalMessage;
                                     })
-                                    .then(function() {
+                                    .then(function () {
                                       chatsRef.doc(groupID).update({
                                         totalMessage: totalMessageCount + 1,
                                       });
@@ -849,26 +836,24 @@ export default function ChatScreen(props) {
                                 timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                 image: url,
                               })
-                              .then(function() {
-                                db.collection("chat")
-                                  .doc(groupID)
-                                  .set(
-                                    {
-                                      message: "Photo",
-                                      lastMessageTime: createdAt,
-                                    },
-                                    {
-                                      merge: true,
-                                    }
-                                  );
+                              .then(function () {
+                                db.collection("chat").doc(groupID).set(
+                                  {
+                                    message: "Photo",
+                                    lastMessageTime: createdAt,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                );
 
                                 chatsRef
                                   .doc(groupID)
                                   .get()
-                                  .then(function(doc) {
+                                  .then(function (doc) {
                                     totalMessageCount = doc.data().totalMessage;
                                   })
-                                  .then(function() {
+                                  .then(function () {
                                     chatsRef.doc(groupID).update({
                                       totalMessage: totalMessageCount + 1,
                                     });

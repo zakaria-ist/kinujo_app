@@ -142,7 +142,7 @@ export default function CustomerList(props) {
         text={Translate.t("customerList")}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />
 

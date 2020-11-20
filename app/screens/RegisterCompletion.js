@@ -24,11 +24,11 @@ const alert = new CustomAlert();
 import Translate from "../assets/Translates/Translate";
 export default function RegisterCompletion(props) {
   async function updateProfile(nextPage) {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       console.log(url);
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           response = response.data;
           let payload = response.payload;
           if (payload) {
@@ -46,11 +46,11 @@ export default function RegisterCompletion(props) {
             .patch(url, {
               payload: payload,
             })
-            .then(function(response) {
+            .then(function (response) {
               console.log("1");
               props.navigation.navigate(nextPage);
             })
-            .catch(function(error) {
+            .catch(function (error) {
               if (
                 error &&
                 error.response &&
@@ -66,7 +66,7 @@ export default function RegisterCompletion(props) {
               }
             });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&

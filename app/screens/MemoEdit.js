@@ -52,12 +52,14 @@ export default function MemoEdit(props) {
           0/500
         </Text>
         <TouchableWithoutFeedback>
-          <Text style={{ fontSize: RFValue(17), color: "white" }}>保存</Text>
+          <Text style={{ fontSize: RFValue(17), color: "white" }}>
+            {Translate.t("save")}
+          </Text>
         </TouchableWithoutFeedback>
       </View>
       <View>
         <TextInput
-          placeholder="入力してください"
+          placeholder={Translate.t("pleaseEnter")}
           placeholderTextColor="white"
           backgroundColor="white"
           maxLength={255}
@@ -65,8 +67,8 @@ export default function MemoEdit(props) {
             fontSize: RFValue(25),
             color: "white",
             alignSelf: "center",
-            width:widthPercentageToDP("80%"),
-            height:heightPercentageToDP("80%"),
+            width: widthPercentageToDP("80%"),
+            height: heightPercentageToDP("80%"),
             marginLeft: widthPercentageToDP("2%"),
             marginTop: heightPercentageToDP("5%"),
           }}

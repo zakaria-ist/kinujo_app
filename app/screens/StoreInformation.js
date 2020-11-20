@@ -89,7 +89,7 @@ export default function StoreInformation(props) {
         text={Translate.t("storeInformation")}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />
       <View style={{ marginTop: heightPercentageToDP("2%") }}>

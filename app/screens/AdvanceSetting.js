@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
-  TextInput
+  TextInput,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -23,7 +23,6 @@ import firebase from "firebase/app";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-import { block } from "react-native-reanimated";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -44,7 +43,6 @@ export default function AdvanceSetting(props) {
   const [firstLoaded, onFirstLoadedChanged] = React.useState(false);
 
   React.useEffect(() => {
-
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -52,7 +50,7 @@ export default function AdvanceSetting(props) {
       });
       let userId = urls[urls.length - 1];
 
-      let customerUrls = props.route.params.url.split("/")
+      let customerUrls = props.route.params.url.split("/");
       customerUrls = customerUrls.filter((url) => {
         return url;
       });
@@ -60,30 +58,40 @@ export default function AdvanceSetting(props) {
       onUserIdChanged(userId);
       onCustomerIdChanged(customerId);
 
-      const subscriber = db.collection('users').doc(userId).collection('customers').doc(customerId).onSnapshot(documentSnapshot => {
-        if(documentSnapshot.data()){
-          let tmpUser = documentSnapshot.data();
-          onFirebaseUserChanged(documentSnapshot.data());
-          if(!firstLoaded){
-            onBlockModeChanged(tmpUser.blockMode);
-            onSecretModeChanged(tmpUser.secretMode);
-            onDisplayNameChanged(tmpUser.displayName);
+      const subscriber = db
+        .collection("users")
+        .doc(userId)
+        .collection("customers")
+        .doc(customerId)
+        .onSnapshot((documentSnapshot) => {
+          if (documentSnapshot.data()) {
+            let tmpUser = documentSnapshot.data();
+            onFirebaseUserChanged(documentSnapshot.data());
+            if (!firstLoaded) {
+              onBlockModeChanged(tmpUser.blockMode);
+              onSecretModeChanged(tmpUser.secretMode);
+              onDisplayNameChanged(tmpUser.displayName);
+            }
+            onFirstLoadedChanged(true);
+          } else {
+            onFirebaseUserChanged({
+              memo: "",
+              displayName: "",
+              secret_mode: false,
+              block: false,
+            });
+            if (!firstLoaded) {
+              onBlockModeChanged(false);
+              onSecretModeChanged(false);
+              onDisplayNameChanged("");
+            }
+            onFirstLoadedChanged(true);
           }
-          onFirstLoadedChanged(true);
-        } else {
-          onFirebaseUserChanged({memo: "", displayName : "", secret_mode: false, block: false})
-          if(!firstLoaded){
-            onBlockModeChanged(false);
-            onSecretModeChanged(false);
-            onDisplayNameChanged("");
-          }
-          onFirstLoadedChanged(true);
-        }
-      });
+        });
     });
   }, []);
 
-  if(!userId){
+  if (!userId) {
   }
 
   return (
@@ -117,14 +125,18 @@ export default function AdvanceSetting(props) {
                 underlayColor="transparent"
                 color="transparent"
                 reverseColor="black"
-                onPress={() => { 
-                  onEditDisplayNameChanged(false)
-                  db.collection('users').doc(userId).collection('customers').doc(customerId).set({
-                    "blockMode" : blockMode,
-                    "secretMode" : secretMode,
-                    "displayName" : displayName,
-                    "memo": firebaseUser.memo
-                  })
+                onPress={() => {
+                  onEditDisplayNameChanged(false);
+                  db.collection("users")
+                    .doc(userId)
+                    .collection("customers")
+                    .doc(customerId)
+                    .set({
+                      blockMode: blockMode,
+                      secretMode: secretMode,
+                      displayName: displayName,
+                      memo: firebaseUser.memo,
+                    });
                 }}
               />
               <TextInput
@@ -167,12 +179,16 @@ export default function AdvanceSetting(props) {
               right: 0,
             }}
             onValueChange={(value) => {
-              db.collection('users').doc(userId).collection('customers').doc(customerId).set({
-                "secretMode" : value,
-                "blockMode" : blockMode,
-                "displayName" : displayName,
-                "memo": firebaseUser.memo
-              })
+              db.collection("users")
+                .doc(userId)
+                .collection("customers")
+                .doc(customerId)
+                .set({
+                  secretMode: value,
+                  blockMode: blockMode,
+                  displayName: displayName,
+                  memo: firebaseUser.memo,
+                });
               onSecretModeChanged(value);
             }}
             value={secretMode}
@@ -188,12 +204,16 @@ export default function AdvanceSetting(props) {
               right: 0,
             }}
             onValueChange={(value) => {
-              db.collection('users').doc(userId).collection('customers').doc(customerId).set({
-                "blockMode" : value,
-                "secretMode" : secretMode,
-                "displayName" : displayName,
-                "memo": firebaseUser.memo
-              })
+              db.collection("users")
+                .doc(userId)
+                .collection("customers")
+                .doc(customerId)
+                .set({
+                  blockMode: value,
+                  secretMode: secretMode,
+                  displayName: displayName,
+                  memo: firebaseUser.memo,
+                });
               onBlockModeChanged(value);
             }}
             value={blockMode}

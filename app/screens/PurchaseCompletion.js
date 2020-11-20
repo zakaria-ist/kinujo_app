@@ -14,7 +14,7 @@ export default function PurchaseCompletion(props) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
-        text="購入完了"
+        text={Translate.t("purchaseCompletion")}
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
       />
@@ -32,7 +32,7 @@ export default function PurchaseCompletion(props) {
             textAlign: "center",
           }}
         >
-          ご注文ありがとうございます！
+          {Translate.t("thankYouForOrder")}
         </Text>
         <Text
           style={{
@@ -41,7 +41,7 @@ export default function PurchaseCompletion(props) {
             textAlign: "center",
           }}
         >
-          お届けまで、もうしばらくお待ちください。
+          {Translate.t("waitUntilDelivery")}
         </Text>
         <TouchableOpacity>
           <View style={styles.buttonContainer}>

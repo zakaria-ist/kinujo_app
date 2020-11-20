@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
+import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -23,6 +24,8 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import DatePicker from "react-native-datepicker";
+import { Picker } from "@react-native-picker/picker";
+import { fallbacks } from "i18n-js";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -34,8 +37,8 @@ function updateUser(user, field, value) {
   obj[field] = value;
   request
     .patch(user.url, obj)
-    .then(function(response) {})
-    .catch(function(error) {
+    .then(function (response) {})
+    .catch(function (error) {
       if (
         error &&
         error.response &&
@@ -55,6 +58,7 @@ function updateUser(user, field, value) {
 export default function ProfileInformation(props) {
   const [user, onUserChanged] = React.useState({});
   const [editName, onEditNameChanged] = React.useState(false);
+  const [editNickname, onEditNicknameChanged] = React.useState(false);
   const [editGender, onEditGenderChanged] = React.useState(false);
   const [editBirthday, onEditBirthdayChanged] = React.useState(false);
   const [editPostalCode, onEditPostalCodeChanged] = React.useState(false);
@@ -62,6 +66,7 @@ export default function ProfileInformation(props) {
   const [editAddress1, onEditAddress1Changed] = React.useState(false);
   const [editAddress2, onEditAddress2Changed] = React.useState(false);
   const [name, onNameChanged] = React.useState("");
+  const [nickname, onNicknameChanged] = React.useState("");
   const [gender, onGenderChanged] = React.useState("");
   const [birthday, onBirthdayChanged] = React.useState("");
   const [postalCode, onPostalCodeChanged] = React.useState("");
@@ -70,12 +75,13 @@ export default function ProfileInformation(props) {
   const [address2, onAddress2Changed] = React.useState("");
 
   if (!user.url) {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
           onNameChanged(response.data.real_name);
+          onNicknameChanged(response.data.nickname);
           onGenderChanged(response.data.gender);
           onBirthdayChanged(response.data.birthday);
           onPostalCodeChanged(response.data.zipcode);
@@ -83,7 +89,7 @@ export default function ProfileInformation(props) {
           onAddress1Changed(response.data.address1);
           onAddress2Changed(response.data.address2);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&
@@ -113,9 +119,7 @@ export default function ProfileInformation(props) {
         }}
         text={Translate.t("personalInformation")}
       />
-      <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
-      />
+      <CustomSecondaryHeader name={user.nickname} />
       <View
         style={{
           marginTop: heightPercentageToDP("2%"),
@@ -185,18 +189,18 @@ export default function ProfileInformation(props) {
         </View>
         <View style={styles.productInformationContainer}>
           <Text style={styles.productInformationTitle}>
-            {Translate.t("gender")}
+            {Translate.t("name")}
           </Text>
-          {editGender == true ? (
+          {editNickname == true ? (
             <View
               style={{
-                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
                 alignItems: "center",
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
+                paddingBottom: heightPercentageToDP("2%"),
               }}
             >
               <Icon
@@ -208,26 +212,26 @@ export default function ProfileInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditGenderChanged(false);
-                  updateUser(user, "gender", gender);
+                  onEditNameChanged(false);
+                  updateUser(user, "nickname", nickname);
                 }}
               />
               <TextInput
-                value={gender}
-                onChangeText={(value) => onGenderChanged(value)}
+                value={nickname}
+                onChangeText={(value) => onNicknameChanged(value)}
                 style={styles.textInput}
               />
             </View>
           ) : (
             <View
               style={{
-                paddingBottom: heightPercentageToDP("2%"),
                 position: "absolute",
                 right: 0,
                 flexDirection: "row-reverse",
                 alignItems: "center",
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
+                paddingBottom: heightPercentageToDP("2%"),
               }}
             >
               <Icon
@@ -238,8 +242,55 @@ export default function ProfileInformation(props) {
                 underlayColor="transparent"
                 color="transparent"
                 reverseColor="black"
-                onPress={() => onEditGenderChanged(true)}
+                onPress={() => onEditNicknameChanged(true)}
               />
+              <Text style={{ fontSize: RFValue(12) }}>{nickname}</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.productInformationContainer}>
+          <Text style={styles.productInformationTitle}>
+            {Translate.t("gender")}
+          </Text>
+          {gender == null ? (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginRight: widthPercentageToDP("-3%"),
+                paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Picker
+                selectedValue={""}
+                style={{
+                  height: RFValue(50),
+                  width: RFValue(120),
+                }}
+                onValueChange={(value) => {
+                  onGenderChanged(value);
+                  updateUser(user, "gender", value);
+                }}
+              >
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+              </Picker>
+            </View>
+          ) : (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginRight: widthPercentageToDP("2%"),
+                paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
               <Text style={{ fontSize: RFValue(12) }}>{gender}</Text>
             </View>
           )}
@@ -248,38 +299,7 @@ export default function ProfileInformation(props) {
           <Text style={styles.productInformationTitle}>
             {Translate.t("birthday")}
           </Text>
-          {editBirthday == true ? (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              {/* <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditBirthdayChanged(false);
-                  updateUser(user, "birthday", birthday);
-                }}
-              />
-              <TextInput
-                value={birthday}
-                onChangeText={(value) => onBirthdayChanged(value)}
-                style={styles.textInput}
-              /> */}
-            </View>
-          ) : (
+          {birthday == null ? (
             <View
               style={{
                 paddingBottom: heightPercentageToDP("2%"),
@@ -299,21 +319,53 @@ export default function ProfileInformation(props) {
                 confirmBtnText="Confirm"
                 cancelBtnText="Cancel"
                 customStyles={{
-                  // dateIcon: {
-                  //   position: "absolute",
-                  //   left: 0,
-                  //   top: 4,
-                  //   marginLeft: 0,
-                  // },
                   dateInput: {
                     marginRight: widthPercentageToDP("3%"),
                   },
                 }}
                 onDateChange={(date) => {
                   onBirthdayChanged(date);
+                  updateUser(user, "birthday", date);
                 }}
               />
-              {/* <Text style={{ fontSize: RFValue(12) }}>{birthday}</Text> */}
+            </View>
+          ) : (
+            <View
+              style={{
+                paddingBottom: heightPercentageToDP("2%"),
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+              }}
+            >
+              <DatePicker
+                disabled={true}
+                style={{
+                  width: widthPercentageToDP("6%"),
+                }}
+                customStyles={{
+                  dateIcon: {
+                    width: RFValue(30),
+                    height: RFValue(30),
+                  },
+                  dateInput: {
+                    display: "none",
+                  },
+                }}
+                onDateChange={(date) => {
+                  this.setState({ dateFrom: date });
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  marginRight: widthPercentageToDP("3%"),
+                }}
+              >
+                {birthday}
+              </Text>
             </View>
           )}
         </View>

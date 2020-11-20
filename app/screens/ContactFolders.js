@@ -29,7 +29,7 @@ const ratioCustomerList = win.width / 10 / 26;
 const ratioProfile = win.width / 13 / 22;
 const ratioDown = win.width / 30 / 8;
 
-export default function Contactz() {
+export default function Contact() {
   return (
     <SafeAreaView>
       <CustomHeader

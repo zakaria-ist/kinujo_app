@@ -64,11 +64,11 @@ export default function GroupFolderCreateCompletion(props) {
         users: friendIds,
         totalMessage: 0,
       })
-      .then(function() {
+      .then(function () {
         db.collection("chat")
           .get()
-          .then(function(querySnapshot) {
-            querySnapshot.forEach(function(doc) {
+          .then(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
               if (
                 doc.data().users.length === friendIds.length &&
                 doc
@@ -166,14 +166,20 @@ export default function GroupFolderCreateCompletion(props) {
               alignItems: "center",
             }}
           >
-            <Text style={styles.text}>{groupName}</Text>
+            {groupName == "" ? (
+              <Text style={styles.text}>
+                {Translate.t("folderOrGroupName")}
+              </Text>
+            ) : (
+              <Text style={styles.text}>{groupName}</Text>
+            )}
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
               }}
             >
-              <Text style={styles.text}>メンバー </Text>
+              <Text style={styles.text}>{Translate.t("member")} - </Text>
               <Text style={styles.text}>( {friendIds.length} )</Text>
             </View>
           </View>
@@ -201,7 +207,7 @@ export default function GroupFolderCreateCompletion(props) {
                 }}
                 source={require("../assets/Images/addMemberIcon.png")}
               />
-              <Text style={styles.textForIcon}>Add</Text>
+              <Text style={styles.textForIcon}>{Translate.t("addMember")}</Text>
             </View>
             {userListHtml}
           </View>
@@ -217,7 +223,7 @@ export default function GroupFolderCreateCompletion(props) {
                 }}
                 source={require("../assets/Images/chatIcon.png")}
               />
-              <Text style={styles.textForIcon}>トーク</Text>
+              <Text style={styles.textForIcon}>{Translate.t("talk")}</Text>
             </View>
           </TouchableWithoutFeedback>
         </View>

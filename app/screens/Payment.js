@@ -18,17 +18,21 @@ import {
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
-import StripeCheckout from 'react-native-stripe-checkout-webview';
-import { WebView } from 'react-native-webview';
-import stripe from 'tipsi-stripe'
+import StripeCheckout from "react-native-stripe-checkout-webview";
+import { WebView } from "react-native-webview";
+import stripe from "tipsi-stripe";
 import CustomAlert from "../lib/alert";
 import Translate from "../assets/Translates/Translate";
-import { CreditCardInput, LiteCreditCardInput } from "react-native-input-credit-card";
+import {
+  CreditCardInput,
+  LiteCreditCardInput,
+} from "react-native-input-credit-card";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import Spinner from "react-native-loading-spinner-overlay";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -39,11 +43,16 @@ const db = firebase.firestore();
 
 export default function Payment(props) {
   const [card, onCardChanged] = React.useState({});
+  const [spinner, onSpinnerChanged] = React.useState(false);
 
-  React.useEffect(() => {
-  }, [])
+  React.useEffect(() => {}, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <CustomHeader
         onBack={() => {
           props.navigation.pop();
@@ -55,58 +64,67 @@ export default function Payment(props) {
         text={Translate.t("payment")}
       />
       <View>
-        <CreditCardInput onChange={(form)=>{
-          onCardChanged(form);
-        }} />
-        <TouchableWithoutFeedback onPress={
-            () => {
-              AsyncStorage.getItem("user").then((url) => {
-                let urls = url.split("/");
-                urls = urls.filter((url) => {
-                  return url;
-                });
-                userId = urls[urls.length - 1];
+        <CreditCardInput
+          onChange={(form) => {
+            onCardChanged(form);
+          }}
+        />
+        <TouchableWithoutFeedback
+          onPress={() => {
+            AsyncStorage.getItem("user").then((url) => {
+              let urls = url.split("/");
+              urls = urls.filter((url) => {
+                return url;
+              });
+              userId = urls[urls.length - 1];
 
-                if(card && card.valid){
-                  request.post("pay/" + userId + "/", {
-                    card : card.values,
+              if (card && card.valid) {
+                onSpinnerChanged(true);
+                request
+                  .post("pay/" + userId + "/", {
+                    card: card.values,
                     products: props.route.params.products,
                     address: props.route.params.address,
-                    tax: props.route.params.tax
-                  }).then(function(response){
-                    if (response.data.success) {
+                    tax: props.route.params.tax,
+                  })
+                  .then(function (response) {
+                    onSpinnerChanged(false);
+                    response = response.data;
+                    if (response.success) {
                       db.collection("users")
-                      .doc(userId)
-                      .collection("carts")
-                      .get()
-                      .then((querySnapshot) => {
-                        querySnapshot.forEach((documentSnapshot) => {
-                          db.collection("users")
-                          .doc(userId)
-                          .collection("carts")
-                          .doc(documentSnapshot.id).delete()
-                          .then(() => {
+                        .doc(userId)
+                        .collection("carts")
+                        .get()
+                        .then((querySnapshot) => {
+                          querySnapshot.forEach((documentSnapshot) => {
+                            db.collection("users")
+                              .doc(userId)
+                              .collection("carts")
+                              .doc(documentSnapshot.id)
+                              .delete()
+                              .then(() => {});
                           });
-                        });
 
-                        props.navigation.pop();
-                      });
+                          props.navigation.pop();
+                        });
                     } else {
                       if (
                         response.errors &&
                         Object.keys(response.errors).length > 0
                       ) {
                         alert.warning(
-                          response.errors[
-                            Object.keys(response.errors)[0]
-                          ][0] +
+                          response.errors[Object.keys(response.errors)[0]][0] +
                             "(" +
                             Object.keys(response.errors)[0] +
                             ")"
                         );
+                      } else if (response.error) {
+                        alert.warning(response.error);
                       }
                     }
-                  }).catch(function(error){
+                  })
+                  .catch(function (error) {
+                    onSpinnerChanged(false);
                     if (
                       error &&
                       error.response &&
@@ -119,16 +137,18 @@ export default function Payment(props) {
                         ][0]
                       );
                     }
-                  })
-                } else {
-                  alert.warning("Card not complete");
-                }
-              });
-            }
-          }>
+                  });
+              } else {
+                alert.warning(Translate.t("cardNotComplete"));
+              }
+            });
+          }}
+        >
           <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
             <View style={styles.orderConfirmButtonContainer}>
-              <Text style={styles.orderConfirmButtonText}>支払いを確認する</Text>
+              <Text style={styles.orderConfirmButtonText}>
+                {Translate.t("confirmPayment")}
+              </Text>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -136,7 +156,6 @@ export default function Payment(props) {
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   orderConfirmButtonContainer: {
@@ -154,5 +173,8 @@ const styles = StyleSheet.create({
     paddingVertical: heightPercentageToDP(".3%"),
     paddingHorizontal: widthPercentageToDP("2%"),
     alignSelf: "center",
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });

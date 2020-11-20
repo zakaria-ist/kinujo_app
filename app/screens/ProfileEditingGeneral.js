@@ -42,6 +42,7 @@ export default function ProfileEditingGeneral(props) {
   const [password, onPasswordChanged] = React.useState("********");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   const [email, onEmailChanged] = React.useState("");
+  const [showTest, setShowTest] = React.useState(true);
   const [editPassword, onEditPasswordChanged] = React.useState(false);
   const [editPhoneNumber, onEditPhoneNumberChanged] = React.useState(false);
   const [editEmail, onEditEmailChanged] = React.useState(false);
@@ -54,17 +55,17 @@ export default function ProfileEditingGeneral(props) {
   const [user, onUserChanged] = React.useState({});
 
   function loadUser() {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
           onPhoneNumberChanged(response.data.tel);
           onEmailChanged(response.data.email);
           onAddingFriendsByIDChanged(response.data.allowed_by_id);
           onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&
@@ -90,10 +91,10 @@ export default function ProfileEditingGeneral(props) {
     obj[field] = value;
     request
       .patch(user.url, obj)
-      .then(function(response) {
+      .then(function (response) {
         loadUser();
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (
           error &&
           error.response &&
@@ -150,23 +151,22 @@ export default function ProfileEditingGeneral(props) {
       {show == true ? (
         <Modal
           visible={true}
-          transparent={false}
+          transparent={true}
           presentationStyle="overFullScreen"
-          style={{
-            flex: 1,
-            position: "absolute",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1,
-            backgroundColor: "#7d7d7d",
-            borderColor: "white",
-            margin: widthPercentageToDP("2%"),
-          }}
         >
           <SafeAreaView
             style={{
+              flex: 1,
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+              backgroundColor: "#7d7d7d",
+              borderColor: "white",
+              margin: widthPercentageToDP("2%"),
+              backgroundColor: "#7d7d7d",
               flex: 1,
             }}
           >
@@ -175,7 +175,7 @@ export default function ProfileEditingGeneral(props) {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "flex-start",
-                marginHorizontal: widthPercentageToDP("3%"),
+                marginHorizontal: widthPercentageToDP("5%"),
                 marginTop: heightPercentageToDP("3%"),
                 height: heightPercentageToDP("5%"),
               }}
@@ -191,26 +191,25 @@ export default function ProfileEditingGeneral(props) {
               </TouchableWithoutFeedback>
               <Text
                 style={{
-                  fontSize: RFValue(15),
+                  fontSize: RFValue(14),
                   color: "white",
-                  alignSelf: "flex-end",
                 }}
               >
                 0/500
               </Text>
               <TouchableWithoutFeedback>
-                <Text style={{ fontSize: RFValue(17), color: "white" }}>
-                  保存
+                <Text style={{ fontSize: RFValue(14), color: "white" }}>
+                  {Translate.t("save")}
                 </Text>
               </TouchableWithoutFeedback>
             </View>
             <View
               style={{
                 alignItems: "center",
-                justifyContent: "flex-start",
                 width: "100%",
                 height: "100%",
                 marginTop: heightPercentageToDP("15%"),
+                paddingHorizontal: widthPercentageToDP("5%"),
               }}
             >
               <TextInput
@@ -218,13 +217,12 @@ export default function ProfileEditingGeneral(props) {
                 placeholderTextColor="white"
                 maxLength={255}
                 multiline={true}
+                autoFocus={true}
                 style={{
-                  width: widthPercentageToDP("90%"),
-                  height: heightPercentageToDP("70%"),
-                  paddingHorizontal: widthPercentageToDP("2%"),
-                  fontSize: RFValue(18),
-                  color: "white",
                   textAlign: "center",
+                  width: "100%",
+                  fontSize: RFValue(14),
+                  color: "white",
                 }}
               ></TextInput>
             </View>
@@ -276,7 +274,7 @@ export default function ProfileEditingGeneral(props) {
               width: widthPercentageToDP("100%"),
               height: heightPercentageToDP("30%"),
             }}
-            source={require("../assets/Images/profileEditingIcon.png")}
+            source={require("../assets/Images/cover_img.jpg")}
           >
             <TouchableWithoutFeedback
               onPress={() => {
@@ -343,7 +341,7 @@ export default function ProfileEditingGeneral(props) {
                 backgroundColor: "white",
                 borderColor: Colors.E6DADE,
               }}
-              source={require("../assets/Images/profileEditingIcon.png")}
+              source={require("../assets/Images/avatar.jpg")}
             >
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -360,20 +358,28 @@ export default function ProfileEditingGeneral(props) {
           <View
             style={{
               width: "100%",
-              marginLeft: widthPercentageToDP("5%"),
+              marginLeft: widthPercentageToDP("3%"),
             }}
           >
             <TouchableWithoutFeedback onPress={() => onShowChanged(true)}>
-              <Image
+              <View
                 style={{
-                  width: win.width / 24,
-                  height: 17 * ratioEditIcon,
-                  position: "absolute",
-                  right: 0,
-                  fontSize: RFValue(10),
+                  width: 10,
+                  height: 10,
+                  marginLeft: widthPercentageToDP("1%"),
                 }}
-                source={require("../assets/Images/editIcon.png")}
-              />
+              >
+                <Image
+                  style={{
+                    width: win.width / 24,
+                    height: 17 * ratioEditIcon,
+                    position: "absolute",
+                    right: 0,
+                    fontSize: RFValue(10),
+                  }}
+                  source={require("../assets/Images/editIcon.png")}
+                />
+              </View>
             </TouchableWithoutFeedback>
             <Text
               style={{
@@ -396,7 +402,7 @@ export default function ProfileEditingGeneral(props) {
                   fontSize: RFValue(12),
                 }}
               >
-                {user.real_name ? user.real_name : user.nickname}
+                {user.nickname}
               </Text>
               <Image
                 style={{
@@ -637,8 +643,8 @@ export default function ProfileEditingGeneral(props) {
                 .patch(user.url, {
                   allowed_by_id: value ? 1 : 0,
                 })
-                .then(function(response) {})
-                .catch(function(error) {
+                .then(function (response) {})
+                .catch(function (error) {
                   if (
                     error &&
                     error.response &&
@@ -673,8 +679,8 @@ export default function ProfileEditingGeneral(props) {
                 .patch(user.url, {
                   allowed_by_tel: value ? 1 : 0,
                 })
-                .then(function(response) {})
-                .catch(function(error) {
+                .then(function (response) {})
+                .catch(function (error) {
                   if (
                     error &&
                     error.response &&

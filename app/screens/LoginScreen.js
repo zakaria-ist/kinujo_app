@@ -15,9 +15,10 @@ import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
-import dynamicLinks from '@react-native-firebase/dynamic-links';
+import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
+import CountryCodePicker from "react-native-country-code-picker";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -54,40 +55,50 @@ function findParams(data, param) {
   return "";
 }
 
-async function performUrl(props, link){
+async function performUrl(props, link) {
   let userId = findParams(link, "userId");
   let store = findParams(link, "is_store");
   await AsyncStorage.setItem("referUser", userId);
-  if(store){
+  if (store) {
     props.navigation.navigate("RegistrationStore");
   } else {
     props.navigation.navigate("RegistrationGeneral");
   }
 }
 
-async function init(props, foreground){
+async function init(props, foreground) {
   let url = await AsyncStorage.getItem("user");
   if (url) {
     request
       .get(url)
-      .then(function(response) {
+      .then(function (response) {
         if (response.data.is_seller) {
           props.navigation.navigate("HomeStore");
         } else {
           props.navigation.navigate("HomeGeneral");
         }
       })
-      .catch(function(error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
         }
       });
   } else {
-    let link = await dynamicLinks().getInitialLink()
-    if(link) {
+    let link = await dynamicLinks().getInitialLink();
+    if (link) {
       await performUrl(props, link.url);
     } else {
-      if(foreground){
+      if (foreground) {
         foreground();
       }
     }
@@ -99,18 +110,18 @@ export default function LoginScreen(props) {
   const [phone, onPhoneChanged] = React.useState("");
 
   React.useEffect(() => {
-    let unsubscribe
+    let unsubscribe;
     init(props, () => {
-      unsubscribe = dynamicLinks().onLink(link => {
+      unsubscribe = dynamicLinks().onLink((link) => {
         performUrl(props, link.url);
       });
-    })
+    });
     return () => {
-      if(unsubscribe){
-        unsubscribe()
+      if (unsubscribe) {
+        unsubscribe();
       }
     };
-  }, [])
+  }, []);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
@@ -137,6 +148,7 @@ export default function LoginScreen(props) {
         }}
         source={require("../assets/Images/tripleDot.png")}
       />
+
       <TextInput
         onChangeText={(text) => onPhoneChanged(text)}
         value={phone}
@@ -161,7 +173,7 @@ export default function LoginScreen(props) {
                   tel: phone,
                   password: password,
                 })
-                .then(function(response) {
+                .then(function (response) {
                   onPasswordChanged("");
                   onPhoneChanged("");
 
@@ -173,7 +185,7 @@ export default function LoginScreen(props) {
                     } else {
                       user.payload = {};
                     }
-                    AsyncStorage.setItem("user", user.url, function(response) {
+                    AsyncStorage.setItem("user", user.url, function (response) {
                       if (user.is_seller && !user.payload.account_selected) {
                         props.navigation.navigate("StoreAccountSelection", {
                           authority: "store",
@@ -206,11 +218,9 @@ export default function LoginScreen(props) {
                         });
                       }
                     });
-                  } else {
-                    alert.warning(response.error);
                   }
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                   if (
                     error &&
                     error.response &&

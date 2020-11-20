@@ -32,6 +32,9 @@ import CartFloating from "../assets/CustomComponents/CartFloating";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import Format from "../lib/format";
+import Translate from "../assets/Translates/Translate";
+const format = new Format();
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -48,9 +51,12 @@ export default function HomeStoreList(props) {
   const [product, onProductChanged] = React.useState({});
   const [images, onImagesChanged] = React.useState({});
   const [show, onShowChanged] = React.useState({});
+  const [showText, onShowText] = React.useState(false);
+  const [time, setTimePassed] = React.useState(false);
   const [XsShow, onXsShow] = React.useState(true);
   const [sShow, onSShow] = React.useState(true);
   const [mShow, onMShow] = React.useState(true);
+  const [cartCount, onCartCountChanged] = React.useState(0);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
   const XSOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
@@ -126,6 +132,12 @@ export default function HomeStoreList(props) {
         onBack={() => {
           props.navigation.pop();
         }}
+        onCartCount={
+          (count) => {
+            onCartCountChanged(count);
+          }
+        }
+        overrideCartCount={cartCount}
       />
       <View style={styles.product_content}>
         <ScrollView>
@@ -166,7 +178,7 @@ export default function HomeStoreList(props) {
               {product ? product.name : ""}
             </Text>
             <Text style={styles.font_small}>
-              {"Seller: " +
+              {Translate.t("seller") + ": " +
                 (product && product.user
                   ? product.user.real_name
                     ? product.user.real_name
@@ -184,13 +196,16 @@ export default function HomeStoreList(props) {
               {product && product.category ? product.category.name : ""}
             </Text>
             <Text style={styles.font_medium}>
-              {(user.is_seller ? product.store_price : product.price) +
-                " Yen (Tax Not Included)"}
+              {(user.is_seller
+                ? format.separator(product.store_price)
+                : format.separator(product.price)) +
+                '円' +
+                Translate.t("taxNotIncluded")}
             </Text>
             <Text style={styles.font_small}>
               {product.shipping_fee
-                ? "Shipping: " + product.shipping_fee
-                : "Free Shipping"}
+                ? Translate.t("shipping") + ": " + product.shipping_fee
+                : Translate.t("freeShipping")}
             </Text>
           </View>
 
@@ -200,7 +215,9 @@ export default function HomeStoreList(props) {
               paddingTop: 20,
             }}
           >
-            <Text style={styles.product_title}>{"Product Featured"}</Text>
+            <Text style={styles.product_title}>
+              {Translate.t("productFeatures")}
+            </Text>
             <Text style={styles.product_description}>{product.pr}</Text>
           </View>
 
@@ -210,7 +227,9 @@ export default function HomeStoreList(props) {
               paddingTop: 20,
             }}
           >
-            <Text style={styles.product_title}>{"Product Details"}</Text>
+            <Text style={styles.product_title}>
+              {Translate.t("productDetails")}
+            </Text>
             <Text style={styles.product_description}>{product.pr}</Text>
           </View>
         </ScrollView>
@@ -244,7 +263,9 @@ export default function HomeStoreList(props) {
               height: heightPercentageToDP("5%"),
             }}
           >
-            <Text style={{ fontSize: RFValue(14) }}>カートへ追加する</Text>
+            <Text style={{ fontSize: RFValue(14) }}>
+              {Translate.t("addToCart")}
+            </Text>
             <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
               <Image
                 style={{
@@ -273,7 +294,7 @@ export default function HomeStoreList(props) {
                 padding: widthPercentageToDP("5%"),
               }}
             >
-              サイズ×カラー
+              {Translate.t("sizeAndColor")}
             </Text>
           </View>
           <ScrollView>
@@ -442,7 +463,6 @@ export default function HomeStoreList(props) {
                 marginTop: heightPercentageToDP("5%"),
                 paddingBottom: heightPercentageToDP("5%"),
                 alignItems: "flex-start",
-                backgroundColor: "orange",
               }}
             >
               <View
@@ -453,7 +473,9 @@ export default function HomeStoreList(props) {
                   flex: 1,
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>数量</Text>
+                <Text style={{ fontSize: RFValue(12) }}>
+                  {Translate.t("unit")}
+                </Text>
                 <Picker
                   selectedValue={"3"}
                   style={styles.picker}
@@ -488,7 +510,9 @@ export default function HomeStoreList(props) {
                       marginHorizontal: widthPercentageToDP("5%"),
                     }}
                   >
-                    <Text style={{ fontSize: RFValue(11) }}>カート入れる</Text>
+                    <Text style={{ fontSize: RFValue(11) }}>
+                      {Translate.t("addToCartBtn")}
+                    </Text>
                   </View>
                 </TouchableWithoutFeedback>
               </View>
@@ -496,6 +520,52 @@ export default function HomeStoreList(props) {
           </ScrollView>
         </SafeAreaView>
       </Modal>
+      {showText == true
+        ? (
+            <View
+              style={{
+                borderRadius: win.width / 2,
+                borderWidth: 1,
+                backgroundColor: Colors.E6DADE,
+                borderColor: "transparent",
+                zIndex: 1,
+                elevation: 1,
+                position: "absolute",
+                right: RFValue(5),
+                borderStyle: "solid",
+                paddingVertical: widthPercentageToDP("1%"),
+                paddingHorizontal: widthPercentageToDP("7%"),
+                marginTop: heightPercentageToDP("6.2%"),
+              }}
+            >
+              <View
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderBottomWidth: RFValue(20),
+                  borderRightWidth: RFValue(12),
+                  borderLeftWidth: RFValue(12),
+                  borderLeftColor: "transparent",
+                  borderRightColor: "transparent",
+                  borderBottomColor: Colors.E6DADE,
+                  top: RFValue(-15),
+                  position: "absolute",
+                  right: RFValue(9),
+                }}
+              ></View>
+              <Text
+                style={{
+                  fontSize: RFValue(10),
+                  color: "black",
+                  alignSelf: "flex-start",
+                }}
+              >
+                {Translate.t("itemAddedToCart")}
+              </Text>
+            </View>
+          )
+        : <View></View>}
+
       <CartFloating
         onPress={() => {
           // onShowChanged(true);
@@ -506,7 +576,22 @@ export default function HomeStoreList(props) {
             .set({
               quantity: 1,
             });
-          alert.warning("Added to cart.");
+          onShowText(true);
+          setTimeout(
+            function () {
+              onShowText(false);
+            }.bind(this),
+            2000
+          )
+
+          const subscriber = db
+          .collection("users")
+          .doc(user.id.toString())
+          .collection("carts")
+          .get()
+          .then((querySnapShot) => {
+            onCartCountChanged(querySnapShot.docs.length)
+          });
         }}
       />
     </SafeAreaView>
@@ -594,7 +679,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     overflow: "hidden",
     fontSize: RFValue(12),
-    fontFamily: "sans-serif",
+    //fontFamily: "sans-serif",
     padding: 2,
   },
   font_medium: {
@@ -602,11 +687,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     overflow: "hidden",
     fontSize: RFValue(14),
-    fontFamily: "sans-serif",
+    //fontFamily: "sans-serif",
     padding: 2,
   },
   product_title: {
-    fontFamily: "sans-serif",
+    //fontFamily: "sans-serif",
     borderBottomColor: "black",
     borderBottomWidth: 2,
     fontSize: RFValue(14),
@@ -615,7 +700,7 @@ const styles = StyleSheet.create({
   },
   product_description: {
     overflow: "hidden",
-    fontFamily: "sans-serif",
+    //fontFamily: "sans-serif",
     textAlign: "justify",
     fontSize: RFValue(12),
   },

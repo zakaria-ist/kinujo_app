@@ -11,7 +11,7 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { Colors } from "../assets/Colors.js";
 import { Picker } from "@react-native-picker/picker";
@@ -28,14 +28,18 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
+import RemoveLogo from "../assets/icons/removeIcon.svg";
 
 import CheckBox from "@react-native-community/checkbox";
+import Format from "../lib/format";
+const format = new Format();
 const request = new Request();
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const ratioUpWhiteArrow = width / 24 / 15;
 const ratioRemoveIcon = width / 19 / 16;
 let firebaseProducts = [];
+let djangoProducts = [];
 let ids = [];
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -45,6 +49,7 @@ const win = Dimensions.get("window");
 const ratioAdd = win.width / 21 / 14;
 const ratioRemove = win.width / 20 / 16;
 let taxObj = {};
+let productLoaded = false;
 export default function Cart(props) {
   const [cartItemShow, onCartItemShowChanged] = React.useState(true);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
@@ -66,62 +71,66 @@ export default function Cart(props) {
   const [subtotal, onSubTotalChanged] = React.useState(0);
   const [shipping, onShippingChanged] = React.useState(0);
   const [tax, onTaxChanged] = React.useState(0);
-  
+
   let userId = 0;
   const isFocused = useIsFocused();
   const [selected, onSelectedChanged] = React.useState("");
   const [addressHtml, onAddressHtmlChanged] = React.useState([]);
 
-  function getAddressHtml(pAddresses, pSelected){
+  function getAddressHtml(pAddresses, pSelected) {
     let tmpAddresses = [];
     pAddresses.map((address) => {
       tmpAddresses.push(
         <TouchableWithoutFeedback key={address.id}>
-          <View>
-          <View style={styles.tabContainer}>
-            <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
-            <Text style={styles.textInTabContainer}>{address.zip1}</Text>
-            <Text style={styles.textInTabContainer}>
-              {address.address1}
-            </Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                  marginTop: heightPercentageToDP(".5%"),
-                }}
-              >
-                {address.prefecture.name}
-              </Text>
+          <View style={
+            {
+              justifyContent : "center"
+            }
+          }>
+            <View style={styles.tabContainer}>
+              <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
+              <Text style={styles.textInTabContainer}>{address.zip1}</Text>
+              <Text style={styles.textInTabContainer}>{address.address1}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    marginTop: heightPercentageToDP(".5%"),
+                  }}
+                >
+                  {address.prefecture.name}
+                </Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.checkBoxContainer}>
-            <CheckBox
-              color={Colors.E6DADE}
-              uncheckedColor={Colors.E6DADE}
-              disabled={false}
-              value={pSelected == address['id']}
-              onPress={() => {
-                alert.warning("PRESS");
-              }}
-              onValueChange={(value) => {
-                if(value){
-                  onSelectedChanged(address['id'])
-                  onAddressHtmlChanged(getAddressHtml(pAddresses, address['id']))
-                }
-              }}
-            />
-          </View>
+            <View style={styles.checkBoxContainer}>
+              <CheckBox
+                color={Colors.E6DADE}
+                uncheckedColor={Colors.E6DADE}
+                disabled={false}
+                value={pSelected == address["id"]}
+                onPress={() => {
+                  alert.warning("PRESS");
+                }}
+                onValueChange={(value) => {
+                  if (value) {
+                    onSelectedChanged(address["id"]);
+                    onAddressHtmlChanged(
+                      getAddressHtml(pAddresses, address["id"])
+                    );
+                  }
+                }}
+              />
+            </View>
           </View>
         </TouchableWithoutFeedback>
       );
-    })
+    });
     return tmpAddresses;
   }
-  
+
   function onValueChanged(id, itemValue, is_store) {
     firebaseProducts = firebaseProducts.map((product) => {
-      if (product.product_id == id) {
+      if (product.id == id) {
         product.quantity = itemValue;
       }
       return product;
@@ -130,41 +139,49 @@ export default function Cart(props) {
   }
 
   function processCartHtml(props, products, maps, is_store = false) {
+    productLoaded = false;
     let tmpCartHtml = [];
-    products.map((product) => {
+    for (i = 0; i < djangoProducts.length; i++) {
+      let product = products[i];
       let item = maps.filter((tmp) => {
-        return tmp.product_id == product.id;
+        return tmp.id == product.id;
       });
-      item = item[0];
+      let quantity = item[0].quantity;
+      let key = "key_" + product.id;
       tmpCartHtml.push(
-        <View key={product.product_id} style={styles.cartFirstTabContainer}>
+        <View key={i} style={styles.cartFirstTabContainer}>
           <View>
             <Text style={styles.cartTabText}>{product.name}</Text>
             <Text style={styles.cartTabText}>
-              {is_store ? product.store_price : product.price}円
+              {is_store
+                ? format.separator(product.store_price)
+                : format.separator(product.price)}
+              円
             </Text>
           </View>
           <View style={styles.tabRightContainer}>
-            <Text style={styles.cartTabText}>数量</Text>
+            <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
 
             <Picker
-              selectedValue={item.quantity}
+              selectedValue={quantity}
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => {
-                onValueChanged(product.product_id, itemValue, is_store);
+                if(productLoaded){
+                  onValueChanged(product.id, itemValue, is_store);
+                }
               }}
               mode="dropdown"
             >
-              <Picker.Item label="1" value="1" />
-              <Picker.Item label="2" value="2" />
-              <Picker.Item label="3" value="3" />
-              <Picker.Item label="4" value="4" />
-              <Picker.Item label="5" value="5" />
-              <Picker.Item label="6" value="6" />
-              <Picker.Item label="7" value="7" />
-              <Picker.Item label="8" value="8" />
-              <Picker.Item label="9" value="9" />
-              <Picker.Item label="10" value="10" />
+              <Picker.Item key="1" label="1" value="1" />
+              <Picker.Item key="2" label="2" value="2" />
+              <Picker.Item key="3" label="3" value="3" />
+              <Picker.Item key="4" label="4" value="4" />
+              <Picker.Item key="5" label="5" value="5" />
+              <Picker.Item key="6" label="6" value="6" />
+              <Picker.Item key="7" label="7" value="7" />
+              <Picker.Item key="8" label="8" value="8" />
+              <Picker.Item key="9" label="9" value="9" />
+              <Picker.Item key="10" label="10" value="10" />
             </Picker>
             <View
               style={{
@@ -191,17 +208,37 @@ export default function Cart(props) {
                   alert.warning("Cart Updated.");
                 }}
               >
-                <Text style={styles.buttonText}>変更</Text>
+                <Text style={styles.buttonText}>{Translate.t("change")}</Text>
               </TouchableWithoutFeedback>
-              <Image
-                source={require("../assets/icons/removeIcon.svg")}
-                style={styles.removeIcon}
-              />
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  firebaseProducts = firebaseProducts.filter(
+                    (firebaseProduct) => {
+                      return firebaseProduct.id != product.id;
+                    }
+                  );
+                  let tmpIds = ids.filter((id) => {
+                    return id != product.id;
+                  });
+                  ids = tmpIds;
+                  onUpdate(tmpIds, firebaseProducts, false);
+                  db.collection("users")
+                    .doc(userId)
+                    .collection("carts")
+                    .doc(product.product_id)
+                    .delete();
+                }}
+              >
+                <RemoveLogo
+                  source={require("../assets/icons/removeIcon.svg")}
+                  style={styles.removeIcon}
+                />
+              </TouchableWithoutFeedback>
             </View>
           </View>
         </View>
       );
-    });
+    }
     return tmpCartHtml;
   }
 
@@ -211,10 +248,11 @@ export default function Cart(props) {
         ids: ids,
       })
       .then(function (response) {
+        djangoProducts = response.data.products;
         onCartHtmlChanged(
-          processCartHtml(props, response.data.products, items, is_store)
+          processCartHtml(props, djangoProducts, items, is_store)
         );
-
+        productLoaded = true;
         let tmpProducts = response.data.products;
         ids.map((id) => {
           let tmpQuantities = firebaseProducts.filter((product) => {
@@ -275,10 +313,10 @@ export default function Cart(props) {
           onUpdate(tmpIds, items, false);
         });
 
-        request
+      request
         .get("addressList/" + userId + "/")
         .then((response) => {
-          onAddressHtmlChanged(getAddressHtml(response.data.addresses, ""))
+          onAddressHtmlChanged(getAddressHtml(response.data.addresses, ""));
         })
         .catch((error) => {
           if (
@@ -296,25 +334,28 @@ export default function Cart(props) {
           }
         });
 
-        request
+      request
         .get("tax_rates/")
         .then((response) => {
-          let taxes = response.data.filter((item)=>{
+          let taxes = response.data.filter((item) => {
             let nowDate = new Date();
-            if(item.start_date && item.end_date){
-              if(nowDate >= new Date(item.start_date) && nowDate <= new Date(item.end_date)){
+            if (item.start_date && item.end_date) {
+              if (
+                nowDate >= new Date(item.start_date) &&
+                nowDate <= new Date(item.end_date)
+              ) {
                 return true;
               }
-            } else if(item.start_date){
-              if(nowDate >= new Date(item.start_date)){
+            } else if (item.start_date) {
+              if (nowDate >= new Date(item.start_date)) {
                 return true;
               }
             }
             return false;
-          })
+          });
 
-          if(taxes.length > 0){
-            taxObj = taxes[0]
+          if (taxes.length > 0) {
+            taxObj = taxes[0];
           }
         })
         .catch((error) => {
@@ -333,11 +374,12 @@ export default function Cart(props) {
           }
         });
     });
-  }, []);
+  }, [isFocused]);
 
   return (
     <View style={{ paddingBottom: heightPercentageToDP("10%"), flexGrow: 1 }}>
       <CustomHeader
+        text={Translate.t("cart")}
         onBack={() => {
           props.navigation.pop();
         }}
@@ -345,7 +387,6 @@ export default function Cart(props) {
           props.navigation.navigate("Cart");
         }}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
-        text="カート"
       />
       <ScrollView>
         <TouchableWithoutFeedback
@@ -412,6 +453,57 @@ export default function Cart(props) {
           >
             {cartHtml}
           </Animated.View>
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                marginTop: heightPercentageToDP("2%"),
+              }}
+            >
+              <View
+                style={{
+                  marginRight: widthPercentageToDP("10%"),
+                  alignItems: "flex-end",
+                }}
+              >
+                <Text style={styles.totalText}>{Translate.t("Subtotal")}</Text>
+                <Text style={styles.totalText}>{Translate.t("gst")}</Text>
+                <Text style={styles.totalText}>
+                  {Translate.t("shippingFee")}
+                </Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.totalText}>{subtotal}円</Text>
+                <Text style={styles.totalText}>
+                  {taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0}円
+                </Text>
+                <Text style={styles.totalText}>{shipping}円</Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              marginTop: heightPercentageToDP("2%"),
+            }}
+          >
+            <Text
+              style={{
+                fontSize: RFValue(14),
+                marginRight: widthPercentageToDP("15%"),
+              }}
+            >
+              {Translate.t("total")}
+            </Text>
+            <Text style={{ fontSize: RFValue(14) }}>
+              {subtotal +
+                (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) +
+                shipping}
+              円
+            </Text>
+          </View>
           <View style={styles.allTabsContainer}>
             {addressHtml}
             <View
@@ -441,67 +533,26 @@ export default function Cart(props) {
               </TouchableWithoutFeedback>
             </View>
           </View>
-
-          <View>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "flex-end",
-                marginTop: heightPercentageToDP("2%"),
-              }}
-            >
-              <View
-                style={{
-                  marginRight: widthPercentageToDP("10%"),
-                  alignItems: "flex-end",
-                }}
-              >
-                <Text style={styles.totalText}>小計</Text>
-                <Text style={styles.totalText}>消費税</Text>
-                <Text style={styles.totalText}>送料</Text>
-              </View>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text style={styles.totalText}>{subtotal}円</Text>
-                <Text style={styles.totalText}>{(taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0)}円</Text>
-                <Text style={styles.totalText}>{shipping}円</Text>
-              </View>
-            </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-end",
-              marginTop: heightPercentageToDP("2%"),
-            }}
-          >
-            <Text
-              style={{
-                fontSize: RFValue(14),
-                marginRight: widthPercentageToDP("15%"),
-              }}
-            >
-              小計
-            </Text>
-            <Text style={{ fontSize: RFValue(14) }}>
-              {subtotal + (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) + shipping}円
-            </Text>
-          </View>
           <TouchableWithoutFeedback
             onPress={() => {
-              if(firebaseProducts.length > 0 && selected){
+              if (firebaseProducts.length > 0 && selected) {
                 props.navigation.navigate("Payment", {
                   products: firebaseProducts,
                   address: selected,
-                  tax: taxObj.id
+                  tax: taxObj.id,
                 });
               } else {
-                alert.warning("You must have items in cart and select an address.");
+                alert.warning(
+                  "You must have items in cart and select an address."
+                );
               }
             }}
           >
             <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
               <View style={styles.orderConfirmButtonContainer}>
-                <Text style={styles.orderConfirmButtonText}>注文確定</Text>
+                <Text style={styles.orderConfirmButtonText}>
+                  {Translate.t("confirmOrder")}
+                </Text>
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -644,7 +695,7 @@ const styles = StyleSheet.create({
   picker: {
     width: widthPercentageToDP("20%"),
     height: heightPercentageToDP("5%"),
-    fontSize: 12,
+    fontSize: RFValue(12),
     backgroundColor: "white",
     marginTop: heightPercentageToDP("1%"),
     borderColor: "transparent",
