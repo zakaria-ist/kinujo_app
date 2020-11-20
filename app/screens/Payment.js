@@ -18,9 +18,7 @@ import {
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
-import StripeCheckout from "react-native-stripe-checkout-webview";
 import { WebView } from "react-native-webview";
-import stripe from "tipsi-stripe";
 import CustomAlert from "../lib/alert";
 import Translate from "../assets/Translates/Translate";
 import {

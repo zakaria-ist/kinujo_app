@@ -7,7 +7,7 @@ platform :ios, '10.0'
 target 'kinujo' do
   use_unimodules!
   config = use_native_modules!
-
+  permissions_path = '../node_modules/react-native-permissions/ios'
   use_react_native!(:path => config["reactNativePath"])
 
   # Enables Flipper.
@@ -22,6 +22,7 @@ target 'kinujo' do
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
+  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
 
   post_install do |installer|
