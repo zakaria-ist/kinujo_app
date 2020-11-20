@@ -40,7 +40,7 @@ const ratioSearchIcon = win.width / 19 / 19;
 export default function FriendSearch(props) {
   const [searchText, onSearchTextChanged] = React.useState("");
   const [friendHtml, onFriendHtmlChanged] = React.useState(<View></View>);
-  AsyncStorage.getItem("user").then(function(url) {
+  AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
@@ -53,7 +53,7 @@ export default function FriendSearch(props) {
     chatRef
       .where("users", "array-contains", ownUserID)
       .get()
-      .then(function(querySnapshot) {
+      .then(function (querySnapshot) {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
           for (var i = 0; i < users.length; i++) {
@@ -83,7 +83,7 @@ export default function FriendSearch(props) {
               [ownTotalMessageReadField]: 0,
               [friendTotalMessageReadField]: 0,
             })
-            .then(function() {
+            .then(function () {
               navigateToChatScreen(friendID);
             });
         }
@@ -147,7 +147,7 @@ export default function FriendSearch(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="友だち検索"
+        text={Translate.t("friendSearch")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => props.navigation.pop()}
@@ -155,7 +155,7 @@ export default function FriendSearch(props) {
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TextInput
-            placeholder="IDで友だちを検索"
+            placeholder={Translate.t("friendSearchByID")}
             placeholderTextColor={Colors.grey}
             onChangeText={(text) => {
               onSearchTextChanged(text);
@@ -163,10 +163,10 @@ export default function FriendSearch(props) {
                 .get("profiles/", {
                   search: text,
                 })
-                .then(function(response) {
+                .then(function (response) {
                   onFriendHtmlChanged(processFriendHtml(props, response.data));
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                   if (
                     error &&
                     error.response &&

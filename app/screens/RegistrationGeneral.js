@@ -136,6 +136,7 @@ export default function RegistrationGeneral(props) {
                         AsyncStorage.getItem("referUser", function(item){
                           props.navigation.navigate("SMSAuthentication", {
                             nickname: nickname,
+                            real_name: nickname,
                             username: phone,
                             password: password,
                             authority: "general",

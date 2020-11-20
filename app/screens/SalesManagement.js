@@ -20,6 +20,8 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import Format from "../lib/format";
+const format = new Format();
 var kanjidate = require("kanjidate");
 
 const request = new Request();
@@ -59,7 +61,7 @@ function processSaleHtml(sales) {
               right: 0,
             }}
           >
-            {sale.unit_price}円
+            {format.separator(sale.unit_price)}円
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -95,7 +97,7 @@ function processCommissionHtml(commissions) {
                     .product_variety.product.name}
             </Text>
             <Text style={styles.commissionTabText}>
-              {commission.order_product.unit_price}円
+              {format.separator(commission.order_product.unit_price)}円
             </Text>
           </View>
           <Text
@@ -184,8 +186,8 @@ export default function SalesManagement(props) {
           response.data.saleProducts.map((sale) => {
             total += sale.unit_price;
           });
-          onTotalSaleChanged(total);
-          onTotalChanged(totalCommission + totalSale);
+          onTotalSaleChanged(format.separator(total));
+          onTotalChanged(format.separator(totalCommission + totalSale));
           onSaleLoaded(true);
         })
         .catch(function(error) {
@@ -209,7 +211,7 @@ export default function SalesManagement(props) {
         }}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={
           props.route.params.is_store ? Translate.t("storeAccount") : ""
         }

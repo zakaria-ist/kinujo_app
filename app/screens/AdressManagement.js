@@ -44,7 +44,7 @@ export default function AddressManagement(props) {
   if (!prefectureLoaded) {
     request
       .get("prefectures/")
-      .then(function(response) {
+      .then(function (response) {
         let tmpPrefectures = response.data.map((prefecture) => {
           return {
             label: prefecture.name,
@@ -57,7 +57,7 @@ export default function AddressManagement(props) {
         if (props.route.params && props.route.params.url && !address.url) {
           request
             .get(props.route.params.url)
-            .then(function(response) {
+            .then(function (response) {
               onAddressChanged(response.data);
               onNameChanged(response.data.name);
               onZipcodeChanged(response.data.zip1);
@@ -66,7 +66,7 @@ export default function AddressManagement(props) {
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
             })
-            .catch(function(error) {
+            .catch(function (error) {
               if (
                 error &&
                 error.response &&
@@ -83,7 +83,7 @@ export default function AddressManagement(props) {
             });
         }
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (
           error &&
           error.response &&
@@ -124,18 +124,18 @@ export default function AddressManagement(props) {
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
-        text="お届け先"
+        text={Translate.t("addressee")}
       />
       <View style={styles.textInputContainer}>
         <TextInput
-          placeholder="Name"
+          placeholder={Translate.t("name")}
           placeholderTextColor={Colors.D7CCA6}
           style={styles.textInput}
           value={name}
           onChangeText={(text) => onNameChanged(text)}
         ></TextInput>
         <TextInput
-          placeholder="郵便番号"
+          placeholder={Translate.t("postalCode")}
           placeholderTextColor={Colors.D7CCA6}
           style={styles.textInput}
           value={zipcode}
@@ -170,7 +170,7 @@ export default function AddressManagement(props) {
           selectedtLabelStyle={{
             color: Colors.F0EEE9,
           }}
-          placeholder="都道府県"
+          placeholder={Translate.t("prefecture")}
           dropDownStyle={{ backgroundColor: "#000000" }}
           onChangeItem={(item) => {
             if (item) {
@@ -179,21 +179,21 @@ export default function AddressManagement(props) {
           }}
         />
         <TextInput
-          placeholder="住所"
+          placeholder={Translate.t("address1")}
           placeholderTextColor={Colors.D7CCA6}
           style={styles.textInput}
           value={add}
           onChangeText={(text) => onAddChanged(text)}
         ></TextInput>
         <TextInput
-          placeholder="建物名"
+          placeholder={Translate.t("address2")}
           placeholderTextColor={Colors.D7CCA6}
           style={styles.textInput}
           value={buildingName}
           onChangeText={(text) => onBuildingNameChanged(text)}
         ></TextInput>
         <TextInput
-          placeholder="電話番号"
+          placeholder={Translate.t("profileEditPhoneNumber")}
           placeholderTextColor={Colors.D7CCA6}
           style={styles.textInput}
           value={phoneNumber}
@@ -213,10 +213,10 @@ export default function AddressManagement(props) {
                 tel: phoneNumber,
                 zip1: zipcode,
               })
-              .then(function(response) {
+              .then(function (response) {
                 props.navigation.pop();
               })
-              .catch(function(error) {
+              .catch(function (error) {
                 if (
                   error &&
                   error.response &&
@@ -234,7 +234,7 @@ export default function AddressManagement(props) {
                 }
               });
           } else {
-            AsyncStorage.getItem("user").then(function(url) {
+            AsyncStorage.getItem("user").then(function (url) {
               request
                 .post("addresses/", {
                   address1: add,
@@ -246,7 +246,7 @@ export default function AddressManagement(props) {
                   user: url,
                   zip1: zipcode,
                 })
-                .then(function(response) {
+                .then(function (response) {
                   onNameChanged("");
                   onZipcodeChanged("");
                   onPrefectureChanged(null);
@@ -257,7 +257,7 @@ export default function AddressManagement(props) {
                   onPrefectureLoadedChanged(false);
                   props.navigation.pop();
                 })
-                .catch(function(error) {
+                .catch(function (error) {
                   if (
                     error &&
                     error.response &&
@@ -279,7 +279,9 @@ export default function AddressManagement(props) {
         }}
       >
         <View style={styles.buttonContainer}>
-          <Text style={styles.buttonText}>登録</Text>
+          <Text style={styles.buttonText}>
+            {Translate.t("addressRegister")}
+          </Text>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

@@ -73,7 +73,7 @@ export default function ContactShare(props) {
       .doc(groupID)
       .collection("messages")
       .add(contactObj)
-      .then(function() {
+      .then(function () {
         db.collection("chat")
           .doc(groupID)
           .set(
@@ -96,13 +96,19 @@ export default function ContactShare(props) {
               merge: true,
             }
           );
-        db.collection("chat").doc(groupID).get().then(function(doc) {
+        db.collection("chat")
+          .doc(groupID)
+          .get()
+          .then(function (doc) {
             totalMessageCount = doc.data().totalMessage;
-          }).then(function() {
-          db.collection("chat").doc(groupID).update({
-              totalMessage: totalMessageCount + 1,
-            });
-        });
+          })
+          .then(function () {
+            db.collection("chat")
+              .doc(groupID)
+              .update({
+                totalMessage: totalMessageCount + 1,
+              });
+          });
         props.navigation.pop();
       });
   }
@@ -115,7 +121,7 @@ export default function ContactShare(props) {
           onPress={() => {
             storeShareContact(
               user.id,
-              user.real_name ? user.real_name : user.nickname
+              user.nickname
             );
           }}
         >
@@ -129,7 +135,7 @@ export default function ContactShare(props) {
               source={require("../assets/Images/profileEditingIcon.png")}
             />
             <Text style={styles.tabLeftText}>
-              {user.real_name ? user.real_name : user.nickname}
+              {user.nickname}
             </Text>
           </View>
         </TouchableWithoutFeedback>
@@ -142,13 +148,13 @@ export default function ContactShare(props) {
   const [user, onUserChanged] = React.useState({});
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&
@@ -186,10 +192,10 @@ export default function ContactShare(props) {
             .get("user/byIds/", {
               ids: ids,
             })
-            .then(function(response) {
+            .then(function (response) {
               onUserHtmlChanged(processUserHtml(props, response.data.users));
             })
-            .catch(function(error) {
+            .catch(function (error) {
               if (
                 error &&
                 error.response &&
@@ -212,12 +218,12 @@ export default function ContactShare(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="連絡先"
+        text={Translate.t("contact")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={user.is_seller ? Translate.t("storeAccount") : ""}
       />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
@@ -226,7 +232,7 @@ export default function ContactShare(props) {
             onPress={() => props.navigation.navigate("ContactSearch")}
           >
             <TextInput
-              placeholder="検索"
+              placeholder={Translate.t("search")}
               placeholderTextColor={Colors.grey}
               style={styles.searchContactInput}
             ></TextInput>

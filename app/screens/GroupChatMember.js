@@ -45,13 +45,13 @@ export default function FolderMemberSelection(props) {
   const [checked, onCheckedChanged] = React.useState(false);
   const [loaded, onLoaded] = React.useState(false);
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&
@@ -94,13 +94,13 @@ export default function FolderMemberSelection(props) {
             .get("user/byIds/", {
               ids: ids,
             })
-            .then(function(response) {
+            .then(function (response) {
               //response = get use details from url
               onUserHtmlChanged(
                 processUserHtml(props, response.data.users, tmpFriend)
               );
             })
-            .catch(function(error) {
+            .catch(function (error) {
               if (
                 error &&
                 error.response &&
@@ -137,12 +137,12 @@ export default function FolderMemberSelection(props) {
       .get("user/byIds/", {
         ids: ids,
       })
-      .then(function(response) {
+      .then(function (response) {
         onUserHtmlChanged(
           processUserHtml(props, response.data.users, tmpFriend)
         );
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (
           error &&
           error.response &&
@@ -176,7 +176,7 @@ export default function FolderMemberSelection(props) {
           <View style={styles.tabContainer}>
             <Image style={styles.memberImage} />
             <Text style={styles.tabContainerText}>
-              {user.real_name ? user.real_name : user.nickname}
+              {user.nickname}
             </Text>
             <View style={styles.checkBoxContainer}>
               <CheckBox
@@ -206,7 +206,7 @@ export default function FolderMemberSelection(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="フォルダメンバー選択"
+        text={Translate.t("groupChatCreation")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
@@ -235,7 +235,7 @@ export default function FolderMemberSelection(props) {
               onPress={() => props.navigation.navigate("ContactSearch")}
             >
               <TextInput
-                placeholder="検索"
+                placeholder={Translate.t("search")}
                 placeholderTextColor={Colors.grey}
                 style={styles.searchInput}
               ></TextInput>

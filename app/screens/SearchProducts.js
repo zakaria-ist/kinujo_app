@@ -12,7 +12,7 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -28,6 +28,8 @@ import Translate from "../assets/Translates/Translate";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import Format from "../lib/format";
+const format = new Format();
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -38,173 +40,214 @@ const ratioSearchIcon = win.width / 19 / 19;
 const ratioProfile = win.width / 13 / 22;
 
 export default function SearchProducts(props) {
-    const [user, onUserChanged] = React.useState({});
-    const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
-    const [products, onProductsChanged] = React.useState([]);
-    const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
-    const [searchTerm, onSearchTermChanged] = React.useState([]);
+  const [user, onUserChanged] = React.useState({});
+  const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
+  const [products, onProductsChanged] = React.useState([]);
+  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
+  const [searchTerm, onSearchTermChanged] = React.useState([]);
 
-    function performProductHtml(products){
-      products = products.sort((p1, p2) => {
-        if(p1.created > p2.created){
-          return -1;
-        }
-        return 1;
-      });
+  function performProductHtml(products) {
+    products = products.sort((p1, p2) => {
+      if (p1.created > p2.created) {
+        return -1;
+      }
+      return 1;
+    });
 
-      let kinujoProducts = products.filter((product) => {
-        return product.user.authority.id == 1;
-        })
-        let featuredProducts = products.filter((product) => {
-        return product.user.authority.id != 1;
-        })
+    let kinujoProducts = products.filter((product) => {
+      return product.user.authority.id == 1;
+    });
+    let featuredProducts = products.filter((product) => {
+      return product.user.authority.id != 1;
+    });
 
-        let tmpKinujoHtml = []
-        kinujoProducts.map((product) => {
-          tmpKinujoHtml.push(<HomeProducts
-              onPress={
-                ()=>{
-                  props.navigation.navigate("HomeStoreList", {
-                    "url" : product.url
-                  })
-                }
-              }
-              idx={product.id}
-              image={product.productImages.length > 0 ? product.productImages[0].image.image : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"}
-              office={product.brand_name}
-              name={product.name}
-              seller={product.user.real_name ? product.user.real_name : product.user.nickname}
-              price={(user.is_seller ? product.store_price : product.price) + " Yen"}
-              category={product.category.name}
-              shipping={product.shipping_fee ? product.shipping_fee  : "Free Shipping"}
-          />)
-        })
-        onKinujoHtmlChanged(tmpKinujoHtml);
+    let tmpKinujoHtml = [];
+    kinujoProducts.map((product) => {
+      tmpKinujoHtml.push(
+        <HomeProducts
+          onPress={() => {
+            props.navigation.navigate("HomeStoreList", {
+              url: product.url,
+            });
+          }}
+          idx={product.id}
+          image={
+            product.productImages.length > 0
+              ? product.productImages[0].image.image
+              : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+          }
+          office={product.brand_name}
+          name={product.name}
+          seller={
+            product.user.real_name
+              ? product.user.real_name
+              : product.user.nickname
+          }
+          price={
+            (user.is_seller
+              ? format.separator(product.store_price)
+              : format.separator(product.price)) + " 円"
+          }
+          category={product.category.name}
+          shipping={
+            product.shipping_fee
+              ? "Shipping :" + format.separator(product.shipping_fee)
+              : "Free Shipping"
+          }
+        />
+      );
+    });
+    onKinujoHtmlChanged(tmpKinujoHtml);
 
-        let tmpFeaturedHtml = []
-        featuredProducts.map((product) => {
-        tmpFeaturedHtml.push(<HomeProducts
-            onPress={
-            ()=>{
-              props.navigation.navigate("HomeStoreList", {
-                "url" : product.url
-              })
-            }
-            }
-            idx={product.id}
-            image={product.productImages.length > 0 ? product.productImages[0].image.image : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"}
-            office={product.brand_name}
-            name={product.name}
-            seller={product.user.real_name ? product.user.real_name : product.user.nickname}
-            price={(user.is_seller ? product.store_price : product.price) + " Yen"}
-            category={product.category.name}
-            shipping={product.shipping_fee ? product.shipping_fee  : "Free Shipping"}
-        />)
+    let tmpFeaturedHtml = [];
+    featuredProducts.map((product) => {
+      tmpFeaturedHtml.push(
+        <HomeProducts
+          onPress={() => {
+            props.navigation.navigate("HomeStoreList", {
+              url: product.url,
+            });
+          }}
+          idx={product.id}
+          image={
+            product.productImages.length > 0
+              ? product.productImages[0].image.image
+              : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+          }
+          office={product.brand_name}
+          name={product.name}
+          seller={
+            product.user.real_name
+              ? product.user.real_name
+              : product.user.nickname
+          }
+          price={
+            (user.is_seller
+              ? format.separator(product.store_price)
+              : format.separator(product.price)) + " 円"
+          }
+          category={product.category.name}
+          shipping={
+            product.shipping_fee
+              ? "Shipping: " + format.separator(product.shipping_fee)
+              : "Free Shipping"
+          }
+        />
+      );
+    });
+    onFeaturedHtmlChanged(tmpFeaturedHtml);
+  }
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
         })
-        onFeaturedHtmlChanged(tmpFeaturedHtml);
-    }
-    React.useEffect(()=>{
-      AsyncStorage.getItem("user").then(function(url) {
-        request
-          .get(url)
-          .then(function(response) {
-            onUserChanged(response.data);
-          })
-          .catch(function(error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-      });
-        request.get("products/").then(function(response){
-            let products = response.data;
-            onProductsChanged(products);
-            performProductHtml(products)
-        }).catch(function(error){
-            if (
+        .catch(function (error) {
+          if (
             error &&
             error.response &&
             error.response.data &&
             Object.keys(error.response.data).length > 0
-            ) {
+          ) {
             alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
+              error.response.data[Object.keys(error.response.data)[0]][0] +
                 "(" +
                 Object.keys(error.response.data)[0] +
                 ")"
             );
-            }
-        })
-        }, [useIsFocused]);
+          }
+        });
+    });
+    request
+      .get("products/")
+      .then(function (response) {
+        let products = response.data;
+        onProductsChanged(products);
+        performProductHtml(products);
+      })
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
+  }, [useIsFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
-          onBack={() => {
+        onBack={() => {
           props.navigation.pop();
-          }}
-          text="Search Products"
-          onFavoritePress={() => props.navigation.navigate("Favorite")}
-          onPress={() => props.navigation.navigate("Cart")}
+        }}
+        text={Translate.t("searchProduct")}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
+        onPress={() => props.navigation.navigate("Cart")}
       />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
-          <View style={styles.searchInputContainer}>
+        <View style={styles.searchInputContainer}>
           <TouchableWithoutFeedback
-              onPress={() => props.navigation.navigate("ContactSearch")}
+            onPress={() => props.navigation.navigate("ContactSearch")}
           >
-              <TextInput
-              placeholder="検索"
+            <TextInput
+              placeholder={Translate.t("search")}
               placeholderTextColor={Colors.grey}
               style={styles.searchContactInput}
               value={searchTerm}
               onChangeText={(value) => {
                 onSearchTermChanged(value);
                 let tmpProducts = products.filter((product) => {
-                  return JSON.stringify(product).indexOf(value) >= 0
-                })
-                performProductHtml(tmpProducts)
+                  return JSON.stringify(product).indexOf(value) >= 0;
+                });
+                performProductHtml(tmpProducts);
               }}
-              ></TextInput>
+            ></TextInput>
           </TouchableWithoutFeedback>
           <Image
-              style={styles.searchIcon}
-              source={require("../assets/Images/searchIcon.png")}
+            style={styles.searchIcon}
+            source={require("../assets/Images/searchIcon.png")}
           />
-          </View>
+        </View>
       </View>
       <ScrollView style={styles.home_product_view}>
-          {kinujoHtml.length > 0 ? (
+        {kinujoHtml.length > 0 ? (
           <View style={styles.section_header}>
-              <Text style={styles.section_header_text}>
+            <Text style={styles.section_header_text}>
               {"KINUJO official product"}
-              </Text>
+            </Text>
           </View>
-          ) : (<View></View>)}
-          {kinujoHtml.length > 0 ? (
-          <View style={styles.section_product}>
-              {kinujoHtml}
-          </View>
-          ) : (<View></View>)}
+        ) : (
+          <View></View>
+        )}
+        {kinujoHtml.length > 0 ? (
+          <View style={styles.section_product}>{kinujoHtml}</View>
+        ) : (
+          <View></View>
+        )}
 
-          {featuredHtml.length > 0 ? (
+        {featuredHtml.length > 0 ? (
           <View style={styles.section_header}>
-              <Text style={styles.section_header_text}>{"Featured Products"}</Text>
+            <Text style={styles.section_header_text}>
+              {Translate.t("featuredProduct")}
+            </Text>
           </View>
-          ) : (<View></View>)}
-          {featuredHtml.length > 0 ? (
-          <View style={styles.section_product}>
-              {featuredHtml}
-          </View>
-          ) : (<View></View>)}
+        ) : (
+          <View></View>
+        )}
+        {featuredHtml.length > 0 ? (
+          <View style={styles.section_product}>{featuredHtml}</View>
+        ) : (
+          <View></View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

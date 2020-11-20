@@ -76,7 +76,7 @@ export default function GroupChatCreation(props) {
                 }).length > 0;
               if (!found) {
                 friendNames.push(
-                  user.real_name ? user.real_name : user.nickname
+                  user.nickname
                 );
                 tmpUserHtml.push(
                   <TouchableWithoutFeedback key={user.id}>
@@ -90,7 +90,7 @@ export default function GroupChatCreation(props) {
                         }}
                       />
                       <Text style={styles.folderText}>
-                        {user.real_name ? user.real_name : user.nickname}
+                        {user.nickname}
                       </Text>
                     </View>
                   </TouchableWithoutFeedback>

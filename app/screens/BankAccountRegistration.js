@@ -28,7 +28,6 @@ import CustomAlert from "../lib/alert";
 import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
 const alert = new CustomAlert();
-import zenginCode from "zengin-code";
 
 const win = Dimensions.get("window");
 export default function BankAccountRegistration(props) {
@@ -43,7 +42,7 @@ export default function BankAccountRegistration(props) {
   const [loaded, onLoaded] = React.useState("");
   const [user, onUserChanged] = React.useState({});
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
@@ -53,10 +52,10 @@ export default function BankAccountRegistration(props) {
       if (!user.url) {
         request
           .get(url)
-          .then(function(response) {
+          .then(function (response) {
             onUserChanged(response.data);
           })
-          .catch(function(error) {
+          .catch(function (error) {
             if (
               error &&
               error.response &&
@@ -76,7 +75,7 @@ export default function BankAccountRegistration(props) {
       if (!loaded) {
         request
           .get("financial-account/" + userId + "/")
-          .then(function(response) {
+          .then(function (response) {
             onLoaded(true);
             onFinancialAccountChanged(response.data.financialAccount);
             onFinancialNameChanged(
@@ -89,7 +88,7 @@ export default function BankAccountRegistration(props) {
             );
             onAccountHolderChanged(response.data.financialAccount.account_name);
           })
-          .catch(function(error) {
+          .catch(function (error) {
             if (
               error &&
               error.response &&
@@ -122,7 +121,7 @@ export default function BankAccountRegistration(props) {
         text={Translate.t("bankAccount")}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={
           props.route.params.is_store ? Translate.t("storeAccount") : ""
         }
@@ -177,7 +176,7 @@ export default function BankAccountRegistration(props) {
               accountNumber &&
               accountHolder
             ) {
-              AsyncStorage.getItem("user").then(function(url) {
+              AsyncStorage.getItem("user").then(function (url) {
                 url = url.replace("http://testserver", "http://127.0.0.1:8000");
                 let urls = url.split("/");
                 urls = urls.filter((url) => {
@@ -195,7 +194,7 @@ export default function BankAccountRegistration(props) {
                     account_name: accountHolder,
                     financial_code: "0000",
                   })
-                  .then(function(response) {
+                  .then(function (response) {
                     onAccountHolderChanged("");
                     onAccountNumberChanged("");
                     onBranchNameChanged("");
@@ -203,7 +202,7 @@ export default function BankAccountRegistration(props) {
                     onAccountTypeChanged("");
                     props.navigation.pop();
                   })
-                  .catch(function(error) {
+                  .catch(function (error) {
                     alert.warning(
                       error.response.data[
                         Object.keys(error.response.data)[0]

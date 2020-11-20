@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, Image, View, Dimensions, TouchableWithoutFeedback} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Image,
+  View,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
 import {
@@ -12,6 +19,8 @@ import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import Format from "../lib/format";
+const format = new Format();
 var kanjidate = require("kanjidate");
 
 const request = new Request();
@@ -23,19 +32,29 @@ const ratioNext = win.width / 38 / 8;
 export default function PurchaseHistoryDetails(props) {
   const [order, onOrderChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
-  if(!loaded){
+  if (!loaded) {
     request
-    .get(props.route.params.url)
-    .then(function (response) {
-      onOrderChanged(response.data);
-      onLoaded(true);
-    })
-    .catch(function (error) {
-      onLoaded(true);
-      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-      }
-    });
+      .get(props.route.params.url)
+      .then(function (response) {
+        onOrderChanged(response.data);
+        onLoaded(true);
+      })
+      .catch(function (error) {
+        onLoaded(true);
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
   }
   return (
     <SafeAreaView>
@@ -48,14 +67,19 @@ export default function PurchaseHistoryDetails(props) {
         }}
       />
       <CustomSecondaryHeader
-        name=
-        {order && order.order ? (order.order.purchaser.real_name ? 
-        order.order.purchaser.real_name :
-        order.order.purchaser.nickname) : ""}
+        name={
+          order && order.order
+            ? order.order.purchaser.real_name
+              ? order.order.purchaser.real_name
+              : order.order.purchaser.nickname
+            : ""
+        }
         accountType={
-          order && order.order  ? (
-            order.order.purchaser.is_seller ? Translate.t("storeAccount") : ""
-          ) : ""
+          order && order.order
+            ? order.order.purchaser.is_seller
+              ? Translate.t("storeAccount")
+              : ""
+            : ""
         }
       />
       <View>
@@ -69,12 +93,16 @@ export default function PurchaseHistoryDetails(props) {
           />
           <View style={{ marginLeft: widthPercentageToDP("3%") }}>
             <Text style={styles.productInformationText}>
-                  {order && order.order ? (order.product_jan_code.horizontal ? 
-                  order.product_jan_code.horizontal.product_variety.product.name :
-                  order.product_jan_code.vertical.product_variety.product.name) : ""
-                }
+              {order && order.order
+                ? order.product_jan_code.horizontal
+                  ? order.product_jan_code.horizontal.product_variety.product
+                      .name
+                  : order.product_jan_code.vertical.product_variety.product.name
+                : ""}
             </Text>
-            <Text style={styles.productInformationText}>{order.unit_price}円</Text>
+            <Text style={styles.productInformationText}>
+              {order.unit_price} 円
+            </Text>
           </View>
         </View>
         <View style={styles.productInformationContainer}>
@@ -82,9 +110,11 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("storeName")}
           </Text>
           <Text style={styles.productSourceText}>
-          {order && order.order ? (order.order.seller.store_name ? 
-            order.order.seller.store_name :
-            order.order.seller.nickname) : ""}
+            {order && order.order
+              ? order.order.seller.store_name
+                ? order.order.seller.store_name
+                : order.order.seller.nickname
+              : ""}
           </Text>
         </View>
         <View style={styles.productInformationContainer}>
@@ -92,7 +122,7 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("orderDate")}
           </Text>
           <Text style={styles.productSourceText}>
-            {order && order.order ? (order.order.created) : ""}
+            {order && order.order ? order.order.created : ""}
           </Text>
         </View>
         <View style={styles.productInformationContainer}>
@@ -100,7 +130,8 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("orderNumber")}
           </Text>
           <Text style={styles.productSourceText}>
-            {order && order.order ? (order.id) : ""}</Text>
+            {order && order.order ? order.id : ""}
+          </Text>
         </View>
         <View style={styles.productInformationContainer}>
           <Text style={styles.productInformationText}>
@@ -111,13 +142,13 @@ export default function PurchaseHistoryDetails(props) {
             source={require("../assets/Images/next.png")}
           />
         </View>
-        <TouchableWithoutFeedback onPress = {
-          () => {
+        <TouchableWithoutFeedback
+          onPress={() => {
             props.navigation.navigate("ReceiptView", {
-              "url" : props.route.params.url
-            })
-          }
-        }>
+              url: props.route.params.url,
+            });
+          }}
+        >
           <View style={styles.productInformationContainer}>
             <Text style={styles.productInformationText}>
               {Translate.t("invoiceIssue")}
@@ -135,7 +166,7 @@ export default function PurchaseHistoryDetails(props) {
           <Text
             style={{ position: "absolute", right: 0, fontSize: RFValue(12) }}
           >
-            {order && order.order ? (order.status) : ""}
+            {order && order.order ? order.status : ""}
           </Text>
         </View>
         <View style={styles.productInformationContainer}>

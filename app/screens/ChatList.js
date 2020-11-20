@@ -76,13 +76,13 @@ export default function ChatList(props) {
     chatRef
       .doc(groupID)
       .get()
-      .then(function(doc) {
+      .then(function (doc) {
         if (doc.exists) {
           userTotalMessageReadCount = doc.data()[userTotalMessageReadField];
           totalMessageCount = doc.data().totalMessage;
         }
       })
-      .then(function() {
+      .then(function () {
         chatRef.doc(groupID).update({
           [unseenMessageCountField]:
             totalMessageCount - userTotalMessageReadCount,
@@ -341,13 +341,13 @@ export default function ChatList(props) {
   React.useEffect(() => {
     firstLoad();
 
-    return function() {};
+    return function () {};
   }, []);
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <View style={{ flex: 1 }}>
         <CustomHeader
-          text="チャット"
+          text={Translate.t("chat")}
           onPress={() => props.navigation.navigate("Cart")}
           onBack={() => props.navigation.pop()}
           onFavoriteChanged="noFavorite"
@@ -383,11 +383,9 @@ export default function ChatList(props) {
                       longPressObj.data["pinned_" + ownUserID]
                         ? false
                         : true;
-                    db.collection("chat")
-                      .doc(longPressObj.id)
-                      .set(update, {
-                        merge: true,
-                      });
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
                     onShowChanged(false);
                   }}
                 >
@@ -403,11 +401,9 @@ export default function ChatList(props) {
                       longPressObj.data["notify_" + ownUserID]
                         ? false
                         : true;
-                    db.collection("chat")
-                      .doc(longPressObj.id)
-                      .set(update, {
-                        merge: true,
-                      });
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
                     onShowChanged(false);
                   }}
                 >
@@ -423,11 +419,9 @@ export default function ChatList(props) {
                       longPressObj.data["hide_" + ownUserID]
                         ? false
                         : true;
-                    db.collection("chat")
-                      .doc(longPressObj.id)
-                      .set(update, {
-                        merge: true,
-                      });
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
                     onShowChanged(false);
                   }}
                 >
@@ -443,11 +437,9 @@ export default function ChatList(props) {
                       longPressObj.data["delete_" + ownUserID]
                         ? false
                         : true;
-                    db.collection("chat")
-                      .doc(longPressObj.id)
-                      .set(update, {
-                        merge: true,
-                      });
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
                     onShowChanged(false);
                   }}
                 >
@@ -492,9 +484,10 @@ export default function ChatList(props) {
               style={{
                 fontSize: RFValue(14),
                 paddingRight: widthPercentageToDP("2%"),
+                marginTop: heightPercentageToDP("3%"),
               }}
             >
-              チャット
+              {Translate.t("chat")}
             </Text>
             {totalUnseenMessage ? (
               <View style={styles.notificationNumberContainer}>

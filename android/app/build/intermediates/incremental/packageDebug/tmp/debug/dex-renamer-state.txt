@@ -1,4 +1,4 @@
-#Tue Nov 17 22:46:48 MYT 2020
+#Thu Nov 19 16:14:32 MYT 2020
 path.1=classes.dex
 path.0=classes.dex
 renamed.6=classes7.dex
@@ -10,13 +10,13 @@ renamed.1=classes2.dex
 renamed.0=classes.dex
 base.6=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes2.dex
 base.5=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes4.dex
-base.4=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeLibDexDebug/out/classes.dex
-base.3=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes3.dex
-base.2=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes2.dex
-base.1=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes.dex
+base.4=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes3.dex
+base.3=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes2.dex
+base.2=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeProjectDexDebug/out/classes.dex
+base.1=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeLibDexDebug/out/classes.dex
 base.0=/Users/guanchuan/Documents/projects/kinujo_frontend/android/app/build/intermediates/dex/debug/mergeExtDexDebug/out/classes.dex
 path.6=classes2.dex
 path.5=classes4.dex
-path.4=classes.dex
-path.3=classes3.dex
-path.2=classes2.dex
+path.4=classes3.dex
+path.3=classes2.dex
+path.2=classes.dex

@@ -116,7 +116,7 @@ export default function Setting(props) {
         text={Translate.t("setting")}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={
           props.route.params.is_store ? Translate.t("storeAccount") : ""
         }

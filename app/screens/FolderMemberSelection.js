@@ -26,6 +26,7 @@ import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import CheckBox from "@react-native-community/checkbox";
+import ArrowDownLogo from "../assets/icons/arrow_down.svg";
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -63,13 +64,13 @@ export default function FolderMemberSelection(props) {
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
+        .catch(function (error) {
           if (
             error &&
             error.response &&
@@ -112,13 +113,13 @@ export default function FolderMemberSelection(props) {
             .get("user/byIds/", {
               ids: ids,
             })
-            .then(function(response) {
+            .then(function (response) {
               //response = get use details from url
               onUserHtmlChanged(
                 processUserHtml(props, response.data.users, tmpFriend)
               );
             })
-            .catch(function(error) {
+            .catch(function (error) {
               if (
                 error &&
                 error.response &&
@@ -155,12 +156,12 @@ export default function FolderMemberSelection(props) {
       .get("user/byIds/", {
         ids: ids,
       })
-      .then(function(response) {
+      .then(function (response) {
         onUserHtmlChanged(
           processUserHtml(props, response.data.users, tmpFriend)
         );
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (
           error &&
           error.response &&
@@ -206,9 +207,7 @@ export default function FolderMemberSelection(props) {
                   backgroundColor: Colors.DCDCDC,
                 }}
               />
-              <Text style={styles.tabText}>
-                {user.real_name ? user.real_name : user.nickname}
-              </Text>
+              <Text style={styles.tabText}>{user.nickname}</Text>
               <View style={styles.checkBoxContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -238,7 +237,7 @@ export default function FolderMemberSelection(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="フォルダメンバー選択"
+        text={Translate.t("folderMemberSelection")}
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
       />
@@ -254,7 +253,6 @@ export default function FolderMemberSelection(props) {
             style={{
               fontSize: RFValue(12),
               right: 0,
-              flex: 1,
               position: "absolute",
               marginRight: widthPercentageToDP("8%"),
             }}
@@ -266,7 +264,7 @@ export default function FolderMemberSelection(props) {
       <View
         style={{
           marginHorizontal: widthPercentageToDP("4%"),
-          marginTop: heightPercentageToDP("-3%"),
+          justifyContent: "flex-start",
         }}
       >
         <View
@@ -278,7 +276,7 @@ export default function FolderMemberSelection(props) {
         >
           <View style={styles.searchInputContainer}>
             <TextInput
-              placeholder="検索"
+              placeholder={Translate.t("search")}
               placeholderTextColor={Colors.grey}
               style={styles.searchInput}
             ></TextInput>
@@ -472,15 +470,13 @@ export default function FolderMemberSelection(props) {
             />
             <Text style={styles.tabText}> {Translate.t("friend")}</Text>
             {friendChatShow == true ? (
-              <Image
-                style={{
-                  width: win.width / 32,
-                  height: ratioDown * 8,
-                  position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("2%"),
-                }}
-                source={require("../assets/Images/downForMoreIcon.png")}
+              <ArrowDownLogo
+                width={widthPercentageToDP("5%")}
+                height={heightPercentageToDP("100%")}
+                resizeMode="contain"
+                position="absolute"
+                right={0}
+                marginRight={widthPercentageToDP("3%")}
               />
             ) : (
               <Image
@@ -525,7 +521,6 @@ export default function FolderMemberSelection(props) {
 
 const styles = StyleSheet.create({
   searchInputContainer: {
-    marginTop: heightPercentageToDP("5%"),
     borderWidth: 1,
     borderColor: "white",
     backgroundColor: Colors.F6F6F6,

@@ -7,9 +7,11 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  DevSettings,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { SafeAreaView } from "react-navigation";
+import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -23,8 +25,9 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
-import auth from '@react-native-firebase/auth';
- 
+import auth from "@react-native-firebase/auth";
+import * as Localization from "expo-localization";
+import i18n from "i18n-js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -42,9 +45,31 @@ const ratioProfileEditingIcon = win.width / 16 / 22;
 const ratioCreditCardIcon = win.width / 14 / 25;
 const ratioOtherIcon = win.width / 14 / 25;
 const ratioHelpIcon = win.width / 18 / 18;
+let defaultLanguage = Localization.locale;
 export default function SettingStore(props) {
   const [user, onUserChanged] = React.useState({});
-
+  const [state, setState] = React.useState(false);
+  async function onValueChanged(language) {
+    switch (language.value) {
+      case "ja":
+        await AsyncStorage.setItem("language", "ja");
+        i18n.locale = "ja";
+        setState(!state);
+        DevSettings.reload();
+        break;
+      case "en":
+        AsyncStorage.setItem("language", "en");
+        i18n.locale = "en";
+        setState(!state);
+        DevSettings.reload();
+        break;
+    }
+  }
+  AsyncStorage.getItem("language").then((language) => {
+    if (language) {
+      defaultLanguage = language;
+    }
+  });
   if (!user.url) {
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -53,8 +78,18 @@ export default function SettingStore(props) {
           onUserChanged(response.data);
         })
         .catch(function (error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });
@@ -78,7 +113,7 @@ export default function SettingStore(props) {
             is_store: true,
           });
         }}
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />
       <View style={{ marginTop: heightPercentageToDP("1%") }}>
@@ -93,9 +128,11 @@ export default function SettingStore(props) {
           />
         </View> */}
         <TouchableWithoutFeedback
-          onPress={() => props.navigation.navigate("SalesManagement", {
-            is_store: 1
-          })}
+          onPress={() =>
+            props.navigation.navigate("SalesManagement", {
+              is_store: 1,
+            })
+          }
         >
           <View style={styles.totalSalesContainer}>
             <Text
@@ -276,19 +313,40 @@ export default function SettingStore(props) {
               />
             </View>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() =>
+          <DropDownPicker
+            items={[
               {
-                AsyncStorage.removeItem("user").then(() => {
-                  props.navigation.navigate("LoginScreen");
-                })
-              }
-            }
+                label: "English",
+                value: "en",
+              },
+              {
+                label: "Japanese",
+                value: "ja",
+              },
+            ]}
+            defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
+            containerStyle={{
+              marginTop: heightPercentageToDP("1%"),
+              height: heightPercentageToDP("7%"),
+
+              marginHorizontal: widthPercentageToDP("3%"),
+            }}
+            style={{ backgroundColor: "#fafafa" }}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            dropDownStyle={{ backgroundColor: "#fafafa" }}
+            onChangeItem={(item) => onValueChanged(item)}
+          />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              AsyncStorage.removeItem("user").then(() => {
+                props.navigation.navigate("LoginScreen");
+              });
+            }}
           >
             <View style={styles.tabContainer}>
-              <Text style={styles.textInLeftContainer}>
-                Logout
-              </Text>
+              <Text style={styles.textInLeftContainer}>{Translate.t("logout")}</Text>
             </View>
           </TouchableWithoutFeedback>
         </View>

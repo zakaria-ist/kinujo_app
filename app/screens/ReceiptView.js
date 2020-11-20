@@ -21,6 +21,8 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import Format from "../lib/format";
+const format = new Format();
 var kanjidate = require("kanjidate");
 const request = new Request();
 const alert = new CustomAlert();
@@ -72,13 +74,13 @@ export default function ReceiptView(props) {
         onBack={() => props.navigation.pop()}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />
       <View style={styles.receiptEditingContainer}>
         <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}</Text>
         <View style={styles.invoiceInputContainer}>
-          <Text style={{ fontSize: RFValue(24) }}>{user.real_name ? user.real_name : user.nickname}</Text>
+          <Text style={{ fontSize: RFValue(24) }}>{user.nickname}</Text>
           <Text
             style={{
               fontSize: RFValue(18),
@@ -88,7 +90,7 @@ export default function ReceiptView(props) {
             {Translate.t("nameTitle")}
           </Text>
         </View>
-        <Text style={styles.receivedMoneyText}>￥{order.total_price} ー</Text>
+        <Text style={styles.receivedMoneyText}>{format.separator(order.total_price)} 円</Text>
         <Text
           style={{
             fontSize: RFValue(12),

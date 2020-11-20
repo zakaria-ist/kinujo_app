@@ -44,7 +44,7 @@ export default function CreateFolder(props) {
   const [folderName, setFolderName] = React.useState("");
   const [loaded, onLoaded] = React.useState(false);
   if (!isFocused) {
-    AsyncStorage.removeItem("ids").then(function() {
+    AsyncStorage.removeItem("ids").then(function () {
       tmpUserHtml = [];
       onUserHtmlChanged([]);
       friendNames = [];
@@ -67,12 +67,12 @@ export default function CreateFolder(props) {
           memberCount = friendIds.length;
         }
       })
-      .then(function() {
+      .then(function () {
         request
           .get("user/byIds/", {
             ids: friendIds,
           })
-          .then(function(response) {
+          .then(function (response) {
             response.data.users.map((user) => {
               let found =
                 tmpUserHtml.filter((html) => {
@@ -80,7 +80,7 @@ export default function CreateFolder(props) {
                 }).length > 0;
               if (!found) {
                 friendNames.push(
-                  user.real_name ? user.real_name : user.nickname
+                  user.nickname
                 );
                 tmpUserHtml.push(
                   <TouchableWithoutFeedback key={user.id}>
@@ -94,7 +94,7 @@ export default function CreateFolder(props) {
                         }}
                       />
                       <Text style={styles.folderText}>
-                        {user.real_name ? user.real_name : user.nickname}
+                        {user.nickname}
                       </Text>
                     </View>
                   </TouchableWithoutFeedback>
@@ -108,15 +108,12 @@ export default function CreateFolder(props) {
   }, [isFocused]);
   function folderCreate() {
     if (friendIds) {
-      db.collection("users")
-        .doc(userId)
-        .collection("folders")
-        .add({
-          type: "folder",
-          users: friendIds,
-          usersName: friendNames,
-          folderName: folderName,
-        });
+      db.collection("users").doc(userId).collection("folders").add({
+        type: "folder",
+        users: friendIds,
+        usersName: friendNames,
+        folderName: folderName,
+      });
       setFolderName("");
       props.navigation.navigate("GroupFolderCreateCompletion", {
         groupName: folderName,
@@ -130,7 +127,7 @@ export default function CreateFolder(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text="フォルダ作成"
+        text={Translate.t("createFolder")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => {

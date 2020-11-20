@@ -21,6 +21,8 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import Format from "../lib/format";
+const format = new Format();
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -74,10 +76,10 @@ function processProductHtml(products, status) {
           </Text>
           <View>
             <Text style={styles.productTabContainerText}>
-              {parseFloat(product.price).toFixed(2)}円
+              {format.separator(product.price)}円
             </Text>
             <Text style={styles.productTabContainerText}>
-              {parseFloat(product.store_price).toFixed(2)}円
+              {format.separator(product.store_price)}円
             </Text>
           </View>
           <Text style={styles.productTabContainerText}>{product.store}</Text>
@@ -148,7 +150,7 @@ export default function ExhibitedProductList(props) {
         text={Translate.t("productManagement")}
       />
       <CustomSecondaryHeader
-        name={user.real_name ? user.real_name : user.nickname}
+        name={user.nickname}
         accountType={
           props.route.params.is_store ? Translate.t("storeAccount") : ""
         }
@@ -240,7 +242,7 @@ export default function ExhibitedProductList(props) {
           }}
         >
           <Text style={{ fontSize: RFValue(12), color: "white" }}>
-            + 出品登录
+            + {Translate.t("productCreate")}
           </Text>
         </View>
       </TouchableWithoutFeedback>

@@ -27,6 +27,8 @@ import CustomAlert from "../lib/alert";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 var kanjidate = require("kanjidate");
 
+import Format from "../lib/format";
+const format = new Format();
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -70,7 +72,9 @@ function processOrderHtml(props, orders, status = "") {
                     : order.product_jan_code.vertical.product_variety.product
                         .name}
                 </Text>
-                <Text>{order.unit_price}円</Text>
+                <Text>
+                  {format.separator(order.unit_price)} 円
+                </Text>
               </View>
               <Image
                 style={styles.nextIcon}
@@ -85,7 +89,9 @@ function processOrderHtml(props, orders, status = "") {
               }}
             >
               <View style={styles.productInformationContainer}>
-                <Text style={styles.productInformationText}>{Translate.t("detail")}</Text>
+                <Text style={styles.productInformationText}>
+                  {Translate.t("detail")}
+                </Text>
                 <Image
                   style={styles.nextIcon}
                   source={require("../assets/Images/next.png")}
@@ -93,7 +99,9 @@ function processOrderHtml(props, orders, status = "") {
               </View>
             </TouchableWithoutFeedback>
             <View style={styles.productInformationContainer}>
-              <Text style={styles.productInformationText}>{Translate.t("inquiry")}</Text>
+              <Text style={styles.productInformationText}>
+                {Translate.t("inquiry")}
+              </Text>
               <Image
                 style={styles.nextIcon}
                 source={require("../assets/Images/next.png")}
@@ -138,7 +146,7 @@ export default function PurchaseHistory(props) {
   function loadOrder(userId, type) {
     request
       .get("orderProducts/" + userId + "/")
-      .then(function(response) {
+      .then(function (response) {
         onOrdersChanged(response.data.orders);
         let tmpYears = [];
         response.data.orderProducts.map((order) => {
@@ -153,15 +161,25 @@ export default function PurchaseHistory(props) {
         );
         onLoaded(true);
       })
-      .catch(function(error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
         }
         onLoaded(true);
       });
   }
   function load() {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
@@ -171,12 +189,22 @@ export default function PurchaseHistory(props) {
       if (!user.url) {
         request
           .get(url)
-          .then(function(response) {
+          .then(function (response) {
             onUserChanged(response.data);
           })
-          .catch(function(error) {
-            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
             }
           });
       }
@@ -194,7 +222,7 @@ export default function PurchaseHistory(props) {
         <TouchableWithoutFeedback
           key={year}
           onPress={() => {
-            AsyncStorage.getItem("user").then(function(url) {
+            AsyncStorage.getItem("user").then(function (url) {
               let urls = url.split("/");
               urls = urls.filter((url) => {
                 return url;
@@ -237,7 +265,7 @@ export default function PurchaseHistory(props) {
           text={Translate.t("purchaseHistory")}
         />
         <CustomSecondaryHeader
-          name={user.real_name ? user.real_name : user.nickname}
+          name={user.nickname}
           accountType={
             props.route.params.is_store ? Translate.t("storeAccount") : ""
           }
@@ -344,7 +372,7 @@ export default function PurchaseHistory(props) {
             onPress={() => {
               onLoaded(false);
 
-              AsyncStorage.getItem("user").then(function(url) {
+              AsyncStorage.getItem("user").then(function (url) {
                 let urls = url.split("/");
                 urls = urls.filter((url) => {
                   return url;

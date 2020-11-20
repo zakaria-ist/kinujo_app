@@ -50,7 +50,7 @@ export default function CustomerInformation(props) {
   const [modal, onModalChanged] = React.useState(false);
 
   chatPersonID = user.id;
-  groupName = user.real_name ? user.real_name : user.nickname;
+  groupName = user.nickname;
 
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function(url) {
@@ -128,7 +128,7 @@ export default function CustomerInformation(props) {
           let friendTotalMessageReadField = "totalMessageRead_" + chatPersonID;
           chatRef
             .add({
-              groupName: user.real_name ? user.real_name : user.nickname,
+              groupName: user.nickname,
               users: [String(ownUserID), String(chatPersonID)],
               totalMessage: 0,
               [ownMessageUnseenField]: 0,
@@ -251,7 +251,7 @@ export default function CustomerInformation(props) {
                   fontSize: RFValue(14),
                 }}
               >
-                {user.real_name ? user.real_name : user.nickname}
+                {user.nickname}
               </Text>
               <Image
                 style={{
