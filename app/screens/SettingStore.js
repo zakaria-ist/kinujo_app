@@ -17,6 +17,7 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -28,6 +29,8 @@ import firebase from "firebase/app";
 import auth from "@react-native-firebase/auth";
 import * as Localization from "expo-localization";
 import i18n from "i18n-js";
+import Format from "../lib/format";
+const format = new Format();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -45,8 +48,11 @@ const ratioProfileEditingIcon = win.width / 16 / 22;
 const ratioCreditCardIcon = win.width / 14 / 25;
 const ratioOtherIcon = win.width / 14 / 25;
 const ratioHelpIcon = win.width / 18 / 18;
+const ratioSignOut = win.width / 14 / 512;
+const ratioGlobe = win.width / 13 / 112;
 let defaultLanguage = Localization.locale;
 export default function SettingStore(props) {
+  const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [state, setState] = React.useState(false);
   async function onValueChanged(language) {
@@ -70,30 +76,32 @@ export default function SettingStore(props) {
       defaultLanguage = language;
     }
   });
-  if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-    });
-  }
+  React.useEffect(() => {
+    if (!user.url) {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
+    }
+  }, [isFocused]);
   return (
     <SafeAreaView>
       <CustomHeader
@@ -149,7 +157,7 @@ export default function SettingStore(props) {
                 marginLeft: widthPercentageToDP("1%"),
               }}
             >
-              {user.profit}円
+              {format.separator(user.profit)}円
             </Text>
             <Image
               style={{
@@ -313,31 +321,45 @@ export default function SettingStore(props) {
               />
             </View>
           </TouchableWithoutFeedback>
-          <DropDownPicker
-            items={[
-              {
-                label: "English",
-                value: "en",
-              },
-              {
-                label: "Japanese",
-                value: "ja",
-              },
-            ]}
-            defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
-            containerStyle={{
-              marginTop: heightPercentageToDP("1%"),
-              height: heightPercentageToDP("7%"),
-
-              marginHorizontal: widthPercentageToDP("3%"),
-            }}
-            style={{ backgroundColor: "#fafafa" }}
-            itemStyle={{
-              justifyContent: "flex-start",
-            }}
-            dropDownStyle={{ backgroundColor: "#fafafa" }}
-            onChangeItem={(item) => onValueChanged(item)}
-          />
+          <View style={styles.tabContainer}>
+            <Image
+              source={require("../assets/Images/globe.png")}
+              style={{ width: win.width / 13, height: 107 * ratioGlobe }}
+            />
+            <DropDownPicker
+              items={[
+                {
+                  label: "English",
+                  value: "en",
+                },
+                {
+                  label: "Japanese",
+                  value: "ja",
+                },
+              ]}
+              defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
+              containerStyle={{
+                height: heightPercentageToDP("5%"),
+                width: widthPercentageToDP("80%"),
+                marginLeft: widthPercentageToDP("4%"),
+              }}
+              style={{
+                backgroundColor: "#fafafa",
+              }}
+              itemStyle={{
+                justifyContent: "flex-start",
+              }}
+              labelStyle={{
+                fontSize: RFValue(12),
+                color: "#000000",
+              }}
+              selectedtLabelStyle={{
+                color: "#000000",
+              }}
+              dropDownStyle={{ backgroundColor: "#000000" }}
+              onChangeItem={(item) => onValueChanged(item)}
+            />
+          </View>
           <TouchableWithoutFeedback
             onPress={() => {
               AsyncStorage.removeItem("user").then(() => {
@@ -345,8 +367,22 @@ export default function SettingStore(props) {
               });
             }}
           >
-            <View style={styles.tabContainer}>
-              <Text style={styles.textInLeftContainer}>{Translate.t("logout")}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                height: heightPercentageToDP("7%"),
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginHorizontal: widthPercentageToDP("5.2%"),
+              }}
+            >
+              <Image
+                source={require("../assets/Images/signout.png")}
+                style={{ width: win.width / 14, height: 512 * ratioSignOut }}
+              />
+              <Text style={styles.textInLeftContainer}>
+                {Translate.t("logout")}
+              </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>

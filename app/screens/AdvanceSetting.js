@@ -220,7 +220,21 @@ export default function AdvanceSetting(props) {
           />
         </View>
       </View>
-      {/* <TouchableOpacity>
+      <TouchableWithoutFeedback onPress={
+        () => {
+          db.collection("users")
+            .doc(userId)
+            .collection("customers")
+            .doc(customerId)
+            .delete()
+          request.post('removeReferral/', {
+            'userId' : customerId,
+            'parentId' : userId
+          }).then(function(response){
+            console.log(response);
+          })
+        }
+      }>
         <View
           style={{
             backgroundColor: Colors.D7CCA6,
@@ -234,7 +248,7 @@ export default function AdvanceSetting(props) {
         >
           <Text style={{ fontSize: RFValue(14), color: "white" }}>Delete</Text>
         </View>
-      </TouchableOpacity> */}
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }

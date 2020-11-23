@@ -35,44 +35,26 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-let checkStatus;
 let ids = [];
 let tmpFriend = [];
+let tmpFriendIds = [];
 export default function FolderMemberSelection(props) {
   const [searchText, onSearchTextChanged] = React.useState("");
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [user, onUserChanged] = React.useState({});
-  const [checked, onCheckedChanged] = React.useState(false);
   const [loaded, onLoaded] = React.useState(false);
   React.useEffect(() => {
+    AsyncStorage.getItem("tmpIds").then((friendIds) => {
+      tmpFriendIds = JSON.parse(friendIds);
+    });
     AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-
+      request.get(url);
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       userId = urls[urls.length - 1];
-      db.collection("users")
+      const subscriber = db
+        .collection("users")
         .doc(userId)
         .collection("friends")
         .get()
@@ -81,21 +63,35 @@ export default function FolderMemberSelection(props) {
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
             if (item.type == "user") {
-              ids.push(item.id); //push user id as array
-              items.push({
-                id: item.id,
-                checkStatus: checked,
-              });
+              if (tmpFriendIds == null) {
+                ids.push(item.id);
+                items.push({
+                  id: item.id,
+                  checkStatus: false,
+                });
+              } else {
+                if (tmpFriendIds.includes(item.id)) {
+                  ids.push(item.id);
+                  items.push({
+                    id: item.id,
+                    checkStatus: true,
+                  });
+                } else {
+                  ids.push(item.id);
+                  items.push({
+                    id: item.id,
+                    checkStatus: false,
+                  });
+                }
+              }
             }
             tmpFriend = items;
-            //item to indicate checkbox status and id
           });
           request
             .get("user/byIds/", {
               ids: ids,
             })
             .then(function (response) {
-              //response = get use details from url
               onUserHtmlChanged(
                 processUserHtml(props, response.data.users, tmpFriend)
               );
@@ -158,7 +154,6 @@ export default function FolderMemberSelection(props) {
         }
       });
   }
-
   function processUserHtml(props, users, friendMaps) {
     let tmpUserHtml = [];
     users.map((user) => {
@@ -175,9 +170,7 @@ export default function FolderMemberSelection(props) {
         >
           <View style={styles.tabContainer}>
             <Image style={styles.memberImage} />
-            <Text style={styles.tabContainerText}>
-              {user.nickname}
-            </Text>
+            <Text style={styles.tabContainerText}>{user.nickname}</Text>
             <View style={styles.checkBoxContainer}>
               <CheckBox
                 color={Colors.E6DADE}

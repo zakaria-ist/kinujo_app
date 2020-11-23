@@ -33,22 +33,22 @@ let friendNames;
 let ownUserID;
 let friendMessageUnseenField;
 let friendTotalMessageReadField;
-let dbFriendIds;
-const request = new Request();
+let documentID;
+let groupDocumentID;
 const win = Dimensions.get("window");
 const ratioCancel = win.width / 20 / 15;
 const ratioChat = win.width / 7 / 21;
-let chatObj;
-let documentID;
 export default function GroupFolderCreateCompletion(props) {
-  console.log({ friendIds });
   const [userListHtml, onUserListHtml] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
   groupName = props.route.params.groupName;
   friendIds = props.route.params.friendIds;
   friendNames = props.route.params.friendNames;
   ownUserID = props.route.params.ownUserID;
+  groupDocumentID = props.route.params.groupDocumentID;
   function redirectToChat() {
+    AsyncStorage.removeItem("ids");
+    AsyncStorage.removeItem("tmpIds");
     friendIds.push(ownUserID);
     let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
     let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
@@ -100,6 +100,14 @@ export default function GroupFolderCreateCompletion(props) {
       });
   }
 
+  function addMemberHandler() {
+    AsyncStorage.setItem("ids", JSON.stringify(friendIds));
+    props.navigation.pop();
+  }
+  function cancelHanlder() {
+    AsyncStorage.removeItem("ids");
+    props.navigation.navigate("HomeGeneral");
+  }
   if (!loaded) {
     let tmpUserListHtml = [];
     for (var i = 0; i < friendIds.length; i++) {
@@ -137,9 +145,7 @@ export default function GroupFolderCreateCompletion(props) {
           backgroundColor: Colors.F6F6F6,
         }}
       >
-        <TouchableWithoutFeedback
-          onPress={() => props.navigation.navigate("HomeGeneral")}
-        >
+        <TouchableWithoutFeedback onPress={() => cancelHanlder()}>
           <Image
             style={{
               width: win.width / 20,
@@ -193,22 +199,26 @@ export default function GroupFolderCreateCompletion(props) {
               marginTop: heightPercentageToDP("8%"),
             }}
           >
-            <View
-              style={{
-                alignItems: "center",
-              }}
-            >
-              <Image
+            <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
+              <View
                 style={{
-                  width: RFValue(50),
-                  height: RFValue(50),
-                  borderRadius: win.width / 2,
-                  backgroundColor: Colors.E6DADE,
+                  alignItems: "center",
                 }}
-                source={require("../assets/Images/addMemberIcon.png")}
-              />
-              <Text style={styles.textForIcon}>{Translate.t("addMember")}</Text>
-            </View>
+              >
+                <Image
+                  style={{
+                    width: RFValue(50),
+                    height: RFValue(50),
+                    borderRadius: win.width / 2,
+                    backgroundColor: Colors.E6DADE,
+                  }}
+                  source={require("../assets/Images/addMemberIcon.png")}
+                />
+                <Text style={styles.textForIcon}>
+                  {Translate.t("addMember")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
             {userListHtml}
           </View>
           {/* /////////////////////////////////////////////////////////////*/}

@@ -45,6 +45,7 @@ export default function CreateFolder(props) {
   const [loaded, onLoaded] = React.useState(false);
   if (!isFocused) {
     AsyncStorage.removeItem("ids").then(function () {
+      memberCount = 0;
       tmpUserHtml = [];
       onUserHtmlChanged([]);
       friendNames = [];
@@ -79,9 +80,7 @@ export default function CreateFolder(props) {
                   return html.key == user.id;
                 }).length > 0;
               if (!found) {
-                friendNames.push(
-                  user.nickname
-                );
+                friendNames.push(user.nickname);
                 tmpUserHtml.push(
                   <TouchableWithoutFeedback key={user.id}>
                     <View style={styles.memberTabsContainer}>
@@ -93,9 +92,7 @@ export default function CreateFolder(props) {
                           backgroundColor: Colors.DCDCDC,
                         }}
                       />
-                      <Text style={styles.folderText}>
-                        {user.nickname}
-                      </Text>
+                      <Text style={styles.folderText}>{user.nickname}</Text>
                     </View>
                   </TouchableWithoutFeedback>
                 );
@@ -107,23 +104,24 @@ export default function CreateFolder(props) {
       });
   }, [isFocused]);
   function folderCreate() {
-    if (friendIds) {
-      db.collection("users").doc(userId).collection("folders").add({
-        type: "folder",
-        users: friendIds,
-        usersName: friendNames,
-        folderName: folderName,
-      });
-      setFolderName("");
-      props.navigation.navigate("GroupFolderCreateCompletion", {
-        groupName: folderName,
-        friendNames: friendNames,
-        friendIds: friendIds,
-        ownUserID: userId,
-      });
+    if (folderName != "") {
+      AsyncStorage.removeItem("tmpIds");
+      if (friendIds) {
+        props.navigation.navigate("GroupFolderCreateCompletion", {
+          groupName: folderName,
+          friendNames: friendNames,
+          friendIds: friendIds,
+          ownUserID: userId,
+        });
+      } else {
+        alert.warning("Please fill in the group name");
+      }
     }
   }
-
+  function addMemberHandler() {
+    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds));
+    props.navigation.navigate("FolderMemberSelection");
+  }
   return (
     <SafeAreaView>
       <CustomHeader
@@ -182,9 +180,7 @@ export default function CreateFolder(props) {
             </Text>
             <Text style={{ fontSize: RFValue(12) }}>( {memberCount} )</Text>
           </View>
-          <TouchableWithoutFeedback
-            onPress={() => props.navigation.navigate("FolderMemberSelection")}
-          >
+          <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
             <View style={styles.memberListContainer}>
               <Image
                 style={{

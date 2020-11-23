@@ -51,18 +51,12 @@ import com.reactnativerestart.RestartPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 // react-native-screens
 import com.swmansion.rnscreens.RNScreensPackage;
-// react-native-stripe-payments
-import com.fitpassu.stripepayments.StripePaymentsPackage;
 // react-native-svg
 import com.horcrux.svg.SvgPackage;
 // react-native-vector-icons
 import com.oblador.vectoricons.VectorIconsPackage;
-// react-native-webview
-import com.reactnativecommunity.webview.RNCWebViewPackage;
 // rn-fetch-blob
 import com.RNFetchBlob.RNFetchBlobPackage;
-// tipsi-stripe
-import com.gettipsi.stripe.StripeReactPackage;
 
 public class PackageList {
   private Application application;
@@ -128,12 +122,9 @@ public class PackageList {
       new RestartPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
-      new StripePaymentsPackage(),
       new SvgPackage(),
       new VectorIconsPackage(),
-      new RNCWebViewPackage(),
-      new RNFetchBlobPackage(),
-      new StripeReactPackage()
+      new RNFetchBlobPackage()
     ));
   }
 }

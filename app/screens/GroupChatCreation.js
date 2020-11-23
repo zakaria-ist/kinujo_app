@@ -15,14 +15,20 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import ImagePicker from "react-native-image-picker";
+import RNFetchBlob from "rn-fetch-blob";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import { useIsFocused } from "@react-navigation/native";
+import CustomAlert from "../lib/alert";
+import storage from "@react-native-firebase/storage";
+const alert = new CustomAlert();
 const request = new Request();
 const win = Dimensions.get("window");
+var uuid = require("react-native-uuid");
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 if (!firebase.apps.length) {
@@ -34,17 +40,20 @@ let memberCount = 0;
 let friendNames = [];
 let tmpUserHtml = [];
 let userId;
+let tmpGroupID;
 export default function GroupChatCreation(props) {
   const isFocused = useIsFocused();
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [groupName, setGroupName] = React.useState("");
+  const [showGroupPhoto, onShowGroupPhotoChanged] = React.useState(false);
   const [loaded, onLoaded] = React.useState(false);
   if (!isFocused) {
-    AsyncStorage.removeItem("ids").then(function() {
+    AsyncStorage.removeItem("ids").then(function () {
       tmpUserHtml = [];
       onUserHtmlChanged([]);
       friendNames = [];
       friendIds = null;
+      memberCount = 0;
     });
   }
   AsyncStorage.getItem("user").then((url) => {
@@ -58,26 +67,22 @@ export default function GroupChatCreation(props) {
     AsyncStorage.getItem("ids")
       .then((val) => {
         friendIds = JSON.parse(val);
-        dbFriendIds = JSON.parse(val);
-        if (friendIds != null) {
-          memberCount = friendIds.length;
-        }
+        memberCount = friendIds.length;
       })
-      .then(function() {
+      .then(function () {
+        console.log({ friendIds });
         request
           .get("user/byIds/", {
             ids: friendIds,
           })
-          .then(function(response) {
+          .then(function (response) {
             response.data.users.map((user) => {
               let found =
                 tmpUserHtml.filter((html) => {
                   return html.key == user.id;
                 }).length > 0;
               if (!found) {
-                friendNames.push(
-                  user.nickname
-                );
+                friendNames.push(user.nickname);
                 tmpUserHtml.push(
                   <TouchableWithoutFeedback key={user.id}>
                     <View style={styles.memberTabsContainer}>
@@ -89,9 +94,7 @@ export default function GroupChatCreation(props) {
                           backgroundColor: Colors.DCDCDC,
                         }}
                       />
-                      <Text style={styles.folderText}>
-                        {user.nickname}
-                      </Text>
+                      <Text style={styles.folderText}>{user.nickname}</Text>
                     </View>
                   </TouchableWithoutFeedback>
                 );
@@ -99,28 +102,29 @@ export default function GroupChatCreation(props) {
             });
             onUserHtmlChanged(tmpUserHtml);
           });
-        onLoaded(true);
+        onLoaded(!loaded);
       });
   }, [isFocused]);
 
   function groupCreate() {
-    if (friendIds) {
-      db.collection("users")
-        .doc(userId)
-        .collection("groups")
-        .add({
-          users: friendIds,
-          usersName: friendNames,
+    if (groupName != "") {
+      AsyncStorage.removeItem("tmpIds");
+      if (friendIds) {
+        props.navigation.navigate("GroupFolderCreateCompletion", {
           groupName: groupName,
+          friendNames: friendNames,
+          friendIds: friendIds,
+          ownUserID: userId,
         });
-      setGroupName("");
-      props.navigation.navigate("GroupFolderCreateCompletion", {
-        groupName: groupName,
-        friendNames: friendNames,
-        friendIds: friendIds,
-        ownUserID: userId,
-      });
+      } else {
+        alert.warning("Please fill in the group name");
+      }
+      // setGroupName("");
     }
+  }
+  function addMemberHandler() {
+    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds));
+    props.navigation.navigate("GroupChatMember");
   }
   return (
     <SafeAreaView>
@@ -150,14 +154,86 @@ export default function GroupChatCreation(props) {
         }}
       >
         <View style={styles.createFolderContainer}>
-          <Image
-            style={{
-              width: RFValue(40),
-              height: RFValue(40),
-              borderRadius: win.width / 2,
-              backgroundColor: Colors.DCDCDC,
-            }}
-          />
+          <TouchableWithoutFeedback
+          // onPress={() => {
+          //   const options = {
+          //     noData: true,
+          //   };
+          //   ImagePicker.launchImageLibrary(options, (response) => {
+          //     if (response.uri) {
+          //       const reference = storage().ref(uuid.v4() + ".png");
+          //       if (Platform.OS === "android") {
+          //         RNFetchBlob.fs.stat(response.uri).then((stat) => {
+          //           reference.putFile(stat.path).then((response) => {
+          //             reference.getDownloadURL().then((url) => {
+          //               db.collection("users")
+          //                 .doc(String(userId))
+          //                 .collection("groups")
+          //                 .add({
+          //                   groupPhoto: url,
+          //                 })
+          //                 .then(function (docRef) {
+          //                   <Image
+          //                     source={{ uri: docRef.data().groupPhoto }}
+          //                     style={{
+          //                       width: RFValue(40),
+          //                       height: RFValue(40),
+          //                       borderRadius: win.width / 2,
+          //                       backgroundColor: Colors.DCDCDC,
+          //                     }}
+          //                   />;
+          //                   AsyncStorage.setItem("groupID", docRef.id);
+          //                   // AsyncStorage.setItem(
+          //                   //   "groupPhoto",
+          //                   //   docRef.data().groupPhoto
+          //                   // );
+          //                 });
+          //             });
+          //           });
+          //         });
+          //       } else {
+          //         reference
+          //           .putFile(response.uri.replace("file://", ""))
+          //           .then((response) => {
+          //             reference.getDownloadURL().then((url) => {
+          //               db.collection("users")
+          //                 .doc(String(userId))
+          //                 .collection("groups")
+          //                 .add({
+          //                   groupPhoto: url,
+          //                 })
+          //                 .then(function (docRef) {
+          //                   <Image
+          //                     source={{ uri: docRef.data().groupPhoto }}
+          //                     style={{
+          //                       width: RFValue(40),
+          //                       height: RFValue(40),
+          //                       borderRadius: win.width / 2,
+          //                       backgroundColor: Colors.DCDCDC,
+          //                     }}
+          //                   />;
+          //                   AsyncStorage.setItem("groupID", docRef.id);
+          //                   // AsyncStorage.setItem(
+          //                   //   "groupPhoto",
+          //                   //   docRef.data().groupPhoto
+          //                   // );
+          //                 });
+          //             });
+          //           });
+          //       }
+          //     }
+          //   });
+          // }}
+          >
+            <Image
+              style={{
+                width: RFValue(40),
+                height: RFValue(40),
+                borderRadius: win.width / 2,
+                backgroundColor: Colors.DCDCDC,
+              }}
+            />
+          </TouchableWithoutFeedback>
           <TextInput
             value={groupName}
             onChangeText={(value) => setGroupName(value)}
@@ -179,9 +255,7 @@ export default function GroupChatCreation(props) {
               {"  "}({memberCount})
             </Text>
           </View>
-          <TouchableWithoutFeedback
-            onPress={() => props.navigation.navigate("GroupChatMember")}
-          >
+          <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
             <View style={styles.memberListContainer}>
               <Image
                 style={{

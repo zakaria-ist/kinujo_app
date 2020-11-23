@@ -91,7 +91,13 @@ export default function HomeStoreList(props) {
     request
       .get(props.route.params.url)
       .then(function (response) {
+        console.log(response.data)
         onProductChanged(response.data);
+
+        let janCodes = [];
+        if(response.data.productVarieties.length > 0){
+          
+        }
 
         if (response.data.productImages.length > 0) {
           onImagesChanged(
@@ -132,11 +138,9 @@ export default function HomeStoreList(props) {
         onBack={() => {
           props.navigation.pop();
         }}
-        onCartCount={
-          (count) => {
-            onCartCountChanged(count);
-          }
-        }
+        onCartCount={(count) => {
+          onCartCountChanged(count);
+        }}
         overrideCartCount={cartCount}
       />
       <View style={styles.product_content}>
@@ -178,7 +182,8 @@ export default function HomeStoreList(props) {
               {product ? product.name : ""}
             </Text>
             <Text style={styles.font_small}>
-              {Translate.t("seller") + ": " +
+              {Translate.t("seller") +
+                ": " +
                 (product && product.user
                   ? product.user.real_name
                     ? product.user.real_name
@@ -199,7 +204,7 @@ export default function HomeStoreList(props) {
               {(user.is_seller
                 ? format.separator(product.store_price)
                 : format.separator(product.price)) +
-                '円' +
+                "円" +
                 Translate.t("taxNotIncluded")}
             </Text>
             <Text style={styles.font_small}>
@@ -230,7 +235,9 @@ export default function HomeStoreList(props) {
             <Text style={styles.product_title}>
               {Translate.t("productDetails")}
             </Text>
-            <Text style={styles.product_description}>{product.pr}</Text>
+            <Text style={styles.product_description}>
+              {product.description}
+            </Text>
           </View>
         </ScrollView>
       </View>
@@ -520,51 +527,51 @@ export default function HomeStoreList(props) {
           </ScrollView>
         </SafeAreaView>
       </Modal>
-      {showText == true
-        ? (
-            <View
-              style={{
-                borderRadius: win.width / 2,
-                borderWidth: 1,
-                backgroundColor: Colors.E6DADE,
-                borderColor: "transparent",
-                zIndex: 1,
-                elevation: 1,
-                position: "absolute",
-                right: RFValue(5),
-                borderStyle: "solid",
-                paddingVertical: widthPercentageToDP("1%"),
-                paddingHorizontal: widthPercentageToDP("7%"),
-                marginTop: heightPercentageToDP("6.2%"),
-              }}
-            >
-              <View
-                style={{
-                  width: 0,
-                  height: 0,
-                  borderBottomWidth: RFValue(20),
-                  borderRightWidth: RFValue(12),
-                  borderLeftWidth: RFValue(12),
-                  borderLeftColor: "transparent",
-                  borderRightColor: "transparent",
-                  borderBottomColor: Colors.E6DADE,
-                  top: RFValue(-15),
-                  position: "absolute",
-                  right: RFValue(9),
-                }}
-              ></View>
-              <Text
-                style={{
-                  fontSize: RFValue(10),
-                  color: "black",
-                  alignSelf: "flex-start",
-                }}
-              >
-                {Translate.t("itemAddedToCart")}
-              </Text>
-            </View>
-          )
-        : <View></View>}
+      {showText == true ? (
+        <View
+          style={{
+            borderRadius: win.width / 2,
+            borderWidth: 1,
+            backgroundColor: Colors.E6DADE,
+            borderColor: "transparent",
+            zIndex: 1,
+            elevation: 1,
+            position: "absolute",
+            right: RFValue(5),
+            borderStyle: "solid",
+            paddingVertical: widthPercentageToDP("1%"),
+            paddingHorizontal: widthPercentageToDP("7%"),
+            marginTop: heightPercentageToDP("6.2%"),
+          }}
+        >
+          <View
+            style={{
+              width: 0,
+              height: 0,
+              borderBottomWidth: RFValue(20),
+              borderRightWidth: RFValue(12),
+              borderLeftWidth: RFValue(12),
+              borderLeftColor: "transparent",
+              borderRightColor: "transparent",
+              borderBottomColor: Colors.E6DADE,
+              top: RFValue(-15),
+              position: "absolute",
+              right: RFValue(9),
+            }}
+          ></View>
+          <Text
+            style={{
+              fontSize: RFValue(10),
+              color: "black",
+              alignSelf: "flex-start",
+            }}
+          >
+            {Translate.t("itemAddedToCart")}
+          </Text>
+        </View>
+      ) : (
+        <View></View>
+      )}
 
       <CartFloating
         onPress={() => {
@@ -582,16 +589,16 @@ export default function HomeStoreList(props) {
               onShowText(false);
             }.bind(this),
             2000
-          )
+          );
 
           const subscriber = db
-          .collection("users")
-          .doc(user.id.toString())
-          .collection("carts")
-          .get()
-          .then((querySnapShot) => {
-            onCartCountChanged(querySnapShot.docs.length)
-          });
+            .collection("users")
+            .doc(user.id.toString())
+            .collection("carts")
+            .get()
+            .then((querySnapShot) => {
+              onCartCountChanged(querySnapShot.docs.length);
+            });
         }}
       />
     </SafeAreaView>

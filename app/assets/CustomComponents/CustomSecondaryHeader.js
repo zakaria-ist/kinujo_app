@@ -39,9 +39,10 @@ export default function CustomKinujoWord({
             borderRadius: win.width / 2,
             marginLeft: widthPercentageToDP("8%"),
           }}
-          width = {RFValue(40)}
-          height = {RFValue(40)}
+          width={RFValue(40)}
+          height={RFValue(40)}
         />
+
         <View style={{ marginLeft: widthPercentageToDP("3%") }}>
           <Text
             style={{

@@ -15,6 +15,7 @@ import RegisterCompletion from "../Screens/RegisterCompletion";
 import HomeGeneral from "../Screens/HomeGeneral";
 import HomeStoreList from "../Screens/HomeStoreList";
 import ChatScreen from "../Screens/ChatScreen";
+import FolderContactList from "../Screens/FolderContactList";
 import ReceiptView from "../Screens/ReceiptView";
 import QRCode from "../Screens/QRCode";
 import SettingGeneral from "../Screens/SettingGeneral";
@@ -268,6 +269,7 @@ export default function LoginStack() {
         <Stack.Screen name="ContactShare" component={ContactShare} />
         <Stack.Screen name="SearchProducts" component={SearchProducts} />
         <Stack.Screen name="Payment" component={Payment} />
+        <Stack.Screen name="FolderContactList" component={FolderContactList} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

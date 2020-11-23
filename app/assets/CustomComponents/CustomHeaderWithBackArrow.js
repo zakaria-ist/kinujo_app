@@ -134,7 +134,7 @@ export default function CustomKinujoWord({
               marginRight: widthPercentageToDP("3%"),
             }}
           >
-            <View style={styles.notificationNumberContainer}>
+            {overrideCartCount || cartCount ? (<View style={styles.notificationNumberContainer}>
               <Text
                 style={{
                   alignSelf: "center",
@@ -144,7 +144,7 @@ export default function CustomKinujoWord({
               >
                 {overrideCartCount ? overrideCartCount : cartCount}
               </Text>
-            </View>
+            </View>) : (<View></View>)}
             <CartIcon
               style={{
                 width: win.width / 11,

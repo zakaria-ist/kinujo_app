@@ -82,11 +82,11 @@ export default function Cart(props) {
     pAddresses.map((address) => {
       tmpAddresses.push(
         <TouchableWithoutFeedback key={address.id}>
-          <View style={
-            {
-              justifyContent : "center"
-            }
-          }>
+          <View
+            style={{
+              justifyContent: "center",
+            }}
+          >
             <View style={styles.tabContainer}>
               <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
               <Text style={styles.textInTabContainer}>{address.zip1}</Text>
@@ -148,9 +148,14 @@ export default function Cart(props) {
       });
       let quantity = item[0].quantity;
       let key = "key_" + product.id;
+      // onShippingChanged(product.shipping_fee);
       tmpCartHtml.push(
         <View key={i} style={styles.cartFirstTabContainer}>
-          <View>
+          <View
+            style={{
+              width: widthPercentageToDP("60%"),
+            }}
+          >
             <Text style={styles.cartTabText}>{product.name}</Text>
             <Text style={styles.cartTabText}>
               {is_store
@@ -166,7 +171,7 @@ export default function Cart(props) {
               selectedValue={quantity}
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => {
-                if(productLoaded){
+                if (productLoaded) {
                   onValueChanged(product.id, itemValue, is_store);
                 }
               }}
@@ -208,7 +213,9 @@ export default function Cart(props) {
                   alert.warning("Cart Updated.");
                 }}
               >
-                <Text style={styles.buttonText}>{Translate.t("change")}</Text>
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>{Translate.t("change")}</Text>
+                </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -263,6 +270,7 @@ export default function Cart(props) {
             return (product.product_id = id);
           });
           tmpProduct = tmpProduct[0];
+
           onSubTotalChanged(
             (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity
           );
@@ -474,11 +482,18 @@ export default function Cart(props) {
                 </Text>
               </View>
               <View style={{ alignItems: "flex-end" }}>
-                <Text style={styles.totalText}>{subtotal}円</Text>
                 <Text style={styles.totalText}>
-                  {taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0}円
+                  {format.separator(subtotal)}円
                 </Text>
-                <Text style={styles.totalText}>{shipping}円</Text>
+                <Text style={styles.totalText}>
+                  {taxObj
+                    ? format.separator(parseInt(taxObj.tax_rate * subtotal))
+                    : 0}
+                  円
+                </Text>
+                <Text style={styles.totalText}>
+                  {format.separator(shipping)}円
+                </Text>
               </View>
             </View>
           </View>
@@ -498,9 +513,11 @@ export default function Cart(props) {
               {Translate.t("total")}
             </Text>
             <Text style={{ fontSize: RFValue(14) }}>
-              {subtotal +
-                (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) +
-                shipping}
+              {format.separator(
+                subtotal +
+                  (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) +
+                  shipping
+              )}
               円
             </Text>
           </View>
@@ -682,7 +699,7 @@ const styles = StyleSheet.create({
     height: 19 * ratioRemoveIcon,
     marginRight: widthPercentageToDP("4%"),
   },
-  buttonText: {
+  buttonContainer: {
     alignSelf: "center",
     fontSize: RFValue(11),
     color: "white",
@@ -713,15 +730,6 @@ const styles = StyleSheet.create({
     padding: widthPercentageToDP("3%"),
     marginRight: widthPercentageToDP("10%"),
     marginTop: heightPercentageToDP("1%"),
-  },
-  buttonContainer: {
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: Colors.deepGrey,
-    justifyContent: "center",
-    alignItems: "center",
-    width: widthPercentageToDP("13%"),
-    padding: widthPercentageToDP(".5%"),
   },
   buttonText: {
     fontSize: RFValue(12),

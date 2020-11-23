@@ -8,7 +8,8 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import Request from "../lib/request";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -43,7 +44,7 @@ export default function RegistrationGeneral(props) {
       style={{ flex: 1 }}
     >
       {/* <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height+999999999999999"}
+        behavior={Platform.OS=="a"}
         style={{ flex: 1 }}
       > */}
       <ScrollView style={{ flex: 1 }}>
@@ -126,21 +127,21 @@ export default function RegistrationGeneral(props) {
                       password: password,
                       authority: "general",
                     })
-                    .then(function(response) {
+                    .then(function (response) {
                       response = response.data;
                       if (response.success) {
                         // onConfirmPasswordChanged("")
                         // onNicknameChanged("")
                         // onPasswordChanged("")
                         // onPhoneChanged("")
-                        AsyncStorage.getItem("referUser", function(item){
+                        AsyncStorage.getItem("referUser", function (item) {
                           props.navigation.navigate("SMSAuthentication", {
                             nickname: nickname,
                             real_name: nickname,
                             username: phone,
                             password: password,
                             authority: "general",
-                            introducer: item
+                            introducer: item,
                           });
                         });
                       } else {
@@ -159,7 +160,7 @@ export default function RegistrationGeneral(props) {
                         }
                       }
                     })
-                    .catch(function(error) {
+                    .catch(function (error) {
                       alert.warning(JSON.stringify(error));
                       if (
                         error &&
@@ -174,12 +175,14 @@ export default function RegistrationGeneral(props) {
                         );
                       }
                     });
-              } else {
-                alert.warning(
-                  Translate.t("passwordAndConfirmPasswordMustSame")
-                );
+                } else {
+                  alert.warning(
+                    Translate.t("passwordAndConfirmPasswordMustSame")
+                  );
+                }
               }
-            }}}>
+            }}
+          >
             <View style={styles.registerGeneralButton}>
               <Text style={styles.registerGeneralButtonText}>
                 {Translate.t("registerAsGeneralUser")}

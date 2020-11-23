@@ -130,7 +130,7 @@ export default function SalesManagement(props) {
   const [totalSale, onTotalSaleChanged] = React.useState(0);
   const [total, onTotalChanged] = React.useState(0);
 
-  AsyncStorage.getItem("user").then(function(url) {
+  AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
@@ -140,12 +140,22 @@ export default function SalesManagement(props) {
     if (!user.url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     }
@@ -153,7 +163,7 @@ export default function SalesManagement(props) {
     if (!commissionLoaded) {
       request
         .get("commissionProducts/" + userId + "/")
-        .then(function(response) {
+        .then(function (response) {
           onCommissionsChanged(response.data.commissionProducts);
           onComissionHtmlChanged(
             processCommissionHtml(response.data.commissionProducts, status)
@@ -166,9 +176,19 @@ export default function SalesManagement(props) {
           onTotalChanged(totalCommission + totalSale);
           onCommissionLoaded(true);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
           onCommissionLoaded(true);
         });
@@ -177,7 +197,7 @@ export default function SalesManagement(props) {
     if (!saleLoaded) {
       request
         .get("saleProducts/" + userId + "/")
-        .then(function(response) {
+        .then(function (response) {
           onSalesChanged(response.data.saleProducts);
           onSaleHtmlChanged(
             processSaleHtml(response.data.saleProducts, status)
@@ -186,13 +206,27 @@ export default function SalesManagement(props) {
           response.data.saleProducts.map((sale) => {
             total += sale.unit_price;
           });
-          onTotalSaleChanged(format.separator(total));
-          onTotalChanged(format.separator(totalCommission + totalSale));
+          onTotalSaleChanged(total);
+          onTotalChanged(
+            format.separator(
+              parseFloat(totalCommission) + parseFloat(totalSale)
+            )
+          );
           onSaleLoaded(true);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
           onSaleLoaded(true);
         });
@@ -253,9 +287,14 @@ export default function SalesManagement(props) {
                 justifyContent: "center",
               }}
             >
-              <Text style={styles.totalSalesContainerText}>{Translate.t("totalSale")}</Text>
+              <Text style={styles.totalSalesContainerText}>
+                {Translate.t("totalSale")}
+              </Text>
               <Text style={{ marginTop: heightPercentageToDP(".5%") }}>
-                {totalSale + totalCommission}円
+                {format.separator(
+                  parseFloat(totalSale) + parseFloat(totalCommission)
+                )}
+                円
               </Text>
             </View>
             <View
@@ -267,7 +306,9 @@ export default function SalesManagement(props) {
                 width: widthPercentageToDP("45%"),
               }}
             >
-              <Text style={styles.totalSalesContainerText}>【{Translate.t("breakdown")}】</Text>
+              <Text style={styles.totalSalesContainerText}>
+                【{Translate.t("breakdown")}】
+              </Text>
               <View style={{ flexDirection: "row" }}>
                 <View style={{ marginTop: heightPercentageToDP("1%") }}>
                   <Text style={styles.totalSalesContainerText}>
@@ -284,10 +325,10 @@ export default function SalesManagement(props) {
                   }}
                 >
                   <Text style={styles.totalSalesContainerText}>
-                    {totalCommission}円
+                    {format.separator(totalCommission)}円
                   </Text>
                   <Text style={styles.totalSalesContainerText}>
-                    {totalSale}円
+                    {format.separator(totalSale)}円
                   </Text>
                 </View>
               </View>
@@ -362,7 +403,9 @@ export default function SalesManagement(props) {
                     marginLeft: widthPercentageToDP("20%"),
                   }}
                 >
-                  {status == "commission" ? Translate.t("product")+" / "+Translate.t("price") : " "+Translate.t("product")}
+                  {status == "commission"
+                    ? Translate.t("product") + " / " + Translate.t("price")
+                    : " " + Translate.t("product")}
                 </Text>
                 <Text
                   style={{
@@ -371,7 +414,9 @@ export default function SalesManagement(props) {
                     right: 0,
                   }}
                 >
-                  {status == "commission" ? Translate.t("commissionAmt") : " "+Translate.t("salesAmt")}
+                  {status == "commission"
+                    ? Translate.t("commissionAmt")
+                    : " " + Translate.t("salesAmt")}
                 </Text>
               </View>
               <View

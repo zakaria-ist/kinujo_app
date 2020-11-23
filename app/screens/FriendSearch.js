@@ -121,10 +121,7 @@ export default function FriendSearch(props) {
         <TouchableWithoutFeedback
           key={friend.id}
           onPress={() => {
-            sendMessageHandler(
-              friend.id,
-              friend.real_name ? friend.real_name : friend.nickname
-            );
+            sendMessageHandler(friend.id, friend.real_name);
             onSearchTextChanged("");
           }}
         >

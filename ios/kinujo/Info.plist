@@ -46,8 +46,24 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you're nearby.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you're nearby.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to scan QR Code and upload photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>This app requires access to your location to get the nearest merchants registered in our app.</string>
+	<key>NSMainNibFile</key>
+	<string>LaunchScreen</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app requires microphone access to voice record.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app requires motion detection access to track motion.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app requires photo library access to function properly.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires photo library access to upload photo.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -56,11 +72,9 @@
 	</array>
 	<key>UIRequiresFullScreen</key>
 	<true/>
-
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

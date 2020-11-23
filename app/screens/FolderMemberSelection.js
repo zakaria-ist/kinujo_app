@@ -31,9 +31,9 @@ let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-let checkStatus;
 let ids = [];
 let tmpFriend = [];
+let tmpFriendIds = [];
 const db = firebase.firestore();
 const request = new Request();
 const alert = new CustomAlert();
@@ -44,11 +44,8 @@ const ratioProfile = win.width / 13 / 22;
 const ratioDown = win.width / 32 / 8;
 const ratioNext = win.width / 38 / 8;
 export default function FolderMemberSelection(props) {
-  const [checked, onCheckedChanged] = React.useState(false);
-  const [groupChatShow, onGroupChatShowChanged] = React.useState(true);
   const [friendChatShow, onFriendChatShowChanged] = React.useState(true);
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [user, onUserChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
   const [searchText, onSearchTextChanged] = React.useState("");
   const groupChatOpacity = useRef(
@@ -64,28 +61,11 @@ export default function FolderMemberSelection(props) {
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
   React.useEffect(() => {
+    AsyncStorage.getItem("tmpIds").then((friendIds) => {
+      tmpFriendIds = JSON.parse(friendIds);
+    });
     AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-
+      request.get(url);
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
@@ -100,11 +80,27 @@ export default function FolderMemberSelection(props) {
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
             if (item.type == "user") {
-              ids.push(item.id); //push user id as array
-              items.push({
-                id: item.id,
-                checkStatus: checked,
-              });
+              if (tmpFriendIds == null) {
+                ids.push(item.id);
+                items.push({
+                  id: item.id,
+                  checkStatus: false,
+                });
+              } else {
+                if (tmpFriendIds.includes(item.id)) {
+                  ids.push(item.id);
+                  items.push({
+                    id: item.id,
+                    checkStatus: true,
+                  });
+                } else {
+                  ids.push(item.id);
+                  items.push({
+                    id: item.id,
+                    checkStatus: false,
+                  });
+                }
+              }
             }
             tmpFriend = items;
             //item to indicate checkbox status and id

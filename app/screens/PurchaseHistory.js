@@ -72,9 +72,7 @@ function processOrderHtml(props, orders, status = "") {
                     : order.product_jan_code.vertical.product_variety.product
                         .name}
                 </Text>
-                <Text>
-                  {format.separator(order.unit_price)} 円
-                </Text>
+                <Text>{format.separator(order.unit_price)} 円</Text>
               </View>
               <Image
                 style={styles.nextIcon}
@@ -136,7 +134,7 @@ function processOrderHtml(props, orders, status = "") {
 
 export default function PurchaseHistory(props) {
   const [orders, onOrdersChanged] = React.useState({});
-  const [orderHtml, onOrderHtmlChanged] = React.useState(<View></View>);
+  const [orderHtml, onOrderHtmlChanged] = React.useState([]);
   const [user, onUserChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
   const [yearHtml, onYearHtmlChanged] = React.useState(<View></View>);
@@ -146,8 +144,7 @@ export default function PurchaseHistory(props) {
   function loadOrder(userId, type) {
     request
       .get("orderProducts/" + userId + "/")
-      .then(function (response) {
-        onOrdersChanged(response.data.orders);
+      .then((response) => {
         let tmpYears = [];
         response.data.orderProducts.map((order) => {
           let year = kanjidate.format("{Y:4}", new Date(order.created));
@@ -155,10 +152,13 @@ export default function PurchaseHistory(props) {
             tmpYears.push(year);
           }
         });
+        let tmpOrderProducts = response.data.orderProducts.filter((order) => {
+          let year = kanjidate.format("{Y:4}", new Date(order.created));
+          return year == type || type == "all";
+        });
+        onOrdersChanged(tmpOrderProducts);
         onYearHtmlChanged(processYearHtml(tmpYears));
-        onOrderHtmlChanged(
-          processOrderHtml(props, response.data.orderProducts, status)
-        );
+        onOrderHtmlChanged(processOrderHtml(props, tmpOrderProducts, ""));
         onLoaded(true);
       })
       .catch(function (error) {
@@ -229,6 +229,11 @@ export default function PurchaseHistory(props) {
               });
               let userId = urls[urls.length - 1];
 
+              Animated.timing(right, {
+                toValue: widthPercentageToDP("-80%"),
+                duration: 500,
+                useNativeDriver: false,
+              }).start();
               loadOrder(userId, year);
             });
           }}
@@ -242,7 +247,9 @@ export default function PurchaseHistory(props) {
     return tmpYearHtml;
   }
 
-  load();
+  React.useEffect(() => {
+    load();
+  }, []);
   return (
     <TouchableWithoutFeedback
       onPress={() =>
@@ -253,7 +260,7 @@ export default function PurchaseHistory(props) {
         }).start()
       }
     >
-      <SafeAreaView>
+      <ScrollView>
         <CustomHeader
           onFavoriteChanged="noFavorite"
           onBack={() => {
@@ -378,7 +385,11 @@ export default function PurchaseHistory(props) {
                   return url;
                 });
                 let userId = urls[urls.length - 1];
-
+                Animated.timing(right, {
+                  toValue: widthPercentageToDP("-80%"),
+                  duration: 500,
+                  useNativeDriver: false,
+                }).start();
                 loadOrder(userId, "past_6_months");
               });
             }}
@@ -489,7 +500,7 @@ export default function PurchaseHistory(props) {
           </TouchableWithoutFeedback>
           {orderHtml}
         </View>
-      </SafeAreaView>
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 }
