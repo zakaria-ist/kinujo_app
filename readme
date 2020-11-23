@@ -31,3 +31,4 @@ react-native bundle --platform android --dev false --entry-file index.js --bundl
 
 6. *****IMPORTANT*****
 - if you have index.android.bundle in the folder, please remove it first then only proceed to the 5th step
+- if the the 5th step shows error, please remove package-lock.jason and remove the node_moudules, reinstall it and start from step 1 again.
