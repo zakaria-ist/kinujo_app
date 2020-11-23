@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const base = "kinujo-develop.c2sg.asia";
+const base = "kinujo-release.c2sg.asia";
 // const base = "kinujo-demo.c2sg.asia";
 // const base = "http://192.168.0.107:8000";
 let api = "https://" + base + "/api/";
