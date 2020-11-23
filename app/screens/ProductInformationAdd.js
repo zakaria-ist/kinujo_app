@@ -29,6 +29,25 @@ const win = Dimensions.get("window");
 const ratioProductAddIcon = win.width / 10 / 28;
 export default function ProductInformationAdd(props) {
   const [user, onUserChanged] = React.useState({});
+  const [productName, onProductNameChanged] = React.useState("");
+  const [brandName, onBrandNameChanged] = React.useState("");
+  const [pr, onPrChanged] = React.useState("");
+  const [productId, onProductIdChanged] = React.useState("");
+  const [productCategory, onProductCategoryChanged] = React.useState("");
+  const [productVariation, onProductVariationChanged] = React.useState("");
+  const [oneItemList, onOneItemList] = React.useState("");
+  const [twoItemList, onTwoItemList] = React.useState("");
+  const [noneItemList, onNoneItemList] = React.useState("");
+  const [publishState, onPublishStateChanged] = React.useState("");
+  const [publishDate, onPublishDateChanged] = React.useState("");
+  const [productStatus, onProductStatusChanged] = React.useState("");
+  const [targetUser, onTargetUserChanged] = React.useState("");
+  const [price, onPriceChanged] = React.useState("");
+  const [storePrice, onStorePriceChanged] = React.useState("");
+  const [shipping, onShippingChanged] = React.useState("");
+  const [productPageDisplayMethod, onProductPageDisplayMethodChanged] = React.useState("");
+  const [productImages, onProductImagesChanged] = React.useState("");
+  const [productDescription, onProductDescriptionChanged] = React.useState("");
 
   if (!user.url) {
     AsyncStorage.getItem("user").then(function(url) {

@@ -26,11 +26,11 @@ import jsQR from "jsqr";
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import AsyncStorage from "@react-native-community/async-storage";
-import dynamicLinks from '@react-native-firebase/dynamic-links';
+import dynamicLinks from "@react-native-firebase/dynamic-links";
 
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { RNCamera } from "react-native-camera";
-import ImagePicker from 'react-native-image-picker'
+import ImagePicker from "react-native-image-picker";
 
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -69,18 +69,22 @@ function findParams(data, param) {
 }
 
 async function buildLink(userId, is_store) {
-  const link = await dynamicLinks().buildLink({
-    link: 'https://kinujo.page.link?userId=' + userId + "&is_store=" + is_store,
-    // domainUriPrefix is created in your Firebase console
-    domainUriPrefix: 'https://kinujo.page.link',
-    android: {
-      packageName: "com.example.kinujo"
+  const link = await dynamicLinks().buildLink(
+    {
+      link:
+        "https://kinujo.page.link?userId=" + userId + "&is_store=" + is_store,
+      // domainUriPrefix is created in your Firebase console
+      domainUriPrefix: "https://kinujo.page.link",
+      android: {
+        packageName: "com.example.kinujo",
+      },
+      ios: {
+        appStoreId: "123123123",
+        bundleId: "com.example.kinujo",
+      },
     },
-    ios:{
-      appStoreId: "123123123",
-      bundleId: "com.example.kinujo"
-    }
-  }, dynamicLinks.ShortLinkType.UNGUESSABLE);
+    dynamicLinks.ShortLinkType.UNGUESSABLE
+  );
   return link + "&kinujoId=" + userId;
 }
 
@@ -103,13 +107,10 @@ export default function QRCode(props) {
         .then((querySnapshot) => {
           if (querySnapshot.size > 0) {
           } else {
-            db.collection("users")
-              .doc(userId)
-              .collection("friends")
-              .add({
-                type: "user",
-                id: code,
-              });
+            db.collection("users").doc(userId).collection("friends").add({
+              type: "user",
+              id: code,
+            });
           }
           alert.warning(Translate.t("friendAdded"));
         });
@@ -119,21 +120,21 @@ export default function QRCode(props) {
   };
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
 
-      buildLink(userId, "1").then(function(link){
+      buildLink(userId, "1").then(function (link) {
         console.log(link);
         onStoreLinkChanged(link);
-      })
-      buildLink(userId, "0").then(function(link){
+      });
+      buildLink(userId, "0").then(function (link) {
         console.log(link);
         onUserLinkChanged(link);
-      })
+      });
       onUserIDChanged(userId);
     });
 
@@ -164,7 +165,9 @@ export default function QRCode(props) {
                   fontSize: RFValue(15),
                 }}
               >
-                {inviteShow ? Translate.t("appInviteQR") : Translate.t("QRCode")}
+                {inviteShow
+                  ? Translate.t("appInviteQR")
+                  : Translate.t("QRCode")}
               </Text>
             </View>
             <View style={styles.qrcode_frame}>
@@ -196,7 +199,7 @@ export default function QRCode(props) {
               ]}
               onPress={() => setPopupQR(true)}
             >
-              <Text style={styles.submitText}>{Translate.t("myQR")}</Text>
+              <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -207,7 +210,7 @@ export default function QRCode(props) {
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   var i = new Image();
-                  i.onload = function() {
+                  i.onload = function () {
                     const code = findParams(
                       jsQR(response.data, i.width, i.height),
                       "kinujoId"
@@ -247,7 +250,9 @@ export default function QRCode(props) {
                 },
               ]}
             >
-              <Text style={styles.submitText}>{Translate.t("readFromPhoto")}</Text>
+              <Text style={styles.submit_text}>
+                {Translate.t("readFromPhoto")}
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -260,7 +265,9 @@ export default function QRCode(props) {
                 },
               ]}
             >
-              <Text style={styles.submitText}>{Translate.t("searchFriend")}</Text>
+              <Text style={styles.submit_text}>
+                {Translate.t("searchFriend")}
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -273,18 +280,20 @@ export default function QRCode(props) {
               ]}
               onPress={() => setInviteShow(true)}
             >
-              <Text style={styles.submitText}>{Translate.t("appInviteQR")}</Text>
+              <Text style={styles.submit_text}>
+                {Translate.t("appInviteQR")}
+              </Text>
             </TouchableOpacity>
           </View>
           <View
             style={{
               textAlign: "center",
               alignItems: "center",
-              paddingTop: 20,
+              paddingTop: RFValue(10),
             }}
           >
-            <Text>{Translate.t("scanQR")}</Text>
-            <Text>{Translate.t("qrDescription")}</Text>
+            <Text style={styles.notice_text}>{Translate.t("scanQR")}</Text>
+            <Text style={styles.notice_text}>{Translate.t("qrDescription")}</Text>
           </View>
         </View>
 
@@ -299,7 +308,9 @@ export default function QRCode(props) {
               ]}
               onPress={() => setPopupQR(true)}
             >
-              <Text style={styles.submitText}>{Translate.t("generalUserInvite")}</Text>
+              <Text style={styles.submit_text}>
+                {Translate.t("generalUserInvite")}
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -315,7 +326,9 @@ export default function QRCode(props) {
                 setPopupQR(true);
               }}
             >
-              <Text style={styles.submitText}>{Translate.t("storeAccInvite")}</Text>
+              <Text style={styles.submit_text}>
+                {Translate.t("storeAccInvite")}
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.button_frame}>
@@ -328,7 +341,7 @@ export default function QRCode(props) {
               ]}
               onPress={() => setInviteShow(false)}
             >
-              <Text style={styles.submitText}>{Translate.t("myQR")}</Text>
+              <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -381,7 +394,13 @@ export default function QRCode(props) {
               <QRCodeIcon
                 size={widthPercentageToDP(60)}
                 value={
-                  store ? (storeLink ? storeLink : "waiting") : (userLink ? userLink : "waiting")
+                  store
+                    ? storeLink
+                      ? storeLink
+                      : "waiting"
+                    : userLink
+                    ? userLink
+                    : "waiting"
                 }
               />
               {/* <Image
@@ -424,7 +443,7 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-evenly",
     backgroundColor: "transparent",
-    paddingTop: 15,
+    paddingTop: RFValue(15),
   },
   qrcode_frame: {
     flex: 1,
@@ -449,7 +468,7 @@ const styles = StyleSheet.create({
   button_frame: {
     width: "80%",
     marginLeft: "10%",
-    marginTop: 10,
+    marginTop: RFValue(10),
   },
   submit: {
     width: "100%",
@@ -459,8 +478,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#fff",
   },
-  submitText: {
+  submit_text: {
     color: "#FFF",
+    textAlign: "center",
+    fontSize: RFValue(10),
+  },
+  notice_text: {
+    color: "#000",
     textAlign: "center",
     fontSize: RFValue(10),
   },
@@ -491,5 +515,3 @@ const styles = StyleSheet.create({
     height: height / 2,
   },
 });
-
-//AppRegistry.registerComponent('default', () => ScanScreen);

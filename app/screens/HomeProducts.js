@@ -4,6 +4,7 @@ import {
   Text,
   Button,
   Image,
+  ImageBackground,
   View,
   Dimensions,
   TouchableWithoutFeedback,
@@ -20,6 +21,7 @@ import Format from "../lib/format";
 const format = new Format();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
+const ratioFavorite = width / 29 / 14;
 export default function HomeProducts({
   onPress,
   idx,
@@ -37,20 +39,31 @@ export default function HomeProducts({
         <View
           style={idx % 2 == 0 ? styles.products_left : styles.products_right}
         >
-          <Image
+          <ImageBackground
             style={styles.product_image}
             source={{
               uri: image,
             }}
             resizeMode="cover"
-          />
+          >
+            <Image
+              source={require("../assets/Images/productFavorite.png")}
+              style={{
+                width: width / 14,
+                height: 26 * ratioFavorite,
+                position: "absolute",
+                right: 7,
+                bottom: 7,
+              }}
+            />
+          </ImageBackground>
           <Text style={styles.product_office}>{office}</Text>
           <Text style={styles.product_name}>{name}</Text>
           <Text style={styles.product_seller}>
             {Translate.t("seller")} : {seller}
           </Text>
           <Text style={styles.product_price}>
-            {format.separator(price)}
+            {price}
             {Translate.t("taxNotIncluded")}
           </Text>
           <Text numberOfLines={2} style={styles.product_category}>

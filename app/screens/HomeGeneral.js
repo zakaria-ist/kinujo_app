@@ -37,7 +37,7 @@ export default function Home(props) {
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
-
+  const isFocused = useIsFocused();
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -98,11 +98,7 @@ export default function Home(props) {
               }
               office={product.brand_name}
               name={product.name}
-              seller={
-                product.user.real_name
-                  ? product.user.real_name
-                  : product.user.nickname
-              }
+              seller={product.user.shop_name}
               price={
                 (user.is_seller
                   ? format.separator(product.store_price)
@@ -137,11 +133,7 @@ export default function Home(props) {
               }
               office={product.brand_name}
               name={product.name}
-              seller={
-                product.user.real_name
-                  ? product.user.real_name
-                  : product.user.nickname
-              }
+              seller={product.user.shop_name}
               price={
                 (user.is_seller
                   ? format.separator(product.store_price)
@@ -173,7 +165,7 @@ export default function Home(props) {
           );
         }
       });
-  }, [useIsFocused]);
+  }, [isFocused]);
 
   return (
     <SafeAreaView>

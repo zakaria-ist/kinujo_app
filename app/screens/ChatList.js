@@ -26,6 +26,7 @@ import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { block } from "react-native-reanimated";
 import CustomAlert from "../lib/alert";
+import { ScrollView } from "react-native-gesture-handler";
 
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
@@ -206,7 +207,13 @@ export default function ChatList(props) {
                       groupName: snapShot.data().groupName,
                     })
                   }
-                  onLongPress={() => onShowChanged(true)}
+                  onLongPress={() => {
+                    onLongPressObjChanged({
+                      id: snapShot.id,
+                      data: snapShot.data(),
+                    });
+                    onShowChanged(true);
+                  }}
                 >
                   <View style={styles.tabContainer}>
                     <Image style={styles.tabImage} />
@@ -258,7 +265,13 @@ export default function ChatList(props) {
                       groupName: snapShot.data().groupName,
                     })
                   }
-                  onLongPress={() => onShowChanged(true)}
+                  onLongPress={() => {
+                    onLongPressObjChanged({
+                      id: snapShot.id,
+                      data: snapShot.data(),
+                    });
+                    onShowChanged(true);
+                  }}
                 >
                   <View style={styles.tabContainer}>
                     <Image style={styles.tabImage} />
@@ -299,15 +312,24 @@ export default function ChatList(props) {
         });
 
         tmpChatHtml.sort((html1, html2) => {
+
+          if (html1.props["pinned"] && !html2.props["pinned"]) {
+            return 1;
+          }
+
+          if (!html1.props["pinned"] && html2.props["pinned"]) {
+            return -1;
+          }
+
           if (html1.props["pinned"] && html2.props["pinned"]) {
             let date1 = getDate(html1.props["date"]);
             let date2 = getDate(html2.props["date"]);
 
             if (date1 > date2) {
-              return 1;
+              return -1;
             }
             if (date1 < date2) {
-              return -1;
+              return 1;
             }
           }
 
@@ -316,19 +338,11 @@ export default function ChatList(props) {
             let date2 = getDate(html2.props["date"]);
 
             if (date1 > date2) {
-              return 1;
-            }
-            if (date1 < date2) {
               return -1;
             }
-          }
-
-          if (html1.props["pinned"] && !html2.props["pinned"]) {
-            return -1;
-          }
-
-          if (!html1.props["pinned"] && html2.props["pinned"]) {
-            return 1;
+            if (date1 < date2) {
+              return 1;
+            }
           }
         });
         const resultChatHtml = tmpChatHtml.filter((html) => {
@@ -352,155 +366,158 @@ export default function ChatList(props) {
           onBack={() => props.navigation.pop()}
           onFavoriteChanged="noFavorite"
         />
-        <View
-          style={{
-            marginHorizontal: widthPercentageToDP("4%"),
-          }}
-        >
-          <View style={show == true ? styles.popUp : styles.none}>
-            <View
-              style={{
-                marginTop: heightPercentageToDP("3%"),
-              }}
-            >
-              <Text style={{ fontSize: RFValue(14) }}>
-                {longPressObj && longPressObj.data
-                  ? longPressObj.data.groupName
-                  : ""}
-              </Text>
-              <View
-                style={{
-                  marginTop: heightPercentageToDP("2%"),
-                  justifyContent: "space-evenly",
-                  height: heightPercentageToDP("35%"),
-                }}
-              >
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["pinned_" + ownUserID] =
-                      longPressObj.data["pinned_" + ownUserID] == "" ||
-                      longPressObj.data["pinned_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("upperFixed")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["notify_" + ownUserID] =
-                      longPressObj.data["notify_" + ownUserID] == "" ||
-                      longPressObj.data["notify_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("notification")} OFF
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["hide_" + ownUserID] =
-                      longPressObj.data["hide_" + ownUserID] == "" ||
-                      longPressObj.data["hide_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("nonRepresent")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["delete_" + ownUserID] =
-                      longPressObj.data["delete_" + ownUserID] == "" ||
-                      longPressObj.data["delete_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("remove")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  // onPressIn={() => onShowChanged(false)}
-                  onPress={() => {
-                    onShowChanged(false);
-                    props.navigation.navigate("GroupChatCreation");
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("groupChatCreate")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  // onPressIn={() => onShowChanged(false)}
-                  onPress={() => {
-                    onShowChanged(false);
-                    props.navigation.navigate("CreateFolder");
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("createFolder")}
-                  </Text>
-                </TouchableWithoutFeedback>
-              </View>
-            </View>
-          </View>
-
+        <ScrollView>
           <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingBottom: heightPercentageToDP("3%"),
+              marginHorizontal: widthPercentageToDP("4%"),
             }}
           >
-            <Text
+            <View style={show == true ? styles.popUp : styles.none}>
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("3%"),
+                }}
+              >
+                {console.log(longPressObj.data)}
+                <Text style={{ fontSize: RFValue(14) }}>
+                  {longPressObj && longPressObj.data
+                    ? longPressObj.data.groupName
+                    : ""}
+                </Text>
+                <View
+                  style={{
+                    marginTop: heightPercentageToDP("2%"),
+                    justifyContent: "space-evenly",
+                    height: heightPercentageToDP("35%"),
+                  }}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      let update = {};
+                      update["pinned_" + ownUserID] =
+                        longPressObj.data["pinned_" + ownUserID] == "" ||
+                        longPressObj.data["pinned_" + ownUserID]
+                          ? false
+                          : true;
+                      db.collection("chat").doc(longPressObj.id).set(update, {
+                        merge: true,
+                      });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("upperFixed")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      let update = {};
+                      update["notify_" + ownUserID] =
+                        longPressObj.data["notify_" + ownUserID] == "" ||
+                        longPressObj.data["notify_" + ownUserID]
+                          ? false
+                          : true;
+                      db.collection("chat").doc(longPressObj.id).set(update, {
+                        merge: true,
+                      });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("notification")} OFF
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      let update = {};
+                      update["hide_" + ownUserID] =
+                        longPressObj.data["hide_" + ownUserID] == "" ||
+                        longPressObj.data["hide_" + ownUserID]
+                          ? false
+                          : true;
+                      db.collection("chat").doc(longPressObj.id).set(update, {
+                        merge: true,
+                      });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("nonRepresent")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      let update = {};
+                      update["delete_" + ownUserID] =
+                        longPressObj.data["delete_" + ownUserID] == "" ||
+                        longPressObj.data["delete_" + ownUserID]
+                          ? false
+                          : true;
+                      db.collection("chat").doc(longPressObj.id).set(update, {
+                        merge: true,
+                      });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("remove")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    // onPressIn={() => onShowChanged(false)}
+                    onPress={() => {
+                      onShowChanged(false);
+                      props.navigation.navigate("GroupChatCreation");
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("groupChatCreate")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    // onPressIn={() => onShowChanged(false)}
+                    onPress={() => {
+                      onShowChanged(false);
+                      props.navigation.navigate("CreateFolder");
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("createFolder")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
+            </View>
+
+            <View
               style={{
-                fontSize: RFValue(14),
-                paddingRight: widthPercentageToDP("2%"),
+                flexDirection: "row",
+                alignItems: "center",
+                paddingBottom: heightPercentageToDP("3%"),
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              {Translate.t("chat")}
-            </Text>
-            {totalUnseenMessage ? (
-              <View style={styles.notificationNumberContainer}>
-                <Text style={styles.notificationNumberText}>
-                  {totalUnseenMessage}
-                </Text>
-              </View>
-            ) : (
-              <View></View>
-            )}
+              <Text
+                style={{
+                  fontSize: RFValue(14),
+                  paddingRight: widthPercentageToDP("2%"),
+                }}
+              >
+                {Translate.t("chat")}
+              </Text>
+              {totalUnseenMessage ? (
+                <View style={styles.notificationNumberContainer}>
+                  <Text style={styles.notificationNumberText}>
+                    {totalUnseenMessage}
+                  </Text>
+                </View>
+              ) : (
+                <View></View>
+              )}
+            </View>
+            {chatHtml}
           </View>
-          {chatHtml}
-        </View>
+        </ScrollView>
       </View>
     </TouchableWithoutFeedback>
   );

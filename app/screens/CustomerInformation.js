@@ -50,10 +50,10 @@ export default function CustomerInformation(props) {
   const [modal, onModalChanged] = React.useState(false);
 
   chatPersonID = user.id;
-  groupName = user.nickname;
+  groupName = user.real_name;
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
@@ -91,12 +91,22 @@ export default function CustomerInformation(props) {
   if (!user.url) {
     request
       .get(props.route.params.url)
-      .then(function(response) {
+      .then(function (response) {
         onUserChanged(response.data);
       })
-      .catch(function(error) {
-        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
         }
       });
   }
@@ -106,7 +116,7 @@ export default function CustomerInformation(props) {
     chatRef
       .where("users", "array-contains", ownUserID)
       .get()
-      .then(function(querySnapshot) {
+      .then(function (querySnapshot) {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
           for (var i = 0; i < users.length; i++) {
@@ -128,7 +138,7 @@ export default function CustomerInformation(props) {
           let friendTotalMessageReadField = "totalMessageRead_" + chatPersonID;
           chatRef
             .add({
-              groupName: user.nickname,
+              groupName: user.real_name,
               users: [String(ownUserID), String(chatPersonID)],
               totalMessage: 0,
               [ownMessageUnseenField]: 0,
@@ -136,7 +146,7 @@ export default function CustomerInformation(props) {
               [ownTotalMessageReadField]: 0,
               [friendTotalMessageReadField]: 0,
             })
-            .then(function() {
+            .then(function () {
               navigateToChatScreen();
             });
         }
@@ -167,7 +177,7 @@ export default function CustomerInformation(props) {
         });
       });
   }
-  AsyncStorage.getItem("user").then(function(url) {
+  AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;

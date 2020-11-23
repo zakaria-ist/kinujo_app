@@ -108,7 +108,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
               marginRight: widthPercentageToDP("3%"),
             }}
           >
-            <View style={styles.notificationNumberContainer}>
+            {cartCount ? (<View style={styles.notificationNumberContainer}>
               <Text
                 style={{
                   alignSelf: "center",
@@ -118,7 +118,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
               >
                 {cartCount}
               </Text>
-            </View>
+            </View>) : (<View></View>)}
             <CartLogo
               style={{
                 width: win.width / 11,

@@ -18,7 +18,6 @@ import {
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
-import { WebView } from "react-native-webview";
 import CustomAlert from "../lib/alert";
 import Translate from "../assets/Translates/Translate";
 import {

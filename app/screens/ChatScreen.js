@@ -15,12 +15,14 @@ import {
   Animated,
   Modal,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
 import RNFetchBlob from "rn-fetch-blob";
 import { SafeAreaView } from "react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
+import EmojiBoard from "react-native-emoji-board";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -31,6 +33,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import ChatText from "./ChatText";
+import ChatContact from "./ChatContact";
 import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -56,8 +59,8 @@ const chatsRef = db.collection("chat");
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
-let hour = new Date().getHours();
-let minute = ("0" + new Date().getMinutes()).slice(-2);
+let hour = String(new Date().getHours()).padStart(2, "0");
+let minute = String(new Date().getMinutes()).padStart(2, "0");
 let seconds = new Date().getSeconds();
 let userId;
 let groupID;
@@ -93,20 +96,44 @@ function checkUpdateFriend(user1, user2) {
     updateFriend = true;
   }
 }
+
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = React.useState(false);
   const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
   const [messages, setMessages] = React.useState("");
+  const [showEmoji, onShowEmojiChanged] = useState(false);
+  const [prevEmoji, setPrevEmoji] = useState("");
+  const [inputBarPosition, setInputBarPosition] = useState(-2);
   const scrollViewReference = useRef();
   const isFocused = useIsFocused();
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
-
-  const handleBack = () => {
-    props.navigation.pop();
+  const onClick = (emoji) => {
+    {
+      {
+        messages == ""
+          ? setMessages(emoji.code)
+          : setMessages(messages + emoji.code);
+      }
+    }
+    setPrevEmoji(emoji.code);
   };
-
+  const onRemove = () => {
+    setMessages(messages.slice(0, -2));
+  };
+  const [textInputHeight, setTextInputHeight] = React.useState(
+    heightPercentageToDP("7%")
+  );
+  function handleEmojiIconPressed() {
+    onShowEmojiChanged(true);
+    setInputBarPosition(heightPercentageToDP("34%"));
+    Keyboard.dismiss();
+  }
+  function hideEmoji() {
+    onShowEmojiChanged(false);
+    setInputBarPosition(-2);
+  }
   async function firstLoad() {
     const updateHtml = [];
     onChatHtmlChanged(updateHtml);
@@ -188,12 +215,21 @@ export default function ChatScreen(props) {
                         //seen area
                         snapShot.data().userID == userId ? (
                           snapShot.data().image == null ? (
-                            <ChatText
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
-                              seen="true"
-                              text={snapShot.data().message}
-                            />
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                seen="true"
+                                text={snapShot.data().message}
+                              />
+                            ) : (
+                              <ChatContact
+                                date={tmpHours + ":" + tmpMinutes}
+                                seen="true"
+                                isSelf="true"
+                                contactName={snapShot.data().contactName}
+                              />
+                            )
                           ) : (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
@@ -203,11 +239,20 @@ export default function ChatScreen(props) {
                             />
                           )
                         ) : snapShot.data().image == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            seen="true"
-                            text={snapShot.data().message}
-                          />
+                          snapShot.data().contactID == null ? (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              seen="true"
+                              text={snapShot.data().message}
+                            />
+                          ) : (
+                            <ChatContact
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              seen="true"
+                              contactName={snapShot.data().contactName}
+                            />
+                          )
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
@@ -218,11 +263,19 @@ export default function ChatScreen(props) {
                       ) : //unseen area
                       snapShot.data().userID == userId ? (
                         snapShot.data().image == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
-                            text={snapShot.data().message}
-                          />
+                          snapShot.data().contactID == null ? (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              text={snapShot.data().message}
+                            />
+                          ) : (
+                            <ChatContact
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              contactName={snapShot.data().contactName}
+                            />
+                          )
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
@@ -231,10 +284,18 @@ export default function ChatScreen(props) {
                           />
                         )
                       ) : snapShot.data().image == null ? (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          text={snapShot.data().message}
-                        />
+                        snapShot.data().contactID == null ? (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            text={snapShot.data().message}
+                          />
+                        ) : (
+                          <ChatContact
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            contactName={snapShot.data().contactName}
+                          />
+                        )
                       ) : (
                         <ChatText
                           date={tmpHours + ":" + tmpMinutes}
@@ -260,12 +321,27 @@ export default function ChatScreen(props) {
                         //seen area
                         snapShot.data().userID == userId ? (
                           snapShot.data().image == null ? (
-                            <ChatText
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
-                              seen="true"
-                              text={snapShot.data().message}
-                            />
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                seen="true"
+                                text={snapShot.data().message}
+                              />
+                            ) : (
+                              <TouchableWithoutFeedback
+                                onPress={() =>
+                                  console.log(snapShot.data().contactName)
+                                }
+                              >
+                                <ChatContact
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  seen="true"
+                                  isSelf="true"
+                                  contactName={snapShot.data().contactName}
+                                />
+                              </TouchableWithoutFeedback>
+                            )
                           ) : (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
@@ -275,11 +351,20 @@ export default function ChatScreen(props) {
                             />
                           )
                         ) : snapShot.data().image == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            seen="true"
-                            text={snapShot.data().message}
-                          />
+                          snapShot.data().contactID == null ? (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              seen="true"
+                              text={snapShot.data().message}
+                            />
+                          ) : (
+                            <ChatContact
+                              date={tmpHours + ":" + tmpMinutes}
+                              seen="true"
+                              isSelf="true"
+                              contactName={snapShot.data().contactName}
+                            />
+                          )
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
@@ -290,11 +375,19 @@ export default function ChatScreen(props) {
                       ) : //unseen area
                       snapShot.data().userID == userId ? (
                         snapShot.data().image == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
-                            text={snapShot.data().message}
-                          />
+                          snapShot.data().contactID == null ? (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              text={snapShot.data().message}
+                            />
+                          ) : (
+                            <ChatContact
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              contactName={snapShot.data().contactName}
+                            />
+                          )
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
@@ -303,10 +396,18 @@ export default function ChatScreen(props) {
                           />
                         )
                       ) : snapShot.data().image == null ? (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          text={snapShot.data().message}
-                        />
+                        snapShot.data().contactID == null ? (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            text={snapShot.data().message}
+                          />
+                        ) : (
+                          <ChatContact
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            contactName={snapShot.data().contactName}
+                          />
+                        )
                       ) : (
                         <ChatText
                           date={tmpHours + ":" + tmpMinutes}
@@ -333,12 +434,21 @@ export default function ChatScreen(props) {
                         //seen area
                         snapShot.data().userID == userId ? (
                           snapShot.data().image == null ? (
-                            <ChatText
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
-                              seen="true"
-                              text={snapShot.data().message}
-                            />
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                seen="true"
+                                text={snapShot.data().message}
+                              />
+                            ) : (
+                              <ChatContact
+                                date={tmpHours + ":" + tmpMinutes}
+                                seen="true"
+                                isSelf="true"
+                                contactName={snapShot.data().contactName}
+                              />
+                            )
                           ) : (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
@@ -348,11 +458,20 @@ export default function ChatScreen(props) {
                             />
                           )
                         ) : snapShot.data().image == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            seen="true"
-                            text={snapShot.data().message}
-                          />
+                          snapShot.data().contactID == null ? (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              seen="true"
+                              text={snapShot.data().message}
+                            />
+                          ) : (
+                            <ChatContact
+                              date={tmpHours + ":" + tmpMinutes}
+                              seen="true"
+                              isSelf="true"
+                              contactName={snapShot.data().contactName}
+                            />
+                          )
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
@@ -363,11 +482,19 @@ export default function ChatScreen(props) {
                       ) : //unseen area
                       snapShot.data().userID == userId ? (
                         snapShot.data().image == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
-                            text={snapShot.data().message}
-                          />
+                          snapShot.data().contactID == null ? (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              text={snapShot.data().message}
+                            />
+                          ) : (
+                            <ChatContact
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
+                              contactName={snapShot.data().contactName}
+                            />
+                          )
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
@@ -376,10 +503,18 @@ export default function ChatScreen(props) {
                           />
                         )
                       ) : snapShot.data().image == null ? (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          text={snapShot.data().message}
-                        />
+                        snapShot.data().contactID == null ? (
+                          <ChatText
+                            date={tmpHours + ":" + tmpMinutes}
+                            text={snapShot.data().message}
+                          />
+                        ) : (
+                          <ChatContact
+                            date={tmpHours + ":" + tmpMinutes}
+                            isSelf="true"
+                            contactName={snapShot.data().contactName}
+                          />
+                        )
                       ) : (
                         <ChatText
                           date={tmpHours + ":" + tmpMinutes}
@@ -470,9 +605,18 @@ export default function ChatScreen(props) {
       <SafeAreaView style={{ flex: 1 }}>
         <CustomHeader
           text={Translate.t("chat")}
-          onBack={() => handleBack()}
+          onBack={() => props.navigation.pop()}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => props.navigation.navigate("Cart")}
+        />
+        <EmojiBoard
+          showBoard={showEmoji}
+          style={{
+            height: heightPercentageToDP("30%"),
+            marginBottom: heightPercentageToDP("10%"),
+          }}
+          onClick={onClick}
+          onRemove={onRemove}
         />
         <CustomSecondaryHeader name={groupName} />
         <LinearGradient
@@ -498,14 +642,21 @@ export default function ChatScreen(props) {
         {/* Bottom Area */}
         <View
           style={{
-            // position: "sticky",
             width: "100%",
-            bottom: -2,
+            bottom: inputBarPosition,
             left: 0,
             overflow: "hidden",
           }}
         >
-          <View style={styles.input_bar}>
+          <View
+            style={{
+              height: textInputHeight,
+              backgroundColor: "#F0EEE9",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <View style={styles.input_bar_file}>
               <TouchableWithoutFeedback
                 onPress={() => setShouldShow(!shouldShow)}
@@ -528,12 +679,30 @@ export default function ChatScreen(props) {
             <View style={styles.input_bar_text}>
               <View style={styles.input_bar_text_border}>
                 <TextInput
+                  // onContentSizeChange={(e) =>
+                  //   setTextInputHeight(
+                  //     textInputHeight + heightPercentageToDP("0.5%")
+                  //   )
+                  // }
+                  onFocus={() => hideEmoji()}
+                  onBlur={() => hideEmoji()}
+                  multiline={true}
                   value={messages}
                   onChangeText={(value) => setMessages(value)}
                   placeholder="Type a message"
-                  style={styles.user_text_input}
+                  style={{
+                    width: widthPercentageToDP("15%"),
+                    flexGrow: 1,
+                    color: "black",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    paddingLeft: 15,
+                  }}
                 ></TextInput>
-                {/* <TouchableWithoutFeedback>
+
+                <TouchableWithoutFeedback
+                  onPress={() => handleEmojiIconPressed()}
+                >
                   <View style={styles.user_emoji_input}>
                     <EmojiLogo
                       width={"100%"}
@@ -541,7 +710,7 @@ export default function ChatScreen(props) {
                       resizeMode="contain"
                     />
                   </View>
-                </TouchableWithoutFeedback> */}
+                </TouchableWithoutFeedback>
               </View>
             </View>
             {/* SEND BUTTON */}
@@ -950,13 +1119,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
   },
-  user_text_input: {
-    flexGrow: 1,
-    color: "black",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    paddingLeft: 15,
-  },
+  // user_text_input: {
+  //   width: widthPercentageToDP("15%"),
+  //   height: heightPercentageToDP("5%"),
+  //   backgroundColor: "orange",
+  //   flexGrow: 1,
+  //   color: "black",
+  //   flexDirection: "row",
+  //   justifyContent: "flex-end",
+  //   paddingLeft: 15,
+  // },
   user_emoji_input: {
     height: heightPercentageToDP("6%"),
     width: heightPercentageToDP("6%"),

@@ -11,6 +11,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  Platform,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Colors } from "../assets/Colors.js";
@@ -72,12 +73,7 @@ export default function ProfileEditingGeneral(props) {
             error.response.data &&
             Object.keys(error.response.data).length > 0
           ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
+            alert.warning(error);
           }
         });
     });
@@ -89,6 +85,10 @@ export default function ProfileEditingGeneral(props) {
   function updateUser(user, field, value) {
     let obj = {};
     obj[field] = value;
+    console.log(Object.keys(obj), Object.values(obj));
+    console.log(user.url);
+    console.log(user.image);
+    console.log(user);
     request
       .patch(user.url, obj)
       .then(function (response) {
@@ -101,48 +101,67 @@ export default function ProfileEditingGeneral(props) {
           error.response.data &&
           Object.keys(error.response.data).length > 0
         ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0]
-          );
+          alert.warning(error);
         }
       });
   }
-
+  // updateUser(user, "gender", "Male");
   handleChoosePhoto = (type) => {
     const options = {
       noData: true,
     };
     ImagePicker.launchImageLibrary(options, (response) => {
-      const formData = new FormData();
-      formData.append("image", {
-        ...response,
-        uri:
-          Platform.OS === "android"
-            ? response.uri
-            : response.uri.replace("file://", ""),
-        name: "mobile.jpg",
-        type: "image/jpeg", // it may be necessary in Android.
-      });
-      request
-        .post("images/", formData, {
-          "Content-Type": "multipart/form-data",
-        })
-        .then((response) => {
-          updateUser(user, type, response.data.url);
-        })
-        .catch((error) => {
-          alert.warning(JSON.stringify(error));
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0]
-            );
-          }
+      if (response.uri) {
+        const formData = new FormData();
+        formData.append("image", {
+          ...response,
+          uri:
+            Platform.OS == "android"
+              ? response.uri
+              : response.uri.replace("file://", ""),
+          name: "mobile.jpg",
+          type: "image/jpeg", // it may be necessary in Android.
         });
+        request
+          .post("images/", formData, {
+            "Content-Type": "multipart/form-data",
+          })
+          .then((response) => {
+            request
+            .post(user.url.replace("profiles", "updateProfileImage"), {
+              "image_id" : response.data.id,
+              "type" : type
+            })
+            .then(function (response) {
+              loadUser();
+            })
+            .catch(function (error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
+          })
+          .catch((error) => {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(error);
+            }
+          });
+      }
     });
   };
 
@@ -242,17 +261,17 @@ export default function ProfileEditingGeneral(props) {
         text={Translate.t("profile")}
       />
       <View>
-        {user && user.image && user.image.image ? (
+        {user && user.image ? (
           <ImageBackground
             style={{
               width: widthPercentageToDP("100%"),
               height: heightPercentageToDP("30%"),
             }}
-            source={(uri = user.image.image)}
+            source={{"uri": user.image.image}}
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                handleChoosePhoto("background");
+                handleChoosePhoto("background_img");
               }}
             >
               <Image
@@ -278,7 +297,7 @@ export default function ProfileEditingGeneral(props) {
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                handleChoosePhoto("background");
+                handleChoosePhoto("background_img");
               }}
             >
               <Image
@@ -319,7 +338,7 @@ export default function ProfileEditingGeneral(props) {
                 backgroundColor: "white",
                 borderColor: Colors.E6DADE,
               }}
-              source={(uri = user.image.image)}
+              source={{"uri": user.image.image}}
             >
               <TouchableWithoutFeedback
                 onPress={() => {

@@ -43,7 +43,9 @@ export default function ProfileEditingGeneral(props) {
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   const [email, onEmailChanged] = React.useState("");
   const [nickName, onNickNameChanged] = React.useState("");
+  const [shopName, onShopNameChanged] = React.useState("");
   const [editPassword, onEditPasswordChanged] = React.useState(false);
+  const [editShopName, onEditShopNameChanged] = React.useState(false);
   const [editPhoneNumber, onEditPhoneNumberChanged] = React.useState(false);
   const [editEmail, onEditEmailChanged] = React.useState(false);
   const [editNickName, onEditNickNameChanged] = React.useState(false);
@@ -60,6 +62,8 @@ export default function ProfileEditingGeneral(props) {
       request
         .get(url)
         .then(function (response) {
+          console.log(response.data)
+          onShopNameChanged(response.data.shop_name);
           onNickNameChanged(response.data.nickname);
           onUserChanged(response.data);
           onPhoneNumberChanged(response.data.tel);
@@ -91,6 +95,7 @@ export default function ProfileEditingGeneral(props) {
   function updateUser(user, field, value) {
     let obj = {};
     obj[field] = value;
+    console.log(obj);
     request
       .patch(user.url, obj)
       .then(function (response) {
@@ -134,7 +139,32 @@ export default function ProfileEditingGeneral(props) {
             "Content-Type": "multipart/form-data",
           })
           .then((response) => {
-            updateUser(user, type, response.data.url);
+            // updateUser(user, type, {
+            //   "id" : response.data.id
+            // });
+            request
+            .post(user.url.replace("profiles", "updateProfileImage"), {
+              "image_id" : response.data.id,
+              "type" : type
+            })
+            .then(function (response) {
+              loadUser();
+            })
+            .catch(function (error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
           })
           .catch((error) => {
             alert.warning(JSON.stringify(error));
@@ -250,17 +280,17 @@ export default function ProfileEditingGeneral(props) {
       />
 
       <View>
-        {user && user.image && user.image.image ? (
+        {user && user.background_img && user.background_img.image ? (
           <ImageBackground
             style={{
               width: widthPercentageToDP("100%"),
               height: heightPercentageToDP("30%"),
             }}
-            source={(uri = user.image)}
+            source={{"uri": user.background_img.image}}
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                handleChoosePhoto("background");
+                handleChoosePhoto("background_img");
               }}
             >
               <Image
@@ -286,7 +316,7 @@ export default function ProfileEditingGeneral(props) {
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                handleChoosePhoto("background");
+                handleChoosePhoto("background_img");
               }}
             >
               <Image
@@ -327,7 +357,7 @@ export default function ProfileEditingGeneral(props) {
                 borderColor: Colors.E6DADE,
                 backgroundColor: "white",
               }}
-              source={(uri = user.image)}
+              source={{"uri": user.image.image}}
             >
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -417,7 +447,7 @@ export default function ProfileEditingGeneral(props) {
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginTop: heightPercentageToDP("5%"),
+            marginTop: heightPercentageToDP("2%"),
           }}
         >
           <Text
@@ -511,6 +541,67 @@ export default function ProfileEditingGeneral(props) {
               </View>
             )}
           </View>
+          {user.is_seller == true ? (
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInContainerLeft}>
+                {Translate.t("shopName")}
+              </Text>
+              {editShopName == true ? (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text>sad</Text>
+                  <Icon
+                    reverse
+                    name="check"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => {
+                      onEditShopNameChanged(false);
+                      updateUser(user, "shop_name", shopName);
+                    }}
+                  />
+                  <TextInput
+                    value={shopName}
+                    onChangeText={(value) => onShopNameChanged(value)}
+                    style={styles.textInputEdit}
+                  />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                  }}
+                >
+                  <Icon
+                    reverse
+                    name="pencil"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => onEditShopNameChanged(true)}
+                  />
+                  <Text style={{ fontSize: RFValue(12) }}>{shopName}</Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <View></View>
+          )}
+
           <View style={styles.tabContainer}>
             <Text style={styles.textInContainerLeft}>
               {Translate.t("profileEditPhoneNumber")}

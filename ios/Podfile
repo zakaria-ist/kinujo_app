@@ -2,7 +2,7 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '10.0'
+platform :ios, '11.0'
 
 target 'kinujo' do
   use_unimodules!
@@ -15,15 +15,12 @@ target 'kinujo' do
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
   use_flipper!
-  pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
-  pod 'RNReanimated', :path => '../node_modules/react-native-reanimated'
 
-  pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
-  pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
+
+  permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
-  pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
 
   post_install do |installer|
     flipper_post_install(installer)
