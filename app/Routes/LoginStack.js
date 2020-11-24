@@ -49,6 +49,8 @@ import CreateFolder from "../Screens/CreateFolder";
 import FolderMemberSelection from "../Screens/FolderMemberSelection";
 import GroupFolderCreateCompletion from "../Screens/GroupFolderCreateCompletion";
 import ContactShare from "../Screens/ContactShare";
+import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
+import ChatContact from "../Screens/ChatContact";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
@@ -249,6 +251,10 @@ export default function LoginStack() {
         <Stack.Screen name="AdvanceSetting" component={AdvanceSetting} />
         <Stack.Screen name="ShippingList" component={ShippingList} />
         <Stack.Screen
+          name="ProductInformationAddNew"
+          component={ProductInformationAddNew}
+        />
+        <Stack.Screen
           name="ProductInformationAdd"
           component={ProductInformationAdd}
         />
@@ -270,6 +276,7 @@ export default function LoginStack() {
         <Stack.Screen name="SearchProducts" component={SearchProducts} />
         <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="FolderContactList" component={FolderContactList} />
+        <Stack.Screen name="ChatContact" component={ChatContact} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

@@ -12,9 +12,9 @@ import {
   TextInput,
   Platform,
   Animated,
-  StatusBar,
   Button,
   Linking,
+  SafeAreaView
 } from "react-native";
 import {
   heightPercentageToDP,
@@ -142,6 +142,7 @@ export default function QRCode(props) {
   }, []);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={{ height: "100%", width: "100%" }}>
       <QRCodeScanner
         onRead={onSuccess}
@@ -415,6 +416,7 @@ export default function QRCode(props) {
         </View>
       </View>
     </View>
+    </SafeAreaView>
   );
 }
 

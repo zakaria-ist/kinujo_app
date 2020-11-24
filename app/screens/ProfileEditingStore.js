@@ -11,13 +11,15 @@ import {
   Modal,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { NavigationEvents, SafeAreaView } from "react-navigation";
+import { NavigationEvents } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+var uuid = require("react-native-uuid");
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -131,7 +133,7 @@ export default function ProfileEditingGeneral(props) {
             Platform.OS === "android"
               ? response.uri
               : response.uri.replace("file://", ""),
-          name: "mobile.jpg",
+          name: "mobile-" + uuid.v4() + ".jpg",
           type: "image/jpeg", // it may be necessary in Android.
         });
         request
@@ -139,9 +141,6 @@ export default function ProfileEditingGeneral(props) {
             "Content-Type": "multipart/form-data",
           })
           .then((response) => {
-            // updateUser(user, type, {
-            //   "id" : response.data.id
-            // });
             request
             .post(user.url.replace("profiles", "updateProfileImage"), {
               "image_id" : response.data.id,
@@ -184,6 +183,7 @@ export default function ProfileEditingGeneral(props) {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView style={{ flex: 1 }}>
       {show == true ? (
         <Modal
@@ -879,6 +879,7 @@ export default function ProfileEditingGeneral(props) {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

@@ -12,7 +12,6 @@ import {
   TextInput,
   Platform,
   Animated,
-  StatusBar,
   Button,
   Linking,
 } from "react-native";

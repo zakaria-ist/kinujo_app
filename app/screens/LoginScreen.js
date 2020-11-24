@@ -8,12 +8,12 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
+  SafeAreaView
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { firebaseConfig } from "../../firebaseConfig.js";
@@ -124,6 +124,7 @@ export default function LoginScreen(props) {
   }, []);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
       <ImageBackground
         style={styles.backgroundImageContainer}
@@ -186,23 +187,23 @@ export default function LoginScreen(props) {
                       user.payload = {};
                     }
                     AsyncStorage.setItem("user", user.url, function (response) {
-                      if (user.is_seller && !user.payload.account_selected) {
+                      if (user.is_seller && !user.is_master && !user.payload.account_selected) {
                         props.navigation.navigate("StoreAccountSelection", {
                           authority: "store",
                         });
-                      } else if (user.is_seller && !user.payload.bank_skipped) {
+                      } else if (user.is_seller && !user.is_master && !user.payload.bank_skipped) {
                         props.navigation.navigate(
                           "BankAccountRegistrationOption",
                           {
                             authority: "store",
                           }
                         );
-                      } else if (user.is_seller && !user.is_approved) {
+                      } else if (user.is_seller && !user.is_master && !user.is_approved) {
                         props.navigation.navigate("AccountExamination", {
                           authority: "store",
                         });
                       } else if (
-                        user.is_seller &&
+                        user.is_seller && !user.is_master &&
                         !user.payload.register_completed
                       ) {
                         props.navigation.navigate("RegisterCompletion", {
@@ -212,7 +213,7 @@ export default function LoginScreen(props) {
                         props.navigation.navigate("HomeGeneral", {
                           authority: "store",
                         });
-                      } else if (user.is_seller) {
+                      } else if (user.is_seller ) {
                         props.navigation.navigate("HomeStore", {
                           authority: "store",
                         });
@@ -269,6 +270,7 @@ export default function LoginScreen(props) {
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

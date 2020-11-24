@@ -108,6 +108,7 @@ export default function CreateFolder(props) {
       AsyncStorage.removeItem("tmpIds");
       if (friendIds) {
         props.navigation.navigate("GroupFolderCreateCompletion", {
+          type: "folder",
           groupName: folderName,
           friendNames: friendNames,
           friendIds: friendIds,

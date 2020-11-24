@@ -7,9 +7,9 @@ import {
   Dimensions,
   TextInput,
   TouchableWithoutFeedback,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -58,23 +58,24 @@ function processCustomerHtml(props, customers, search = "") {
           </Text>
           <View
             style={{
-              flexDirection: "row-reverse",
+              flexDirection: "row",
               position: "absolute",
               right: 0,
             }}
           >
-            <Image
-              style={styles.nextIcon}
-              source={require("../assets/Images/next.png")}
-            />
             <Text
               style={{
                 marginRight: widthPercentageToDP("8%"),
                 fontSize: RFValue(13),
+                alignSelf: "center",
               }}
             >
               {customer.created.split("T")[0]}
             </Text>
+            <Image
+              style={styles.nextIcon}
+              source={require("../assets/Images/next.png")}
+            />
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -91,22 +92,32 @@ export default function CustomerList(props) {
   const [user, onUserChanged] = React.useState({});
 
   if (!user.url) {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });
   }
 
   if (!loaded) {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
@@ -114,16 +125,26 @@ export default function CustomerList(props) {
       let userId = urls[urls.length - 1];
       request
         .get("customers/" + userId + "/")
-        .then(function(response) {
+        .then(function (response) {
           onCustomersChanged(response.data.customers);
           onCustomerHtmlChanged(
             processCustomerHtml(props, response.data.customers, "")
           );
           onLoaded(true);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
           onLoaded(true);
         });
@@ -202,6 +223,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   nextIcon: {
+    alignSelf: "center",
     width: win.width / 38,
     height: 15 * ratioNext,
     position: "absolute",

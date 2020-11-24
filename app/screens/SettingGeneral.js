@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   DevSettings,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
@@ -197,6 +197,7 @@ export default function SettingGeneral(props) {
             style={{ width: win.width / 13, height: 107 * ratioGlobe }}
           />
           <DropDownPicker
+            controller={(instance) => (controller = instance)}
             items={[
               {
                 label: "English",
@@ -221,10 +222,10 @@ export default function SettingGeneral(props) {
             }}
             labelStyle={{
               fontSize: RFValue(12),
-              color: "#000000",
+              color: Colors.D7CCA6,
             }}
             selectedtLabelStyle={{
-              color: "#000000",
+              color: Colors.D7CCA6,
             }}
             dropDownStyle={{ backgroundColor: "#000000" }}
             onChangeItem={(item) => onValueChanged(item)}

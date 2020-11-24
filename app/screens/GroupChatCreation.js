@@ -111,6 +111,7 @@ export default function GroupChatCreation(props) {
       AsyncStorage.removeItem("tmpIds");
       if (friendIds) {
         props.navigation.navigate("GroupFolderCreateCompletion", {
+          type: "group",
           groupName: groupName,
           friendNames: friendNames,
           friendIds: friendIds,

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Button,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
@@ -23,57 +24,185 @@ import AsyncStorage from "@react-native-community/async-storage";
 import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
-
-
+let items = [];
 export default function ProductOneVariations({ props }) {
   const [item, hideItem] = React.useState(false);
   const [invt, hideInvt] = React.useState(false);
-
+  const [choice, onChoiceChanged] = React.useState("");
+  const [janCode, onJanCodeChanged] = React.useState("");
+  const [stock, onStockChanged] = React.useState("");
+  const [itemName, onItemNameChanged] = React.useState("");
+  const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
+  const [variationDetailsHtml, onProcessSVariationDetailsHtml] = React.useState(
+    <View></View>
+  );
+  const [loaded, onLoaded] = React.useState(false);
+  const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
+  console.log(items);
+  function onUpdate() {
+    items.push({
+      janCode: janCode,
+      stock: stock,
+      choice: choice,
+    });
+    onStockChanged("");
+    onJanCodeChanged("");
+    onChoiceChanged("");
+    onProcessVariationHtml(processVariationHtml(items));
+    onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+    onLoaded(true);
+  }
+  function onProcess(items) {
+    onProcessVariationHtml(processVariationHtml(items));
+    onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+  }
+  function processVariationDetailsHtml(items) {
+    let tmpVariationDetailsHtml = [];
+    let count = 1;
+    items.map((product) => {
+      tmpVariationDetailsHtml.push(
+        <View style={{ width: "100%" }} key={count}>
+          <View style={styles.icon_title_wrapper}>
+            <Text style={styles.variantName}>{product.choice}</Text>
+            <TouchableOpacity>
+              {false ? (
+                <ArrowDownIcon
+                  style={styles.widget_icon}
+                  resizeMode="contain"
+                />
+              ) : (
+                <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+              )}
+            </TouchableOpacity>
+          </View>
+          <View style={false ? styles.none : null}>
+            <View style={styles.subline} />
+            <View style={styles.variantContainer}>
+              <TextInput
+                style={styles.variantInput}
+                value={product.stock}
+              ></TextInput>
+              <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+            </View>
+            <View style={styles.variantContainer}>
+              <TextInput
+                style={styles.variantInput}
+                value={product.janCode}
+              ></TextInput>
+              <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+            </View>
+            <View
+              style={[
+                styles.variantContainer,
+                { paddingBottom: heightPercentageToDP("1.5%") },
+              ]}
+            >
+              <Text style={styles.variantText}>{Translate.t("delete")}</Text>
+              <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+            </View>
+          </View>
+          <View style={styles.line} />
+        </View>
+      );
+      count++;
+      onCurrentVariationCount(currentVariationCount + 1);
+    });
+    return tmpVariationDetailsHtml;
+  }
+  function onValueChanged(value, type) {
+    items = items.map((product) => {
+      if (type == product.janCode) {
+        product.janCode = value;
+      } else if (type == product.stock) {
+        product.stock = value;
+      } else if (type == product.choice) {
+        product.choice = value;
+      }
+      return product;
+    });
+    onProcess(items);
+  }
+  function processVariationHtml(items) {
+    let tmpVariationHtml = [];
+    let count = 1;
+    items.map((product) => {
+      tmpVariationHtml.push(
+        <View style={styles.subframe} key={count}>
+          <Text style={{ fontSize: RFValue(14) }}>{count}</Text>
+          <Text style={styles.text}>{Translate.t("choice")}</Text>
+          <TextInput
+            style={styles.textInput}
+            value={product.choice}
+            onChangeText={(value) => onValueChanged(value, product.choice)}
+          ></TextInput>
+          <Text style={styles.text}>{Translate.t("janCode")}</Text>
+          <TextInput
+            style={styles.textInput}
+            value={product.janCode}
+            onChangeText={(value) => onValueChanged(value, product.janCode)}
+          ></TextInput>
+          <Text style={styles.text}>{Translate.t("inStock")}</Text>
+          <TextInput
+            style={styles.textInput}
+            value={product.stock}
+            onChangeText={(value) => onValueChanged(value, product.stock)}
+          ></TextInput>
+        </View>
+      );
+      count++;
+      onCurrentVariationCount(currentVariationCount + 1);
+    });
+    return tmpVariationHtml;
+  }
   return (
     <SafeAreaView>
       {/*項目名*/}
       <View style={{ width: "100%" }}>
         <View style={styles.icon_title_wrapper}>
           <Text style={styles.text}>{Translate.t("itemName")}</Text>
-          <TouchableOpacity
-            onPress={() => hideItem(!item)}>
-            {item ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
+          <TouchableOpacity onPress={() => hideItem(!item)}>
+            {item ? (
+              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
+            ) : (
+              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={item ? styles.none : null}>
-          <TextInput style={styles.textInput}></TextInput>
+          <TextInput
+            style={styles.textInput}
+            value={itemName}
+            onChangeText={(value) => onItemNameChanged(value)}
+          ></TextInput>
+          <ScrollView>
+            <View>{variationHtml}</View>
+            <View style={styles.subframe}>
+              <Text style={{ fontSize: RFValue(14) }}>
+                {currentVariationCount}
+              </Text>
+              <Text style={styles.text}>{Translate.t("choice")}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={choice}
+                onChangeText={(value) => onChoiceChanged(value)}
+              ></TextInput>
 
-          <View style={styles.subframe}>
-            <Text style={{ fontSize: RFValue(14) }}>{"1"}</Text>
-            <Text style={styles.text}>{Translate.t("choices")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
+              <Text style={styles.text}>{Translate.t("janCode")}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={janCode}
+                onChangeText={(value) => onJanCodeChanged(value)}
+              ></TextInput>
 
-            <Text style={styles.text}>{Translate.t("janCode")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
-
-            <Text style={styles.text}>{Translate.t("inStock")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
-          </View>
-
-          <View style={styles.subframe}>
-            <Text style={{ fontSize: RFValue(14) }}>{"2"}</Text>
-            <Text style={styles.text}>{Translate.t("choices")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
-
-            <Text style={styles.text}>{Translate.t("janCode")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
-
-            <Text style={styles.text}>{Translate.t("inStock")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
-          </View>
-
-          <TouchableOpacity>
+              <Text style={styles.text}>{Translate.t("inStock")}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={stock}
+                onChangeText={(value) => onStockChanged(value)}
+              ></TextInput>
+            </View>
+          </ScrollView>
+          <TouchableOpacity onPress={() => onUpdate()}>
             <View
               style={{
                 backgroundColor: Colors.deepGrey,
@@ -103,15 +232,12 @@ export default function ProductOneVariations({ props }) {
         {/*在庫*/}
         <View style={styles.icon_title_wrapper}>
           <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
-          <TouchableOpacity
-            onPress={() => hideInvt(!invt)}>
-            {invt ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
+          <TouchableOpacity onPress={() => hideInvt(!invt)}>
+            {invt ? (
+              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
+            ) : (
+              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={invt ? styles.none : null}>
@@ -125,125 +251,12 @@ export default function ProductOneVariations({ props }) {
       </View>
 
       <View style={styles.variantTitle}>
-        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>{Translate.t("size")}</Text>
+        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>
+          {Translate.t("size")}
+        </Text>
       </View>
 
-      <View style={{ width: "100%" }}>
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.variantName}>{"XS"}</Text>
-          <TouchableOpacity>
-            {false ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
-          </TouchableOpacity>
-        </View>
-        <View style={false ? styles.none : null}>
-          <View style={styles.subline} />
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-          </View>
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-          </View>
-          <View
-            style={[
-              styles.variantContainer,
-              { paddingBottom: heightPercentageToDP("1.5%") },
-            ]}
-          >
-            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-            <DustBinIcon
-              style={styles.widget_icon}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
-
-      <View style={{ width: "100%" }}>
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.variantName}>{"S"}</Text>
-          <TouchableOpacity>
-            {false ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
-          </TouchableOpacity>
-        </View>
-        <View style={false ? styles.none : null}>
-          <View style={styles.subline} />
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-          </View>
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-          </View>
-          <View
-            style={[
-              styles.variantContainer,
-              { paddingBottom: heightPercentageToDP("1.5%") },
-            ]}
-          >
-            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-            <DustBinIcon
-              style={styles.widget_icon}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
-
-      <View style={{ width: "100%" }}>
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.variantName}>{"M"}</Text>
-          <TouchableOpacity>
-            {true ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
-          </TouchableOpacity>
-        </View>
-        <View style={true ? styles.none : null}>
-          <View style={styles.subline} />
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-          </View>
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-          </View>
-          <View
-            style={[
-              styles.variantContainer,
-              { paddingBottom: heightPercentageToDP("1.5%") },
-            ]}
-          >
-            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-            <DustBinIcon
-              style={styles.widget_icon}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
+      <View style={{ width: "100%" }}>{variationDetailsHtml}</View>
 
       <TouchableOpacity>
         <View
@@ -345,6 +358,7 @@ const styles = StyleSheet.create({
     marginLeft: -3,
   },
   textInput: {
+    color: "black",
     borderWidth: 0,
     backgroundColor: "white",
     fontSize: RFValue(14),

@@ -15,14 +15,28 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import AsyncStorage from "@react-native-community/async-storage";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Format from "../lib/format";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import CustomAlert from "../lib/alert";
+const alert = new CustomAlert();
 const format = new Format();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const ratioFavorite = width / 29 / 14;
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
+
 export default function HomeProducts({
+  product_id,
+  userId,
   onPress,
   idx,
   image,
@@ -46,16 +60,37 @@ export default function HomeProducts({
             }}
             resizeMode="cover"
           >
-            <Image
-              source={require("../assets/Images/productFavorite.png")}
-              style={{
-                width: width / 14,
-                height: 26 * ratioFavorite,
-                position: "absolute",
-                right: 7,
-                bottom: 7,
-              }}
-            />
+            <TouchableWithoutFeedback onPress={
+              ()=>{
+                AsyncStorage.getItem("user").then( (url) => {
+                  let urls = url.split("/");
+                  urls = urls.filter((url) => {
+                    return url;
+                  });
+                  let userId = urls[urls.length - 1];
+
+                  db.collection("users")
+                    .doc(userId.toString())
+                    .collection("favourite")
+                    .doc(product_id.toString()).set({
+                      "status" : "added"
+                    })
+                  
+                    alert.warning("Added to favourite");
+                });
+              }
+            }>
+              <Image
+                source={require("../assets/Images/productFavorite.png")}
+                style={{
+                  width: width / 14,
+                  height: 26 * ratioFavorite,
+                  position: "absolute",
+                  right: 7,
+                  bottom: 7,
+                }}
+              />
+            </TouchableWithoutFeedback>
           </ImageBackground>
           <Text style={styles.product_office}>{office}</Text>
           <Text style={styles.product_name}>{name}</Text>

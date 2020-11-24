@@ -314,9 +314,11 @@ export default function Cart(props) {
               product_id: documentSnapshot.id.toString(),
               id: documentSnapshot.id.toString(),
               quantity: documentSnapshot.data().quantity,
+              varietyId: documentSnapshot.data().url,
             });
           });
           ids = tmpIds;
+          console.log(items);
           firebaseProducts = items;
           onUpdate(tmpIds, items, false);
         });
@@ -385,6 +387,7 @@ export default function Cart(props) {
   }, [isFocused]);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={{ paddingBottom: heightPercentageToDP("10%"), flexGrow: 1 }}>
       <CustomHeader
         text={Translate.t("cart")}
@@ -576,6 +579,7 @@ export default function Cart(props) {
         </View>
       </ScrollView>
     </View>
+    </SafeAreaView>
   );
 }
 

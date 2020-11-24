@@ -12,15 +12,16 @@ import {
   TextInput,
   ScrollView,
   Platform,
+  SafeAreaView
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import ImagePicker from "react-native-image-picker";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+var uuid = require("react-native-uuid");
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -85,10 +86,6 @@ export default function ProfileEditingGeneral(props) {
   function updateUser(user, field, value) {
     let obj = {};
     obj[field] = value;
-    console.log(Object.keys(obj), Object.values(obj));
-    console.log(user.url);
-    console.log(user.image);
-    console.log(user);
     request
       .patch(user.url, obj)
       .then(function (response) {
@@ -119,7 +116,7 @@ export default function ProfileEditingGeneral(props) {
             Platform.OS == "android"
               ? response.uri
               : response.uri.replace("file://", ""),
-          name: "mobile.jpg",
+          name: "mobile-" + uuid.v4() + ".jpg",
           type: "image/jpeg", // it may be necessary in Android.
         });
         request
@@ -128,28 +125,30 @@ export default function ProfileEditingGeneral(props) {
           })
           .then((response) => {
             request
-            .post(user.url.replace("profiles", "updateProfileImage"), {
-              "image_id" : response.data.id,
-              "type" : type
-            })
-            .then(function (response) {
-              loadUser();
-            })
-            .catch(function (error) {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
-            });
+              .post(user.url.replace("profiles", "updateProfileImage"), {
+                image_id: response.data.id,
+                type: type,
+              })
+              .then(function (response) {
+                loadUser();
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[
+                      Object.keys(error.response.data)[0]
+                    ][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
           })
           .catch((error) => {
             if (
@@ -166,6 +165,7 @@ export default function ProfileEditingGeneral(props) {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView style={{ flex: 1 }}>
       {show == true ? (
         <Modal
@@ -267,7 +267,7 @@ export default function ProfileEditingGeneral(props) {
               width: widthPercentageToDP("100%"),
               height: heightPercentageToDP("30%"),
             }}
-            source={{"uri": user.image.image}}
+            source={{ uri: user.image.image }}
           >
             <TouchableWithoutFeedback
               onPress={() => {
@@ -338,7 +338,7 @@ export default function ProfileEditingGeneral(props) {
                 backgroundColor: "white",
                 borderColor: Colors.E6DADE,
               }}
-              source={{"uri": user.image.image}}
+              source={{ uri: user.image.image }}
             >
               <TouchableWithoutFeedback
                 onPress={() => {
@@ -722,6 +722,7 @@ export default function ProfileEditingGeneral(props) {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

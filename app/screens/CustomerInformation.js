@@ -9,9 +9,9 @@ import {
   TextInput,
   ImageBackground,
   TouchableWithoutFeedback,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -129,7 +129,7 @@ export default function CustomerInformation(props) {
         if (groupID != null) {
           props.navigation.navigate("ChatScreen", {
             groupID: groupID,
-            groupName: groupName,
+            groupName: user.real_name,
           });
         } else {
           let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
@@ -146,37 +146,15 @@ export default function CustomerInformation(props) {
               [ownTotalMessageReadField]: 0,
               [friendTotalMessageReadField]: 0,
             })
-            .then(function () {
-              navigateToChatScreen();
+            .then(function (docRef) {
+              props.navigation.navigate("ChatScreen", {
+                groupID: docRef.id,
+                groupName: user.real_name,
+              });
             });
         }
       });
   };
-
-  function navigateToChatScreen() {
-    let groupID;
-    let groupName;
-    chatRef
-      .where("users", "array-contains", ownUserID)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == chatPersonID) {
-              groupID = snapShot.doc.id;
-              groupName = snapShot.doc.data().groupName;
-            }
-          }
-          if (groupID != null) {
-            props.navigation.navigate("ChatScreen", {
-              groupID: groupID,
-              groupName: groupName,
-            });
-          }
-        });
-      });
-  }
   AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {

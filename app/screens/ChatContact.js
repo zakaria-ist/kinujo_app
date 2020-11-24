@@ -11,101 +11,173 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Platform,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
+import AsyncStorage from "@react-native-community/async-storage";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import { withNavigation } from "react-navigation";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+const db = firebase.firestore();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
 const ratioSeenTick = width / 35 / 13;
+let userId;
 export default function ChatContact({
   isSelf,
   contactID,
   contactName,
   seen,
   date,
+  props,
 }) {
-  const { width } = Dimensions.get("window");
+  AsyncStorage.getItem("user").then((url) => {
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    userId = urls[urls.length - 1];
+  });
+  function redirectToChat(contactID, contactName) {
+    let groupID;
+    let groupName;
+    let deleted = "delete_" + userId;
+    db.collection("chat")
+      .where("users", "array-contains", userId)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == contactID) {
+              groupID = snapShot.doc.id;
+            }
+          }
+        });
+        if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
+          props.navigation.push("ChatScreen", {
+            groupID: groupID,
+            groupName: contactName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + userId;
+          let friendMessageUnseenField = "unseenMessageCount_" + contactID;
+          let ownTotalMessageReadField = "totalMessageRead_" + userId;
+          let friendTotalMessageReadField = "totalMessageRead_" + contactID;
+          db.collection("chat")
+            .add({
+              groupName: contactName,
+              users: [userId, contactID],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function (docRef) {
+              props.navigation.push("ChatScreen", {
+                groupID: docRef.id,
+                groupName: contactName,
+              });
+            });
+        }
+      });
+  }
   return (
-    <SafeAreaView style={{ marginTop: heightPercentageToDP("1%") }}>
-      {/*Left Side*/}
-      <View style={isSelf ? styles.right : styles.left} collapsable={false}>
-        <View>
-          <Image
-            style={[isSelf ? styles.none : styles.avatar]}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-        </View>
-        <View
-          style={[
-            styles.triangle,
-            isSelf ? styles.right_triangle : styles.left_triangle,
-          ]}
-        />
-        <TouchableHighlight
-          activeOpacity={1}
-          disabled={true}
-          onLongPress={() => {
-            // this.props.onMessageLongPress(this[`item_${this.props.rowId}`], 'text', parseInt(this.props.rowId), changeEmojiText(this.props.message.content, 'en').join(''), message)
-          }}
-          onPress={() => {
-            // this.props.onMessagePress('text', parseInt(this.props.rowId), changeEmojiText(this.props.message.content, 'en').join(''), message)
-          }}
-        >
-          <View
-            style={[
-              styles.container,
-              isSelf ? styles.right_chatbox : styles.left_chatbox,
-            ]}
-          >
+    <TouchableWithoutFeedback
+      onPress={() => redirectToChat(contactID, contactName)}
+    >
+      <SafeAreaView style={{ marginTop: heightPercentageToDP("1%") }}>
+        {/*Left Side*/}
+        <View style={isSelf ? styles.right : styles.left} collapsable={false}>
+          <View>
             <Image
-              style={styles.contact_avatar}
+              style={[isSelf ? styles.none : styles.avatar]}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.contact_name}>{contactName}</Text>
           </View>
-        </TouchableHighlight>
-        <View style={[isSelf ? styles.right_status : styles.left_status]}>
-          <Text
+          <View
             style={[
-              isSelf ? styles.right_status_text : styles.left_status_text,
+              styles.triangle,
+              isSelf ? styles.right_triangle : styles.left_triangle,
             ]}
+          />
+          <TouchableHighlight
+            activeOpacity={1}
+            disabled={true}
+            onLongPress={() => {
+              // this.props.onMessageLongPress(this[`item_${this.props.rowId}`], 'text', parseInt(this.props.rowId), changeEmojiText(this.props.message.content, 'en').join(''), message)
+            }}
+            onPress={() => {
+              // this.props.onMessagePress('text', parseInt(this.props.rowId), changeEmojiText(this.props.message.content, 'en').join(''), message)
+            }}
           >
-            {seen ? (
+            <View
+              style={[
+                styles.container,
+                isSelf ? styles.right_chatbox : styles.left_chatbox,
+              ]}
+            >
               <Image
-                source={require("../assets/Images/seenTick.png")}
-                style={{
-                  width: width / 35,
-                  height: ratioSeenTick * 10,
-                }}
+                style={styles.contact_avatar}
+                source={require("../assets/Images/profileEditingIcon.png")}
               />
-            ) : (
-              ""
-            )}
-          </Text>
-          <Text
-            style={[
-              isSelf ? styles.right_status_time : styles.left_status_time,
-            ]}
-          >
-            {date}
-          </Text>
+              <Text style={styles.contact_name}>{contactName}</Text>
+            </View>
+          </TouchableHighlight>
+          <View style={[isSelf ? styles.right_status : styles.left_status]}>
+            <Text
+              style={[
+                isSelf ? styles.right_status_text : styles.left_status_text,
+              ]}
+            >
+              {seen ? (
+                <Image
+                  source={require("../assets/Images/seenTick.png")}
+                  style={{
+                    width: width / 35,
+                    height: ratioSeenTick * 10,
+                  }}
+                />
+              ) : (
+                ""
+              )}
+            </Text>
+            <Text
+              style={[
+                isSelf ? styles.right_status_time : styles.left_status_time,
+              ]}
+            >
+              {date}
+            </Text>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

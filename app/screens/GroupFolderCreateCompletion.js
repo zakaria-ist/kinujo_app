@@ -7,9 +7,9 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -35,6 +35,7 @@ let friendMessageUnseenField;
 let friendTotalMessageReadField;
 let documentID;
 let groupDocumentID;
+let type;
 const win = Dimensions.get("window");
 const ratioCancel = win.width / 20 / 15;
 const ratioChat = win.width / 7 / 21;
@@ -46,6 +47,7 @@ export default function GroupFolderCreateCompletion(props) {
   friendNames = props.route.params.friendNames;
   ownUserID = props.route.params.ownUserID;
   groupDocumentID = props.route.params.groupDocumentID;
+  type = props.route.params.type;
   function redirectToChat() {
     AsyncStorage.removeItem("ids");
     AsyncStorage.removeItem("tmpIds");
@@ -63,6 +65,7 @@ export default function GroupFolderCreateCompletion(props) {
         groupName: groupName,
         users: friendIds,
         totalMessage: 0,
+        type: type,
       })
       .then(function () {
         db.collection("chat")
@@ -80,9 +83,9 @@ export default function GroupFolderCreateCompletion(props) {
                 documentID = doc.id;
                 for (var i = 0; i < friendIds.length; i++) {
                   friendMessageUnseenField =
-                    "unseenMessageCount_" + friendIds[i];
+                    "unseenMessageCount_" + String(friendIds[i]);
                   friendTotalMessageReadField =
-                    "totalMessageRead_" + friendIds[i];
+                    "totalMessageRead_" + String(friendIds[i]);
                   db.collection("chat")
                     .doc(documentID)
                     .update({

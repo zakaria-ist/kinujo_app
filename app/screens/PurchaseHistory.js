@@ -10,9 +10,9 @@ import {
   TouchableWithoutFeedback,
   Button,
   Animated,
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -25,8 +25,11 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
+const db = firebase.firestore();
 var kanjidate = require("kanjidate");
-
 import Format from "../lib/format";
 const format = new Format();
 const request = new Request();
@@ -36,102 +39,7 @@ const ratioStoreIcon = win.width / 12 / 20;
 const ratioNext = win.width / 38 / 8;
 const ratioSearch = win.width / 24 / 19;
 const ratioCancel = win.width / 42 / 15;
-
-function processOrderHtml(props, orders, status = "") {
-  let tmpOrderHtml = [];
-  for (var i = 0; i < orders.length; i++) {
-    let order = orders[i];
-    tmpOrderHtml.push(
-      <TouchableWithoutFeedback key={i}>
-        <View>
-          <Text
-            style={{
-              fontSize: RFValue(12),
-              marginTop: heightPercentageToDP("1.5%"),
-            }}
-          >
-            {kanjidate.format(
-              "{Y:4}年{M:2}月{D:2}日 ({G:1}) {h:2}:{M:2}",
-              new Date(order.order.created)
-            )}
-          </Text>
-          <View style={styles.purchaseHistoryProductContainer}>
-            <View style={styles.productInformationContainer}>
-              <Image
-                style={{
-                  height: RFValue(45),
-                  width: RFValue(45),
-                }}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
-              <View style={{ marginLeft: widthPercentageToDP("3%") }}>
-                <Text style={styles.productInformationText}>
-                  {order.product_jan_code.horizontal
-                    ? order.product_jan_code.horizontal.product_variety.product
-                        .name
-                    : order.product_jan_code.vertical.product_variety.product
-                        .name}
-                </Text>
-                <Text>{format.separator(order.unit_price)} 円</Text>
-              </View>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                props.navigation.navigate("PurchaseHistoryDetails", {
-                  url: order.url,
-                });
-              }}
-            >
-              <View style={styles.productInformationContainer}>
-                <Text style={styles.productInformationText}>
-                  {Translate.t("detail")}
-                </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-            <View style={styles.productInformationContainer}>
-              <Text style={styles.productInformationText}>
-                {Translate.t("inquiry")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-            <View style={styles.productInformationContainer}>
-              <Image
-                style={{
-                  width: win.width / 12,
-                  height: 17 * ratioStoreIcon,
-                }}
-                source={require("../assets/Images/purchaseHistoryProductStoreIcon.png")}
-              />
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                  marginLeft: widthPercentageToDP("3%"),
-                }}
-              >
-                {order.order.seller.shop_name
-                  ? order.order.seller.shop_name
-                  : order.order.seller.nickname}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  }
-  return tmpOrderHtml;
-}
-
+let userId;
 export default function PurchaseHistory(props) {
   const [orders, onOrdersChanged] = React.useState({});
   const [orderHtml, onOrderHtmlChanged] = React.useState([]);
@@ -141,6 +49,161 @@ export default function PurchaseHistory(props) {
   const [years, onYearChanged] = React.useState(<View></View>);
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
 
+  function processOrderHtml(props, orders, status = "") {
+    let tmpOrderHtml = [];
+    for (var i = 0; i < orders.length; i++) {
+      let order = orders[i];
+      tmpOrderHtml.push(
+        <TouchableWithoutFeedback key={i}>
+          <View>
+            <Text
+              style={{
+                fontSize: RFValue(12),
+                marginTop: heightPercentageToDP("1.5%"),
+              }}
+            >
+              {kanjidate.format(
+                "{Y:4}年{M:2}月{D:2}日 ({G:1}) {h:2}:{M:2}",
+                new Date(order.order.created)
+              )}
+            </Text>
+            <View style={styles.purchaseHistoryProductContainer}>
+              <View style={styles.productInformationContainer}>
+                <Image
+                  style={{
+                    height: RFValue(45),
+                    width: RFValue(45),
+                  }}
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
+                <View style={{ marginLeft: widthPercentageToDP("3%") }}>
+                  <Text style={styles.productInformationText}>
+                    {order.product_jan_code.horizontal
+                      ? order.product_jan_code.horizontal.product_variety
+                          .product.name
+                      : order.product_jan_code.vertical.product_variety.product
+                          .name}
+                  </Text>
+                  <Text>{format.separator(order.unit_price)} 円</Text>
+                </View>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  props.navigation.navigate("PurchaseHistoryDetails", {
+                    url: order.url,
+                  });
+                }}
+              >
+                <View style={styles.productInformationContainer}>
+                  <Text style={styles.productInformationText}>
+                    {Translate.t("detail")}
+                  </Text>
+                  <Image
+                    style={styles.nextIcon}
+                    source={require("../assets/Images/next.png")}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  redirectToChat(order.id, order.order.seller.shop_name)
+                }
+              >
+                <View style={styles.productInformationContainer}>
+                  <Text style={styles.productInformationText}>
+                    {Translate.t("inquiry")}
+                  </Text>
+                  <Image
+                    style={styles.nextIcon}
+                    source={require("../assets/Images/next.png")}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              <View style={styles.productInformationContainer}>
+                <Image
+                  style={{
+                    width: win.width / 12,
+                    height: 17 * ratioStoreIcon,
+                  }}
+                  source={require("../assets/Images/purchaseHistoryProductStoreIcon.png")}
+                />
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    marginLeft: widthPercentageToDP("3%"),
+                  }}
+                >
+                  {order.order.seller.shop_name
+                    ? order.order.seller.shop_name
+                    : order.order.seller.nickname}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    }
+    return tmpOrderHtml;
+  }
+  function redirectToChat(orderID, orderName) {
+    let groupID;
+    let groupName;
+    let deleted = "delete_" + userId;
+    db.collection("chat")
+      .where("users", "array-contains", userId)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == orderID) {
+              groupID = snapShot.doc.id;
+            }
+          }
+        });
+        if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
+          props.navigation.push("ChatScreen", {
+            groupID: groupID,
+            groupName: orderName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + userId;
+          let friendMessageUnseenField = "unseenMessageCount_" + orderID;
+          let ownTotalMessageReadField = "totalMessageRead_" + userId;
+          let friendTotalMessageReadField = "totalMessageRead_" + orderID;
+          db.collection("chat")
+            .add({
+              groupName: orderName,
+              users: [userId, orderID],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function (docRef) {
+              props.navigation.push("ChatScreen", {
+                groupID: docRef.id,
+                groupName: orderName,
+              });
+            });
+        }
+      });
+  }
   function loadOrder(userId, type) {
     request
       .get("orderProducts/" + userId + "/")
@@ -184,7 +247,7 @@ export default function PurchaseHistory(props) {
       urls = urls.filter((url) => {
         return url;
       });
-      let userId = urls[urls.length - 1];
+      userId = urls[urls.length - 1];
 
       if (!user.url) {
         request
@@ -251,163 +314,165 @@ export default function PurchaseHistory(props) {
     load();
   }, []);
   return (
-    <TouchableWithoutFeedback
-      onPress={() =>
-        Animated.timing(right, {
-          toValue: widthPercentageToDP("-80%"),
-          duration: 500,
-          useNativeDriver: false,
-        }).start()
-      }
-    >
-      <ScrollView>
-        <CustomHeader
-          onFavoriteChanged="noFavorite"
-          onBack={() => {
-            props.navigation.pop();
-          }}
-          onPress={() => {
-            props.navigation.navigate("Cart");
-          }}
-          text={Translate.t("purchaseHistory")}
-        />
-        <CustomSecondaryHeader
-          name={user.nickname}
-          accountType={
-            props.route.params.is_store ? Translate.t("storeAccount") : ""
-          }
-        />
-        <Animated.View
-          style={{
-            zIndex: 1,
-            height: heightPercentageToDP("100%"),
-            alignSelf: "center",
-            width: widthPercentageToDP("80%"),
-            position: "absolute",
-            right: right,
-            backgroundColor: "white",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.D7CCA6,
+    <SafeAreaView style={{ flex: 1 }}>
+      <TouchableWithoutFeedback
+        onPress={() =>
+          Animated.timing(right, {
+            toValue: widthPercentageToDP("-80%"),
+            duration: 500,
+            useNativeDriver: false,
+          }).start()
+        }
+      >
+        <View>
+          <CustomHeader
+            onFavoriteChanged="noFavorite"
+            onBack={() => {
+              props.navigation.pop();
             }}
-          >
-            <Text
+            onPress={() => {
+              props.navigation.navigate("Cart");
+            }}
+            text={Translate.t("purchaseHistory")}
+          />
+          <CustomSecondaryHeader
+            name={user.nickname}
+            accountType={
+              props.route.params.is_store ? Translate.t("storeAccount") : ""
+            }
+          />
+          <ScrollView>
+            <Animated.View
               style={{
+                zIndex: 1,
+                height: heightPercentageToDP("100%"),
                 alignSelf: "center",
-                fontSize: RFValue(14),
-                paddingTop: heightPercentageToDP("2%"),
-                paddingBottom: heightPercentageToDP("2%"),
+                width: widthPercentageToDP("80%"),
+                position: "absolute",
+                right: right,
+                backgroundColor: "white",
               }}
             >
-              {Translate.t("narrowDown")}
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              paddingVertical: heightPercentageToDP("2%"),
-              backgroundColor: "white",
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.D7CCA6,
-              marginHorizontal: widthPercentageToDP("1.5%"),
-            }}
-          >
-            <Image
-              style={{
-                width: win.width / 24,
-                height: ratioSearch * 19,
-                position: "absolute",
-                left: 0,
-                marginLeft: widthPercentageToDP("4%"),
-                alignSelf: "center",
-              }}
-              source={require("../assets/Images/searchIcon.png")}
-            />
-            <TextInput
-              placeholder="Product Name"
-              style={{
-                paddingVertical: heightPercentageToDP("1%"),
-                width: "100%",
-                backgroundColor: Colors.F6F6F6,
-                fontSize: RFValue(14),
-                borderWidth: 1,
-                paddingLeft: widthPercentageToDP("10%"),
-                borderRadius: 5,
-                borderColor: "transparent",
-              }}
-            />
-            <Image
-              style={{
-                width: win.width / 24,
-                height: ratioSearch * 19,
-                position: "absolute",
-                right: 0,
-                marginRight: widthPercentageToDP("4%"),
-                alignSelf: "center",
-              }}
-              source={require("../assets/Images/cancelIcon.png")}
-            />
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: heightPercentageToDP("2%"),
-              marginHorizontal: widthPercentageToDP("1.5%"),
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.D7CCA6,
-            }}
-          >
-            <Text style={styles.dateTabText}>Release Date</Text>
-            <Image
-              style={{
-                width: win.width / 24,
-                height: ratioSearch * 8,
-                position: "absolute",
-                right: 0,
-                marginRight: widthPercentageToDP("4%"),
-                alignSelf: "center",
-              }}
-              source={require("../assets/Images/upIcon.png")}
-            />
-          </View>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              onLoaded(false);
+              <View
+                style={{
+                  backgroundColor: "white",
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.D7CCA6,
+                }}
+              >
+                <Text
+                  style={{
+                    alignSelf: "center",
+                    fontSize: RFValue(14),
+                    paddingTop: heightPercentageToDP("2%"),
+                    paddingBottom: heightPercentageToDP("2%"),
+                  }}
+                >
+                  {Translate.t("narrowDown")}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingVertical: heightPercentageToDP("2%"),
+                  backgroundColor: "white",
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.D7CCA6,
+                  marginHorizontal: widthPercentageToDP("1.5%"),
+                }}
+              >
+                <Image
+                  style={{
+                    width: win.width / 24,
+                    height: ratioSearch * 19,
+                    position: "absolute",
+                    left: 0,
+                    marginLeft: widthPercentageToDP("4%"),
+                    alignSelf: "center",
+                  }}
+                  source={require("../assets/Images/searchIcon.png")}
+                />
+                <TextInput
+                  placeholder="Product Name"
+                  style={{
+                    paddingVertical: heightPercentageToDP("1%"),
+                    width: "100%",
+                    backgroundColor: Colors.F6F6F6,
+                    fontSize: RFValue(14),
+                    borderWidth: 1,
+                    paddingLeft: widthPercentageToDP("10%"),
+                    borderRadius: 5,
+                    borderColor: "transparent",
+                  }}
+                />
+                <Image
+                  style={{
+                    width: win.width / 24,
+                    height: ratioSearch * 19,
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("4%"),
+                    alignSelf: "center",
+                  }}
+                  source={require("../assets/Images/cancelIcon.png")}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP("2%"),
+                  marginHorizontal: widthPercentageToDP("1.5%"),
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.D7CCA6,
+                }}
+              >
+                <Text style={styles.dateTabText}>Release Date</Text>
+                <Image
+                  style={{
+                    width: win.width / 24,
+                    height: ratioSearch * 8,
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("4%"),
+                    alignSelf: "center",
+                  }}
+                  source={require("../assets/Images/upIcon.png")}
+                />
+              </View>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  onLoaded(false);
 
-              AsyncStorage.getItem("user").then(function (url) {
-                let urls = url.split("/");
-                urls = urls.filter((url) => {
-                  return url;
-                });
-                let userId = urls[urls.length - 1];
-                Animated.timing(right, {
-                  toValue: widthPercentageToDP("-80%"),
-                  duration: 500,
-                  useNativeDriver: false,
-                }).start();
-                loadOrder(userId, "past_6_months");
-              });
-            }}
-          >
-            <View style={styles.dateTabContainer}>
-              <Text style={styles.dateTabText}>Past 6 Month</Text>
-            </View>
-          </TouchableWithoutFeedback>
-          {yearHtml}
-          <View
-            style={{
-              alignItems: "flex-start",
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.D7CCA6,
-              paddingVertical: heightPercentageToDP("1.5%"),
-            }}
-          >
-            {/* <Text
+                  AsyncStorage.getItem("user").then(function (url) {
+                    let urls = url.split("/");
+                    urls = urls.filter((url) => {
+                      return url;
+                    });
+                    let userId = urls[urls.length - 1];
+                    Animated.timing(right, {
+                      toValue: widthPercentageToDP("-80%"),
+                      duration: 500,
+                      useNativeDriver: false,
+                    }).start();
+                    loadOrder(userId, "past_6_months");
+                  });
+                }}
+              >
+                <View style={styles.dateTabContainer}>
+                  <Text style={styles.dateTabText}>Past 6 Month</Text>
+                </View>
+              </TouchableWithoutFeedback>
+              {yearHtml}
+              <View
+                style={{
+                  alignItems: "flex-start",
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.D7CCA6,
+                  paddingVertical: heightPercentageToDP("1.5%"),
+                }}
+              >
+                {/* <Text
               style={{
                 marginLeft: widthPercentageToDP("8%"),
                 borderBottomWidth: 1,
@@ -419,19 +484,19 @@ export default function PurchaseHistory(props) {
             >
               2015 年 3月以前
             </Text> */}
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              flex: 1,
-              marginTop: heightPercentageToDP("30%"),
-              marginHorizontal: widthPercentageToDP("1%"),
-              justifyContent: "space-between",
-              backgroundColor: "white",
-            }}
-          >
-            {/* <Image
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  flex: 1,
+                  marginTop: heightPercentageToDP("30%"),
+                  marginHorizontal: widthPercentageToDP("1%"),
+                  justifyContent: "space-between",
+                  backgroundColor: "white",
+                }}
+              >
+                {/* <Image
               style={{
                 width: win.width / 42,
                 height: ratioCancel * 15,
@@ -441,7 +506,7 @@ export default function PurchaseHistory(props) {
               }}
               source={require("../assets/Images/blackCancelIcon.png")}
             /> */}
-            {/* <Text
+                {/* <Text
               style={{
                 fontSize: RFValue(14),
                 marginLeft: widthPercentageToDP("8%"),
@@ -464,44 +529,46 @@ export default function PurchaseHistory(props) {
                 <Text style={styles.dateTabText}>Done</Text>
               </View>
             </TouchableOpacity> */}
-          </View>
-        </Animated.View>
+              </View>
+            </Animated.View>
 
-        <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              Animated.timing(right, {
-                toValue: 0,
-                duration: 500,
-                useNativeDriver: false,
-              }).start()
-            }
-          >
-            <View style={styles.narrowDownContainer}>
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                  marginLeft: widthPercentageToDP("3%"),
-                }}
+            <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  Animated.timing(right, {
+                    toValue: 0,
+                    duration: 500,
+                    useNativeDriver: false,
+                  }).start()
+                }
               >
-                {Translate.t("narrowDown")}
-              </Text>
-              <Image
-                style={{
-                  width: win.width / 50,
-                  height: 15 * ratioNext,
-                  position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("3%"),
-                }}
-                source={require("../assets/Images/next.png")}
-              />
+                <View style={styles.narrowDownContainer}>
+                  <Text
+                    style={{
+                      fontSize: RFValue(12),
+                      marginLeft: widthPercentageToDP("3%"),
+                    }}
+                  >
+                    {Translate.t("narrowDown")}
+                  </Text>
+                  <Image
+                    style={{
+                      width: win.width / 50,
+                      height: 15 * ratioNext,
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("3%"),
+                    }}
+                    source={require("../assets/Images/next.png")}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              {orderHtml}
             </View>
-          </TouchableWithoutFeedback>
-          {orderHtml}
+          </ScrollView>
         </View>
-      </ScrollView>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
