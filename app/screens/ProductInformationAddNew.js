@@ -19,29 +19,90 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
-
 import ProductNoneVariations from "./ProductNoneVariations";
 import ProductOneVariations from "./ProductOneVariations";
 import ProductTwoVariations from "./ProductTwoVariations";
-
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-
+import storage from "@react-native-firebase/storage";
+import RNFetchBlob from "rn-fetch-blob";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+var uuid = require("react-native-uuid");
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
-
 const request = new Request();
 const alert = new CustomAlert();
-
 const win = Dimensions.get("window");
 const ratioProductAddIcon = win.width / 10 / 28;
+
+let janCode = [];
+let productStock = [];
+let choices = [];
 export default function ProductInformationAdd(props) {
   const [user, onUserChanged] = React.useState({});
-
-  const [variant, setVariant] = React.useState("one");
-
+  const [productName, onProductNameChanged] = React.useState("");
+  const [brandName, onBrandNameChanged] = React.useState("");
+  const [pr, onPrChanged] = React.useState("");
+  const [productId, onProductIdChanged] = React.useState("");
+  const [productCategory, onProductCategoryChanged] = React.useState("");
+  const [productVariation, onProductVariationChanged] = React.useState("one");
+  const [oneItemList, onOneItemList] = React.useState("");
+  const [twoItemList, onTwoItemList] = React.useState("");
+  const [noneItemList, onNoneItemList] = React.useState("");
+  const [publishState, onPublishStateChanged] = React.useState("");
+  const [publishDate, onPublishDateChanged] = React.useState("");
+  const [productStatus, onProductStatusChanged] = React.useState("");
+  const [targetUser, onTargetUserChanged] = React.useState("");
+  const [price, onPriceChanged] = React.useState("");
+  const [storePrice, onStorePriceChanged] = React.useState("");
+  const [shipping, onShippingChanged] = React.useState("");
+  const [
+    productPageDisplayMethod,
+    onProductPageDisplayMethodChanged,
+  ] = React.useState("");
+  const [productImages, onProductImagesChanged] = React.useState("");
+  const [productDescription, onProductDescriptionChanged] = React.useState("");
+  if (!user.url) {
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
+  }
+  function onValueChanged(variant) {
+    onProductVariationChanged(variant);
+    if (variant == "none") {
+      console.log("none");
+    } else if (variant == "one") {
+      console.log("1");
+    } else if (variant == "two") {
+      console.log("2");
+    }
+  }
   return (
     <SafeAreaView>
       <CustomHeader
@@ -52,38 +113,53 @@ export default function ProductInformationAdd(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader
-        name={user.nickname}
-        accountType={""}
-      />
-      <View style={{ height: height - heightPercentageToDP("20%")}}>
+      <CustomSecondaryHeader name={user.nickname} accountType={""} />
+      <View style={{ height: height - heightPercentageToDP("20%") }}>
         <ScrollView>
           <View style={styles.formContainer}>
             <Text style={styles.text}>{Translate.t("productName")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
+            <TextInput
+              style={styles.textInput}
+              value={productName}
+              onValueChange={(value) => onProductNameChanged(value)}
+            ></TextInput>
 
             <Text style={styles.text}>{Translate.t("brandName")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
+            <TextInput
+              style={styles.textInput}
+              value={brandName}
+              onValueChange={(value) => onBrandNameChanged(value)}
+            ></TextInput>
 
             <Text style={styles.text}>{Translate.t("prStatement")}</Text>
             <TextInput
               multiline={true}
               numberOfLines={4}
               style={styles.textInput}
+              value={pr}
+              onValueChange={(value) => onPrChanged(value)}
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("productIDURL")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
+            <TextInput
+              style={styles.textInput}
+              value={productId}
+              onValueChange={(value) => onProductIdChanged(value)}
+            ></TextInput>
 
             <Text style={styles.text}>{Translate.t("productCategory")}</Text>
-            <TextInput style={styles.textInput}></TextInput>
+            <TextInput
+              style={styles.textInput}
+              value={productCategory}
+              onValueChange={(value) => onProductCategoryChanged(value)}
+            ></TextInput>
 
             <Text style={styles.text}>{Translate.t("variation")}</Text>
             <View style={styles.radioGroupContainer}>
               <RadioButton.Group
                 style={{ alignItems: "flex-start" }}
-                onValueChange={(variant) => setVariant(variant)}
-                value={variant}
+                onValueChange={(variant) => onValueChanged(variant)}
+                value={productVariation}
               >
                 <View style={styles.radionButtonLabel}>
                   <RadioButton
@@ -91,7 +167,10 @@ export default function ProductInformationAdd(props) {
                     uncheckedColor="#FFF"
                     color="#BD9848"
                   />
-                  <Text style={styles.radioButtonText}>{"1 "}{Translate.t("item")}</Text>
+                  <Text style={styles.radioButtonText}>
+                    {"1 "}
+                    {Translate.t("item")}
+                  </Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
                   <RadioButton
@@ -99,7 +178,10 @@ export default function ProductInformationAdd(props) {
                     uncheckedColor="#FFF"
                     color="#BD9848"
                   />
-                  <Text style={styles.radioButtonText}>{"2 "}{Translate.t("item")}</Text>
+                  <Text style={styles.radioButtonText}>
+                    {"2 "}
+                    {Translate.t("item")}
+                  </Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
                   <RadioButton
@@ -107,7 +189,9 @@ export default function ProductInformationAdd(props) {
                     uncheckedColor="#FFF"
                     color="#BD9848"
                   />
-                  <Text style={styles.radioButtonText}>{Translate.t("none")}</Text>
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("none")}
+                  </Text>
                 </View>
               </RadioButton.Group>
             </View>
@@ -115,64 +199,77 @@ export default function ProductInformationAdd(props) {
             <View style={styles.line} />
 
             {/*1 項目*/}
-            <View style={variant !== "one" ? styles.none : null}>
+            <View style={productVariation !== "one" ? styles.none : null}>
               <ProductOneVariations />
             </View>
-            <View style={variant !== "two" ? styles.none : null}>
+            <View style={productVariation !== "two" ? styles.none : null}>
               <ProductTwoVariations />
             </View>
-            <View style={variant !== "none" ? styles.none : null}>
+            <View style={productVariation !== "none" ? styles.none : null}>
               <ProductNoneVariations />
             </View>
 
             <Text style={styles.text}>{Translate.t("publishState")}</Text>
             <View style={styles.radioGroupContainer}>
-              <RadioButton.Group>
+              <RadioButton.Group
+                onValueChange={(newValue) => onPublishStateChanged(newValue)}
+                value={publishState}
+              >
                 <Text style={styles.radioButtonText}>
                   {Translate.t("published")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="published" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("nonPublished")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="unpublished" />
               </RadioButton.Group>
             </View>
             <View style={styles.releaseDateContainer}>
               <Text style={styles.radioButtonText}>
                 {Translate.t("publishedDate")} :
               </Text>
-              <TextInput style={styles.releaseDateTextInput}></TextInput>
+              <TextInput
+                style={styles.releaseDateTextInput}
+                value={publishDate}
+                onChangeText={(value) => onPublishDateChanged(value)}
+              ></TextInput>
             </View>
             <Text style={styles.releaseDateWarningText}>
               {Translate.t("publishWarning")}
             </Text>
             <Text style={styles.text}>{Translate.t("productStatus")}</Text>
             <View style={styles.radioGroupContainer}>
-              <RadioButton.Group>
+              <RadioButton.Group
+                onValueChange={(newValue) => onProductStatusChanged(newValue)}
+                value={productStatus}
+              >
                 <Text style={styles.radioButtonText}>{Translate.t("new")}</Text>
-                <RadioButton />
+                <RadioButton value="new" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("secondHand")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="secondHand" />
               </RadioButton.Group>
             </View>
             <Text style={styles.text}>{Translate.t("targetUser")}</Text>
             <View style={styles.radioGroupContainer}>
-              <RadioButton.Group>
+              <RadioButton.Group
+                onValueChange={(newValue) => onTargetUserChanged(newValue)}
+                value={targetUser}
+              >
                 <Text style={styles.radioButtonText}>
                   {Translate.t("allUser")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="allUser" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("generalUser")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="generalUser" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("storeUser")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="storeUser" />
               </RadioButton.Group>
             </View>
             <Text style={styles.releaseDateWarningText}>
@@ -187,13 +284,21 @@ export default function ProductInformationAdd(props) {
               }}
             >
               <View style={styles.productPricingContainer}>
-                <TextInput style={styles.productPricingTextInput}></TextInput>
+                <TextInput
+                  style={styles.productPricingTextInput}
+                  value={price}
+                  onChangeText={(value) => onPriceChanged(value)}
+                ></TextInput>
                 <Text style={styles.productPricingText}>
                   {Translate.t("generalPrice")} :
                 </Text>
               </View>
               <View style={styles.productPricingContainer}>
-                <TextInput style={styles.productPricingTextInput}></TextInput>
+                <TextInput
+                  style={styles.productPricingTextInput}
+                  value={storePrice}
+                  onChangeText={(value) => onStorePriceChanged(value)}
+                ></TextInput>
                 <View style={{ alignItems: "flex-end" }}>
                   <Text style={styles.productPricingText}>
                     {Translate.t("storePrice")} :
@@ -204,7 +309,11 @@ export default function ProductInformationAdd(props) {
                 </View>
               </View>
               <View style={styles.productPricingContainer}>
-                <TextInput style={styles.productPricingTextInput}></TextInput>
+                <TextInput
+                  style={styles.productPricingTextInput}
+                  value={shipping}
+                  onChangeText={(value) => onShippingChanged(value)}
+                ></TextInput>
                 <Text style={styles.productPricingText}>
                   {Translate.t("shipping")} :
                 </Text>
@@ -214,16 +323,21 @@ export default function ProductInformationAdd(props) {
               {Translate.t("productPageDisplayMethod")}
             </Text>
             <View style={styles.radioGroupContainer}>
-              <RadioButton.Group>
+              <RadioButton.Group
+                onValueChange={(newValue) =>
+                  onProductPageDisplayMethodChanged(newValue)
+                }
+                value={productPageDisplayMethod}
+              >
                 <Text style={styles.radioButtonText}>
                   {Translate.t("slidingType")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="slidingType" />
 
                 <Text style={styles.radioButtonText}>
                   {Translate.t("lrType")}
                 </Text>
-                <RadioButton />
+                <RadioButton value="lrType" />
               </RadioButton.Group>
             </View>
             <Text style={styles.text}>{Translate.t("productImage")}</Text>
@@ -241,14 +355,25 @@ export default function ProductInformationAdd(props) {
                 alignItems: "center",
               }}
             >
-              <Image
-                style={{
-                  width: win.width / 10,
-                  height: 28 * ratioProductAddIcon,
-                  position: "absolute",
-                }}
-                source={require("../assets/Images/productAddIcon.png")}
-              />
+              {productImages == "" ? (
+                <Image
+                  style={{
+                    width: win.width / 10,
+                    height: 28 * ratioProductAddIcon,
+                    position: "absolute",
+                  }}
+                  source={require("../assets/Images/productAddIcon.png")}
+                />
+              ) : (
+                <Image
+                  style={{
+                    width: win.width / 10,
+                    height: 28 * ratioProductAddIcon,
+                    position: "absolute",
+                  }}
+                  source={{ uri: productImages }}
+                />
+              )}
               <Text
                 style={{
                   marginTop: heightPercentageToDP("15%"),
@@ -265,7 +390,35 @@ export default function ProductInformationAdd(props) {
                 marginTop: heightPercentageToDP("2%"),
               }}
             >
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  const options = {
+                    noData: true,
+                  };
+                  ImagePicker.launchImageLibrary(options, (response) => {
+                    if (response.uri) {
+                      const reference = storage().ref(uuid.v4() + ".png");
+                      if (Platform.OS === "android") {
+                        RNFetchBlob.fs.stat(response.uri).then((stat) => {
+                          reference.putFile(stat.path).then((response) => {
+                            reference.getDownloadURL().then((url) => {
+                              onProductImagesChanged(url);
+                            });
+                          });
+                        });
+                      } else {
+                        reference
+                          .putFile(response.uri.replace("file://", ""))
+                          .then((response) => {
+                            reference.getDownloadURL().then((url) => {
+                              onProductImagesChanged(url);
+                            });
+                          });
+                      }
+                    }
+                  });
+                }}
+              >
                 <View
                   style={{
                     backgroundColor: Colors.deepGrey,
@@ -285,6 +438,8 @@ export default function ProductInformationAdd(props) {
             <TextInput
               style={styles.productDescriptionInput}
               multiline={true}
+              value={productDescription}
+              onValueChange={(value) => onProductDescriptionChanged(value)}
             ></TextInput>
           </View>
           <View style={styles.allButtonContainer}>
@@ -394,7 +549,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     height: heightPercentageToDP("10%"),
     marginTop: heightPercentageToDP("3%"),
-    marginBottom:heightPercentageToDP("5%")
+    marginBottom: heightPercentageToDP("5%"),
   },
   addProductButtonText: {
     fontSize: RFValue("14"),

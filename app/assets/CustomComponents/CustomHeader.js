@@ -40,24 +40,23 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user")
-      .then(function (url) {
-        let urls = url.split("/");
-        urls = urls.filter((url) => {
-          return url;
-        });
-        userId = urls[urls.length - 1];
-
-        onCartChanged(0)
-        const subscriber = db
-          .collection("users")
-          .doc(userId)
-          .collection("carts")
-          .get()
-          .then((querySnapShot) => {
-            onCartChanged(querySnapShot.docs.length)
-          });
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
       });
+      userId = urls[urls.length - 1];
+
+      onCartChanged(0);
+      const subscriber = db
+        .collection("users")
+        .doc(userId)
+        .collection("carts")
+        .get()
+        .then((querySnapShot) => {
+          onCartChanged(querySnapShot.docs.length);
+        });
+    });
   }, [isFocused]);
   return (
     <SafeAreaView
@@ -72,6 +71,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
       <StatusBar
         style={{ height: Platform.OS === "ios" ? 20 : StatusBar.currentHeight }}
       />
+
       <Image
         style={{
           width: win.width / 4,
@@ -85,8 +85,6 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
 
       <Text
         style={{
-          justifyContent: "center",
-          alignSelf: "center",
           fontSize: RFValue(12),
         }}
       >
@@ -108,17 +106,21 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
               marginRight: widthPercentageToDP("3%"),
             }}
           >
-            {cartCount ? (<View style={styles.notificationNumberContainer}>
-              <Text
-                style={{
-                  alignSelf: "center",
-                  fontSize: RFValue(10),
-                  color: "white",
-                }}
-              >
-                {cartCount}
-              </Text>
-            </View>) : (<View></View>)}
+            {cartCount ? (
+              <View style={styles.notificationNumberContainer}>
+                <Text
+                  style={{
+                    alignSelf: "center",
+                    fontSize: RFValue(10),
+                    color: "white",
+                  }}
+                >
+                  {cartCount}
+                </Text>
+              </View>
+            ) : (
+              <View></View>
+            )}
             <CartLogo
               style={{
                 width: win.width / 11,

@@ -51,7 +51,7 @@ export default function ContactShare(props) {
   function storeShareContact(contactID, contactName) {
     let contactObj = {
       contactName: contactName,
-      contactID: contactID,
+      contactID: String(contactID),
       userID: userId,
       timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
       createdAt:
@@ -119,10 +119,7 @@ export default function ContactShare(props) {
         <TouchableWithoutFeedback
           key={user.id}
           onPress={() => {
-            storeShareContact(
-              user.id,
-              user.nickname
-            );
+            storeShareContact(user.id, user.nickname);
           }}
         >
           <View style={styles.contactTabContainer}>
@@ -134,9 +131,7 @@ export default function ContactShare(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.tabLeftText}>
-              {user.nickname}
-            </Text>
+            <Text style={styles.tabLeftText}>{user.nickname}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
@@ -224,7 +219,7 @@ export default function ContactShare(props) {
       />
       <CustomSecondaryHeader
         name={user.nickname}
-        accountType={user.is_seller ? Translate.t("storeAccount") : ""}
+        accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
       />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>

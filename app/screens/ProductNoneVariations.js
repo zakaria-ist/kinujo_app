@@ -23,7 +23,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
-
+let janCode;
+let stock;
 export default function ProductNoneVariations({ props }) {
   const [invt, hideInvt] = React.useState(false);
 
@@ -40,19 +41,20 @@ export default function ProductNoneVariations({ props }) {
         <View style={styles.line} />
       </View>
 
-      <View style={{ width: "100%" }}>
+      <View
+        style={{
+          width: widthPercentageToDP("89%"),
+        }}
+      >
         {/*在庫*/}
         <View style={styles.icon_title_wrapper}>
           <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
-          <TouchableOpacity
-            onPress={() => hideInvt(!invt)}>
-            {invt ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
+          <TouchableOpacity onPress={() => hideInvt(!invt)}>
+            {invt ? (
+              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
+            ) : (
+              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={invt ? styles.none : null}>
@@ -79,7 +81,7 @@ export default function ProductNoneVariations({ props }) {
               >
                 <Text
                   style={{
-                    fontSize: RFValue("12"),
+                    fontSize: RFValue("11"),
                     color: "#FFF",
                   }}
                 >
@@ -99,7 +101,7 @@ export default function ProductNoneVariations({ props }) {
 
 const styles = StyleSheet.create({
   none: {
-    display: "none"
+    display: "none",
   },
   icon_title_wrapper: {
     flex: 1,
@@ -146,6 +148,7 @@ const styles = StyleSheet.create({
   variantContainer: {
     flexDirection: "row-reverse",
     alignItems: "center",
+    justifyContent: "center",
   },
   variantText: {
     fontSize: RFValue(9),
@@ -155,7 +158,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     backgroundColor: "white",
     fontSize: RFValue(14),
-    width: widthPercentageToDP("55%"),
+    width: widthPercentageToDP("40%"),
     height: heightPercentageToDP("6%"),
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),

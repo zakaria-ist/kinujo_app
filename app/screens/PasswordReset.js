@@ -35,6 +35,7 @@ export default function PasswordReset(props) {
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView style={{ flex: 1 }}>
       <View>
         <BlackBackArrow onPress={() => props.navigation.pop()} />
@@ -170,6 +171,7 @@ export default function PasswordReset(props) {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

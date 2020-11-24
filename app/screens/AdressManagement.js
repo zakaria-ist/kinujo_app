@@ -10,9 +10,9 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
@@ -35,7 +35,7 @@ export default function AddressManagement(props) {
   const [address, onAddressChanged] = React.useState({});
   const [name, onNameChanged] = React.useState("");
   const [zipcode, onZipcodeChanged] = React.useState("");
-  const [prefecture, onPrefectureChanged] = React.useState(null);
+  const [prefecture, onPrefectureChanged] = React.useState("");
   const [add, onAddChanged] = React.useState("");
   const [buildingName, onBuildingNameChanged] = React.useState("");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
@@ -61,7 +61,7 @@ export default function AddressManagement(props) {
               onAddressChanged(response.data);
               onNameChanged(response.data.name);
               onZipcodeChanged(response.data.zip1);
-              onPrefectureChanged(response.data.prefecture);
+              onPrefectureChanged(response.data.prefecture.url);
               onAddChanged(response.data.address1);
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
@@ -110,15 +110,15 @@ export default function AddressManagement(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          onNameChanged("");
-          onZipcodeChanged("");
-          onPrefectureChanged(null);
-          onAddChanged("");
-          onBuildingNameChanged("");
-          onPhoneNumberChanged("");
-          onPrefecturesChanged([]);
-          onPrefectureLoadedChanged(false);
-          controller.reset();
+          // onNameChanged("");
+          // onZipcodeChanged("");
+          // onPrefectureChanged(null);
+          // onAddChanged("");
+          // onBuildingNameChanged("");
+          // onPhoneNumberChanged("");
+          // onPrefecturesChanged([]);
+          // onPrefectureLoadedChanged(false);
+          // controller.reset();
           props.navigation.pop();
         }}
         onPress={() => {
@@ -155,10 +155,10 @@ export default function AddressManagement(props) {
           }}
         ></TextInput>
         <DropDownPicker
-          controller={(instance) => (controller = instance)}
+          // controller={(instance) => (controller = instance)}
           style={styles.textInput}
           items={prefectures ? prefectures : []}
-          defaultValue={prefecture ? prefecture : null}
+          defaultValue={prefecture ? prefecture : ""}
           containerStyle={{ height: heightPercentageToDP("8%") }}
           labelStyle={{
             fontSize: RFValue(12),

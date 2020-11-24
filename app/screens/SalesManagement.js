@@ -6,9 +6,9 @@ import {
   View,
   Dimensions,
   TouchableWithoutFeedback,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,

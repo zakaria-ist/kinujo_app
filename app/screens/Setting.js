@@ -9,9 +9,9 @@ import {
   TouchableWithoutFeedback,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -104,6 +104,7 @@ export default function Setting(props) {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView>
       <CustomHeader
         onFavoriteChanged="noFavorite"
@@ -584,6 +585,7 @@ export default function Setting(props) {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

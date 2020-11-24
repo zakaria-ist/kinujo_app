@@ -46,16 +46,23 @@ const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 const ratioCancelIcon = win.width / 20 / 15;
+
+let janCodes = {};
+let janCodeNames = {};
+
 export default function HomeStoreList(props) {
   const [user, onUserChanged] = React.useState({});
   const [product, onProductChanged] = React.useState({});
+  const [selectedJanCode, onSelectedJanCodeChanged] = React.useState({});
   const [images, onImagesChanged] = React.useState({});
   const [show, onShowChanged] = React.useState({});
   const [showText, onShowText] = React.useState(false);
   const [time, setTimePassed] = React.useState(false);
   const [XsShow, onXsShow] = React.useState(true);
   const [sShow, onSShow] = React.useState(true);
+  const [quantity, onQuantityChanged] = React.useState(1);
   const [mShow, onMShow] = React.useState(true);
+  const [popupHtml, onPopupHtmlChanged] = React.useState([]);
   const [cartCount, onCartCountChanged] = React.useState(0);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
   const XSOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
@@ -64,6 +71,53 @@ export default function HomeStoreList(props) {
     .current;
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
+
+  function populatePopupList(props, tmpJanCodes, selected){
+    let tmpHtml = []
+    Object.keys(tmpJanCodes).map((key, index) => {
+      let tmpJanCode = tmpJanCodes[key];
+      tmpHtml.push(<View key={key} style={styles.variationTabs}>
+        <RadioButton status={ selected === tmpJanCode.id ? 'checked' : 'unchecked' }
+        onPress={() => {
+          onSelectedJanCodeChanged(tmpJanCode.id);
+          onPopupHtmlChanged(populatePopupHtml(props, janCodes, tmpJanCode.id))
+        }}/>
+        <Text style={styles.variationTabsText}>{key}</Text>
+      </View>)
+    })
+    return tmpHtml
+  }
+
+  function populatePopupHtml(props, tmpJanCodes, selected){
+    if(tmpJanCodes['none']){
+      return populatePopupList(props, tmpJanCodes['none'], selected)
+    } else if(tmpJanCodes[Object.keys(tmpJanCodes)[0]]['none']){
+      onSelectedJanCodeChanged(tmpJanCodes[Object.keys(tmpJanCodes)[0]]['none'].id)
+      return [];
+    }
+    let tmpHtml = []
+    Object.keys(tmpJanCodes).map((key) => {
+      tmpHtml.push(<View key={key}
+        style={{
+          borderBottomWidth: 1,
+          borderBottomColor: Colors.C2A059,
+        }}
+      >
+        <TouchableWithoutFeedback>
+          <View style={styles.variationTabs}>
+            <Text style={styles.variationTabsText}>{key}</Text>
+            <ArrowUpIcon
+              style={styles.widget_icon}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableWithoutFeedback>
+        {populatePopupList(props, tmpJanCodes[key], selected)}
+      </View>);
+    })
+    return tmpHtml;
+  }
+
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -91,13 +145,54 @@ export default function HomeStoreList(props) {
     request
       .get(props.route.params.url)
       .then(function (response) {
-        console.log(response.data)
         onProductChanged(response.data);
-
-        let janCodes = [];
-        if(response.data.productVarieties.length > 0){
-          
-        }
+        
+        response.data.productVarieties.map((productVariety) => {
+          productVariety.productVarietySelections.map((productVarietySelection) => {
+            janCodeNames[productVarietySelection.url] = productVarietySelection.selection
+          })
+        })
+        response.data.productVarieties.map((productVariety) => {
+          productVariety.productVarietySelections.map((productVarietySelection) => {
+            productVarietySelection.jancode_horizontal.map((horizontal) => {
+              let hoName = horizontal.horizontal ? janCodeNames[horizontal.horizontal] : "none";
+              let veName = horizontal.vertical ? janCodeNames[horizontal.vertical] : "none";
+              if(janCodes[hoName]){
+                janCodes[hoName][veName] = {
+                  "stock" : horizontal.stock,
+                  "url" : horizontal.url,
+                  "id" : horizontal.id
+                }
+              } else {
+                janCodes[hoName] = {}
+                janCodes[hoName][veName] = {
+                  "stock" : horizontal.stock,
+                  "url" : horizontal.url,
+                  "id" : horizontal.id
+                }
+              }
+            })
+            productVarietySelection.jancode_vertical.map((vertical) => {
+              let hoName = vertical.horizontal ? janCodeNames[vertical.horizontal] : "none";
+              let veName = vertical.vertical ? janCodeNames[vertical.vertical] : "none";
+              if(janCodes[hoName]){
+                janCodes[hoName][veName] = {
+                  "stock" : vertical.stock,
+                  "url" : vertical.url,
+                  "id" : vertical.id
+                }
+              } else {
+                janCodes[hoName] = {}
+                janCodes[hoName][veName] = {
+                  "stock" : vertical.stock,
+                  "url" : vertical.url,
+                  "id" : vertical.id
+                }
+              }
+            })
+          })
+        })
+        onPopupHtmlChanged(populatePopupHtml(props, janCodes, ""));
 
         if (response.data.productImages.length > 0) {
           onImagesChanged(
@@ -305,165 +400,7 @@ export default function HomeStoreList(props) {
             </Text>
           </View>
           <ScrollView>
-            <View
-              style={{
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.C2A059,
-              }}
-            >
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  XsShow == true
-                    ? Animated.parallel([
-                        Animated.timing(XSOpacity, {
-                          toValue: heightPercentageToDP("0%"),
-                          duration: 100,
-                          useNativeDriver: false,
-                        }),
-                      ]).start(() => {}, onXsShow(false))
-                    : Animated.parallel([
-                        Animated.timing(XSOpacity, {
-                          toValue: heightPercentageToDP("100%"),
-                          duration: 30000,
-                          useNativeDriver: false,
-                        }),
-                      ]).start(() => {}, onXsShow(true));
-                }}
-              >
-                <View style={styles.variationTabs}>
-                  <Text style={styles.variationTabsText}>XS</Text>
-                  <ArrowUpIcon
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-              <Animated.View
-                style={XsShow == false ? styles.none : (opacity = XSOpacity)}
-              >
-                <View style={styles.variationTabs}>
-                  <RadioButton value="green" />
-                  <Text style={styles.variationTabsText}>Green</Text>
-                </View>
-                <View
-                  style={{
-                    marginHorizontal: widthPercentageToDP("3%"),
-                    flexDirection: "row",
-                    alignItems: "center",
-                    height: heightPercentageToDP("5%"),
-                  }}
-                >
-                  <RadioButton value="pink" />
-                  <Text style={styles.variationTabsText}>Pink</Text>
-                </View>
-              </Animated.View>
-            </View>
-            <View
-              style={{
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.C2A059,
-              }}
-            >
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  sShow == true
-                    ? Animated.parallel([
-                        Animated.timing(sOpacity, {
-                          toValue: heightPercentageToDP("0%"),
-                          duration: 100,
-                          useNativeDriver: false,
-                        }),
-                      ]).start(() => {}, onSShow(false))
-                    : Animated.parallel([
-                        Animated.timing(sOpacity, {
-                          toValue: heightPercentageToDP("100%"),
-                          duration: 30000,
-                          useNativeDriver: false,
-                        }),
-                      ]).start(() => {}, onSShow(true));
-                }}
-              >
-                <View style={styles.variationTabs}>
-                  <Text style={styles.variationTabsText}>S</Text>
-                  <ArrowUpIcon
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-              <Animated.View
-                style={sShow == false ? styles.none : (opacity = sOpacity)}
-              >
-                <View style={styles.variationTabs}>
-                  <RadioButton value="グリーン" />
-                  <Text style={styles.variationTabsText}>グリーン</Text>
-                </View>
-                <View
-                  style={{
-                    marginHorizontal: widthPercentageToDP("3%"),
-                    flexDirection: "row",
-                    alignItems: "center",
-                    height: heightPercentageToDP("5%"),
-                  }}
-                >
-                  <RadioButton value="ピンク" />
-                  <Text style={styles.variationTabsText}>ピンク</Text>
-                </View>
-              </Animated.View>
-            </View>
-            <View
-              style={{
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.C2A059,
-              }}
-            >
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  mShow == true
-                    ? Animated.parallel([
-                        Animated.timing(mOpacity, {
-                          toValue: heightPercentageToDP("0%"),
-                          duration: 100,
-                          useNativeDriver: false,
-                        }),
-                      ]).start(() => {}, onMShow(false))
-                    : Animated.parallel([
-                        Animated.timing(mOpacity, {
-                          toValue: heightPercentageToDP("100%"),
-                          duration: 30000,
-                          useNativeDriver: false,
-                        }),
-                      ]).start(() => {}, onMShow(true));
-                }}
-              >
-                <View style={styles.variationTabs}>
-                  <Text style={styles.variationTabsText}>M</Text>
-                  <ArrowUpIcon
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-              <Animated.View
-                style={mShow == false ? styles.none : (opacity = mOpacity)}
-              >
-                <View style={styles.variationTabs}>
-                  <RadioButton value="グリーン" />
-                  <Text style={styles.variationTabsText}>グリーン</Text>
-                </View>
-                <View
-                  style={{
-                    marginHorizontal: widthPercentageToDP("3%"),
-                    flexDirection: "row",
-                    alignItems: "center",
-                    height: heightPercentageToDP("5%"),
-                  }}
-                >
-                  <RadioButton value="ピンク" />
-                  <Text style={styles.variationTabsText}>ピンク</Text>
-                </View>
-              </Animated.View>
-            </View>
+            {popupHtml}
             <View
               style={{
                 flexDirection: "row",
@@ -484,7 +421,11 @@ export default function HomeStoreList(props) {
                   {Translate.t("unit")}
                 </Text>
                 <Picker
-                  selectedValue={"3"}
+                  selectedValue={quantity}
+                  style={styles.picker}
+                  onValueChange={(itemValue, itemIndex) => {
+                    onQuantityChanged(itemValue);
+                  }}
                   style={styles.picker}
                   mode="dropdown"
                 >
@@ -506,7 +447,50 @@ export default function HomeStoreList(props) {
                   flex: 1,
                 }}
               >
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={
+                  ()=>{
+                    if(selectedJanCode && quantity){
+                      onShowChanged(false);
+
+                      db.collection("users")
+                        .doc(user.id.toString())
+                        .collection("carts")
+                        .doc(product.id.toString())
+                        .get().then((snapshot) => {
+                          let tmpQuantity = parseInt(quantity);
+                          if(snapshot.data()){
+                            tmpQuantity += parseInt(snapshot.data().quantity);
+                          }
+                          db.collection("users")
+                            .doc(user.id.toString())
+                            .collection("carts")
+                            .doc(product.id.toString())
+                            .set({
+                              quantity: tmpQuantity,
+                              url: selectedJanCode
+                            });
+                        })
+                      onShowText(true);
+                      setTimeout(
+                        function () {
+                          onShowText(false);
+                        }.bind(this),
+                        2000
+                      );
+            
+                      const subscriber = db
+                        .collection("users")
+                        .doc(user.id.toString())
+                        .collection("carts")
+                        .get()
+                        .then((querySnapShot) => {
+                          onCartCountChanged(querySnapShot.docs.length);
+                        });
+                    } else {
+                      alert.warning("Please select an item and set a quantity");
+                    }
+                  }
+                }>
                   <View
                     style={{
                       backgroundColor: Colors.deepGrey,
@@ -575,30 +559,30 @@ export default function HomeStoreList(props) {
 
       <CartFloating
         onPress={() => {
-          // onShowChanged(true);
-          db.collection("users")
-            .doc(user.id.toString())
-            .collection("carts")
-            .doc(product.id.toString())
-            .set({
-              quantity: 1,
-            });
-          onShowText(true);
-          setTimeout(
-            function () {
-              onShowText(false);
-            }.bind(this),
-            2000
-          );
+          onShowChanged(true);
+          // db.collection("users")
+          //   .doc(user.id.toString())
+          //   .collection("carts")
+          //   .doc(product.id.toString())
+          //   .set({
+          //     quantity: 1,
+          //   });
+          // onShowText(true);
+          // setTimeout(
+          //   function () {
+          //     onShowText(false);
+          //   }.bind(this),
+          //   2000
+          // );
 
-          const subscriber = db
-            .collection("users")
-            .doc(user.id.toString())
-            .collection("carts")
-            .get()
-            .then((querySnapShot) => {
-              onCartCountChanged(querySnapShot.docs.length);
-            });
+          // const subscriber = db
+          //   .collection("users")
+          //   .doc(user.id.toString())
+          //   .collection("carts")
+          //   .get()
+          //   .then((querySnapShot) => {
+          //     onCartCountChanged(querySnapShot.docs.length);
+          //   });
         }}
       />
     </SafeAreaView>

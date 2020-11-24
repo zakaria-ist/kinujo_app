@@ -54,48 +54,6 @@ function getID(url) {
   userId = urls[urls.length - 1];
   return userId;
 }
-function sendMessageHandler(friendID, friendName) {
-  let groupID;
-  let groupName;
-  chatRef
-    .where("users", "array-contains", ownUserID)
-    .get()
-    .then(function (querySnapshot) {
-      querySnapshot.docChanges().forEach((snapShot) => {
-        let users = snapShot.doc.data().users;
-        for (var i = 0; i < users.length; i++) {
-          if (users[i] == friendID) {
-            groupID = snapShot.doc.id;
-            groupName = snapShot.doc.data().groupName;
-          }
-        }
-      });
-      if (groupID != null) {
-        props.navigation.navigate("ChatScreen", {
-          groupID: groupID,
-          groupName: groupName,
-        });
-      } else {
-        let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
-        let friendMessageUnseenField = "unseenMessageCount_" + friendID;
-        let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
-        let friendTotalMessageReadField = "totalMessageRead_" + friendID;
-        chatRef
-          .add({
-            groupName: friendName,
-            users: [String(ownUserID), String(friendID)],
-            totalMessage: 0,
-            [ownMessageUnseenField]: 0,
-            [friendMessageUnseenField]: 0,
-            [ownTotalMessageReadField]: 0,
-            [friendTotalMessageReadField]: 0,
-          })
-          .then(function () {
-            navigateToChatScreen(friendID);
-          });
-      }
-    });
-}
 function addFriend(firstUserId, secondUserId) {
   firestore()
     .collection("users")
@@ -114,9 +72,13 @@ function addFriend(firstUserId, secondUserId) {
     });
 }
 export default function Contact(props) {
+  React.useEffect(() => {
+    onShowChanged(false);
+  }, [!isFocused]);
   function redirectToChat(friendID, friendName) {
     let groupID;
     let groupName;
+    let deleted = "delete_" + userId;
     db.collection("chat")
       .where("users", "array-contains", userId)
       .get()
@@ -131,6 +93,16 @@ export default function Contact(props) {
           }
         });
         if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
           props.navigation.navigate("ChatScreen", {
             groupID: groupID,
             groupName: groupName,
@@ -143,7 +115,7 @@ export default function Contact(props) {
           db.collection("chat")
             .add({
               groupName: friendName,
-              users: [userId, friendID],
+              users: [userId, String(friendID)],
               totalMessage: 0,
               [ownMessageUnseenField]: 0,
               [friendMessageUnseenField]: 0,
@@ -217,16 +189,17 @@ export default function Contact(props) {
     return tmpUserHtml;
   }
   function processGroupHtml(props, groups) {
-    setGroupCount(groups.length)
+    setGroupCount(groups.length);
     let tmpGroupHtml = [];
     for (var i = 0; i < groups.length; i++) {
-      let group = groups[i]
+      let group = groups[i];
       tmpGroupHtml.push(
-        <TouchableWithoutFeedback key={groups[i]['id']} onPress = {
-          () => {
-            navigateToChatScreenWithGroupID(group['id'], group['name'])
-          }
-        }>
+        <TouchableWithoutFeedback
+          key={groups[i]["id"]}
+          onPress={() => {
+            navigateToChatScreenWithGroupID(group["id"], group["name"]);
+          }}
+        >
           <View style={styles.contactTabContainer}>
             <Image
               style={{
@@ -235,7 +208,7 @@ export default function Contact(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.tabLeftText}>{groups[i]['name']}</Text>
+            <Text style={styles.tabLeftText}>{groups[i]["name"]}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
@@ -243,18 +216,19 @@ export default function Contact(props) {
     return tmpGroupHtml;
   }
   function processFolderHtml(props, folders) {
-    setFolderCount(folders.length)
-    let tmpFolderHtml = []
+    setFolderCount(folders.length);
+    let tmpFolderHtml = [];
     for (var i = 0; i < folders.length; i++) {
       let folder = folders[i];
       tmpFolderHtml.push(
-        <TouchableWithoutFeedback key={folders[i]['id']} onPress={
-          ()=>{
+        <TouchableWithoutFeedback
+          key={folders[i]["id"]}
+          onPress={() => {
             props.navigation.navigate("FolderContactList", {
-              "folderID" : folder['folderId']
-            })
-          }
-        }>
+              folderID: folder["folderId"],
+            });
+          }}
+        >
           <View style={styles.contactTabContainer}>
             <Image
               style={{
@@ -263,7 +237,7 @@ export default function Contact(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.tabLeftText}>{folders[i]['name']}</Text>
+            <Text style={styles.tabLeftText}>{folders[i]["name"]}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
@@ -310,18 +284,14 @@ export default function Contact(props) {
           querySnapshot.forEach((documentSnapshot) => {
             if (documentSnapshot.data().type == "folder") {
               folders.push({
-                "id": documentSnapshot.id,
-                "folderId": documentSnapshot.id,
-                "name": documentSnapshot.data().folderName
-              })
+                id: documentSnapshot.id,
+                folderId: documentSnapshot.id,
+                name: documentSnapshot.data().folderName,
+              });
             }
           });
           globalFolders = folders;
-          onFolderHtmlChanged(
-            processFolderHtml(
-              props, folders
-            )
-          );
+          onFolderHtmlChanged(processFolderHtml(props, folders));
         });
       onFolderLoaded(true);
     });
@@ -337,20 +307,18 @@ export default function Contact(props) {
           let items = [];
           let total = 0;
           let groups = [];
-          
+
           querySnapshot.forEach((documentSnapshot) => {
-            if(documentSnapshot.data().users.length > 2){
+            if (documentSnapshot.data().users.length > 2) {
               groups.push({
-                "id": documentSnapshot.id,
-                "name": documentSnapshot.data().groupName
-              })
+                id: documentSnapshot.id,
+                name: documentSnapshot.data().groupName,
+              });
               total += 1;
             }
           });
           globalGroups = groups;
-          onGroupHtmlChanged(
-            processGroupHtml(props, groups)
-          );
+          onGroupHtmlChanged(processGroupHtml(props, groups));
           setGroupCount(total);
         });
       onGroupLoaded(true);
@@ -403,7 +371,7 @@ export default function Contact(props) {
               ids: ids,
             })
             .then(function (response) {
-              globalUsers = response.data.users
+              globalUsers = response.data.users;
               onUserHtmlChanged(processUserHtml(props, response.data.users));
             })
             .catch(function (error) {
@@ -437,7 +405,7 @@ export default function Contact(props) {
           />
           <CustomSecondaryHeader
             name={user.nickname}
-            accountType={user.is_seller ? Translate.t("storeAccount") : ""}
+            accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
           />
           <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
             <View style={styles.searchInputContainer}>
@@ -450,18 +418,47 @@ export default function Contact(props) {
                   style={styles.searchContactInput}
                   value={searchText}
                   onChangeText={(value) => {
-                    onSearchTextChanged(value)
+                    onSearchTextChanged(value);
 
-                    onUserHtmlChanged(processUserHtml(props, globalUsers.filter((user) => {
-                      return (user.real_name.toLowerCase().indexOf(value.toLowerCase()) >= 0) ||
-                      user.nickname.toLowerCase().indexOf(value.toLowerCase()) >= 0;
-                    })))
-                    onGroupHtmlChanged(processGroupHtml(props, globalGroups.filter((group) => {
-                      return group['name'].toLowerCase().indexOf(value.toLowerCase()) >= 0
-                    })))
-                    onFolderHtmlChanged(processFolderHtml(props, globalFolders.filter((folder) => {
-                      return folder['name'].toLowerCase().indexOf(value.toLowerCase()) >= 0
-                    })))
+                    onUserHtmlChanged(
+                      processUserHtml(
+                        props,
+                        globalUsers.filter((user) => {
+                          return (
+                            user.real_name
+                              .toLowerCase()
+                              .indexOf(value.toLowerCase()) >= 0 ||
+                            user.nickname
+                              .toLowerCase()
+                              .indexOf(value.toLowerCase()) >= 0
+                          );
+                        })
+                      )
+                    );
+                    onGroupHtmlChanged(
+                      processGroupHtml(
+                        props,
+                        globalGroups.filter((group) => {
+                          return (
+                            group["name"]
+                              .toLowerCase()
+                              .indexOf(value.toLowerCase()) >= 0
+                          );
+                        })
+                      )
+                    );
+                    onFolderHtmlChanged(
+                      processFolderHtml(
+                        props,
+                        globalFolders.filter((folder) => {
+                          return (
+                            folder["name"]
+                              .toLowerCase()
+                              .indexOf(value.toLowerCase()) >= 0
+                          );
+                        })
+                      )
+                    );
                   }}
                 ></TextInput>
               </TouchableWithoutFeedback>

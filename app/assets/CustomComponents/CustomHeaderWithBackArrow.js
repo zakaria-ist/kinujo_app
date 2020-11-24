@@ -43,7 +43,7 @@ export default function CustomKinujoWord({
   onFavoriteChanged,
   onFavoritePress,
   overrideCartCount,
-  onCartCount
+  onCartCount,
 }) {
   const [cartCount, onCartChanged] = React.useState(0);
   const ratioKinujo = win.width / 5 / 78;
@@ -52,25 +52,24 @@ export default function CustomKinujoWord({
   const isFocused = useIsFocused();
   const ratioBackArrow = win.width / 18 / 20;
   React.useEffect(() => {
-    AsyncStorage.getItem("user")
-      .then(function (url) {
-        let urls = url.split("/");
-        urls = urls.filter((url) => {
-          return url;
-        });
-        userId = urls[urls.length - 1];
-
-        onCartChanged(0);
-        const subscriber = db
-          .collection("users")
-          .doc(userId)
-          .collection("carts")
-          .get()
-          .then((querySnapShot) => {
-            onCartChanged(querySnapShot.docs.length)
-            onCartCount(querySnapShot.docs.length)
-          });
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
       });
+      userId = urls[urls.length - 1];
+
+      onCartChanged(0);
+      const subscriber = db
+        .collection("users")
+        .doc(userId)
+        .collection("carts")
+        .get()
+        .then((querySnapShot) => {
+          onCartChanged(querySnapShot.docs.length);
+          onCartCount(querySnapShot.docs.length);
+        });
+    });
   }, [isFocused]);
   return (
     <SafeAreaView
@@ -82,6 +81,9 @@ export default function CustomKinujoWord({
         justifyContent: "space-evenly",
       }}
     >
+      <StatusBar
+        style={{ height: Platform.OS === "ios" ? 20 : StatusBar.currentHeight }}
+      />
       <View
         style={{
           flexDirection: "row",
@@ -111,8 +113,6 @@ export default function CustomKinujoWord({
 
       <Text
         style={{
-          justifyContent: "center",
-          alignSelf: "center",
           fontSize: RFValue(11),
         }}
       >
@@ -134,17 +134,21 @@ export default function CustomKinujoWord({
               marginRight: widthPercentageToDP("3%"),
             }}
           >
-            {overrideCartCount || cartCount ? (<View style={styles.notificationNumberContainer}>
-              <Text
-                style={{
-                  alignSelf: "center",
-                  fontSize: RFValue(10),
-                  color: "white",
-                }}
-              >
-                {overrideCartCount ? overrideCartCount : cartCount}
-              </Text>
-            </View>) : (<View></View>)}
+            {overrideCartCount || cartCount ? (
+              <View style={styles.notificationNumberContainer}>
+                <Text
+                  style={{
+                    alignSelf: "center",
+                    fontSize: RFValue(10),
+                    color: "white",
+                  }}
+                >
+                  {overrideCartCount ? overrideCartCount : cartCount}
+                </Text>
+              </View>
+            ) : (
+              <View></View>
+            )}
             <CartIcon
               style={{
                 width: win.width / 11,

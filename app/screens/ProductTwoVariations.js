@@ -26,68 +26,18 @@ import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 
 export default function ProductTwoVariations({ props }) {
   const [invt, hideInvt] = React.useState(false);
-
+  const [choice, onChoiceChanged] = React.useState("");
+  const [horizontalAxis, onHorizontalAxisChanged] = React.useState("");
+  const [janCode, onJanCodeChanged] = React.useState("");
+  const [stock, onStockChanged] = React.useState("");
+  const [itemName, onItemNameChanged] = React.useState("");
+  const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
+  const [loaded, onLoaded] = React.useState(false);
+  const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
   return (
     <SafeAreaView>
       {/*項目名*/}
       <View style={{ width: "100%" }}>
-        <View style={styles.subframe}>
-          <Text style={styles.text}>{Translate.t("horizonItemName")}</Text>
-          <TextInput style={styles.textInput}></TextInput>
-
-          <View style={styles.multiVariant}>
-            <View
-              style={{
-                height: "100%",
-                marginHorizontal: widthPercentageToDP("1%"),
-                flexDirection: "row",
-                alignItems: "flex-end",
-              }}
-            >
-              <TouchableOpacity>
-                <View
-                  style={{
-                    backgroundColor: Colors.deepGrey,
-                    marginTop: heightPercentageToDP("2%"),
-                    marginBottom: heightPercentageToDP("2%"),
-                    borderRadius: 5,
-                    alignItems: "center",
-                    padding: widthPercentageToDP("1%"),
-                    alignSelf: "flex-start",
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: RFValue("12"),
-                      color: "#FFF",
-                    }}
-                  >
-                    +{Translate.t("add")}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                padding: widthPercentageToDP("1%"),
-              }}
-            >
-              <Text style={styles.text}>{Translate.t("choice")}</Text>
-
-              <View style={styles.multiVariant}>
-                <Text style={styles.text}>{"1"}</Text>
-                <TextInput style={styles.textInput}></TextInput>
-              </View>
-
-              <View style={styles.multiVariant}>
-                <Text style={styles.text}>{"2"}</Text>
-                <TextInput style={styles.textInput}></TextInput>
-              </View>
-            </View>
-          </View>
-        </View>
-
         <View style={styles.subframe}>
           <Text style={styles.text}>{Translate.t("horizonItemName")}</Text>
           <TextInput style={styles.textInput}></TextInput>
@@ -152,20 +102,17 @@ export default function ProductTwoVariations({ props }) {
         {/*在庫*/}
         <View style={styles.icon_title_wrapper}>
           <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
-          <TouchableOpacity
-            onPress={() => hideInvt(!invt)}>
-            {invt ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
+          <TouchableOpacity onPress={() => hideInvt(!invt)}>
+            {invt ? (
+              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
+            ) : (
+              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={invt ? styles.none : null}>
           <Text style={{ fontSize: RFValue(14) }}>
-          {Translate.t("stockEditWarning")}
+            {Translate.t("stockEditWarning")}
           </Text>
           <Text style={{ fontSize: RFValue(14), marginBottom: 20 }}>
             {Translate.t("stockEditDescription")}
@@ -174,26 +121,27 @@ export default function ProductTwoVariations({ props }) {
       </View>
 
       <View style={styles.variantTitle}>
-        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>{Translate.t("size")}</Text>
+        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>
+          {Translate.t("size")}
+        </Text>
       </View>
 
       <View style={{ width: "100%" }}>
         <View style={styles.icon_title_wrapper}>
           <Text style={styles.variantName}>{"XS"}</Text>
           <TouchableOpacity>
-            {false ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
+            {false ? (
+              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
+            ) : (
+              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+            )}
           </TouchableOpacity>
         </View>
         <View style={false ? styles.none : null}>
           <View style={styles.subline} />
           <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
+            <Text style={styles.colorText}>Color</Text>
+            <TextInput style={styles.variantStockInput}></TextInput>
             <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
           </View>
           <View style={styles.variantContainer}>
@@ -207,113 +155,7 @@ export default function ProductTwoVariations({ props }) {
             ]}
           >
             <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-            <DustBinIcon
-              style={styles.widget_icon}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
-
-      <View style={{ width: "100%" }}>
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.variantName}>{"S"}</Text>
-          <TouchableOpacity>
-            {false ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
-          </TouchableOpacity>
-        </View>
-        <View style={false ? styles.none : null}>
-          <View style={styles.subline} />
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-          </View>
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-          </View>
-          <View
-            style={[
-              styles.variantContainer,
-              { paddingBottom: heightPercentageToDP("1.5%") },
-            ]}
-          >
-            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-            <DustBinIcon
-              style={styles.widget_icon}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
-
-      <View style={{ width: "100%" }}>
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.variantName}>{"M"}</Text>
-          <TouchableOpacity>
-            {true ? <ArrowDownIcon
-              style={styles.widget_icon}
-              resizeMode="contain"/> :
-              <ArrowUpIcon
-                style={styles.widget_icon}
-                resizeMode="contain"/>
-            }
-          </TouchableOpacity>
-        </View>
-        <View style={true ? styles.none : null}>
-          <View style={{ width: "100%" }}>
-            <View style={styles.subline} />
-            <View style={styles.variantContainer}>
-              <TextInput style={styles.variantInput}></TextInput>
-              <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-            </View>
-            <View style={styles.variantContainer}>
-              <TextInput style={styles.variantInput}></TextInput>
-              <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-            </View>
-            <View
-              style={[
-                styles.variantContainer,
-                { paddingBottom: heightPercentageToDP("1.5%") },
-              ]}
-            >
-              <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-              <DustBinIcon
-                style={styles.widget_icon}
-                resizeMode="contain"
-              />
-            </View>
-          </View>
-          <View style={{ width: "100%" }}>
-            <View style={styles.subline} />
-            <View style={styles.variantContainer}>
-              <TextInput style={styles.variantInput}></TextInput>
-              <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-            </View>
-            <View style={styles.variantContainer}>
-              <TextInput style={styles.variantInput}></TextInput>
-              <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-            </View>
-            <View
-              style={[
-                styles.variantContainer,
-                { paddingBottom: heightPercentageToDP("1.5%") },
-              ]}
-            >
-              <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-              <DustBinIcon
-                style={styles.widget_icon}
-                resizeMode="contain"
-              />
-            </View>
+            <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
           </View>
         </View>
         <View style={styles.line} />
@@ -349,7 +191,7 @@ export default function ProductTwoVariations({ props }) {
 
 const styles = StyleSheet.create({
   none: {
-    display: "none"
+    display: "none",
   },
   icon_title_wrapper: {
     flex: 1,
@@ -382,7 +224,7 @@ const styles = StyleSheet.create({
   multiVariant: {
     flexDirection: "row",
     alignItems: "center",
-    overflow: "hidden"
+    overflow: "hidden",
   },
   variantTitle: {
     marginTop: 5,
@@ -406,11 +248,27 @@ const styles = StyleSheet.create({
     fontSize: RFValue(9),
     marginTop: heightPercentageToDP("1%"),
   },
+  colorText: {
+    position: "absolute",
+    left: 300,
+    fontSize: RFValue(9),
+    marginTop: heightPercentageToDP("1%"),
+  },
   variantInput: {
     borderWidth: 0,
     backgroundColor: "white",
     fontSize: RFValue(14),
     width: widthPercentageToDP("60%"),
+    height: heightPercentageToDP("6%"),
+    marginLeft: widthPercentageToDP("2%"),
+    marginTop: heightPercentageToDP("1%"),
+    paddingLeft: widthPercentageToDP("2%"),
+  },
+  variantStockInput: {
+    borderWidth: 0,
+    backgroundColor: "white",
+    fontSize: RFValue(14),
+    width: widthPercentageToDP("30%"),
     height: heightPercentageToDP("6%"),
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),

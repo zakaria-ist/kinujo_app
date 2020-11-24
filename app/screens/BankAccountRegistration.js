@@ -10,10 +10,9 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  StatusBar,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -108,6 +107,7 @@ export default function BankAccountRegistration(props) {
   });
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView>
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -222,6 +222,7 @@ export default function BankAccountRegistration(props) {
         </TouchableWithoutFeedback>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

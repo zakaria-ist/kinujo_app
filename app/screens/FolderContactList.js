@@ -45,15 +45,15 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-let globalUsers = []
+let globalUsers = [];
 
 function getID(url) {
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-        return url;
-    });
-    userId = urls[urls.length - 1];
-    return userId;
+  let urls = url.split("/");
+  urls = urls.filter((url) => {
+    return url;
+  });
+  userId = urls[urls.length - 1];
+  return userId;
 }
 
 export default function FolderContactList(props) {
@@ -63,6 +63,7 @@ export default function FolderContactList(props) {
   function redirectToChat(friendID, friendName) {
     let groupID;
     let groupName;
+    let deleted = "delete_" + userId;
     db.collection("chat")
       .where("users", "array-contains", userId)
       .get()
@@ -77,9 +78,19 @@ export default function FolderContactList(props) {
           }
         });
         if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
           props.navigation.navigate("ChatScreen", {
             groupID: groupID,
-            groupName: groupName,
+            groupName: friendName,
           });
         } else {
           let ownMessageUnseenField = "unseenMessageCount_" + userId;
@@ -89,15 +100,18 @@ export default function FolderContactList(props) {
           db.collection("chat")
             .add({
               groupName: friendName,
-              users: [userId, friendID],
+              users: [userId, String(friendID)],
               totalMessage: 0,
               [ownMessageUnseenField]: 0,
               [friendMessageUnseenField]: 0,
               [ownTotalMessageReadField]: 0,
               [friendTotalMessageReadField]: 0,
             })
-            .then(function () {
-              navigateToChatScreen(friendID);
+            .then(function (docRef) {
+              props.navigation.navigate("ChatScreen", {
+                groupID: docRef.id,
+                groupName: friendName,
+              });
             });
         }
       });
@@ -135,16 +149,23 @@ export default function FolderContactList(props) {
 
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
-        let userId = getID(url);
-        firebase.firestore().collection("users").doc(userId).collection("folders").doc(props.route.params.folderID).get().then(function(snapshot){
-            request
-          .get("user/byIds/", {
-            ids: snapshot.data().users,
-          })
-          .then(function (response) {
-            globalUsers = response.data.users
-            onUserHtmlChanged(processUserHtml(props, response.data.users));
-          });
+      let userId = getID(url);
+      firebase
+        .firestore()
+        .collection("users")
+        .doc(userId)
+        .collection("folders")
+        .doc(props.route.params.folderID)
+        .get()
+        .then(function (snapshot) {
+          request
+            .get("user/byIds/", {
+              ids: snapshot.data().users,
+            })
+            .then(function (response) {
+              globalUsers = response.data.users;
+              onUserHtmlChanged(processUserHtml(props, response.data.users));
+            });
         });
     });
   }, [useIsFocused]);
@@ -169,11 +190,22 @@ export default function FolderContactList(props) {
               style={styles.searchContactInput}
               value={searchTerm}
               onChangeText={(value) => {
-                  onSearchTermChanged(value)
-                  onUserHtmlChanged(processUserHtml(props, globalUsers.filter((user) => {
-                    return (user.real_name.toLowerCase().indexOf(value.toLowerCase()) >= 0) ||
-                    user.nickname.toLowerCase().indexOf(value.toLowerCase()) >= 0;
-                  })))
+                onSearchTermChanged(value);
+                onUserHtmlChanged(
+                  processUserHtml(
+                    props,
+                    globalUsers.filter((user) => {
+                      return (
+                        user.real_name
+                          .toLowerCase()
+                          .indexOf(value.toLowerCase()) >= 0 ||
+                        user.nickname
+                          .toLowerCase()
+                          .indexOf(value.toLowerCase()) >= 0
+                      );
+                    })
+                  )
+                );
               }}
             ></TextInput>
           </TouchableWithoutFeedback>
@@ -183,9 +215,7 @@ export default function FolderContactList(props) {
           />
         </View>
       </View>
-      <ScrollView style={styles.home_product_view}>
-        {userHtml}
-      </ScrollView>
+      <ScrollView style={styles.home_product_view}>{userHtml}</ScrollView>
     </SafeAreaView>
   );
 }

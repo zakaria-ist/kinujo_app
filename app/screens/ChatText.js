@@ -11,9 +11,9 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Platform,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   widthPercentageToDP,

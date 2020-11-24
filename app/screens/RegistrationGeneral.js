@@ -37,6 +37,7 @@ export default function RegistrationGeneral(props) {
   const [phone, onPhoneChanged] = React.useState("");
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
       start={[0, 0]}
@@ -204,6 +205,7 @@ export default function RegistrationGeneral(props) {
       </ScrollView>
       {/* </KeyboardAvoidingView> */}
     </LinearGradient>
+    </SafeAreaView>
   );
 }
 

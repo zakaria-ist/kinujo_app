@@ -69,7 +69,12 @@ export default function ChatList(props) {
   const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
   const [longPressObj, onLongPressObjChanged] = React.useState({});
-
+  // if (!isFocused) {
+  //   onShowChanged(false);
+  // }
+  React.useEffect(() => {
+    onShowChanged(false);
+  }, [!isFocused]);
   function getUnseenMessageCount(groupID, userID) {
     let userTotalMessageReadField = "totalMessageRead_" + userID;
     let userTotalMessageReadCount;
@@ -143,6 +148,7 @@ export default function ChatList(props) {
                   delete={snapShot.data()["delete_" + ownUserID] ? true : false}
                   onPress={() =>
                     props.navigation.navigate("ChatScreen", {
+                      type: snapShot.data().type,
                       groupID: snapShot.id,
                       groupName: snapShot.data().groupName,
                     })
@@ -203,6 +209,7 @@ export default function ChatList(props) {
                   delete={snapShot.data()["delete_" + ownUserID] ? true : false}
                   onPress={() =>
                     props.navigation.navigate("ChatScreen", {
+                      type: snapShot.data().type,
                       groupID: snapShot.id,
                       groupName: snapShot.data().groupName,
                     })
@@ -261,6 +268,7 @@ export default function ChatList(props) {
                   delete={snapShot.data()["delete_" + ownUserID] ? true : false}
                   onPress={() =>
                     props.navigation.navigate("ChatScreen", {
+                      type: snapShot.data().type,
                       groupID: snapShot.id,
                       groupName: snapShot.data().groupName,
                     })
@@ -312,7 +320,6 @@ export default function ChatList(props) {
         });
 
         tmpChatHtml.sort((html1, html2) => {
-
           if (html1.props["pinned"] && !html2.props["pinned"]) {
             return 1;
           }
@@ -358,8 +365,7 @@ export default function ChatList(props) {
     return function () {};
   }, []);
   return (
-    <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
-      <View style={{ flex: 1 }}>
+    <SafeAreaView>
         <CustomHeader
           text={Translate.t("chat")}
           onPress={() => props.navigation.navigate("Cart")}
@@ -378,7 +384,6 @@ export default function ChatList(props) {
                   marginTop: heightPercentageToDP("3%"),
                 }}
               >
-                {console.log(longPressObj.data)}
                 <Text style={{ fontSize: RFValue(14) }}>
                   {longPressObj && longPressObj.data
                     ? longPressObj.data.groupName
@@ -518,8 +523,7 @@ export default function ChatList(props) {
             {chatHtml}
           </View>
         </ScrollView>
-      </View>
-    </TouchableWithoutFeedback>
+  </SafeAreaView>
   );
 }
 

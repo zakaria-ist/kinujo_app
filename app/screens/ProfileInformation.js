@@ -7,9 +7,9 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
@@ -108,6 +108,7 @@ export default function ProfileInformation(props) {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ScrollView>
       <CustomHeader
         onFavoriteChanged="noFavorite"
@@ -615,6 +616,7 @@ export default function ProfileInformation(props) {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

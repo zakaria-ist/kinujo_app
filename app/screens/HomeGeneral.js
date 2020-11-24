@@ -85,6 +85,7 @@ export default function Home(props) {
           tmpKinujoHtml.push(
             <HomeProducts
               key={product.id}
+              product_id={product.id}
               onPress={() => {
                 props.navigation.navigate("HomeStoreList", {
                   url: product.url,
@@ -120,6 +121,7 @@ export default function Home(props) {
           tmpFeaturedHtml.push(
             <HomeProducts
               key={product.id}
+              product_id={product.id}
               onPress={() => {
                 props.navigation.navigate("HomeStoreList", {
                   url: product.url,
@@ -178,7 +180,7 @@ export default function Home(props) {
 
       <CustomSecondaryHeader
         name={user.nickname}
-        accountType={user.is_seller ? Translate.t("storeAccount") : ""}
+        accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
       />
       <View style={styles.discription_header}>
         <View>

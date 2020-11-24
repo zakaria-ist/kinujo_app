@@ -16,11 +16,12 @@ import {
   Modal,
   ScrollView,
   Keyboard,
+  SafeAreaView,
+  PixelRatio
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
 import RNFetchBlob from "rn-fetch-blob";
-import { SafeAreaView } from "react-navigation";
 import { LinearGradient } from "expo-linear-gradient";
 import EmojiBoard from "react-native-emoji-board";
 import {
@@ -45,7 +46,9 @@ import SendLogo from "../assets/icons/send.svg";
 import CameraLogo from "../assets/icons/camera.svg";
 import GalleryLogo from "../assets/icons/gallery.svg";
 import ContactLogo from "../assets/icons/contact.svg";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import _ from "lodash";
+import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import storage from "@react-native-firebase/storage";
 const alert = new CustomAlert();
@@ -56,6 +59,7 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 const chatsRef = db.collection("chat");
+const request = new Request();
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
@@ -77,6 +81,8 @@ let smallestSeenCount = 0;
 let seenMessageCount = [];
 let updateFriend = false;
 let unsubscribe;
+let finalGroupName;
+let chatPersonID;
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
     db.collection("users")
@@ -104,11 +110,50 @@ export default function ChatScreen(props) {
   const [messages, setMessages] = React.useState("");
   const [showEmoji, onShowEmojiChanged] = useState(false);
   const [prevEmoji, setPrevEmoji] = useState("");
+  const [users, onUserChanged] = React.useState("");
+  // const [user, processUser] = useState("");
   const [inputBarPosition, setInputBarPosition] = useState(-2);
   const scrollViewReference = useRef();
   const isFocused = useIsFocused();
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
+  groupType = props.route.params.type;
+  const insets = useSafeAreaInsets();
+  function processUserHtml(props, users) {
+    users.map((user) => {
+      finalGroupName = user.real_name ? user.real_name : user.nickname;
+    });
+  }
+  function getGroupName() {
+    let users;
+    db.collection("chat")
+      .doc(groupID)
+      .get()
+      .then((snapShot) => {
+        let ids = [];
+        users = snapShot.data().users;
+        if (
+          snapShot.data().type == null ||
+          snapShot.data().type != "group" ||
+          snapShot.data().type != "folder"
+        ) {
+          for (var i in users) {
+            if (users[i] != userId) {
+              chatPersonID = users[i];
+            }
+            ids.push(chatPersonID);
+          }
+          request
+            .get("user/byIds/", {
+              ids: ids,
+            })
+            .then(function (response) {
+              processUserHtml(props, response.data.users);
+            });
+        }
+      });
+    return finalGroupName;
+  }
   const onClick = (emoji) => {
     {
       {
@@ -127,7 +172,8 @@ export default function ChatScreen(props) {
   );
   function handleEmojiIconPressed() {
     onShowEmojiChanged(true);
-    setInputBarPosition(heightPercentageToDP("34%"));
+    setShouldShow(false);
+    setInputBarPosition(heightPercentageToDP("34%") - insets.top/2);
     Keyboard.dismiss();
   }
   function hideEmoji() {
@@ -224,9 +270,11 @@ export default function ChatScreen(props) {
                               />
                             ) : (
                               <ChatContact
+                                props={props}
                                 date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 isSelf="true"
+                                contactID={snapShot.data().contactID}
                                 contactName={snapShot.data().contactName}
                               />
                             )
@@ -247,9 +295,11 @@ export default function ChatScreen(props) {
                             />
                           ) : (
                             <ChatContact
+                              props={props}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               seen="true"
+                              contactID={snapShot.data().contactID}
                               contactName={snapShot.data().contactName}
                             />
                           )
@@ -271,6 +321,8 @@ export default function ChatScreen(props) {
                             />
                           ) : (
                             <ChatContact
+                              props={props}
+                              contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               contactName={snapShot.data().contactName}
@@ -291,6 +343,8 @@ export default function ChatScreen(props) {
                           />
                         ) : (
                           <ChatContact
+                            props={props}
+                            contactID={snapShot.data().contactID}
                             date={tmpHours + ":" + tmpMinutes}
                             isSelf="true"
                             contactName={snapShot.data().contactName}
@@ -329,18 +383,14 @@ export default function ChatScreen(props) {
                                 text={snapShot.data().message}
                               />
                             ) : (
-                              <TouchableWithoutFeedback
-                                onPress={() =>
-                                  console.log(snapShot.data().contactName)
-                                }
-                              >
-                                <ChatContact
-                                  date={tmpHours + ":" + tmpMinutes}
-                                  seen="true"
-                                  isSelf="true"
-                                  contactName={snapShot.data().contactName}
-                                />
-                              </TouchableWithoutFeedback>
+                              <ChatContact
+                                props={props}
+                                contactID={snapShot.data().contactID}
+                                date={tmpHours + ":" + tmpMinutes}
+                                seen="true"
+                                isSelf="true"
+                                contactName={snapShot.data().contactName}
+                              />
                             )
                           ) : (
                             <ChatText
@@ -359,6 +409,8 @@ export default function ChatScreen(props) {
                             />
                           ) : (
                             <ChatContact
+                              props={props}
+                              contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
                               seen="true"
                               isSelf="true"
@@ -383,6 +435,8 @@ export default function ChatScreen(props) {
                             />
                           ) : (
                             <ChatContact
+                              props={props}
+                              contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               contactName={snapShot.data().contactName}
@@ -403,6 +457,8 @@ export default function ChatScreen(props) {
                           />
                         ) : (
                           <ChatContact
+                            props={props}
+                            contactID={snapShot.data().contactID}
                             date={tmpHours + ":" + tmpMinutes}
                             isSelf="true"
                             contactName={snapShot.data().contactName}
@@ -443,6 +499,8 @@ export default function ChatScreen(props) {
                               />
                             ) : (
                               <ChatContact
+                                props={props}
+                                contactID={snapShot.data().contactID}
                                 date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 isSelf="true"
@@ -466,6 +524,8 @@ export default function ChatScreen(props) {
                             />
                           ) : (
                             <ChatContact
+                              props={props}
+                              contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
                               seen="true"
                               isSelf="true"
@@ -490,6 +550,8 @@ export default function ChatScreen(props) {
                             />
                           ) : (
                             <ChatContact
+                              props={props}
+                              contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               contactName={snapShot.data().contactName}
@@ -510,6 +572,8 @@ export default function ChatScreen(props) {
                           />
                         ) : (
                           <ChatContact
+                            props={props}
+                            contactID={snapShot.data().contactID}
                             date={tmpHours + ":" + tmpMinutes}
                             isSelf="true"
                             contactName={snapShot.data().contactName}
@@ -598,11 +662,11 @@ export default function ChatScreen(props) {
   }, []);
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <KeyboardAvoidingView
       behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
         <CustomHeader
           text={Translate.t("chat")}
           onBack={() => props.navigation.pop()}
@@ -618,7 +682,14 @@ export default function ChatScreen(props) {
           onClick={onClick}
           onRemove={onRemove}
         />
-        <CustomSecondaryHeader name={groupName} />
+
+        <CustomSecondaryHeader
+          name={
+            groupType == "group" || groupType == "folder"
+              ? groupName
+              : getGroupName()
+          }
+        />
         <LinearGradient
           colors={[Colors.E4DBC0, Colors.C2A059]}
           start={[0, 0]}
@@ -659,7 +730,10 @@ export default function ChatScreen(props) {
           >
             <View style={styles.input_bar_file}>
               <TouchableWithoutFeedback
-                onPress={() => setShouldShow(!shouldShow)}
+                onPress={() => {
+                  hideEmoji();
+                  setShouldShow(!shouldShow)
+                }}
               >
                 {shouldShow ? (
                   <ArrowDownLogo
@@ -1061,8 +1135,8 @@ export default function ChatScreen(props) {
             </TouchableWithoutFeedback>
           </Animated.View>
         </View>
-      </SafeAreaView>
     </KeyboardAvoidingView>
+      </SafeAreaView>
   );
 }
 

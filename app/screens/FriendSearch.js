@@ -66,7 +66,7 @@ export default function FriendSearch(props) {
         if (groupID != null) {
           props.navigation.navigate("ChatScreen", {
             groupID: groupID,
-            groupName: groupName,
+            groupName: friendName,
           });
         } else {
           let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
@@ -83,37 +83,16 @@ export default function FriendSearch(props) {
               [ownTotalMessageReadField]: 0,
               [friendTotalMessageReadField]: 0,
             })
-            .then(function () {
-              navigateToChatScreen(friendID);
+            .then(function (docRef) {
+              props.navigation.navigate("ChatScreen", {
+                groupID: docRef.id,
+                groupName: friendName,
+              });
             });
         }
       });
   }
 
-  function navigateToChatScreen(friendID) {
-    let groupID;
-    let groupName;
-    chatRef
-      .where("users", "array-contains", ownUserID)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == friendID) {
-              groupID = snapShot.doc.id;
-              groupName = snapShot.doc.data().groupName;
-            }
-          }
-          if (groupID != null) {
-            props.navigation.navigate("ChatScreen", {
-              groupID: groupID,
-              groupName: groupName,
-            });
-          }
-        });
-      });
-  }
   function processFriendHtml(props, friends) {
     let tmpFriendHtml = [];
     friends.map((friend) => {

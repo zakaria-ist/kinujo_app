@@ -65,6 +65,7 @@ export default function SearchProducts(props) {
     kinujoProducts.map((product) => {
       tmpKinujoHtml.push(
         <HomeProducts
+          product_id={product.id}
           onPress={() => {
             props.navigation.navigate("HomeStoreList", {
               url: product.url,
@@ -103,6 +104,7 @@ export default function SearchProducts(props) {
     featuredProducts.map((product) => {
       tmpFeaturedHtml.push(
         <HomeProducts
+          product_id={product.id}
           onPress={() => {
             props.navigation.navigate("HomeStoreList", {
               url: product.url,
@@ -206,7 +208,7 @@ export default function SearchProducts(props) {
               onChangeText={(value) => {
                 onSearchTermChanged(value);
                 let tmpProducts = products.filter((product) => {
-                  return JSON.stringify(product).indexOf(value) >= 0;
+                  return JSON.stringify(product).toLowerCase().indexOf(value.toLowerCase()) >= 0;
                 });
                 performProductHtml(tmpProducts);
               }}

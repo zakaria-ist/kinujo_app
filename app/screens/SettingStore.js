@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   DevSettings,
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
@@ -28,6 +28,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import auth from "@react-native-firebase/auth";
 import * as Localization from "expo-localization";
+import { Picker } from "@react-native-picker/picker";
 import i18n from "i18n-js";
 import Format from "../lib/format";
 const format = new Format();
@@ -52,6 +53,7 @@ const ratioSignOut = win.width / 14 / 512;
 const ratioGlobe = win.width / 13 / 112;
 let defaultLanguage = Localization.locale;
 export default function SettingStore(props) {
+  let controller;
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [state, setState] = React.useState(false);
@@ -321,12 +323,25 @@ export default function SettingStore(props) {
               />
             </View>
           </TouchableWithoutFeedback>
-          <View style={styles.tabContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              height: heightPercentageToDP("7%"),
+              justifyContent: "flex-start",
+              alignItems: "center",
+              marginHorizontal: widthPercentageToDP("4%"),
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.F0EEE9,
+              zIndex: 10,
+            }}
+          >
             <Image
               source={require("../assets/Images/globe.png")}
               style={{ width: win.width / 13, height: 107 * ratioGlobe }}
             />
             <DropDownPicker
+              zIndex={9999}
+              controller={(instance) => (this.controller = instance)}
               items={[
                 {
                   label: "English",
@@ -344,19 +359,21 @@ export default function SettingStore(props) {
                 marginLeft: widthPercentageToDP("4%"),
               }}
               style={{
-                backgroundColor: "#fafafa",
+                backgroundColor: "white",
               }}
               itemStyle={{
                 justifyContent: "flex-start",
               }}
               labelStyle={{
                 fontSize: RFValue(12),
-                color: "#000000",
+                color: Colors.D7CCA6,
               }}
               selectedtLabelStyle={{
-                color: "#000000",
+                color: Colors.D7CCA6,
               }}
-              dropDownStyle={{ backgroundColor: "#000000" }}
+              dropDownStyle={{
+                backgroundColor: "black",
+              }}
               onChangeItem={(item) => onValueChanged(item)}
             />
           </View>

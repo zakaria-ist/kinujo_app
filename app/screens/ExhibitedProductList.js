@@ -7,9 +7,9 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  SafeAreaView
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
-import { SafeAreaView } from "react-navigation";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -101,7 +101,7 @@ export default function ExhibitedProductList(props) {
   const [productHtml, onProductHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
 
-  AsyncStorage.getItem("user").then(function(url) {
+  AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
@@ -110,28 +110,48 @@ export default function ExhibitedProductList(props) {
     if (!user.url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     }
     if (!loaded) {
       request
         .get("sellerProducts/" + userId + "/")
-        .then(function(response) {
+        .then(function (response) {
           onProductsChanged(response.data.products);
           onProductHtmlChanged(
             processProductHtml(response.data.products, status)
           );
           onLoaded(true);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
           onLoaded(true);
         });
@@ -226,7 +246,7 @@ export default function ExhibitedProductList(props) {
       </View>
       <TouchableWithoutFeedback
         onPress={() => {
-          props.navigation.navigate("ProductInformationAdd", {
+          props.navigation.navigate("ProductInformationAddNew", {
             is_store: props.route.params.is_store,
           });
         }}
