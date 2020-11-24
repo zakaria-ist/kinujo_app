@@ -1,5 +1,5 @@
 export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home"
-export ANDROID_HOME="/Users/admin/Library/Android/sdk"
+export ANDROID_HOME="/Users/YOUR_USERNAME/Library/Android/sdk"
 
 
 
@@ -7,7 +7,7 @@ Things to be done after node_modules installed:
 1. Create an folder named `assets` in the android/app/src/main
 2. modify the metro-config in the node_modules
 3. access to the src/defaults/blacklist.js
-4. Replace : 
+4. Replace :
 
 var sharedBlacklist = [
   /node_modules[/\\]react[/\\]dist[/\\].*/,
@@ -16,7 +16,7 @@ var sharedBlacklist = [
   /.*\/__tests__\/.*/
 ];
 
-with : 
+with :
 
 var sharedBlacklist = [
   /node_modules[\/\\]react[\/\\]dist[\/\\].*/,
