@@ -59,3 +59,6 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+android/app/src/main/res/drawable-mdpi/app_assets_images_globe.png
+android/app/src/main/res/drawable-mdpi/app_assets_images_productfavorite.png
+android/app/src/main/res/drawable-mdpi/app_assets_images_signout.png
