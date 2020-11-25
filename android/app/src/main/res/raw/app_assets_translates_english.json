@@ -174,7 +174,6 @@
   "create": "Create",
   "member": "Member",
   "groupName": "Group Name",
-  "folder":"Folder",
   "folderName": "Folder Name",
   "registrationCompleteEnjoy": "Registration has been completed. Enjoy the KINUJO app.",
   "item": "Item",
@@ -265,7 +264,6 @@
   "thankYouForOrder":"Thank you for your order!",
   "waitUntilDelivery":"Please wait for a while until delivery.",
   "searchProduct":"Search Products",
-  "itemAddedToCart":"The product is in!",
-  "shopName":"Shop Name"
+  "itemAddedToCart":"The product is in!"
 
 }
