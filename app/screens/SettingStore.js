@@ -52,8 +52,8 @@ const ratioHelpIcon = win.width / 18 / 18;
 const ratioSignOut = win.width / 14 / 512;
 const ratioGlobe = win.width / 13 / 112;
 let defaultLanguage = Localization.locale;
+let controller;
 export default function SettingStore(props) {
-  let controller;
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [state, setState] = React.useState(false);
@@ -330,9 +330,8 @@ export default function SettingStore(props) {
               justifyContent: "flex-start",
               alignItems: "center",
               marginHorizontal: widthPercentageToDP("4%"),
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.F0EEE9,
-              zIndex: 10,
+              // borderBottomWidth: 1,
+              // borderBottomColor: Colors.F0EEE9,
             }}
           >
             <Image
@@ -340,8 +339,10 @@ export default function SettingStore(props) {
               style={{ width: win.width / 13, height: 107 * ratioGlobe }}
             />
             <DropDownPicker
-              zIndex={9999}
-              controller={(instance) => (this.controller = instance)}
+              zIndex={1000}
+              controller={(instance) => {
+                controller = instance
+              }}
               items={[
                 {
                   label: "English",
@@ -373,35 +374,44 @@ export default function SettingStore(props) {
               }}
               dropDownStyle={{
                 backgroundColor: "black",
+                color: "white",
               }}
               onChangeItem={(item) => onValueChanged(item)}
             />
           </View>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              AsyncStorage.removeItem("user").then(() => {
-                props.navigation.navigate("LoginScreen");
-              });
-            }}
-          >
-            <View
+          <View>
+            <TouchableWithoutFeedback
               style={{
-                flexDirection: "row",
-                height: heightPercentageToDP("7%"),
-                justifyContent: "flex-start",
-                alignItems: "center",
-                marginHorizontal: widthPercentageToDP("5.2%"),
+                zIndex: -1,
+                elevation: -1
+              }}
+              onPress={() => {
+                if(!controller.isOpen()){
+                  AsyncStorage.removeItem("user").then(() => {
+                    props.navigation.navigate("LoginScreen");
+                  });
+                }
               }}
             >
-              <Image
-                source={require("../assets/Images/signout.png")}
-                style={{ width: win.width / 14, height: 512 * ratioSignOut }}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("logout")}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
+              <View
+                style={{
+                  flexDirection: "row",
+                  height: heightPercentageToDP("7%"),
+                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  marginHorizontal: widthPercentageToDP("5.2%"),
+                }}
+              >
+                <Image
+                  source={require("../assets/Images/signout.png")}
+                  style={{ width: win.width / 14, height: 512 * ratioSignOut }}
+                />
+                <Text style={styles.textInLeftContainer}>
+                  {Translate.t("logout")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </View>
       </View>
     </SafeAreaView>

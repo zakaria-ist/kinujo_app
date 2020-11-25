@@ -63,6 +63,7 @@ import PersonLogo from "../assets/icons/person.svg";
 import ChatLogo from "../assets/icons/chat.svg";
 import QRCodeLogo from "../assets/icons/qrcode.svg";
 import SettingLogo from "../assets/icons/setting.svg";
+import StarLogo from "../assets/icons/star.svg";
 
 function BottomNavigationGeneral() {
   return (
@@ -98,6 +99,7 @@ function BottomNavigationGeneral() {
           tabBarIcon: () => <ChatLogo width={25} height={25} />,
         }}
       />
+
       <Tab.Screen
         name="QRCode"
         component={QRCode}
@@ -109,6 +111,35 @@ function BottomNavigationGeneral() {
       <Tab.Screen
         name="SettingGeneral"
         component={SettingGeneral}
+        options={{
+          tabBarLabel: "Setting",
+          tabBarIcon: () => <SettingLogo width={25} height={25} />,
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+function ChatNavigator() {
+  return (
+    <Tab.Navigator
+      initialRouteName="ChatList"
+      tabBarOptions={{
+        showLabel: false,
+        showIcon: true,
+        activeTintColor: "#e91e63",
+      }}
+    >
+      <Tab.Screen
+        name="QRCode"
+        component={QRCode}
+        options={{
+          tabBarLabel: "QRCode",
+          tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
+        }}
+      />
+      <Tab.Screen
+        name="SettingStore"
+        component={SettingStore}
         options={{
           tabBarLabel: "Setting",
           tabBarIcon: () => <SettingLogo width={25} height={25} />,
@@ -258,7 +289,7 @@ export default function LoginStack() {
           name="ProductInformationAdd"
           component={ProductInformationAdd}
         />
-        <Stack.Screen name="ChatList" component={BottomNavigationGeneral} />
+        <Stack.Screen name="ChatList" component={ChatList} />
         <Stack.Screen
           name="ContactGeneral"
           component={BottomNavigationGeneral}

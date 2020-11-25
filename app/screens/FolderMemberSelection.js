@@ -108,6 +108,8 @@ export default function FolderMemberSelection(props) {
           request
             .get("user/byIds/", {
               ids: ids,
+              userId: userId,
+              "type" : "contact"
             })
             .then(function (response) {
               //response = get use details from url
@@ -151,6 +153,8 @@ export default function FolderMemberSelection(props) {
     request
       .get("user/byIds/", {
         ids: ids,
+        userId: userId,
+        "type" : "contact"
       })
       .then(function (response) {
         onUserHtmlChanged(

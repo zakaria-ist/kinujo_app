@@ -42,6 +42,7 @@ const ratioCancelIcon = win.width / 20 / 15;
 
 export default function ProfileEditingGeneral(props) {
   const [password, onPasswordChanged] = React.useState("********");
+  const [word, setWord] = React.useState("");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   const [email, onEmailChanged] = React.useState("");
   const [nickName, onNickNameChanged] = React.useState("");
@@ -72,6 +73,7 @@ export default function ProfileEditingGeneral(props) {
           onEmailChanged(response.data.email);
           onAddingFriendsByIDChanged(response.data.allowed_by_id);
           onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
+          setWord(response.data.word)
         })
         .catch(function (error) {
           if (
@@ -217,7 +219,10 @@ export default function ProfileEditingGeneral(props) {
                 height: heightPercentageToDP("5%"),
               }}
             >
-              <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
+              <TouchableWithoutFeedback onPress={() => {
+                onShowChanged(false)
+                setWord(user.word);
+              }}>
                 <Image
                   style={{
                     width: win.width / 20,
@@ -232,9 +237,16 @@ export default function ProfileEditingGeneral(props) {
                   color: "white",
                 }}
               >
-                0/500
+                {word.length}/500
               </Text>
-              <TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={() => {
+                onShowChanged(false)
+                let tmpUser = user;
+                tmpUser.word = word;
+                onUserChanged(tmpUser);
+
+                updateUser(user, "word", word);
+              }}>
                 <Text style={{ fontSize: RFValue(14), color: "white" }}>
                   {Translate.t("save")}
                 </Text>
@@ -252,7 +264,7 @@ export default function ProfileEditingGeneral(props) {
               <TextInput
                 placeholder="入力してください"
                 placeholderTextColor="white"
-                maxLength={255}
+                maxLength={500}
                 multiline={true}
                 autoFocus={true}
                 style={{
@@ -260,6 +272,10 @@ export default function ProfileEditingGeneral(props) {
                   width: "100%",
                   fontSize: RFValue(14),
                   color: "white",
+                }}
+                value={word}
+                onChangeText={(value) =>{
+                    setWord(value)
                 }}
               ></TextInput>
             </View>
@@ -415,7 +431,7 @@ export default function ProfileEditingGeneral(props) {
                 color: Colors.white,
               }}
             >
-              {user.word}
+              {user.word ? user.word.slice(0,30) : ""}
             </Text>
             <View
               style={{

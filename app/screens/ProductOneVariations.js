@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
+import { useIsFocused } from "@react-navigation/native";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -25,12 +26,13 @@ import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 let items = [];
-export default function ProductOneVariations({ props }) {
+export default function ProductOneVariations({ props, onItemsChanged}) {
+  const isFocused = useIsFocused();
   const [item, hideItem] = React.useState(false);
   const [invt, hideInvt] = React.useState(false);
   const [choice, onChoiceChanged] = React.useState("");
-  const [janCode, onJanCodeChanged] = React.useState("");
-  const [stock, onStockChanged] = React.useState("");
+  const [janCode, onJanCodeChanged] = React.useState(123456789);
+  const [stock, onStockChanged] = React.useState(1);
   const [itemName, onItemNameChanged] = React.useState("");
   const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
   const [variationDetailsHtml, onProcessSVariationDetailsHtml] = React.useState(
@@ -38,17 +40,19 @@ export default function ProductOneVariations({ props }) {
   );
   const [loaded, onLoaded] = React.useState(false);
   const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
-  console.log(items);
   function onUpdate() {
     items.push({
-      janCode: janCode,
-      stock: stock,
+      index: items.length,
       choice: choice,
+      stock: stock,
+      janCode: janCode,
     });
-    onStockChanged("");
-    onJanCodeChanged("");
+    console.log(items)
+    onItemsChanged(items);
     onChoiceChanged("");
+    console.log(items.length)
     onProcessVariationHtml(processVariationHtml(items));
+    console.log(items.length)
     onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
     onLoaded(true);
   }
@@ -58,10 +62,9 @@ export default function ProductOneVariations({ props }) {
   }
   function processVariationDetailsHtml(items) {
     let tmpVariationDetailsHtml = [];
-    let count = 1;
     items.map((product) => {
       tmpVariationDetailsHtml.push(
-        <View style={{ width: "100%" }} key={count}>
+        <View style={{ width: "100%" }} key={product.index}>
           <View style={styles.icon_title_wrapper}>
             <Text style={styles.variantName}>{product.choice}</Text>
             <TouchableOpacity>
@@ -81,6 +84,9 @@ export default function ProductOneVariations({ props }) {
               <TextInput
                 style={styles.variantInput}
                 value={product.stock}
+                onChangeText={(value) =>
+                  onValueChanged(value, product.stock, product.index)
+                }
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
             </View>
@@ -88,34 +94,50 @@ export default function ProductOneVariations({ props }) {
               <TextInput
                 style={styles.variantInput}
                 value={product.janCode}
+                onChangeText={(value) =>
+                  onValueChanged(value, product.janCode, product.id)
+                }
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
             </View>
-            <View
-              style={[
-                styles.variantContainer,
-                { paddingBottom: heightPercentageToDP("1.5%") },
-              ]}
+            <TouchableWithoutFeedback
+              onPress={() => deleteProduct(product.index)}
             >
-              <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-              <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
-            </View>
+              <View
+                style={[
+                  styles.variantContainer,
+                  { paddingBottom: heightPercentageToDP("1.5%") },
+                ]}
+              >
+                <Text style={styles.variantText}>{Translate.t("delete")}</Text>
+                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
           <View style={styles.line} />
         </View>
       );
-      count++;
-      onCurrentVariationCount(currentVariationCount + 1);
     });
     return tmpVariationDetailsHtml;
   }
-  function onValueChanged(value, type) {
+  function deleteProduct(index) {
+    items = items.filter((product) => {
+      return product.index != index;
+    });
+    onProcessVariationHtml(items);
+    onProcessSVariationDetailsHtml(items);
+  }
+  function onValueChanged(value, type, choice) {
+    console.log(value);
     items = items.map((product) => {
-      if (type == product.janCode) {
-        product.janCode = value;
-      } else if (type == product.stock) {
-        product.stock = value;
-      } else if (type == product.choice) {
+      if (choice == product.choice) {
+        if (type == product.janCode) {
+          product.janCode = value;
+        } else if (type == product.stock) {
+          product.stock = value;
+        }
+      }
+      if (type == product.choice) {
         product.choice = value;
       }
       return product;
@@ -124,36 +146,26 @@ export default function ProductOneVariations({ props }) {
   }
   function processVariationHtml(items) {
     let tmpVariationHtml = [];
-    let count = 1;
     items.map((product) => {
       tmpVariationHtml.push(
-        <View style={styles.subframe} key={count}>
-          <Text style={{ fontSize: RFValue(14) }}>{count}</Text>
+        <View style={styles.subframe} key={product.index}>
+          <Text style={{ fontSize: RFValue(14) }}>{product.index + 1}</Text>
           <Text style={styles.text}>{Translate.t("choice")}</Text>
           <TextInput
             style={styles.textInput}
             value={product.choice}
             onChangeText={(value) => onValueChanged(value, product.choice)}
           ></TextInput>
-          <Text style={styles.text}>{Translate.t("janCode")}</Text>
-          <TextInput
-            style={styles.textInput}
-            value={product.janCode}
-            onChangeText={(value) => onValueChanged(value, product.janCode)}
-          ></TextInput>
-          <Text style={styles.text}>{Translate.t("inStock")}</Text>
-          <TextInput
-            style={styles.textInput}
-            value={product.stock}
-            onChangeText={(value) => onValueChanged(value, product.stock)}
-          ></TextInput>
         </View>
       );
-      count++;
       onCurrentVariationCount(currentVariationCount + 1);
     });
     return tmpVariationHtml;
   }
+
+  React.useEffect(()=>{
+  }, [isFocused])
+
   return (
     <SafeAreaView>
       {/*項目名*/}
@@ -176,31 +188,6 @@ export default function ProductOneVariations({ props }) {
           ></TextInput>
           <ScrollView>
             <View>{variationHtml}</View>
-            <View style={styles.subframe}>
-              <Text style={{ fontSize: RFValue(14) }}>
-                {currentVariationCount}
-              </Text>
-              <Text style={styles.text}>{Translate.t("choice")}</Text>
-              <TextInput
-                style={styles.textInput}
-                value={choice}
-                onChangeText={(value) => onChoiceChanged(value)}
-              ></TextInput>
-
-              <Text style={styles.text}>{Translate.t("janCode")}</Text>
-              <TextInput
-                style={styles.textInput}
-                value={janCode}
-                onChangeText={(value) => onJanCodeChanged(value)}
-              ></TextInput>
-
-              <Text style={styles.text}>{Translate.t("inStock")}</Text>
-              <TextInput
-                style={styles.textInput}
-                value={stock}
-                onChangeText={(value) => onStockChanged(value)}
-              ></TextInput>
-            </View>
           </ScrollView>
           <TouchableOpacity onPress={() => onUpdate()}>
             <View

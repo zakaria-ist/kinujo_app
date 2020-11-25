@@ -36,6 +36,7 @@ MERGED from [:react-native-safe-area-context] /Users/guanchuan/Documents/project
 MERGED from [:react-native-screens] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-screens/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:react-native-vector-icons] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-vector-icons/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [:rn-fetch-blob] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-47:12
+MERGED from [:rn-qr-generator] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/rn-qr-generator/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [com.facebook.react:react-native:0.63.3] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/0066f4fcc5abb1cb6e71d7ce9a438877/jetified-react-native-0.63.3/AndroidManifest.xml:2:1-13:12
 MERGED from [:expo-image-loader] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/expo-image-loader/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-11:12
 MERGED from [com.facebook.fresco:flipper:2.2.0] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/8fb12fb547088dcf8b01d81e1a70126d/flipper-2.2.0/AndroidManifest.xml:2:1-9:12
@@ -633,6 +634,8 @@ MERGED from [:react-native-vector-icons] /Users/guanchuan/Documents/projects/kin
 MERGED from [:react-native-vector-icons] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/react-native-vector-icons/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:rn-fetch-blob] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
 MERGED from [:rn-fetch-blob] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/rn-fetch-blob/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41
+MERGED from [:rn-qr-generator] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/rn-qr-generator/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:rn-qr-generator] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/rn-qr-generator/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [com.facebook.react:react-native:0.63.3] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/0066f4fcc5abb1cb6e71d7ce9a438877/jetified-react-native-0.63.3/AndroidManifest.xml:7:5-9:41
 MERGED from [com.facebook.react:react-native:0.63.3] /Users/guanchuan/.gradle/caches/transforms-2/files-2.1/0066f4fcc5abb1cb6e71d7ce9a438877/jetified-react-native-0.63.3/AndroidManifest.xml:7:5-9:41
 MERGED from [:expo-image-loader] /Users/guanchuan/Documents/projects/kinujo_frontend/node_modules/expo-image-loader/android/build/intermediates/library_manifest/debug/AndroidManifest.xml:7:5-9:41

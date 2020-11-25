@@ -57,6 +57,8 @@ import com.horcrux.svg.SvgPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 // rn-fetch-blob
 import com.RNFetchBlob.RNFetchBlobPackage;
+// rn-qr-generator
+import com.gevorg.reactlibrary.RNQrGeneratorPackage;
 
 public class PackageList {
   private Application application;
@@ -124,7 +126,8 @@ public class PackageList {
       new RNScreensPackage(),
       new SvgPackage(),
       new VectorIconsPackage(),
-      new RNFetchBlobPackage()
+      new RNFetchBlobPackage(),
+      new RNQrGeneratorPackage()
     ));
   }
 }

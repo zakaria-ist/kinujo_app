@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
+import messaging from '@react-native-firebase/messaging';
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -26,6 +27,11 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
 import Format from "../lib/format";
+import firebase from "firebase/app";
+import { firebaseConfig } from "../../firebaseConfig.js";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const format = new Format();
 
 const request = new Request();
@@ -33,12 +39,24 @@ const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+}
+
 export default function Home(props) {
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
   const isFocused = useIsFocused();
   React.useEffect(() => {
+    requestUserPermission();
     AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)

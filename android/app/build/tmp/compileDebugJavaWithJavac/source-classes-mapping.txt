@@ -294,9 +294,8 @@ io/grpc/android/R.java
  io.grpc.android.R
 com/bumptech/glide/gifdecoder/R.java
  com.bumptech.glide.gifdecoder.R
-com/example/kinujo/MainApplication.java
- com.example.kinujo.MainApplication
- com.example.kinujo.MainApplication$1
+com/google/android/gms/clearcut/R.java
+ com.google.android.gms.clearcut.R
 com/facebook/fresco/memorytypes/nativememory/R.java
  com.facebook.fresco.memorytypes.nativememory.R
 expo/modules/lineargradient/R.java
@@ -1031,8 +1030,8 @@ expo/modules/location/R.java
  expo.modules.location.R$string
  expo.modules.location.R$style
  expo.modules.location.R$styleable
-com/facebook/react/PackageList.java
- com.facebook.react.PackageList
+com/google/android/gms/vision/R.java
+ com.google.android.gms.vision.R
 androidx/slidingpanelayout/R.java
  androidx.slidingpanelayout.R
  androidx.slidingpanelayout.R$attr
@@ -1158,7 +1157,23 @@ expo/modules/updates/R.java
  expo.modules.updates.R$style
  expo.modules.updates.R$styleable
  expo.modules.updates.R$xml
-com/google/android/gms/vision/R.java
- com.google.android.gms.vision.R
-com/google/android/gms/clearcut/R.java
- com.google.android.gms.clearcut.R
+com/example/kinujo/MainApplication.java
+ com.example.kinujo.MainApplication
+ com.example.kinujo.MainApplication$1
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList
+com/gevorg/reactlibrary/R.java
+ com.gevorg.reactlibrary.R
+ com.gevorg.reactlibrary.R$anim
+ com.gevorg.reactlibrary.R$attr
+ com.gevorg.reactlibrary.R$bool
+ com.gevorg.reactlibrary.R$color
+ com.gevorg.reactlibrary.R$dimen
+ com.gevorg.reactlibrary.R$drawable
+ com.gevorg.reactlibrary.R$id
+ com.gevorg.reactlibrary.R$integer
+ com.gevorg.reactlibrary.R$layout
+ com.gevorg.reactlibrary.R$string
+ com.gevorg.reactlibrary.R$style
+ com.gevorg.reactlibrary.R$styleable
+ com.gevorg.reactlibrary.R$xml

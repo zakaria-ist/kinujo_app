@@ -19,12 +19,38 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
-
 import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
-
-export default function ProductTwoVariations({ props }) {
+import _ from "lodash";
+let items = [
+  {
+    index: 0,
+    horizontalItem: "",
+    choices: [
+      {
+        choiceIndex: 0,
+        choiceItem: "",
+        janCode: "",
+        stock: "",
+      },
+    ],
+  },
+  {
+    index: 1,
+    horizontalItem: "",
+    choices: [
+      {
+        choiceIndex: 0,
+        choiceItem: "",
+        janCode: "",
+        stock: "",
+      },
+    ],
+  },
+];
+let globalMappingValue = {}
+export default function ProductTwoVariations({ props, onItemsChanged }) {
   const [invt, hideInvt] = React.useState(false);
   const [choice, onChoiceChanged] = React.useState("");
   const [horizontalAxis, onHorizontalAxisChanged] = React.useState("");
@@ -33,71 +59,269 @@ export default function ProductTwoVariations({ props }) {
   const [itemName, onItemNameChanged] = React.useState("");
   const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
-  const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
-  return (
-    <SafeAreaView>
-      {/*項目名*/}
-      <View style={{ width: "100%" }}>
-        <View style={styles.subframe}>
-          <Text style={styles.text}>{Translate.t("horizonItemName")}</Text>
-          <TextInput style={styles.textInput}></TextInput>
+  const [variationDetailsHtml, onProcessVariationDetailsHtml] = React.useState(
+    <View></View>
+  );
+  function populateMapping(){
+    mappingValue = globalMappingValue;
+    items[0].choices.map((choice1) => {
+      if(choice1){
+        items[1].choices.map((choice2) => {
+          if(choice2){
+            if(mappingValue[choice1.choiceItem]){
+              if(!mappingValue[choice1.choiceItem][choice2.choiceItem]){
+                mappingValue[choice1.choiceItem][choice2.choiceItem] = {
+                  stock: 0,
+                  janCode: ""
+                }
+              }
+            } else {
+              mappingValue[choice1.choiceItem] = {
+              }
+              mappingValue[choice1.choiceItem][choice2.choiceItem] = {
+                stock: 0,
+                janCode: ""
+              }
+            }
+          }
+        })
+      }
+    })
+    globalMappingValue = mappingValue;
+    console.log(globalMappingValue)
 
-          <View style={styles.multiVariant}>
-            <View
-              style={{
-                height: "100%",
-                marginHorizontal: widthPercentageToDP("1%"),
-                flexDirection: "row",
-                alignItems: "flex-end",
-              }}
+    if(onItemsChanged){
+      onItemsChanged({
+        "items" : items,
+        "mappingValue" : globalMappingValue
+      })
+    }
+  }
+  function addNewChoice(index, choiceIndex) {
+    let choiceObj = {
+      choiceIndex: choiceIndex + 1,
+      choiceItem: "",
+    };
+    items.map((product) => {
+      if (index == product.index) {
+        product.choices.push(choiceObj);
+      }
+      return product;
+    });
+    
+    populateMapping()
+    onProcessVariationHtml(processVariationHtml(items));
+    onLoaded(true);
+  }
+  function processChoiceHtml(index, choices) {
+    let tmpChoiceHtml = [];
+    choices.map((choice) => {
+      tmpChoiceHtml.push(
+        <View style={styles.multiVariant} key={choice.choiceIndex}>
+          <View
+            style={{
+              height: "100%",
+              marginHorizontal: widthPercentageToDP("1%"),
+              flexDirection: "row",
+              alignItems: "flex-end",
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => addNewChoice(index, choice.choiceIndex)}
             >
-              <TouchableOpacity>
-                <View
+              <View
+                style={
+                  choice.choiceIndex == choices.length - 1
+                    ? styles.addNewChoice
+                    : styles.none
+                }
+              >
+                <Text
                   style={{
-                    backgroundColor: Colors.deepGrey,
-                    marginTop: heightPercentageToDP("2%"),
-                    marginBottom: heightPercentageToDP("2%"),
-                    borderRadius: 5,
-                    alignItems: "center",
-                    padding: widthPercentageToDP("1%"),
-                    alignSelf: "flex-start",
+                    fontSize: RFValue("12"),
+                    color: "#FFF",
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: RFValue("12"),
-                      color: "#FFF",
-                    }}
-                  >
-                    +{Translate.t("add")}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flex: 1,
-                padding: widthPercentageToDP("1%"),
-              }}
-            >
-              <Text style={styles.text}>{Translate.t("choice")}</Text>
-
-              <View style={styles.multiVariant}>
-                <Text style={styles.text}>{"1"}</Text>
-                <TextInput style={styles.textInput}></TextInput>
+                  +{Translate.t("add")}
+                </Text>
               </View>
-
-              <View style={styles.multiVariant}>
-                <Text style={styles.text}>{"2"}</Text>
-                <TextInput style={styles.textInput}></TextInput>
-              </View>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              padding: widthPercentageToDP("1%"),
+            }}
+          >
+            <Text style={styles.text}>{Translate.t("choice")}</Text>
+            <View style={styles.multiVariant}>
+              <Text style={styles.text}>{choice.choiceIndex}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={choice.choiceItem}
+                onChangeText={(value) =>
+                  onValueChanged(value, "choice", index, choice.choiceIndex)
+                }
+              ></TextInput>
             </View>
           </View>
         </View>
+      );
+    });
+    return tmpChoiceHtml;
+  }
+  function processVariationHtml(items) {
+    let tmpVariationHtml = [];
+    items.map((product) => {
+      tmpVariationHtml.push(
+        <View style={{ width: "100%" }} key={product.index}>
+          <View style={styles.subframe}>
+            <Text style={styles.text}>{Translate.t("horizonItemName")}</Text>
+            <TextInput
+              style={styles.textInput}
+              value={product.horizontalItem}
+              onChangeText={(value) =>
+                onValueChanged(value, "horizontalItem", product.index)
+              }
+            ></TextInput>
 
-        <View style={styles.line} />
-      </View>
+            {processChoiceHtml(product.index, product.choices)}
+          </View>
+          <View style={styles.line} />
+        </View>
+      );
+    });
+    return tmpVariationHtml;
+  }
+  function onValueChanged(value, type, index, choiceIndex) {
+    items = items.map((product) => {
+      if (index == product.index) {
+        if (type == "horizontalItem") {
+          product.horizontalItem = value;
+        }
+        product.choices.map((choices) => {
+          if (type == "choice") {
+            if (choices.choiceIndex == choiceIndex) {
+              choices.choiceItem = value;
+            }
+          } else if (type == "stock") {
+            if (choices.choiceIndex == choiceIndex) {
+              choices.stock = value;
+            }
+          } else if (type == "janCode") {
+            if (choices.choiceIndex == choiceIndex) {
+              choices.janCode = value;
+            }
+          }
+          return choices;
+        });
+      }
+      return product;
+    });
+    populateMapping()
+    onProcessVariationHtml(processVariationHtml(items));
+    onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+  }
+  function processDetailsVariationHtml(items) {
+    let tmpVariationDetailsHtml = [];
+    items[0].choices.map((choice) => {
+      tmpVariationDetailsHtml.push(
+        <View style={{ width: "100%" }} key={choice.choiceIndex}>
+          <View style={styles.icon_title_wrapper}>
+            <Text style={styles.variantName}>{choice.choiceItem}</Text>
+            <TouchableOpacity>
+              {false ? (
+                <ArrowDownIcon
+                  style={styles.widget_icon}
+                  resizeMode="contain"
+                />
+              ) : (
+                <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+              )}
+            </TouchableOpacity>
+          </View>
+          {populateChoiceDetailsHtml(choice.choiceItem, items[1].choices)}
+          <View style={styles.line} />
+        </View>
+      );
+    });
+    return tmpVariationDetailsHtml;
+  }
+  function populateChoiceDetailsHtml(choice1Item, choices) {
+    let tmpChoiceDetailsHtml = [];
+    choices.map((choice) => {
+      tmpChoiceDetailsHtml.push(
+        <View style={false ? styles.none : null}>
+          <View style={styles.subline} />
+          <View style={styles.variantContainer}>
+            <Text style={styles.colorText}>{choice.choiceItem}</Text>
+            {/* onValueChanged(value, "choice", index, choice.choiceIndex) */}
+            <TextInput
+              style={styles.variantStockInput}
+              value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['stock'] : ""}
+              onChangeText={(value) => {
+                globalMappingValue[choice1Item][choice.choiceItem]['stock'] = value;
+                onProcessVariationHtml(processVariationHtml(items));
+                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+              }}
+            ></TextInput>
+            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+          </View>
+          <View style={styles.variantContainer}>
+            <TextInput
+              style={styles.variantInput}
+              value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['janCode'] : ""}
+              onChangeText={(value) => {
+                globalMappingValue[choice1Item][choice.choiceItem]['janCode'] = value;
+                onProcessVariationHtml(processVariationHtml(items));
+                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+              }}
+            ></TextInput>
+            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              deleteProduct(index, choice.choiceIndex)
+            }}
+          >
+            <View
+              style={[
+                styles.variantContainer,
+                { paddingBottom: heightPercentageToDP("1.5%") },
+              ]}
+            >
+              <Text style={styles.variantText}>{Translate.t("delete")}</Text>
+              <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+            </View>
+          </TouchableOpacity>
+        </View>
+      );
+    });
 
+    return tmpChoiceDetailsHtml;
+  }
+  function deleteProduct(index, choiceIndex) {
+    items = items.map((item) => {
+      if (item.index == index) {
+        choices = item.choices.filter((choice) => {
+          return choice.choiceIndex != choiceIndex;
+        });
+      }
+      return item;
+    });
+    onProcessVariationHtml(processVariationHtml(items));
+    onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+  }
+  if (!loaded) {
+    onProcessVariationHtml(processVariationHtml(items));
+    onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+    onLoaded(true);
+  }
+
+  return (
+    <SafeAreaView>
+      {/*項目名*/}
+      {variationHtml}
       <View style={{ width: "100%" }}>
         {/*在庫*/}
         <View style={styles.icon_title_wrapper}>
@@ -126,40 +350,7 @@ export default function ProductTwoVariations({ props }) {
         </Text>
       </View>
 
-      <View style={{ width: "100%" }}>
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.variantName}>{"XS"}</Text>
-          <TouchableOpacity>
-            {false ? (
-              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
-            ) : (
-              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
-            )}
-          </TouchableOpacity>
-        </View>
-        <View style={false ? styles.none : null}>
-          <View style={styles.subline} />
-          <View style={styles.variantContainer}>
-            <Text style={styles.colorText}>Color</Text>
-            <TextInput style={styles.variantStockInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-          </View>
-          <View style={styles.variantContainer}>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-          </View>
-          <View
-            style={[
-              styles.variantContainer,
-              { paddingBottom: heightPercentageToDP("1.5%") },
-            ]}
-          >
-            <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-            <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
-          </View>
-        </View>
-        <View style={styles.line} />
-      </View>
+      {variationDetailsHtml}
 
       <TouchableOpacity>
         <View
@@ -311,5 +502,14 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     paddingRight: 10,
     flexBasis: "auto",
+  },
+  addNewChoice: {
+    backgroundColor: Colors.deepGrey,
+    marginTop: heightPercentageToDP("2%"),
+    marginBottom: heightPercentageToDP("2%"),
+    borderRadius: 5,
+    alignItems: "center",
+    padding: widthPercentageToDP("1%"),
+    alignSelf: "flex-start",
   },
 });

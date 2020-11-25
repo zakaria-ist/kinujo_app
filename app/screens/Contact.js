@@ -72,9 +72,10 @@ function addFriend(firstUserId, secondUserId) {
     });
 }
 export default function Contact(props) {
+  const isFocused = useIsFocused();
   React.useEffect(() => {
     onShowChanged(false);
-  }, [!isFocused]);
+  }, [isFocused]);
   function redirectToChat(friendID, friendName) {
     let groupID;
     let groupName;
@@ -158,6 +159,15 @@ export default function Contact(props) {
       groupName: groupName,
     });
   }
+  function getName(obj){
+    if(obj.data){
+      if(obj.type == 'user'){
+        return obj.data.real_name ? obj.data.real_name : obj.data.nickname;
+      }
+      return obj.data.name;
+    }
+    return "";
+  }
   function processUserHtml(props, users) {
     setFriendCount(users.length);
     let tmpUserHtml = [];
@@ -165,12 +175,15 @@ export default function Contact(props) {
       tmpUserHtml.push(
         <TouchableWithoutFeedback
           onLongPress={() => {
-            onLongPressObjChanged(user);
+            onLongPressObjChanged({
+              "type" : "user",
+              "data" : user
+            });
             onShowChanged(true);
           }}
           key={user.id}
           onPress={() => {
-            redirectToChat(user.id, user.nickname);
+            redirectToChat(user.id, user.real_name ? user.real_name : user.nickname);
           }}
         >
           <View style={styles.contactTabContainer}>
@@ -181,7 +194,7 @@ export default function Contact(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.tabLeftText}>{user.nickname}</Text>
+            <Text style={styles.tabLeftText}>{user.real_name ? user.real_name : user.nickname}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
@@ -195,6 +208,13 @@ export default function Contact(props) {
       let group = groups[i];
       tmpGroupHtml.push(
         <TouchableWithoutFeedback
+          onLongPress={() => {
+            onLongPressObjChanged({
+              "type" : "group",
+              "data" : group
+            });
+            onShowChanged(true);
+          }}
           key={groups[i]["id"]}
           onPress={() => {
             navigateToChatScreenWithGroupID(group["id"], group["name"]);
@@ -222,6 +242,13 @@ export default function Contact(props) {
       let folder = folders[i];
       tmpFolderHtml.push(
         <TouchableWithoutFeedback
+          onLongPress={() => {
+            onLongPressObjChanged({
+              "type" : "folder",
+              "data" : folder
+            });
+            onShowChanged(true);
+          }}
           key={folders[i]["id"]}
           onPress={() => {
             props.navigation.navigate("FolderContactList", {
@@ -244,7 +271,6 @@ export default function Contact(props) {
     }
     return tmpFolderHtml;
   }
-  const isFocused = useIsFocused();
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [groupHtml, onGroupHtmlChanged] = React.useState(<View></View>);
   const [folderHtml, onFolderHtmlChanged] = React.useState(<View></View>);
@@ -269,7 +295,6 @@ export default function Contact(props) {
   const friendsOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
-
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let userId = getID(url);
@@ -369,12 +394,15 @@ export default function Contact(props) {
           request
             .get("user/byIds/", {
               ids: ids,
+              userId: userId,
+              "type" : "contact"
             })
             .then(function (response) {
               globalUsers = response.data.users;
               onUserHtmlChanged(processUserHtml(props, response.data.users));
             })
             .catch(function (error) {
+              console.log(error);
               if (
                 error &&
                 error.response &&
@@ -397,16 +425,16 @@ export default function Contact(props) {
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <SafeAreaView style={{ flex: 1 }}>
+        <CustomHeader
+          text={Translate.t("contact")}
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onPress={() => props.navigation.navigate("Cart")}
+        />
+        <CustomSecondaryHeader
+          name={user.nickname}
+          accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
+        />
         <ScrollView>
-          <CustomHeader
-            text={Translate.t("contact")}
-            onFavoritePress={() => props.navigation.navigate("Favorite")}
-            onPress={() => props.navigation.navigate("Cart")}
-          />
-          <CustomSecondaryHeader
-            name={user.nickname}
-            accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
-          />
           <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
             <View style={styles.searchInputContainer}>
               <TouchableWithoutFeedback
@@ -466,189 +494,6 @@ export default function Contact(props) {
                 style={styles.searchIcon}
                 source={require("../assets/Images/searchIcon.png")}
               />
-            </View>
-            <View style={show == true ? styles.popUp : styles.none}>
-              <View
-                style={{
-                  marginTop: heightPercentageToDP("3%"),
-                }}
-              >
-                <Text style={{ fontSize: RFValue(14) }}>
-                  {longPressObj.real_name
-                    ? longPressObj.real_name
-                    : longPressObj.nickname}
-                </Text>
-                <View
-                  style={{
-                    marginTop: heightPercentageToDP("2%"),
-                    justifyContent: "space-evenly",
-                    height: heightPercentageToDP("35%"),
-                  }}
-                >
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      db.collection("users")
-                        .doc(String(user.id))
-                        .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
-                        .get()
-                        .then((querySnapshot) => {
-                          if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(String(user.id))
-                                .collection("friends")
-                                .doc(documentSnapshot.id)
-                                .set(
-                                  {
-                                    pinned:
-                                      longPressObj["pinned"] == "" ||
-                                      longPressObj["pinned"]
-                                        ? false
-                                        : true,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                );
-                            });
-                          }
-                        });
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("upperFixed")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      db.collection("users")
-                        .doc(String(user.id))
-                        .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
-                        .get()
-                        .then((querySnapshot) => {
-                          if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(String(user.id))
-                                .collection("friends")
-                                .doc(documentSnapshot.id)
-                                .set(
-                                  {
-                                    notify:
-                                      longPressObj["notify"] == "" ||
-                                      longPressObj["notify"]
-                                        ? false
-                                        : true,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                );
-                            });
-                          }
-                        });
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("notification")}OFF
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      db.collection("users")
-                        .doc(String(user.id))
-                        .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
-                        .get()
-                        .then((querySnapshot) => {
-                          if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(String(user.id))
-                                .collection("friends")
-                                .doc(documentSnapshot.id)
-                                .set(
-                                  {
-                                    hide:
-                                      longPressObj["hide"] == "" ||
-                                      longPressObj["hide"]
-                                        ? false
-                                        : true,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                );
-                            });
-                          }
-                        });
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("nonRepresent")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      db.collection("users")
-                        .doc(String(user.id))
-                        .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
-                        .get()
-                        .then((querySnapshot) => {
-                          if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(String(user.id))
-                                .collection("friends")
-                                .doc(documentSnapshot.id)
-                                .set(
-                                  {
-                                    delete:
-                                      longPressObj["delete"] == "" ||
-                                      longPressObj["delete"]
-                                        ? false
-                                        : true,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                );
-                            });
-                          }
-                        });
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("remove")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPressIn={() => onShowChanged(false)}
-                    onPress={() =>
-                      props.navigation.navigate("GroupChatCreation")
-                    }
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("groupChatCreate")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPressIn={() => onShowChanged(false)}
-                    onPress={() => props.navigation.navigate("CreateFolder")}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("createFolder")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                </View>
-              </View>
             </View>
             {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
             <View>
@@ -893,6 +738,201 @@ export default function Contact(props) {
             {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/}
           </View>
         </ScrollView>
+        <View style={show == true ? styles.popUp : styles.none}>
+        <View style={
+          {
+            zIndex: 1,
+            borderWidth: 1,
+            backgroundColor: "white",
+            alignSelf: "center",
+            marginTop: heightPercentageToDP("30%"),
+            borderColor: Colors.D7CCA6,
+            alignItems: "flex-start",
+            paddingLeft: widthPercentageToDP("5%"),
+            paddingRight: widthPercentageToDP("25%")
+          }
+        }>
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("3%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(14) }}>
+                  {getName(longPressObj)}
+                </Text>
+                <View
+                  style={{
+                    marginTop: heightPercentageToDP("2%"),
+                    justifyContent: "space-evenly",
+                    height: heightPercentageToDP("35%"),
+                  }}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      db.collection("users")
+                        .doc(String(user.id))
+                        .collection("friends")
+                        .where("id", "==", String(longPressObj.data.id))
+                        .get()
+                        .then((querySnapshot) => {
+                          if (querySnapshot.size > 0) {
+                            querySnapshot.forEach((documentSnapshot) => {
+                              db.collection("users")
+                                .doc(String(user.id))
+                                .collection("friends")
+                                .doc(documentSnapshot.id)
+                                .set(
+                                  {
+                                    pinned:
+                                      longPressObj["pinned"] == "" ||
+                                      longPressObj["pinned"]
+                                        ? false
+                                        : true,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                );
+                            });
+                          }
+                        });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("upperFixed")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      db.collection("users")
+                        .doc(String(user.id))
+                        .collection("friends")
+                        .where("id", "==", String(longPressObj.id))
+                        .get()
+                        .then((querySnapshot) => {
+                          if (querySnapshot.size > 0) {
+                            querySnapshot.forEach((documentSnapshot) => {
+                              db.collection("users")
+                                .doc(String(user.id))
+                                .collection("friends")
+                                .doc(documentSnapshot.id)
+                                .set(
+                                  {
+                                    notify:
+                                      longPressObj["notify"] == "" ||
+                                      longPressObj["notify"]
+                                        ? false
+                                        : true,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                );
+                            });
+                          }
+                        });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("notification")}OFF
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      db.collection("users")
+                        .doc(String(user.id))
+                        .collection("friends")
+                        .where("id", "==", String(longPressObj.id))
+                        .get()
+                        .then((querySnapshot) => {
+                          if (querySnapshot.size > 0) {
+                            querySnapshot.forEach((documentSnapshot) => {
+                              db.collection("users")
+                                .doc(String(user.id))
+                                .collection("friends")
+                                .doc(documentSnapshot.id)
+                                .set(
+                                  {
+                                    hide:
+                                      longPressObj["hide"] == "" ||
+                                      longPressObj["hide"]
+                                        ? false
+                                        : true,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                );
+                            });
+                          }
+                        });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("nonRepresent")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      db.collection("users")
+                        .doc(String(user.id))
+                        .collection("friends")
+                        .where("id", "==", String(longPressObj.id))
+                        .get()
+                        .then((querySnapshot) => {
+                          if (querySnapshot.size > 0) {
+                            querySnapshot.forEach((documentSnapshot) => {
+                              db.collection("users")
+                                .doc(String(user.id))
+                                .collection("friends")
+                                .doc(documentSnapshot.id)
+                                .set(
+                                  {
+                                    delete:
+                                      longPressObj["delete"] == "" ||
+                                      longPressObj["delete"]
+                                        ? false
+                                        : true,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                );
+                            });
+                          }
+                        });
+                      onShowChanged(false);
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("remove")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPressIn={() => onShowChanged(false)}
+                    onPress={() =>
+                      props.navigation.navigate("GroupChatCreation")
+                    }
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("groupChatCreate")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPressIn={() => onShowChanged(false)}
+                    onPress={() => props.navigation.navigate("CreateFolder")}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("createFolder")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
+            </View>
+        </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -959,14 +999,12 @@ const styles = StyleSheet.create({
   },
   popUp: {
     position: "absolute",
-    zIndex: 1,
+    zIndex: 100,
     borderWidth: 1,
-    backgroundColor: "white",
     alignSelf: "center",
-    marginTop: heightPercentageToDP("15%"),
+    width: widthPercentageToDP("100%"),
+    height:heightPercentageToDP("100%"),
     borderColor: Colors.D7CCA6,
     alignItems: "flex-start",
-    paddingLeft: widthPercentageToDP("5%"),
-    paddingRight: widthPercentageToDP("25%"),
   },
 });

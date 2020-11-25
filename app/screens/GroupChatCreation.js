@@ -117,10 +117,10 @@ export default function GroupChatCreation(props) {
           friendIds: friendIds,
           ownUserID: userId,
         });
-      } else {
-        alert.warning("Please fill in the group name");
       }
       // setGroupName("");
+    } else {
+      alert.warning("Please fill in the group name");
     }
   }
   function addMemberHandler() {

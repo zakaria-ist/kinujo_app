@@ -16,6 +16,8 @@ import {
   Linking,
   SafeAreaView
 } from "react-native";
+import RNQRGenerator from 'rn-qr-generator';
+import { Buffer } from 'buffer';
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -53,15 +55,17 @@ function findParams(data, param) {
   let tmps = data.split("?");
   if (tmps.length > 0) {
     let tmp = tmps[1];
-    let params = tmp.split("&");
-    let searchParams = params.filter((tmpParam) => {
-      return tmpParam.indexOf(param) >= 0;
-    });
-    if (searchParams.length > 0) {
-      let foundParam = searchParams[0];
-      let foundParams = foundParam.split("=");
-      if (foundParams.length > 0) {
-        return foundParams[1];
+    if(tmp){
+      let params = tmp.split("&");
+      let searchParams = params.filter((tmpParam) => {
+        return tmpParam.indexOf(param) >= 0;
+      });
+      if (searchParams.length > 0) {
+        let foundParam = searchParams[0];
+        let foundParams = foundParam.split("=");
+        if (foundParams.length > 0) {
+          return foundParams[1];
+        }
       }
     }
   }
@@ -207,41 +211,48 @@ export default function QRCode(props) {
             <TouchableOpacity
               onPress={() => {
                 const options = {
-                  noData: true,
+                  // noData: true,
+                  includeBase64: true
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
-                  var i = new Image();
-                  i.onload = function () {
-                    const code = findParams(
-                      jsQR(response.data, i.width, i.height),
-                      "kinujoId"
-                    );
-                    if (code) {
-                      firestore()
-                        .collection("users")
-                        .doc(userId)
-                        .collection("friends")
-                        .where("id", "==", code)
-                        .get()
-                        .then((querySnapshot) => {
-                          if (querySnapshot && querySnapshot.data()) {
-                          } else {
-                            db.collection("users")
-                              .doc(userId)
-                              .collection("friends")
-                              .add({
-                                type: "user",
-                                id: code,
-                              });
-                          }
-                          alert.warning(Translate.t("friendAdded"));
-                        });
-                    } else {
-                      alert.warning(Translate.t("invalidQRcode"));
-                    }
-                  };
-
-                  i.src = response.data;
+                  console.log(response)
+                  RNQRGenerator.detect({
+                    base64: response.data
+                    // uri: Platform.OS === "android"
+                    // ? response.uri
+                    // : response.uri.replace("file://", ""), // local path of the image. Can be skipped if base64 is passed.
+                  })
+                    .then(response => {
+                      const { values } = response; // Array of detected QR code values. Empty if nothing found.
+                      const code = findParams(
+                        values[0],
+                        "kinujoId"
+                      );
+                      if (code) {
+                        firestore()
+                          .collection("users")
+                          .doc(userId)
+                          .collection("friends")
+                          .where("id", "==", code)
+                          .get()
+                          .then((querySnapshot) => {
+                            if (querySnapshot && querySnapshot.data()) {
+                            } else {
+                              db.collection("users")
+                                .doc(userId)
+                                .collection("friends")
+                                .add({
+                                  type: "user",
+                                  id: code,
+                                });
+                            }
+                            alert.warning(Translate.t("friendAdded"));
+                          });
+                      } else {
+                        alert.warning(Translate.t("invalidQRcode"));
+                      }
+                    })
+                    .catch(error => console.log('Cannot detect QR code in image', error));
                 });
               }}
               style={[

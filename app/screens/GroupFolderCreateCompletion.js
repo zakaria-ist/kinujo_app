@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -96,6 +96,7 @@ export default function GroupFolderCreateCompletion(props) {
               }
             });
             props.navigation.replace("ChatScreen", {
+              type: "group",
               groupName: groupName,
               groupID: documentID,
             });
@@ -109,7 +110,9 @@ export default function GroupFolderCreateCompletion(props) {
   }
   function cancelHanlder() {
     AsyncStorage.removeItem("ids");
-    props.navigation.navigate("HomeGeneral");
+    let routes = props.navigation.dangerouslyGetState().routes;
+    props.navigation.pop(2);
+    // props.navigation.navigate("Contact");
   }
   if (!loaded) {
     let tmpUserListHtml = [];
@@ -225,20 +228,24 @@ export default function GroupFolderCreateCompletion(props) {
             {userListHtml}
           </View>
           {/* /////////////////////////////////////////////////////////////*/}
-          <TouchableWithoutFeedback onPress={() => redirectToChat()}>
-            <View>
-              <Image
-                style={{
-                  width: win.width / 7,
-                  height: 18 * ratioChat,
-                  alignSelf: "center",
-                  marginTop: heightPercentageToDP("5%"),
-                }}
-                source={require("../assets/Images/chatIcon.png")}
-              />
-              <Text style={styles.textForIcon}>{Translate.t("talk")}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+          {props.route.params.type != "folder" ? (
+            <TouchableWithoutFeedback onPress={() => redirectToChat()}>
+              <View>
+                <Image
+                  style={{
+                    width: win.width / 7,
+                    height: 18 * ratioChat,
+                    alignSelf: "center",
+                    marginTop: heightPercentageToDP("5%"),
+                  }}
+                  source={require("../assets/Images/chatIcon.png")}
+                />
+                <Text style={styles.textForIcon}>{Translate.t("talk")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          ) : (
+            <View></View>
+          )}
         </View>
       </View>
     </SafeAreaView>

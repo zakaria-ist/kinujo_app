@@ -341,8 +341,7 @@ export default function PurchaseHistory(props) {
               props.route.params.is_store ? Translate.t("storeAccount") : ""
             }
           />
-          <ScrollView>
-            <Animated.View
+          <Animated.View
               style={{
                 zIndex: 1,
                 height: heightPercentageToDP("100%"),
@@ -531,7 +530,7 @@ export default function PurchaseHistory(props) {
             </TouchableOpacity> */}
               </View>
             </Animated.View>
-
+          <ScrollView style={{ flexGrow: 1 }}>
             <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
               <TouchableWithoutFeedback
                 onPress={() =>
