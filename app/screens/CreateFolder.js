@@ -60,6 +60,8 @@ export default function CreateFolder(props) {
     userId = urls[urls.length - 1];
   });
   React.useEffect(() => {
+    let routes = props.navigation.dangerouslyGetState().routes;
+    console.log(routes);
     AsyncStorage.getItem("ids")
       .then((val) => {
         friendIds = JSON.parse(val);
@@ -107,6 +109,13 @@ export default function CreateFolder(props) {
     if (folderName != "") {
       AsyncStorage.removeItem("tmpIds");
       if (friendIds) {
+        db.collection("users").doc(userId).collection("folders").add({
+          folderName: folderName,
+          type: "folder",
+          users: friendIds,
+          usersName: friendNames,
+        });
+
         props.navigation.navigate("GroupFolderCreateCompletion", {
           type: "folder",
           groupName: folderName,
@@ -114,9 +123,9 @@ export default function CreateFolder(props) {
           friendIds: friendIds,
           ownUserID: userId,
         });
-      } else {
-        alert.warning("Please fill in the group name");
       }
+    } else {
+      alert.warning("Please fill in the folder name");
     }
   }
   function addMemberHandler() {

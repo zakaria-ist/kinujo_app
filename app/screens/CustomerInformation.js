@@ -76,7 +76,7 @@ export default function CustomerInformation(props) {
         .onSnapshot((documentSnapshot) => {
           if (documentSnapshot.data()) {
             onFirebaseUserChanged(documentSnapshot.data());
-            onMemoChanged(firebaseUser.memo);
+            onMemoChanged(documentSnapshot.data().memo);
           } else {
             onFirebaseUserChanged({
               memo: "",
@@ -206,10 +206,6 @@ export default function CustomerInformation(props) {
             }}
             source={require("../assets/Images/profileEditingIcon.png")}
           >
-            <Image
-              style={styles.cameraIconInsideProfilePicture}
-              source={require("../assets/Images/cameraIcon.png")}
-            />
           </ImageBackground>
           <View
             style={{
@@ -404,9 +400,9 @@ export default function CustomerInformation(props) {
                   .collection("customers")
                   .doc(customerId)
                   .set({
-                    secretMode: firebaseUser.secretMode,
-                    blockMode: firebaseUser.blockMode,
-                    displayName: firebaseUser.displayName,
+                    secretMode: firebaseUser.secretMode ? firebaseUser.secretMode : false,
+                    blockMode: firebaseUser.blockMode ? firebaseUser.blockMode : false,
+                    displayName: firebaseUser.displayName ? firebaseUser.displayName : "",
                     memo: memo,
                   });
               }}

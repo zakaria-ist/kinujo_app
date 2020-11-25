@@ -15,7 +15,7 @@
   "smsAuthentication": "認証する",
   "nonBeautician": "美容師以外の方はこちら",
   "termsOfService": "利用規約",
-  "productCreate" : "出品登録",
+  "productCreate" : "出品登录",
   "agree": "同意する",
   "logout" : "ログアウト",
   "totalSale" : "総売上",
@@ -69,7 +69,6 @@
   "profile": "プロフィール",
   "customerTotal": "お客様合計",
   "note": "メモ",
-  "folder":"フォルダ",
   "folderSetting": "フォルダの設定",
   "sharingGroup": "共有中のグループ",
   "advancedSetting": "詳細設定",
@@ -244,7 +243,8 @@
   "friendSearch":"友だち検索",
   "friendSearchByID":"IDで友だちを検索",
   "groupChatCreation":"フォルダメンバー選択",
-  "shopName":"お店名",
+
+
   "talk":"トーク",
   "folderOrGroupName":"フォルダ名またはグループ名",
   "featuredProduct":"おすすめ商品",

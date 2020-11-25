@@ -213,7 +213,7 @@ export default function ProfileInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditNameChanged(false);
+                  onEditNicknameChanged(false);
                   updateUser(user, "nickname", nickname);
                 }}
               />
@@ -253,7 +253,6 @@ export default function ProfileInformation(props) {
           <Text style={styles.productInformationTitle}>
             {Translate.t("gender")}
           </Text>
-          {gender == null ? (
             <View
               style={{
                 position: "absolute",
@@ -266,7 +265,7 @@ export default function ProfileInformation(props) {
               }}
             >
               <Picker
-                selectedValue={""}
+                selectedValue={gender}
                 style={{
                   height: RFValue(50),
                   width: RFValue(120),
@@ -276,25 +275,10 @@ export default function ProfileInformation(props) {
                   updateUser(user, "gender", value);
                 }}
               >
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
+                <Picker.Item label="Male" value="0" />
+                <Picker.Item label="Female" value="1" />
               </Picker>
             </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("2%"),
-                paddingBottom: heightPercentageToDP("2%"),
-              }}
-            >
-              <Text style={{ fontSize: RFValue(12) }}>{gender}</Text>
-            </View>
-          )}
         </View>
         <View style={styles.productInformationContainer}>
           <Text style={styles.productInformationTitle}>

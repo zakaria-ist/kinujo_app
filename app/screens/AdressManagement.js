@@ -61,7 +61,7 @@ export default function AddressManagement(props) {
               onAddressChanged(response.data);
               onNameChanged(response.data.name);
               onZipcodeChanged(response.data.zip1);
-              onPrefectureChanged(response.data.prefecture.url);
+              onPrefectureChanged(response.data.prefecture);
               onAddChanged(response.data.address1);
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
@@ -204,7 +204,7 @@ export default function AddressManagement(props) {
         onPress={() => {
           if (props.route.params && props.route.params.url) {
             request
-              .patch(props.route.params.url, {
+              .patch(props.route.params.url.replace("addresses", "insertAddresses"), {
                 address1: add,
                 address2: add,
                 address_name: buildingName,
@@ -236,7 +236,7 @@ export default function AddressManagement(props) {
           } else {
             AsyncStorage.getItem("user").then(function (url) {
               request
-                .post("addresses/", {
+                .post("insertAddresses/", {
                   address1: add,
                   address2: add,
                   address_name: buildingName,

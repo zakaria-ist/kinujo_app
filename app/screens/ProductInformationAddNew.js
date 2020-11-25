@@ -48,6 +48,9 @@ let choices = [];
 export default function ProductInformationAdd(props) {
   const [user, onUserChanged] = React.useState({});
   const [productName, onProductNameChanged] = React.useState("");
+  const [noneVariationItems, onNoneVariationItemsChanged] = React.useState([]);
+  const [oneVariationItems, onOneVariationItemsChanged] = React.useState([]);
+  const [twoVariationItems, onTwoVariationItemsChanged] = React.useState([]);
   const [brandName, onBrandNameChanged] = React.useState("");
   const [pr, onPrChanged] = React.useState("");
   const [productId, onProductIdChanged] = React.useState("");
@@ -100,7 +103,7 @@ export default function ProductInformationAdd(props) {
     } else if (variant == "one") {
       console.log("1");
     } else if (variant == "two") {
-      console.log("2");
+      //   console.log("2");
     }
   }
   return (
@@ -200,13 +203,25 @@ export default function ProductInformationAdd(props) {
 
             {/*1 項目*/}
             <View style={productVariation !== "one" ? styles.none : null}>
-              <ProductOneVariations />
+              <ProductOneVariations onItemsChanged={
+                (items) => {
+                  onOneVariationItemsChanged(items);
+                }
+              }/>
             </View>
             <View style={productVariation !== "two" ? styles.none : null}>
-              <ProductTwoVariations />
+              <ProductTwoVariations onItemsChanged={
+                (items) => {
+                  onTwoVariationItemsChanged(items);
+                }
+              }/>
             </View>
             <View style={productVariation !== "none" ? styles.none : null}>
-              <ProductNoneVariations />
+              <ProductNoneVariations onItemsChanged={
+                (items) => {
+                  onNoneVariationItemsChanged(items);
+                }
+              }/>
             </View>
 
             <Text style={styles.text}>{Translate.t("publishState")}</Text>
@@ -443,7 +458,11 @@ export default function ProductInformationAdd(props) {
             ></TextInput>
           </View>
           <View style={styles.allButtonContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={
+              ()=>{
+                console.log(oneVariationItems)
+              }
+            }>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>
                   {Translate.t("saveDraft")}

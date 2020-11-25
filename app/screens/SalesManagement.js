@@ -6,7 +6,7 @@ import {
   View,
   Dimensions,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
+import DropDownPicker from "react-native-dropdown-picker";
 const format = new Format();
 var kanjidate = require("kanjidate");
 
@@ -45,7 +46,8 @@ function processSaleHtml(sales) {
             style={{
               position: "absolute",
               left: 0,
-              marginLeft: widthPercentageToDP("20%"),
+              marginLeft: widthPercentageToDP("24%"),
+              paddingBottom: heightPercentageToDP("2%"),
             }}
           >
             <Text style={styles.commissionTabText}>
@@ -59,6 +61,7 @@ function processSaleHtml(sales) {
               position: "absolute",
               fontSize: RFValue(12),
               right: 0,
+              paddingBottom: heightPercentageToDP("2%"),
             }}
           >
             {format.separator(sale.unit_price)}円
@@ -86,7 +89,8 @@ function processCommissionHtml(commissions) {
             style={{
               position: "absolute",
               left: 0,
-              marginLeft: widthPercentageToDP("20%"),
+              marginLeft: widthPercentageToDP("24%"),
+              paddingBottom: heightPercentageToDP("2%"),
             }}
           >
             <Text style={styles.commissionTabText}>
@@ -105,6 +109,7 @@ function processCommissionHtml(commissions) {
               position: "absolute",
               fontSize: RFValue(12),
               right: 0,
+              paddingBottom: heightPercentageToDP("2%"),
             }}
           >
             {commission.amount}円
@@ -267,7 +272,42 @@ export default function SalesManagement(props) {
             source={require("../assets/Images/downForMoreIcon.png")}
           />
         </View> */}
-        <View>
+        <View style={{ marginTop: heightPercentageToDP("3%") }}>
+          <DropDownPicker
+            style={{ borderColor: "transparent", borderWidth: 0 }}
+            items={[
+              {
+                label: "USA",
+                value: "usa",
+                hidden: true,
+              },
+              {
+                label: "UK",
+                value: "uk",
+              },
+              {
+                label: "France",
+                value: "france",
+              },
+            ]}
+            defaultValue={"usa"}
+            containerStyle={{
+              height: heightPercentageToDP("5%"),
+              width: widthPercentageToDP("35%"),
+            }}
+            arrowSize={RFValue(20)}
+            labelStyle={{
+              fontSize: RFValue(11),
+              color: "black",
+            }}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            selectedtLabelStyle={{
+              color: "black",
+            }}
+            dropDownStyle={{ backgroundColor: "white" }}
+          />
           <View
             style={{
               borderWidth: 2,
@@ -334,6 +374,7 @@ export default function SalesManagement(props) {
               </View>
             </View>
           </View>
+
           <View
             style={{
               marginTop: heightPercentageToDP("3%"),
@@ -400,7 +441,7 @@ export default function SalesManagement(props) {
                     fontSize: RFValue(12),
                     position: "absolute",
                     left: 0,
-                    marginLeft: widthPercentageToDP("20%"),
+                    marginLeft: widthPercentageToDP("22%"),
                   }}
                 >
                   {status == "commission"
@@ -462,8 +503,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: heightPercentageToDP("3%"),
     borderBottomColor: Colors.CECECE,
+    marginTop: heightPercentageToDP("1.5%"),
   },
   commissionTabText: {
-    fontSize: RFValue(12),
+    fontSize: RFValue(11),
   },
 });

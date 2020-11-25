@@ -17,7 +17,7 @@ import {
   ScrollView,
   Keyboard,
   SafeAreaView,
-  PixelRatio
+  PixelRatio,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
@@ -46,11 +46,12 @@ import SendLogo from "../assets/icons/send.svg";
 import CameraLogo from "../assets/icons/camera.svg";
 import GalleryLogo from "../assets/icons/gallery.svg";
 import ContactLogo from "../assets/icons/contact.svg";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import _ from "lodash";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import storage from "@react-native-firebase/storage";
+import Clipboard from "@react-native-community/clipboard";
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 var uuid = require("react-native-uuid");
@@ -102,15 +103,20 @@ function checkUpdateFriend(user1, user2) {
     updateFriend = true;
   }
 }
-
+// const fetchCopiedText = async () => {
+//   const text = await Clipboard.getString();
+//   setCopiedText(text);
+// };
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = React.useState(false);
+  const [showPopUp, onShowPopUpChanged] = React.useState(false);
   const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
   const [messages, setMessages] = React.useState("");
   const [showEmoji, onShowEmojiChanged] = useState(false);
   const [prevEmoji, setPrevEmoji] = useState("");
   const [users, onUserChanged] = React.useState("");
+  const [copiedText, setCopiedText] = useState("");
   // const [user, processUser] = useState("");
   const [inputBarPosition, setInputBarPosition] = useState(-2);
   const scrollViewReference = useRef();
@@ -118,6 +124,7 @@ export default function ChatScreen(props) {
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
   groupType = props.route.params.type;
+  const [longPressObj, onLongPressObjChanged] = React.useState({});
   const insets = useSafeAreaInsets();
   function processUserHtml(props, users) {
     users.map((user) => {
@@ -173,7 +180,7 @@ export default function ChatScreen(props) {
   function handleEmojiIconPressed() {
     onShowEmojiChanged(true);
     setShouldShow(false);
-    setInputBarPosition(heightPercentageToDP("34%") - insets.top/2);
+    setInputBarPosition(heightPercentageToDP("34%") - insets.top / 2);
     Keyboard.dismiss();
   }
   function hideEmoji() {
@@ -248,23 +255,58 @@ export default function ChatScreen(props) {
               if (!found) {
                 if (tmpDay == day) {
                   tmpChatHtml.push(
-                    <View key={snapShot.id}>
-                      {previousMessageDateToday == null ? (
-                        <Text style={[styles.chat_date]}>
-                          {Translate.t("today")}
-                        </Text>
-                      ) : (
-                        <Text style={[styles.chat_date]}>{""}</Text>
-                      )}
-                      {/*///////////////////////////////////////*/}
-                      {tmpMessageCount <= smallestSeenCount ? (
-                        //seen area
-                        snapShot.data().userID == userId ? (
-                          snapShot.data().image == null ? (
-                            snapShot.data().contactID == null ? (
+                    <TouchableWithoutFeedback
+                      key={snapShot.id}
+                      onLongPress={() => {
+                        onLongPressObjChanged({
+                          id: snapShot.id,
+                          message: snapShot.data().message,
+                        });
+                        onShowPopUpChanged(true);
+                      }}
+                    >
+                      <View key={snapShot.id}>
+                        {previousMessageDateToday == null ? (
+                          <Text style={[styles.chat_date]}>
+                            {Translate.t("today")}
+                          </Text>
+                        ) : (
+                          <Text style={[styles.chat_date]}>{""}</Text>
+                        )}
+                        {/*///////////////////////////////////////*/}
+                        {tmpMessageCount <= smallestSeenCount ? (
+                          //seen area
+                          snapShot.data().userID == userId ? (
+                            snapShot.data().image == null ? (
+                              snapShot.data().contactID == null ? (
+                                <ChatText
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  isSelf="true"
+                                  seen="true"
+                                  text={snapShot.data().message}
+                                />
+                              ) : (
+                                <ChatContact
+                                  props={props}
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  seen="true"
+                                  isSelf="true"
+                                  contactID={snapShot.data().contactID}
+                                  contactName={snapShot.data().contactName}
+                                />
+                              )
+                            ) : (
                               <ChatText
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
+                                seen="true"
+                                imageURL={snapShot.data().image}
+                              />
+                            )
+                          ) : snapShot.data().image == null ? (
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 text={snapShot.data().message}
                               />
@@ -272,8 +314,8 @@ export default function ChatScreen(props) {
                               <ChatContact
                                 props={props}
                                 date={tmpHours + ":" + tmpMinutes}
-                                seen="true"
                                 isSelf="true"
+                                seen="true"
                                 contactID={snapShot.data().contactID}
                                 contactName={snapShot.data().contactName}
                               />
@@ -281,8 +323,32 @@ export default function ChatScreen(props) {
                           ) : (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
                               seen="true"
+                              imageURL={snapShot.data().image}
+                            />
+                          )
+                        ) : //unseen area
+                        snapShot.data().userID == userId ? (
+                          snapShot.data().image == null ? (
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                text={snapShot.data().message}
+                              />
+                            ) : (
+                              <ChatContact
+                                props={props}
+                                contactID={snapShot.data().contactID}
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                contactName={snapShot.data().contactName}
+                              />
+                            )
+                          ) : (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
                               imageURL={snapShot.data().image}
                             />
                           )
@@ -290,33 +356,6 @@ export default function ChatScreen(props) {
                           snapShot.data().contactID == null ? (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
-                              seen="true"
-                              text={snapShot.data().message}
-                            />
-                          ) : (
-                            <ChatContact
-                              props={props}
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
-                              seen="true"
-                              contactID={snapShot.data().contactID}
-                              contactName={snapShot.data().contactName}
-                            />
-                          )
-                        ) : (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            seen="true"
-                            imageURL={snapShot.data().image}
-                          />
-                        )
-                      ) : //unseen area
-                      snapShot.data().userID == userId ? (
-                        snapShot.data().image == null ? (
-                          snapShot.data().contactID == null ? (
-                            <ChatText
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
                               text={snapShot.data().message}
                             />
                           ) : (
@@ -331,54 +370,68 @@ export default function ChatScreen(props) {
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
                             imageURL={snapShot.data().image}
                           />
-                        )
-                      ) : snapShot.data().image == null ? (
-                        snapShot.data().contactID == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            text={snapShot.data().message}
-                          />
-                        ) : (
-                          <ChatContact
-                            props={props}
-                            contactID={snapShot.data().contactID}
-                            date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
-                            contactName={snapShot.data().contactName}
-                          />
-                        )
-                      ) : (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          imageURL={snapShot.data().image}
-                        />
-                      )}
-                      {/*///////////////////////////////////////*/}
-                    </View>
+                        )}
+                        {/*///////////////////////////////////////*/}
+                      </View>
+                    </TouchableWithoutFeedback>
                   );
                   previousMessageDateToday = tmpDay;
                 } else if (tmpDay == day - 1) {
                   tmpChatHtml.push(
-                    <View key={snapShot.id}>
-                      {previousMessageDateYesterday == null ? (
-                        <Text style={[styles.chat_date]}>
-                          {Translate.t("yesterday")}
-                        </Text>
-                      ) : (
-                        <Text style={[styles.chat_date]}>{""}</Text>
-                      )}
-                      {/*///////////////////////////////////////*/}
-                      {tmpMessageCount <= smallestSeenCount ? (
-                        //seen area
-                        snapShot.data().userID == userId ? (
-                          snapShot.data().image == null ? (
-                            snapShot.data().contactID == null ? (
+                    <TouchableWithoutFeedback
+                      key={snapShot.id}
+                      onLongPress={() => {
+                        onLongPressObjChanged({
+                          id: snapShot.id,
+                          message: snapShot.data().message,
+                        });
+                        onShowPopUpChanged(true);
+                      }}
+                    >
+                      <View key={snapShot.id}>
+                        {previousMessageDateYesterday == null ? (
+                          <Text style={[styles.chat_date]}>
+                            {Translate.t("yesterday")}
+                          </Text>
+                        ) : (
+                          <Text style={[styles.chat_date]}>{""}</Text>
+                        )}
+                        {/*///////////////////////////////////////*/}
+                        {tmpMessageCount <= smallestSeenCount ? (
+                          //seen area
+                          snapShot.data().userID == userId ? (
+                            snapShot.data().image == null ? (
+                              snapShot.data().contactID == null ? (
+                                <ChatText
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  isSelf="true"
+                                  seen="true"
+                                  text={snapShot.data().message}
+                                />
+                              ) : (
+                                <ChatContact
+                                  props={props}
+                                  contactID={snapShot.data().contactID}
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  seen="true"
+                                  isSelf="true"
+                                  contactName={snapShot.data().contactName}
+                                />
+                              )
+                            ) : (
                               <ChatText
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
+                                seen="true"
+                                imageURL={snapShot.data().image}
+                              />
+                            )
+                          ) : snapShot.data().image == null ? (
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 text={snapShot.data().message}
                               />
@@ -395,8 +448,32 @@ export default function ChatScreen(props) {
                           ) : (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
                               seen="true"
+                              imageURL={snapShot.data().image}
+                            />
+                          )
+                        ) : //unseen area
+                        snapShot.data().userID == userId ? (
+                          snapShot.data().image == null ? (
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                text={snapShot.data().message}
+                              />
+                            ) : (
+                              <ChatContact
+                                props={props}
+                                contactID={snapShot.data().contactID}
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                contactName={snapShot.data().contactName}
+                              />
+                            )
+                          ) : (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
                               imageURL={snapShot.data().image}
                             />
                           )
@@ -404,33 +481,6 @@ export default function ChatScreen(props) {
                           snapShot.data().contactID == null ? (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
-                              seen="true"
-                              text={snapShot.data().message}
-                            />
-                          ) : (
-                            <ChatContact
-                              props={props}
-                              contactID={snapShot.data().contactID}
-                              date={tmpHours + ":" + tmpMinutes}
-                              seen="true"
-                              isSelf="true"
-                              contactName={snapShot.data().contactName}
-                            />
-                          )
-                        ) : (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            seen="true"
-                            imageURL={snapShot.data().image}
-                          />
-                        )
-                      ) : //unseen area
-                      snapShot.data().userID == userId ? (
-                        snapShot.data().image == null ? (
-                          snapShot.data().contactID == null ? (
-                            <ChatText
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
                               text={snapShot.data().message}
                             />
                           ) : (
@@ -445,55 +495,69 @@ export default function ChatScreen(props) {
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
                             imageURL={snapShot.data().image}
                           />
-                        )
-                      ) : snapShot.data().image == null ? (
-                        snapShot.data().contactID == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            text={snapShot.data().message}
-                          />
-                        ) : (
-                          <ChatContact
-                            props={props}
-                            contactID={snapShot.data().contactID}
-                            date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
-                            contactName={snapShot.data().contactName}
-                          />
-                        )
-                      ) : (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          imageURL={snapShot.data().image}
-                        />
-                      )}
-                      {/*///////////////////////////////////////*/}
-                    </View>
+                        )}
+                        {/*///////////////////////////////////////*/}
+                      </View>
+                    </TouchableWithoutFeedback>
                   );
                   previousMessageDateYesterday = tmpDay;
                 } else if (tmpDay != day && tmpDay != day - 1) {
                   tmpChatHtml.push(
-                    <View key={snapShot.id}>
-                      {previousMessageDateElse ==
-                      snapShot.data().timeStamp.toDate().toDateString() ? (
-                        <Text style={[styles.chat_date]}>{""}</Text>
-                      ) : (
-                        <Text style={[styles.chat_date]}>
-                          {tmpMonth + "/" + tmpDay}
-                        </Text>
-                      )}
-                      {/*///////////////////////////////////////*/}
-                      {tmpMessageCount <= smallestSeenCount ? (
-                        //seen area
-                        snapShot.data().userID == userId ? (
-                          snapShot.data().image == null ? (
-                            snapShot.data().contactID == null ? (
+                    <TouchableWithoutFeedback
+                      key={snapShot.id}
+                      onLongPress={() => {
+                        onLongPressObjChanged({
+                          id: snapShot.id,
+                          message: snapShot.data().message,
+                        });
+                        onShowPopUpChanged(true);
+                      }}
+                    >
+                      <View key={snapShot.id}>
+                        {previousMessageDateElse ==
+                        snapShot.data().timeStamp.toDate().toDateString() ? (
+                          <Text style={[styles.chat_date]}>{""}</Text>
+                        ) : (
+                          <Text style={[styles.chat_date]}>
+                            {tmpMonth + "/" + tmpDay}
+                          </Text>
+                        )}
+                        {/*///////////////////////////////////////*/}
+                        {tmpMessageCount <= smallestSeenCount ? (
+                          //seen area
+                          snapShot.data().userID == userId ? (
+                            snapShot.data().image == null ? (
+                              snapShot.data().contactID == null ? (
+                                <ChatText
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  isSelf="true"
+                                  seen="true"
+                                  text={snapShot.data().message}
+                                />
+                              ) : (
+                                <ChatContact
+                                  props={props}
+                                  contactID={snapShot.data().contactID}
+                                  date={tmpHours + ":" + tmpMinutes}
+                                  seen="true"
+                                  isSelf="true"
+                                  contactName={snapShot.data().contactName}
+                                />
+                              )
+                            ) : (
                               <ChatText
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
+                                seen="true"
+                                imageURL={snapShot.data().image}
+                              />
+                            )
+                          ) : snapShot.data().image == null ? (
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 text={snapShot.data().message}
                               />
@@ -510,8 +574,32 @@ export default function ChatScreen(props) {
                           ) : (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
                               seen="true"
+                              imageURL={snapShot.data().image}
+                            />
+                          )
+                        ) : //unseen area
+                        snapShot.data().userID == userId ? (
+                          snapShot.data().image == null ? (
+                            snapShot.data().contactID == null ? (
+                              <ChatText
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                text={snapShot.data().message}
+                              />
+                            ) : (
+                              <ChatContact
+                                props={props}
+                                contactID={snapShot.data().contactID}
+                                date={tmpHours + ":" + tmpMinutes}
+                                isSelf="true"
+                                contactName={snapShot.data().contactName}
+                              />
+                            )
+                          ) : (
+                            <ChatText
+                              date={tmpHours + ":" + tmpMinutes}
+                              isSelf="true"
                               imageURL={snapShot.data().image}
                             />
                           )
@@ -519,33 +607,6 @@ export default function ChatScreen(props) {
                           snapShot.data().contactID == null ? (
                             <ChatText
                               date={tmpHours + ":" + tmpMinutes}
-                              seen="true"
-                              text={snapShot.data().message}
-                            />
-                          ) : (
-                            <ChatContact
-                              props={props}
-                              contactID={snapShot.data().contactID}
-                              date={tmpHours + ":" + tmpMinutes}
-                              seen="true"
-                              isSelf="true"
-                              contactName={snapShot.data().contactName}
-                            />
-                          )
-                        ) : (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            seen="true"
-                            imageURL={snapShot.data().image}
-                          />
-                        )
-                      ) : //unseen area
-                      snapShot.data().userID == userId ? (
-                        snapShot.data().image == null ? (
-                          snapShot.data().contactID == null ? (
-                            <ChatText
-                              date={tmpHours + ":" + tmpMinutes}
-                              isSelf="true"
                               text={snapShot.data().message}
                             />
                           ) : (
@@ -560,33 +621,12 @@ export default function ChatScreen(props) {
                         ) : (
                           <ChatText
                             date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
                             imageURL={snapShot.data().image}
                           />
-                        )
-                      ) : snapShot.data().image == null ? (
-                        snapShot.data().contactID == null ? (
-                          <ChatText
-                            date={tmpHours + ":" + tmpMinutes}
-                            text={snapShot.data().message}
-                          />
-                        ) : (
-                          <ChatContact
-                            props={props}
-                            contactID={snapShot.data().contactID}
-                            date={tmpHours + ":" + tmpMinutes}
-                            isSelf="true"
-                            contactName={snapShot.data().contactName}
-                          />
-                        )
-                      ) : (
-                        <ChatText
-                          date={tmpHours + ":" + tmpMinutes}
-                          imageURL={snapShot.data().image}
-                        />
-                      )}
-                      {/*///////////////////////////////////////*/}
-                    </View>
+                        )}
+                        {/*///////////////////////////////////////*/}
+                      </View>
+                    </TouchableWithoutFeedback>
                   );
 
                   previousMessageDateElse = snapShot
@@ -655,6 +695,7 @@ export default function ChatScreen(props) {
             });
           });
         unsubscribe();
+        onShowPopUpChanged(false);
         onChatHtmlChanged([]);
         tmpChatHtml = [];
       }
@@ -663,480 +704,547 @@ export default function ChatScreen(props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <KeyboardAvoidingView
-      behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
-      style={{ flex: 1 }}
-    >
-        <CustomHeader
-          text={Translate.t("chat")}
-          onBack={() => props.navigation.pop()}
-          onFavoritePress={() => props.navigation.navigate("Favorite")}
-          onPress={() => props.navigation.navigate("Cart")}
-        />
-        <EmojiBoard
-          showBoard={showEmoji}
-          style={{
-            height: heightPercentageToDP("30%"),
-            marginBottom: heightPercentageToDP("10%"),
-          }}
-          onClick={onClick}
-          onRemove={onRemove}
-        />
-
-        <CustomSecondaryHeader
-          name={
-            groupType == "group" || groupType == "folder"
-              ? groupName
-              : getGroupName()
-          }
-        />
-        <LinearGradient
-          colors={[Colors.E4DBC0, Colors.C2A059]}
-          start={[0, 0]}
-          end={[1, 0.6]}
+      <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
           style={{ flex: 1 }}
         >
-          <ScrollView
-            ref={scrollViewReference}
-            onContentSizeChange={() =>
-              scrollViewReference.current.scrollToEnd({ animated: true })
+          <CustomHeader
+            text={Translate.t("chat")}
+            onBack={() => props.navigation.pop()}
+            onFavoritePress={() => props.navigation.navigate("Favorite")}
+            onPress={() => props.navigation.navigate("Cart")}
+          />
+          <EmojiBoard
+            showBoard={showEmoji}
+            style={{
+              height: heightPercentageToDP("30%"),
+              marginBottom: heightPercentageToDP("10%"),
+            }}
+            onClick={onClick}
+            onRemove={onRemove}
+          />
+          <CustomSecondaryHeader
+            name={
+              groupType == "group" || groupType == "folder"
+                ? groupName
+                : getGroupName()
             }
-            style={{
-              width: "100%",
-              paddingTop: heightPercentageToDP("1%"),
-              paddingBottom: heightPercentageToDP("5%"),
-            }}
+          />
+          <LinearGradient
+            colors={[Colors.E4DBC0, Colors.C2A059]}
+            start={[0, 0]}
+            end={[1, 0.6]}
+            style={{ flex: 1 }}
           >
-            {chatHtml}
-          </ScrollView>
-        </LinearGradient>
-        {/* Bottom Area */}
-        <View
-          style={{
-            width: "100%",
-            bottom: inputBarPosition,
-            left: 0,
-            overflow: "hidden",
-          }}
-        >
-          <View
-            style={{
-              height: textInputHeight,
-              backgroundColor: "#F0EEE9",
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={styles.input_bar_file}>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  hideEmoji();
-                  setShouldShow(!shouldShow)
+            <ScrollView
+              ref={scrollViewReference}
+              onContentSizeChange={() =>
+                scrollViewReference.current.scrollToEnd({ animated: true })
+              }
+              style={{
+                width: "100%",
+                paddingTop: heightPercentageToDP("1%"),
+                paddingBottom: heightPercentageToDP("5%"),
+              }}
+            >
+              {chatHtml}
+            </ScrollView>
+          </LinearGradient>
+          <View style={showPopUp == true ? styles.popUpView : styles.none}>
+            <View style={{
+              backgroundColor: "white",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+              flex: 1,
+              marginHorizontal: widthPercentageToDP("15%"),
+              marginVertical: heightPercentageToDP("30%"),
+              borderWidth: 1,
+              borderColor: Colors.D7CCA6,
+              justifyContent: "space-evenly",
+            }}>
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("1.5%"),
+                  flex: 1,
+                  width: "100%",
                 }}
               >
-                {shouldShow ? (
-                  <ArrowDownLogo
-                    width={"100%"}
-                    height={"100%"}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <PlusCircleLogo
-                    width={"100%"}
-                    height={"100%"}
-                    resizeMode="contain"
-                  />
-                )}
-              </TouchableWithoutFeedback>
+                <View>
+                  <TouchableWithoutFeedback
+                    onPress={() => Clipboard.setString(longPressObj.message)}
+                    onPressIn={() => onShowPopUpChanged(false)}
+                  >
+                    <Text style={styles.popUpText}>{Translate.t("copy")}</Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback>
+                    <Text style={styles.popUpText}>{Translate.t("forward")}</Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback>
+                    <Text style={styles.popUpText}>
+                      {Translate.t("cancelOnlyMe")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback>
+                    <Text style={styles.popUpText}>{Translate.t("remove")}</Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback>
+                    <Text style={styles.popUpText}>
+                      {Translate.t("addToFav")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback>
+                    <Text style={styles.popUpText}>
+                      {Translate.t("multiSelect")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
             </View>
-            <View style={styles.input_bar_text}>
-              <View style={styles.input_bar_text_border}>
-                <TextInput
-                  // onContentSizeChange={(e) =>
-                  //   setTextInputHeight(
-                  //     textInputHeight + heightPercentageToDP("0.5%")
-                  //   )
-                  // }
-                  onFocus={() => hideEmoji()}
-                  onBlur={() => hideEmoji()}
-                  multiline={true}
-                  value={messages}
-                  onChangeText={(value) => setMessages(value)}
-                  placeholder="Type a message"
-                  style={{
-                    width: widthPercentageToDP("15%"),
-                    flexGrow: 1,
-                    color: "black",
-                    flexDirection: "row",
-                    justifyContent: "flex-end",
-                    paddingLeft: 15,
-                  }}
-                ></TextInput>
-
+          </View>
+          {/* Bottom Area */}
+          <View
+            style={{
+              width: "100%",
+              bottom: inputBarPosition,
+              left: 0,
+              overflow: "hidden",
+            }}
+          >
+            <View
+              style={{
+                height: textInputHeight,
+                backgroundColor: "#F0EEE9",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={styles.input_bar_file}>
                 <TouchableWithoutFeedback
-                  onPress={() => handleEmojiIconPressed()}
+                  onPress={() => {
+                    hideEmoji();
+                    setShouldShow(!shouldShow);
+                  }}
                 >
-                  <View style={styles.user_emoji_input}>
-                    <EmojiLogo
+                  {shouldShow ? (
+                    <ArrowDownLogo
                       width={"100%"}
                       height={"100%"}
                       resizeMode="contain"
                     />
-                  </View>
+                  ) : (
+                    <PlusCircleLogo
+                      width={"100%"}
+                      height={"100%"}
+                      resizeMode="contain"
+                    />
+                  )}
                 </TouchableWithoutFeedback>
               </View>
+              <View style={styles.input_bar_text}>
+                <View style={styles.input_bar_text_border}>
+                  <TextInput
+                    // onContentSizeChange={(e) =>
+                    //   setTextInputHeight(
+                    //     textInputHeight + heightPercentageToDP("0.5%")
+                    //   )
+                    // }
+                    onFocus={() => hideEmoji()}
+                    onBlur={() => hideEmoji()}
+                    multiline={true}
+                    value={messages}
+                    onChangeText={(value) => setMessages(value)}
+                    placeholder="Type a message"
+                    style={{
+                      width: widthPercentageToDP("15%"),
+                      flexGrow: 1,
+                      color: "black",
+                      flexDirection: "row",
+                      justifyContent: "flex-end",
+                      paddingLeft: 15,
+                    }}
+                  ></TextInput>
+
+                  <TouchableWithoutFeedback
+                    onPress={() => handleEmojiIconPressed()}
+                  >
+                    <View style={styles.user_emoji_input}>
+                      <EmojiLogo
+                        width={"100%"}
+                        height={"100%"}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              </View>
+              {/* SEND BUTTON */}
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  let tmpMessage = messages;
+                  setMessages("");
+                  let createdAt =
+                    year +
+                    ":" +
+                    month +
+                    ":" +
+                    day +
+                    ":" +
+                    hour +
+                    ":" +
+                    minute +
+                    ":" +
+                    seconds;
+                  console.log(groupID);
+                  tmpMessage != ""
+                    ? db
+                        .collection("chat")
+                        .doc(groupID)
+                        .collection("messages")
+                        .add({
+                          userID: userId,
+                          createdAt: createdAt,
+                          timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                          message: tmpMessage,
+                        })
+                        .then(function () {
+                          db.collection("chat").doc(groupID).set(
+                            {
+                              message: tmpMessage,
+                              lastMessageTime: createdAt,
+                            },
+                            {
+                              merge: true,
+                            }
+                          );
+
+                          chatsRef
+                            .doc(groupID)
+                            .get()
+                            .then(function (doc) {
+                              totalMessageCount = doc.data().totalMessage;
+                            })
+                            .then(function () {
+                              chatsRef.doc(groupID).update({
+                                totalMessage: totalMessageCount + 1,
+                              });
+                            });
+                        })
+                    : null;
+                }}
+              >
+                <View style={styles.input_bar_send}>
+                  <SendLogo
+                    width={"100%"}
+                    height={"100%"}
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-            {/* SEND BUTTON */}
-            <TouchableWithoutFeedback
-              onPress={() => {
-                let tmpMessage = messages;
-                setMessages("");
-                let createdAt =
-                  year +
-                  ":" +
-                  month +
-                  ":" +
-                  day +
-                  ":" +
-                  hour +
-                  ":" +
-                  minute +
-                  ":" +
-                  seconds;
-
-                tmpMessage != ""
-                  ? db
-                      .collection("chat")
-                      .doc(groupID)
-                      .collection("messages")
-                      .add({
-                        userID: userId,
-                        createdAt: createdAt,
-                        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        message: tmpMessage,
-                      })
-                      .then(function () {
-                        db.collection("chat").doc(groupID).set(
-                          {
-                            message: tmpMessage,
-                            lastMessageTime: createdAt,
-                          },
-                          {
-                            merge: true,
-                          }
-                        );
-
-                        chatsRef
-                          .doc(groupID)
-                          .get()
-                          .then(function (doc) {
-                            totalMessageCount = doc.data().totalMessage;
-                          })
-                          .then(function () {
-                            chatsRef.doc(groupID).update({
-                              totalMessage: totalMessageCount + 1,
-                            });
-                          });
-                      })
-                  : null;
-              }}
+            <Animated.View
+              style={[shouldShow ? styles.input_bar_widget : styles.none]}
             >
-              <View style={styles.input_bar_send}>
-                <SendLogo width={"100%"} height={"100%"} resizeMode="contain" />
-              </View>
-            </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  const options = {
+                    noData: true,
+                    mediaType: "photo",
+                  };
+                  ImagePicker.launchCamera(options, (response) => {
+                    if (response.uri) {
+                      const reference = storage().ref(uuid.v4() + ".png");
+                      if (Platform.OS === "android") {
+                        RNFetchBlob.fs.stat(response.path).then((stat) => {
+                          reference
+                            .putFile(stat.path)
+                            .then((response) => {
+                              reference.getDownloadURL().then((url) => {
+                                let createdAt =
+                                  year +
+                                  ":" +
+                                  month +
+                                  ":" +
+                                  day +
+                                  ":" +
+                                  hour +
+                                  ":" +
+                                  minute +
+                                  ":" +
+                                  seconds;
+
+                                chatsRef
+                                  .doc(groupID)
+                                  .collection("messages")
+                                  .add({
+                                    userID: userId,
+                                    createdAt: createdAt,
+                                    message: "Photo",
+                                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                    image: url,
+                                  })
+                                  .then(function () {
+                                    db.collection("chat").doc(groupID).set(
+                                      {
+                                        message: "Photo",
+                                        lastMessageTime: createdAt,
+                                      },
+                                      {
+                                        merge: true,
+                                      }
+                                    );
+
+                                    chatsRef
+                                      .doc(groupID)
+                                      .get()
+                                      .then(function (doc) {
+                                        totalMessageCount = doc.data()
+                                          .totalMessage;
+                                      })
+                                      .then(function () {
+                                        chatsRef.doc(groupID).update({
+                                          totalMessage: totalMessageCount + 1,
+                                        });
+                                      });
+                                  });
+                              });
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                        });
+                      } else {
+                        reference
+                          .putFile(response.path.replace("file://", ""))
+                          .then((response) => {
+                            reference.getDownloadURL().then((url) => {
+                              let createdAt =
+                                year +
+                                ":" +
+                                month +
+                                ":" +
+                                day +
+                                ":" +
+                                hour +
+                                ":" +
+                                minute +
+                                ":" +
+                                seconds;
+
+                              chatsRef
+                                .doc(groupID)
+                                .collection("messages")
+                                .add({
+                                  userID: userId,
+                                  createdAt: createdAt,
+                                  message: "Photo",
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                  image: url,
+                                })
+                                .then(function () {
+                                  db.collection("chat").doc(groupID).set(
+                                    {
+                                      message: "Photo",
+                                      lastMessageTime: createdAt,
+                                    },
+                                    {
+                                      merge: true,
+                                    }
+                                  );
+                                  chatsRef
+                                    .doc(groupID)
+                                    .get()
+                                    .then(function (doc) {
+                                      totalMessageCount = doc.data()
+                                        .totalMessage;
+                                    })
+                                    .then(function () {
+                                      chatsRef.doc(groupID).update({
+                                        totalMessage: totalMessageCount + 1,
+                                      });
+                                    });
+                                });
+                            });
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                      }
+                    }
+                  });
+                }}
+              >
+                <View style={styles.widget_box}>
+                  <CameraLogo style={styles.widget_icon} resizeMode="contain" />
+                  <Text style={{ fontSize: RFValue(11) }}>
+                    {Translate.t("camera")}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  const options = {
+                    noData: true,
+                  };
+                  ImagePicker.launchImageLibrary(options, (response) => {
+                    if (response.uri) {
+                      const reference = storage().ref(uuid.v4() + ".png");
+                      if (Platform.OS === "android") {
+                        RNFetchBlob.fs.stat(response.uri).then((stat) => {
+                          reference
+                            .putFile(stat.path)
+                            .then((response) => {
+                              reference.getDownloadURL().then((url) => {
+                                let createdAt =
+                                  year +
+                                  ":" +
+                                  month +
+                                  ":" +
+                                  day +
+                                  ":" +
+                                  hour +
+                                  ":" +
+                                  minute +
+                                  ":" +
+                                  seconds;
+
+                                chatsRef
+                                  .doc(groupID)
+                                  .collection("messages")
+                                  .add({
+                                    userID: userId,
+                                    createdAt: createdAt,
+                                    message: "Photo",
+                                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                    image: url,
+                                  })
+                                  .then(function () {
+                                    db.collection("chat").doc(groupID).set(
+                                      {
+                                        message: "Photo",
+                                        lastMessageTime: createdAt,
+                                      },
+                                      {
+                                        merge: true,
+                                      }
+                                    );
+                                    chatsRef
+                                      .doc(groupID)
+                                      .get()
+                                      .then(function (doc) {
+                                        totalMessageCount = doc.data()
+                                          .totalMessage;
+                                      })
+                                      .then(function () {
+                                        chatsRef.doc(groupID).update({
+                                          totalMessage: totalMessageCount + 1,
+                                        });
+                                      });
+                                  });
+                              });
+                            })
+                            .catch((error) => {
+                              console.log(error);
+                            });
+                        });
+                      } else {
+                        reference
+                          .putFile(response.uri.replace("file://", ""))
+                          .then((response) => {
+                            reference.getDownloadURL().then((url) => {
+                              let createdAt =
+                                year +
+                                ":" +
+                                month +
+                                ":" +
+                                day +
+                                ":" +
+                                hour +
+                                ":" +
+                                minute +
+                                ":" +
+                                seconds;
+
+                              chatsRef
+                                .doc(groupID)
+                                .collection("messages")
+                                .add({
+                                  userID: userId,
+                                  createdAt: createdAt,
+                                  message: "Photo",
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                  image: url,
+                                })
+                                .then(function () {
+                                  db.collection("chat").doc(groupID).set(
+                                    {
+                                      message: "Photo",
+                                      lastMessageTime: createdAt,
+                                    },
+                                    {
+                                      merge: true,
+                                    }
+                                  );
+
+                                  chatsRef
+                                    .doc(groupID)
+                                    .get()
+                                    .then(function (doc) {
+                                      totalMessageCount = doc.data()
+                                        .totalMessage;
+                                    })
+                                    .then(function () {
+                                      chatsRef.doc(groupID).update({
+                                        totalMessage: totalMessageCount + 1,
+                                      });
+                                    });
+                                });
+                            });
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                      }
+                    }
+                  });
+                }}
+              >
+                <View style={styles.widget_box}>
+                  <GalleryLogo
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                  <Text style={{ fontSize: RFValue(11) }}>
+                    {Translate.t("gallery")}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  props.navigation.navigate("ContactShare", {
+                    groupID: groupID,
+                  })
+                }
+              >
+                <View style={styles.widget_box}>
+                  <ContactLogo
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                  <Text style={{ fontSize: RFValue(11) }}>
+                    {Translate.t("contact")}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </Animated.View>
           </View>
-          <Animated.View
-            style={[shouldShow ? styles.input_bar_widget : styles.none]}
-          >
-            <TouchableWithoutFeedback
-              onPress={() => {
-                const options = {
-                  noData: true,
-                  mediaType: "photo",
-                };
-                ImagePicker.launchCamera(options, (response) => {
-                  if (response.uri) {
-                    const reference = storage().ref(uuid.v4() + ".png");
-                    if (Platform.OS === "android") {
-                      RNFetchBlob.fs.stat(response.path).then((stat) => {
-                        reference
-                          .putFile(stat.path)
-                          .then((response) => {
-                            reference.getDownloadURL().then((url) => {
-                              let createdAt =
-                                year +
-                                ":" +
-                                month +
-                                ":" +
-                                day +
-                                ":" +
-                                hour +
-                                ":" +
-                                minute +
-                                ":" +
-                                seconds;
-
-                              chatsRef
-                                .doc(groupID)
-                                .collection("messages")
-                                .add({
-                                  userID: userId,
-                                  createdAt: createdAt,
-                                  message: "Photo",
-                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                  image: url,
-                                })
-                                .then(function () {
-                                  db.collection("chat").doc(groupID).set(
-                                    {
-                                      message: "Photo",
-                                      lastMessageTime: createdAt,
-                                    },
-                                    {
-                                      merge: true,
-                                    }
-                                  );
-
-                                  chatsRef
-                                    .doc(groupID)
-                                    .get()
-                                    .then(function (doc) {
-                                      totalMessageCount = doc.data()
-                                        .totalMessage;
-                                    })
-                                    .then(function () {
-                                      chatsRef.doc(groupID).update({
-                                        totalMessage: totalMessageCount + 1,
-                                      });
-                                    });
-                                });
-                            });
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          });
-                      });
-                    } else {
-                      reference
-                        .putFile(response.path.replace("file://", ""))
-                        .then((response) => {
-                          reference.getDownloadURL().then((url) => {
-                            let createdAt =
-                              year +
-                              ":" +
-                              month +
-                              ":" +
-                              day +
-                              ":" +
-                              hour +
-                              ":" +
-                              minute +
-                              ":" +
-                              seconds;
-
-                            chatsRef
-                              .doc(groupID)
-                              .collection("messages")
-                              .add({
-                                userID: userId,
-                                createdAt: createdAt,
-                                message: "Photo",
-                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                image: url,
-                              })
-                              .then(function () {
-                                db.collection("chat").doc(groupID).set(
-                                  {
-                                    message: "Photo",
-                                    lastMessageTime: createdAt,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                );
-                                chatsRef
-                                  .doc(groupID)
-                                  .get()
-                                  .then(function (doc) {
-                                    totalMessageCount = doc.data().totalMessage;
-                                  })
-                                  .then(function () {
-                                    chatsRef.doc(groupID).update({
-                                      totalMessage: totalMessageCount + 1,
-                                    });
-                                  });
-                              });
-                          });
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                    }
-                  }
-                });
-              }}
-            >
-              <View style={styles.widget_box}>
-                <CameraLogo style={styles.widget_icon} resizeMode="contain" />
-                <Text style={{ fontSize: RFValue(11) }}>
-                  {Translate.t("camera")}
-                </Text>
-              </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                const options = {
-                  noData: true,
-                };
-                ImagePicker.launchImageLibrary(options, (response) => {
-                  if (response.uri) {
-                    const reference = storage().ref(uuid.v4() + ".png");
-                    if (Platform.OS === "android") {
-                      RNFetchBlob.fs.stat(response.uri).then((stat) => {
-                        reference
-                          .putFile(stat.path)
-                          .then((response) => {
-                            reference.getDownloadURL().then((url) => {
-                              let createdAt =
-                                year +
-                                ":" +
-                                month +
-                                ":" +
-                                day +
-                                ":" +
-                                hour +
-                                ":" +
-                                minute +
-                                ":" +
-                                seconds;
-
-                              chatsRef
-                                .doc(groupID)
-                                .collection("messages")
-                                .add({
-                                  userID: userId,
-                                  createdAt: createdAt,
-                                  message: "Photo",
-                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                  image: url,
-                                })
-                                .then(function () {
-                                  db.collection("chat").doc(groupID).set(
-                                    {
-                                      message: "Photo",
-                                      lastMessageTime: createdAt,
-                                    },
-                                    {
-                                      merge: true,
-                                    }
-                                  );
-                                  chatsRef
-                                    .doc(groupID)
-                                    .get()
-                                    .then(function (doc) {
-                                      totalMessageCount = doc.data()
-                                        .totalMessage;
-                                    })
-                                    .then(function () {
-                                      chatsRef.doc(groupID).update({
-                                        totalMessage: totalMessageCount + 1,
-                                      });
-                                    });
-                                });
-                            });
-                          })
-                          .catch((error) => {
-                            console.log(error);
-                          });
-                      });
-                    } else {
-                      reference
-                        .putFile(response.uri.replace("file://", ""))
-                        .then((response) => {
-                          reference.getDownloadURL().then((url) => {
-                            let createdAt =
-                              year +
-                              ":" +
-                              month +
-                              ":" +
-                              day +
-                              ":" +
-                              hour +
-                              ":" +
-                              minute +
-                              ":" +
-                              seconds;
-
-                            chatsRef
-                              .doc(groupID)
-                              .collection("messages")
-                              .add({
-                                userID: userId,
-                                createdAt: createdAt,
-                                message: "Photo",
-                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                image: url,
-                              })
-                              .then(function () {
-                                db.collection("chat").doc(groupID).set(
-                                  {
-                                    message: "Photo",
-                                    lastMessageTime: createdAt,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                );
-
-                                chatsRef
-                                  .doc(groupID)
-                                  .get()
-                                  .then(function (doc) {
-                                    totalMessageCount = doc.data().totalMessage;
-                                  })
-                                  .then(function () {
-                                    chatsRef.doc(groupID).update({
-                                      totalMessage: totalMessageCount + 1,
-                                    });
-                                  });
-                              });
-                          });
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
-                    }
-                  }
-                });
-              }}
-            >
-              <View style={styles.widget_box}>
-                <GalleryLogo style={styles.widget_icon} resizeMode="contain" />
-                <Text style={{ fontSize: RFValue(11) }}>
-                  {Translate.t("gallery")}
-                </Text>
-              </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={() =>
-                props.navigation.navigate("ContactShare", {
-                  groupID: groupID,
-                })
-              }
-            >
-              <View style={styles.widget_box}>
-                <ContactLogo style={styles.widget_icon} resizeMode="contain" />
-                <Text style={{ fontSize: RFValue(11) }}>
-                  {Translate.t("contact")}
-                </Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </Animated.View>
-        </View>
-    </KeyboardAvoidingView>
-      </SafeAreaView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 
@@ -1192,6 +1300,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  popUpView: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    borderWidth: 1,
+    borderColor: Colors.D7CCA6,
+    justifyContent: "space-evenly",
+    width: widthPercentageToDP("100%"),
+    height:heightPercentageToDP("100%"),
+  },
+  popUpText: {
+    marginLeft: widthPercentageToDP("2%"),
+    fontSize: RFValue(12),
+    paddingBottom: heightPercentageToDP("2%"),
   },
   // user_text_input: {
   //   width: widthPercentageToDP("15%"),

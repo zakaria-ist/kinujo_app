@@ -42,6 +42,7 @@ const ratioHelpIcon = win.width / 18 / 18;
 const ratioSignOut = win.width / 14 / 512;
 const ratioGlobe = win.width / 13 / 112;
 let defaultLanguage = Localization.locale;
+let controller;
 export default function SettingGeneral(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
@@ -191,7 +192,13 @@ export default function SettingGeneral(props) {
             />
           </View>
         </TouchableWithoutFeedback>
-        <View style={styles.tabContainer}>
+        <View style={{
+            flexDirection: "row",
+            height: heightPercentageToDP("7.5%"),
+            justifyContent: "flex-start",
+            alignItems: "center",
+            marginHorizontal: widthPercentageToDP("4%"),
+          }}>
           <Image
             source={require("../assets/Images/globe.png")}
             style={{ width: win.width / 13, height: 107 * ratioGlobe }}
@@ -233,14 +240,17 @@ export default function SettingGeneral(props) {
         </View>
         <TouchableWithoutFeedback
           onPress={() => {
-            AsyncStorage.removeItem("user").then(() => {
-              props.navigation.navigate("LoginScreen");
-            });
+            if(!controller.isOpen()){
+              AsyncStorage.removeItem("user").then(() => {
+                props.navigation.navigate("LoginScreen");
+              });
+            }
           }}
         >
           <View
             style={{
               flexDirection: "row",
+              zIndex: 1,
               height: heightPercentageToDP("7%"),
               justifyContent: "flex-start",
               alignItems: "center",
@@ -269,6 +279,7 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("4%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
+    zIndex: 2
   },
   nextIcon: {
     width: win.width / 38,

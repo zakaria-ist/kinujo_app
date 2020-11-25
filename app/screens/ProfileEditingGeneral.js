@@ -199,7 +199,10 @@ export default function ProfileEditingGeneral(props) {
                 height: heightPercentageToDP("5%"),
               }}
             >
-              <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
+            <TouchableWithoutFeedback onPress={() => {
+              onShowChanged(false)
+              setWord(user.word);
+            }}>
                 <Image
                   style={{
                     width: win.width / 20,
@@ -214,9 +217,16 @@ export default function ProfileEditingGeneral(props) {
                   color: "white",
                 }}
               >
-                0/500
+              {word.length}/500
               </Text>
-              <TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={() => {
+                onShowChanged(false)
+                let tmpUser = user;
+                tmpUser.word = word;
+                onUserChanged(tmpUser);
+
+                updateUser(user, "word", word);
+              }}>
                 <Text style={{ fontSize: RFValue(14), color: "white" }}>
                   {Translate.t("save")}
                 </Text>
@@ -242,6 +252,10 @@ export default function ProfileEditingGeneral(props) {
                   width: "100%",
                   fontSize: RFValue(14),
                   color: "white",
+                }}
+                value={word}
+                onChangeText={(value) =>{
+                    setWord(value)
                 }}
               ></TextInput>
             </View>
@@ -406,7 +420,7 @@ export default function ProfileEditingGeneral(props) {
                 color: Colors.white,
               }}
             >
-              {user.word}
+            {user.word ? user.word.slice(0,30) : ""}
             </Text>
             <View
               style={{

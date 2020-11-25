@@ -25,18 +25,41 @@ import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 let janCode;
 let stock;
-export default function ProductNoneVariations({ props }) {
+let items = [];
+export default function ProductNoneVariations({ props, onItemsChanged }) {
   const [invt, hideInvt] = React.useState(false);
+  const [janCode, setJanCode] = React.useState("");
+  const [stock, setStock] = React.useState(0);
 
   return (
     <SafeAreaView>
       {/*項目名*/}
       <View style={{ width: "100%" }}>
         <Text style={styles.text}>{Translate.t("janCode")}</Text>
-        <TextInput style={styles.textInput}></TextInput>
+        <TextInput style={styles.textInput} 
+              value={janCode}
+              onChangeText={(value) => {
+                setJanCode(value)
+                if(onItemsChanged){
+                  onItemsChanged({
+                    "janCode" : value,
+                    "stock" : stock
+                  })
+                }
+              }}></TextInput>
 
         <Text style={styles.text}>{Translate.t("inStock")}</Text>
-        <TextInput style={styles.textInput}></TextInput>
+        <TextInput style={styles.textInput}
+              value={stock}
+              onChangeText={(value) => {
+                setStock(stock)
+                if(onItemsChanged){
+                  onItemsChanged({
+                    "janCode" : janCode,
+                    "stock" : value
+                  })
+                }
+              }}></TextInput>
 
         <View style={styles.line} />
       </View>

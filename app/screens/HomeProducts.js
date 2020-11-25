@@ -60,9 +60,9 @@ export default function HomeProducts({
             }}
             resizeMode="cover"
           >
-            <TouchableWithoutFeedback onPress={
-              ()=>{
-                AsyncStorage.getItem("user").then( (url) => {
+            <TouchableWithoutFeedback
+              onPress={() => {
+                AsyncStorage.getItem("user").then((url) => {
                   let urls = url.split("/");
                   urls = urls.filter((url) => {
                     return url;
@@ -72,14 +72,15 @@ export default function HomeProducts({
                   db.collection("users")
                     .doc(userId.toString())
                     .collection("favourite")
-                    .doc(product_id.toString()).set({
-                      "status" : "added"
-                    })
-                  
-                    alert.warning("Added to favourite");
+                    .doc(product_id.toString())
+                    .set({
+                      status: "added",
+                    });
+
+                  alert.warning("Added to favourite");
                 });
-              }
-            }>
+              }}
+            >
               <Image
                 source={require("../assets/Images/productFavorite.png")}
                 style={{
@@ -104,7 +105,7 @@ export default function HomeProducts({
           <Text numberOfLines={2} style={styles.product_category}>
             {category}
           </Text>
-          <Text style={styles.product_shipping}>{shipping}</Text>
+          <Text style={styles.product_shipping}>{shipping}円</Text>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
@@ -129,11 +130,11 @@ const styles = StyleSheet.create({
     height: width / 2.4 - 18,
   },
   product_office: {
-    fontSize: RFValue(9),
+    fontSize: RFValue(10),
     width: "100%",
   },
   product_name: {
-    fontSize: RFValue(13),
+    fontSize: RFValue(11),
     width: "100%",
   },
   product_seller: {

@@ -72,49 +72,57 @@ export default function HomeStoreList(props) {
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
 
-  function populatePopupList(props, tmpJanCodes, selected){
-    let tmpHtml = []
+  function populatePopupList(props, tmpJanCodes, selected) {
+    let tmpHtml = [];
     Object.keys(tmpJanCodes).map((key, index) => {
       let tmpJanCode = tmpJanCodes[key];
-      tmpHtml.push(<View key={key} style={styles.variationTabs}>
-        <RadioButton status={ selected === tmpJanCode.id ? 'checked' : 'unchecked' }
-        onPress={() => {
-          onSelectedJanCodeChanged(tmpJanCode.id);
-          onPopupHtmlChanged(populatePopupHtml(props, janCodes, tmpJanCode.id))
-        }}/>
-        <Text style={styles.variationTabsText}>{key}</Text>
-      </View>)
-    })
-    return tmpHtml
+      tmpHtml.push(
+        <View key={key} style={styles.variationTabs}>
+          <RadioButton
+            status={selected === tmpJanCode.id ? "checked" : "unchecked"}
+            onPress={() => {
+              onSelectedJanCodeChanged(tmpJanCode.id);
+              onPopupHtmlChanged(
+                populatePopupHtml(props, janCodes, tmpJanCode.id)
+              );
+            }}
+          />
+          <Text style={styles.variationTabsText}>{key}</Text>
+        </View>
+      );
+    });
+    return tmpHtml;
   }
 
-  function populatePopupHtml(props, tmpJanCodes, selected){
-    if(tmpJanCodes['none']){
-      return populatePopupList(props, tmpJanCodes['none'], selected)
-    } else if(tmpJanCodes[Object.keys(tmpJanCodes)[0]]['none']){
-      onSelectedJanCodeChanged(tmpJanCodes[Object.keys(tmpJanCodes)[0]]['none'].id)
+  function populatePopupHtml(props, tmpJanCodes, selected) {
+    if (tmpJanCodes["none"]) {
+      return populatePopupList(props, tmpJanCodes["none"], selected);
+    } else if (tmpJanCodes[Object.keys(tmpJanCodes)[0]]["none"]) {
+      onSelectedJanCodeChanged(
+        tmpJanCodes[Object.keys(tmpJanCodes)[0]]["none"].id
+      );
       return [];
     }
-    let tmpHtml = []
+    let tmpHtml = [];
     Object.keys(tmpJanCodes).map((key) => {
-      tmpHtml.push(<View key={key}
-        style={{
-          borderBottomWidth: 1,
-          borderBottomColor: Colors.C2A059,
-        }}
-      >
-        <TouchableWithoutFeedback>
-          <View style={styles.variationTabs}>
-            <Text style={styles.variationTabsText}>{key}</Text>
-            <ArrowUpIcon
-              style={styles.widget_icon}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableWithoutFeedback>
-        {populatePopupList(props, tmpJanCodes[key], selected)}
-      </View>);
-    })
+      tmpHtml.push(
+        <View
+          key={key}
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.C2A059,
+          }}
+        >
+          <TouchableWithoutFeedback>
+            <View style={styles.variationTabs}>
+              <Text style={styles.variationTabsText}>{key}</Text>
+              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+            </View>
+          </TouchableWithoutFeedback>
+          {populatePopupList(props, tmpJanCodes[key], selected)}
+        </View>
+      );
+    });
     return tmpHtml;
   }
 
@@ -146,52 +154,65 @@ export default function HomeStoreList(props) {
       .get(props.route.params.url)
       .then(function (response) {
         onProductChanged(response.data);
-        
+
         response.data.productVarieties.map((productVariety) => {
-          productVariety.productVarietySelections.map((productVarietySelection) => {
-            janCodeNames[productVarietySelection.url] = productVarietySelection.selection
-          })
-        })
+          productVariety.productVarietySelections.map(
+            (productVarietySelection) => {
+              janCodeNames[productVarietySelection.url] =
+                productVarietySelection.selection;
+            }
+          );
+        });
         response.data.productVarieties.map((productVariety) => {
-          productVariety.productVarietySelections.map((productVarietySelection) => {
-            productVarietySelection.jancode_horizontal.map((horizontal) => {
-              let hoName = horizontal.horizontal ? janCodeNames[horizontal.horizontal] : "none";
-              let veName = horizontal.vertical ? janCodeNames[horizontal.vertical] : "none";
-              if(janCodes[hoName]){
-                janCodes[hoName][veName] = {
-                  "stock" : horizontal.stock,
-                  "url" : horizontal.url,
-                  "id" : horizontal.id
+          productVariety.productVarietySelections.map(
+            (productVarietySelection) => {
+              productVarietySelection.jancode_horizontal.map((horizontal) => {
+                let hoName = horizontal.horizontal
+                  ? janCodeNames[horizontal.horizontal]
+                  : "none";
+                let veName = horizontal.vertical
+                  ? janCodeNames[horizontal.vertical]
+                  : "none";
+                if (janCodes[hoName]) {
+                  janCodes[hoName][veName] = {
+                    stock: horizontal.stock,
+                    url: horizontal.url,
+                    id: horizontal.id,
+                  };
+                } else {
+                  janCodes[hoName] = {};
+                  janCodes[hoName][veName] = {
+                    stock: horizontal.stock,
+                    url: horizontal.url,
+                    id: horizontal.id,
+                  };
                 }
-              } else {
-                janCodes[hoName] = {}
-                janCodes[hoName][veName] = {
-                  "stock" : horizontal.stock,
-                  "url" : horizontal.url,
-                  "id" : horizontal.id
+              });
+              productVarietySelection.jancode_vertical.map((vertical) => {
+                let hoName = vertical.horizontal
+                  ? janCodeNames[vertical.horizontal]
+                  : "none";
+                let veName = vertical.vertical
+                  ? janCodeNames[vertical.vertical]
+                  : "none";
+                if (janCodes[hoName]) {
+                  janCodes[hoName][veName] = {
+                    stock: vertical.stock,
+                    url: vertical.url,
+                    id: vertical.id,
+                  };
+                } else {
+                  janCodes[hoName] = {};
+                  janCodes[hoName][veName] = {
+                    stock: vertical.stock,
+                    url: vertical.url,
+                    id: vertical.id,
+                  };
                 }
-              }
-            })
-            productVarietySelection.jancode_vertical.map((vertical) => {
-              let hoName = vertical.horizontal ? janCodeNames[vertical.horizontal] : "none";
-              let veName = vertical.vertical ? janCodeNames[vertical.vertical] : "none";
-              if(janCodes[hoName]){
-                janCodes[hoName][veName] = {
-                  "stock" : vertical.stock,
-                  "url" : vertical.url,
-                  "id" : vertical.id
-                }
-              } else {
-                janCodes[hoName] = {}
-                janCodes[hoName][veName] = {
-                  "stock" : vertical.stock,
-                  "url" : vertical.url,
-                  "id" : vertical.id
-                }
-              }
-            })
-          })
-        })
+              });
+            }
+          );
+        });
         onPopupHtmlChanged(populatePopupHtml(props, janCodes, ""));
 
         if (response.data.productImages.length > 0) {
@@ -447,18 +468,19 @@ export default function HomeStoreList(props) {
                   flex: 1,
                 }}
               >
-                <TouchableWithoutFeedback onPress={
-                  ()=>{
-                    if(selectedJanCode && quantity){
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    if (selectedJanCode && quantity) {
                       onShowChanged(false);
 
                       db.collection("users")
                         .doc(user.id.toString())
                         .collection("carts")
                         .doc(product.id.toString())
-                        .get().then((snapshot) => {
+                        .get()
+                        .then((snapshot) => {
                           let tmpQuantity = parseInt(quantity);
-                          if(snapshot.data()){
+                          if (snapshot.data()) {
                             tmpQuantity += parseInt(snapshot.data().quantity);
                           }
                           db.collection("users")
@@ -467,9 +489,9 @@ export default function HomeStoreList(props) {
                             .doc(product.id.toString())
                             .set({
                               quantity: tmpQuantity,
-                              url: selectedJanCode
+                              url: selectedJanCode,
                             });
-                        })
+                        });
                       onShowText(true);
                       setTimeout(
                         function () {
@@ -477,7 +499,7 @@ export default function HomeStoreList(props) {
                         }.bind(this),
                         2000
                       );
-            
+
                       const subscriber = db
                         .collection("users")
                         .doc(user.id.toString())
@@ -489,8 +511,8 @@ export default function HomeStoreList(props) {
                     } else {
                       alert.warning("Please select an item and set a quantity");
                     }
-                  }
-                }>
+                  }}
+                >
                   <View
                     style={{
                       backgroundColor: Colors.deepGrey,
@@ -594,7 +616,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentageToDP("1%"),
     width: widthPercentageToDP("18%"),
     height: heightPercentageToDP("4%"),
-    fontSize: 12,
+    fontSize: RFValue(12),
     backgroundColor: "white",
     borderColor: "transparent",
   },
@@ -669,7 +691,7 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     overflow: "hidden",
-    fontSize: RFValue(12),
+    fontSize: RFValue(10),
     //fontFamily: "sans-serif",
     padding: 2,
   },
@@ -677,7 +699,7 @@ const styles = StyleSheet.create({
     width: "100%",
     textAlign: "center",
     overflow: "hidden",
-    fontSize: RFValue(14),
+    fontSize: RFValue(11),
     //fontFamily: "sans-serif",
     padding: 2,
   },
@@ -685,7 +707,7 @@ const styles = StyleSheet.create({
     //fontFamily: "sans-serif",
     borderBottomColor: "black",
     borderBottomWidth: 2,
-    fontSize: RFValue(14),
+    fontSize: RFValue(13),
     paddingBottom: 5,
     marginBottom: 15,
   },
@@ -693,6 +715,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     //fontFamily: "sans-serif",
     textAlign: "justify",
-    fontSize: RFValue(12),
+    fontSize: RFValue(11),
   },
 });
