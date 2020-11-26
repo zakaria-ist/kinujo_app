@@ -54,6 +54,11 @@ export default function SearchProducts(props) {
       return 1;
     });
 
+    products = products.filter((product) => {
+      let date = new Date(product.is_opened);
+      return product.is_opened == 1 && ((new Date()) > date) && product.is_hidden == 0 && product.is_draft == 0;
+    })
+
     let kinujoProducts = products.filter((product) => {
       return product.user.authority.id == 1;
     });
@@ -208,7 +213,11 @@ export default function SearchProducts(props) {
               onChangeText={(value) => {
                 onSearchTermChanged(value);
                 let tmpProducts = products.filter((product) => {
-                  return JSON.stringify(product).toLowerCase().indexOf(value.toLowerCase()) >= 0;
+                  return (
+                    JSON.stringify(product)
+                      .toLowerCase()
+                      .indexOf(value.toLowerCase()) >= 0
+                  );
                 });
                 performProductHtml(tmpProducts);
               }}
@@ -281,7 +290,9 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchContactInput: {
-    fontSize: RFValue(11),
+    alignItems: "center",
+    alignSelf: "center",
+    fontSize: RFValue(9),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,

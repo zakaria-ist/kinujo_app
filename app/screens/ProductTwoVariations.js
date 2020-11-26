@@ -50,7 +50,7 @@ let items = [
   },
 ];
 let globalMappingValue = {}
-export default function ProductTwoVariations({ props, onItemsChanged }) {
+export default function ProductTwoVariations({ props, pItems, onItemsChanged }) {
   const [invt, hideInvt] = React.useState(false);
   const [choice, onChoiceChanged] = React.useState("");
   const [horizontalAxis, onHorizontalAxisChanged] = React.useState("");
@@ -62,6 +62,18 @@ export default function ProductTwoVariations({ props, onItemsChanged }) {
   const [variationDetailsHtml, onProcessVariationDetailsHtml] = React.useState(
     <View></View>
   );
+  
+  React.useEffect(()=>{
+    if(pItems && pItems.mappingValue){
+      globalMappingValue = pItems.mappingValue
+    }
+    if(pItems && pItems.items){
+      items = pItems.items
+    }
+    onProcessVariationHtml(processVariationHtml(items));
+    onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+  }, [pItems])
+
   function populateMapping(){
     mappingValue = globalMappingValue;
     items[0].choices.map((choice1) => {
@@ -88,8 +100,6 @@ export default function ProductTwoVariations({ props, onItemsChanged }) {
       }
     })
     globalMappingValue = mappingValue;
-    console.log(globalMappingValue)
-
     if(onItemsChanged){
       onItemsChanged({
         "items" : items,

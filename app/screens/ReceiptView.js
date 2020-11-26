@@ -7,7 +7,8 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -34,19 +35,29 @@ export default function ReceiptView(props) {
   const [order, onOrderChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
 
-  if(!loaded){
+  if (!loaded) {
     request
-    .get(props.route.params.url)
-    .then(function (response) {
-      onOrderChanged(response.data);
-      onLoaded(true);
-    })
-    .catch(function (error) {
-      onLoaded(true);
-      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-      }
-    });
+      .get(props.route.params.url)
+      .then(function (response) {
+        onOrderChanged(response.data);
+        onLoaded(true);
+      })
+      .catch(function (error) {
+        onLoaded(true);
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
   }
 
   if (!user.url) {
@@ -57,14 +68,24 @@ export default function ReceiptView(props) {
           onUserChanged(response.data);
         })
         .catch(function (error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });
   }
   return (
-    <SafeAreaView>
+    <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
       <CustomHeader
         onFavoriteChanged="noFavorite"
         text={Translate.t("invoiceIssue")}
@@ -90,7 +111,9 @@ export default function ReceiptView(props) {
             {Translate.t("nameTitle")}
           </Text>
         </View>
-        <Text style={styles.receivedMoneyText}>{format.separator(order.total_price)} 円</Text>
+        <Text style={styles.receivedMoneyText}>
+          {format.separator(order.total_price)} 円
+        </Text>
         <Text
           style={{
             fontSize: RFValue(12),
@@ -104,29 +127,43 @@ export default function ReceiptView(props) {
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("issueDate")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>{kanjidate.format("{Y:4}年{M:2}月{D:2}日", new Date(order.created))}</Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {kanjidate.format(
+                "{Y:4}年{M:2}月{D:2}日",
+                new Date(order.created)
+              )}
+            </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("orderDate")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>{kanjidate.format("{Y:4}年{M:2}月{D:2}日", new Date(order.created))}</Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {kanjidate.format(
+                "{Y:4}年{M:2}月{D:2}日",
+                new Date(order.created)
+              )}
+            </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("orderNumber")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>{order ? (order.id) : ""}</Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order ? order.id : ""}
+            </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("productName")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-            {order && order.product_jan_code ? (order.product_jan_code.horizontal ?
-                  order.product_jan_code.horizontal.product_variety.product.name :
-                  order.product_jan_code.vertical.product_variety.product.name) : ""
-                }
+              {order && order.product_jan_code
+                ? order.product_jan_code.horizontal
+                  ? order.product_jan_code.horizontal.product_variety.product
+                      .name
+                  : order.product_jan_code.vertical.product_variety.product.name
+                : ""}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -134,25 +171,29 @@ export default function ReceiptView(props) {
               {Translate.t("seller")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-            {order && order.order ? (order.order.seller.nickname) : "" }
+              {order && order.order ? order.order.seller.nickname : ""}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("deliveryAddress")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>{order && order.order ? order.order.name : ""}</Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order && order.order ? order.order.name : ""}
+            </Text>
           </View>
-          <Text style={styles.receiptEditingDetailsText}>{order && order.order ? order.order.tel : ""}</Text>
           <Text style={styles.receiptEditingDetailsText}>
-          {order && order.order ? order.order.address1 : ""}
+            {order && order.order ? order.order.tel : ""}
+          </Text>
+          <Text style={styles.receiptEditingDetailsText}>
+            {order && order.order ? order.order.address1 : ""}
           </Text>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
               {Translate.t("paymentMethod")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-            {order && order.order ? order.order.payment : ""}
+              {order && order.order ? order.order.payment : ""}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -168,7 +209,7 @@ export default function ReceiptView(props) {
             right: 0,
             bottom: 0,
             marginRight: widthPercentageToDP("5%"),
-            paddingBottom: heightPercentageToDP("1%"),
+            marginTop: heightPercentageToDP("19%"),
           }}
         >
           <Image
@@ -181,7 +222,7 @@ export default function ReceiptView(props) {
           <Text style={styles.receiptEditingDetailsText}>03-0000-0000</Text>
         </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
@@ -230,7 +271,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.grey,
     padding: widthPercentageToDP("3%"),
-    paddingBottom: heightPercentageToDP("9%"),
+    paddingBottom: heightPercentageToDP("15%"),
     marginHorizontal: widthPercentageToDP("3%"),
     paddingTop: widthPercentageToDP("3%"),
     alignItems: "center",

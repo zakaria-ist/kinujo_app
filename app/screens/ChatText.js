@@ -11,7 +11,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Platform,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { LinearGradient } from "expo-linear-gradient";
@@ -23,12 +23,20 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import CheckBox from "@react-native-community/checkbox";
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
 const ratioSeenTick = width / 35 / 13;
-export default function ChatText({ isSelf, text, date, seen, imageURL }) {
+export default function ChatText({
+  isSelf,
+  text,
+  date,
+  seen,
+  imageURL,
+  showCheckBox,
+}) {
   return (
     <SafeAreaView>
       {/*Right Side*/}
@@ -76,6 +84,16 @@ export default function ChatText({ isSelf, text, date, seen, imageURL }) {
           )}
         </TouchableHighlight>
         <View style={[isSelf ? styles.right_status : styles.left_status]}>
+          {showCheckBox ? (
+            <CheckBox
+              style={isSelf ? styles.checkBoxRight : styles.checkBoxLeft}
+              color={Colors.E6DADE}
+              uncheckedColor={Colors.E6DADE}
+              disabled={false}
+            />
+          ) : (
+            <View></View>
+          )}
           {imageURL ? (
             <Text
               style={[
@@ -128,15 +146,31 @@ export default function ChatText({ isSelf, text, date, seen, imageURL }) {
           ) : null}
 
           {imageURL ? (
-            <Text
-              style={[
-                isSelf
-                  ? styles.right_status_time_image
-                  : styles.left_status_time_image,
-              ]}
-            >
-              {date}
-            </Text>
+            <View>
+              {showCheckBox ? (
+                <CheckBox
+                  style={
+                    isSelf
+                      ? styles.checkBoxRightImage
+                      : styles.checkBoxLeftImage
+                  }
+                  color={Colors.E6DADE}
+                  uncheckedColor={Colors.E6DADE}
+                  disabled={false}
+                />
+              ) : (
+                <View></View>
+              )}
+              <Text
+                style={[
+                  isSelf
+                    ? styles.right_status_time_image
+                    : styles.left_status_time_image,
+                ]}
+              >
+                {date}
+              </Text>
+            </View>
           ) : (
             <Text
               style={[
@@ -153,6 +187,38 @@ export default function ChatText({ isSelf, text, date, seen, imageURL }) {
 }
 
 const styles = StyleSheet.create({
+  // right_status_text_image: {
+  //   position: "absolute",
+  //   textAlign: "right",
+  //   width: 60,
+  //   paddingRight: 10,
+  //   fontSize: RFValue(8),
+  //   bottom: 12,
+  //   right: 0,
+  //   marginBottom: heightPercentageToDP("2%"),
+  //   marginRight: widthPercentageToDP("30%"),
+  // },
+  checkBoxRight: {
+    position: "absolute",
+    right: 0,
+  },
+  checkBoxLeft: {
+    position: "absolute",
+    left: 0,
+  },
+  checkBoxRightImage: {
+    position: "absolute",
+    right: 0,
+    marginRight: widthPercentageToDP("30%"),
+    bottom: widthPercentageToDP("12%"),
+  },
+  checkBoxLeftImage: {
+    position: "absolute",
+    left: 0,
+    marginBottom: heightPercentageToDP("2%"),
+    marginLeft: widthPercentageToDP("30%"),
+    bottom: widthPercentageToDP("12%"),
+  },
   container: {
     flex: 1,
     flexDirection: "row",

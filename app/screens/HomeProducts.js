@@ -105,7 +105,9 @@ export default function HomeProducts({
           <Text numberOfLines={2} style={styles.product_category}>
             {category}
           </Text>
-          <Text style={styles.product_shipping}>{shipping}円</Text>
+          <Text style={styles.product_shipping}>
+            {Translate.t("shipping")}円
+          </Text>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

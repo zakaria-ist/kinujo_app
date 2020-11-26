@@ -26,10 +26,19 @@ import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 let janCode;
 let stock;
 let items = [];
-export default function ProductNoneVariations({ props, onItemsChanged }) {
+export default function ProductNoneVariations({ props, pItems, onItemsChanged }) {
   const [invt, hideInvt] = React.useState(false);
   const [janCode, setJanCode] = React.useState("");
-  const [stock, setStock] = React.useState(0);
+  const [stock, setStock] = React.useState("");
+
+  React.useEffect(()=>{
+    if(pItems){
+      setJanCode(pItems.janCode)
+      if(pItems.stock){
+        setStock(pItems.stock);
+      }
+    }
+  }, [pItems])
 
   return (
     <SafeAreaView>

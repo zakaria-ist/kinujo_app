@@ -36,7 +36,7 @@ export default function CustomKinujoWord({
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
         onUserChanged(response.data);
-      });
+      })
     });
   }, [isFocused]);
 

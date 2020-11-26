@@ -76,7 +76,7 @@ export default function Cart(props) {
   const isFocused = useIsFocused();
   const [selected, onSelectedChanged] = React.useState("");
   const [addressHtml, onAddressHtmlChanged] = React.useState([]);
-
+  const cartItems = []
   function getAddressHtml(pAddresses, pSelected) {
     let tmpAddresses = [];
     pAddresses.map((address) => {
@@ -148,9 +148,19 @@ export default function Cart(props) {
       });
       let quantity = item[0].quantity;
       let key = "key_" + product.id;
+      let realIndex = 1000-i;
+      console.log(quantity);
       // onShippingChanged(product.shipping_fee);
       tmpCartHtml.push(
-        <View key={i} style={styles.cartFirstTabContainer}>
+        <View key={i} style={{
+          flexDirection: "row",
+          backgroundColor: Colors.F0EEE9,
+          height: heightPercentageToDP("18%"),
+          marginTop: heightPercentageToDP("2%"),
+          paddingHorizontal: widthPercentageToDP("4%"),
+          paddingBottom: heightPercentageToDP("14%"),
+          zIndex: realIndex
+        }}>
           <View
             style={{
               width: widthPercentageToDP("60%"),
@@ -166,8 +176,55 @@ export default function Cart(props) {
           </View>
           <View style={styles.tabRightContainer}>
             <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
-
-            <Picker
+            <View style={
+              {
+                position: "absolute",
+                zIndex: 1000,
+                top: heightPercentageToDP("4.5%")
+              }
+            }>
+              <DropDownPicker
+                style={{
+                  borderWidth: 1,
+                  backgroundColor: "transparent",
+                  borderColor: "transparent",
+                  color: "black",
+                  borderRadius: 0,
+                  fontSize: RFValue(12),
+                  height: heightPercentageToDP("5.5%"),
+                  paddingLeft: widthPercentageToDP("2%"),
+                  marginVertical: heightPercentageToDP("1%"),
+                }}
+                items={cartItems}
+                defaultValue={quantity ? (quantity + "") : ""}
+                containerStyle={{ 
+                  paddingVertical: 0,
+                  width: widthPercentageToDP("20%")
+                  }}
+                labelStyle={{
+                  fontSize: RFValue(12),
+                  color: "gray",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.F0EEE9,
+                }}
+                placeholder={Translate.t("unit")}
+                dropDownStyle={{ 
+                  backgroundColor: "#FFFFFF",
+                  color: "black",
+                  zIndex: 1000
+                }}
+                onChangeItem={(item) => {
+                  if (item) {
+                    onValueChanged(product.id, item.value, is_store);
+                  }
+                }}
+              />
+            </View>
+            {/* <Picker
               selectedValue={quantity}
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => {
@@ -187,7 +244,7 @@ export default function Cart(props) {
               <Picker.Item key="8" label="8" value="8" />
               <Picker.Item key="9" label="9" value="9" />
               <Picker.Item key="10" label="10" value="10" />
-            </Picker>
+            </Picker> */}
             <View
               style={{
                 flexDirection: "row-reverse",
@@ -294,6 +351,12 @@ export default function Cart(props) {
   }
 
   React.useEffect(() => {
+    for(var i=1; i<100; i++){
+      cartItems.push({
+        "value" : i+"",
+        "label" : i+""
+      })
+    }
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -453,8 +516,10 @@ export default function Cart(props) {
           </View>
         </TouchableWithoutFeedback>
 
-        <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
-          <Animated.View
+        <View style={{ 
+          marginHorizontal: widthPercentageToDP("5%")
+         }}>
+          {/* <Animated.View
             style={{
               opacity: cartItemOpacity,
               borderBottomWidth: 1,
@@ -462,9 +527,9 @@ export default function Cart(props) {
               borderColor: Colors.deepGrey,
             }}
           >
-            {cartHtml}
-          </Animated.View>
+          </Animated.View> */}
           <View>
+            {cartHtml}
             <View
               style={{
                 flexDirection: "row",
@@ -670,6 +735,7 @@ const styles = StyleSheet.create({
     right: 0,
     paddingRight: widthPercentageToDP("4%"),
     alignItems: "flex-end",
+    zIndex: 1000
   },
   upWhiteArrow: {
     width: width / 24,

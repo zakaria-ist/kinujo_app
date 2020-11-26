@@ -26,7 +26,7 @@ import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 let items = [];
-export default function ProductOneVariations({ props, onItemsChanged}) {
+export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   const isFocused = useIsFocused();
   const [item, hideItem] = React.useState(false);
   const [invt, hideInvt] = React.useState(false);
@@ -40,19 +40,32 @@ export default function ProductOneVariations({ props, onItemsChanged}) {
   );
   const [loaded, onLoaded] = React.useState(false);
   const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
+
+  React.useEffect(()=>{
+    if(pItems && pItems.name){
+      onItemNameChanged(pItems.name)
+    }
+
+    if(pItems && pItems.items){
+      items = pItems.items;
+      onProcessVariationHtml(processVariationHtml(items));
+      onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+    }
+  }, [pItems])
+
   function onUpdate() {
     items.push({
       index: items.length,
-      choice: choice,
-      stock: stock,
-      janCode: janCode,
+      choice: "",
+      stock: 0,
+      janCode: "",
     });
-    console.log(items)
-    onItemsChanged(items);
+    onItemsChanged({
+      "name" : itemName,
+      "items" : items
+    });
     onChoiceChanged("");
-    console.log(items.length)
     onProcessVariationHtml(processVariationHtml(items));
-    console.log(items.length)
     onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
     onLoaded(true);
   }
@@ -85,7 +98,7 @@ export default function ProductOneVariations({ props, onItemsChanged}) {
                 style={styles.variantInput}
                 value={product.stock}
                 onChangeText={(value) =>
-                  onValueChanged(value, product.stock, product.index)
+                  onValueChanged(value, "stock", product.index)
                 }
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
@@ -95,7 +108,7 @@ export default function ProductOneVariations({ props, onItemsChanged}) {
                 style={styles.variantInput}
                 value={product.janCode}
                 onChangeText={(value) =>
-                  onValueChanged(value, product.janCode, product.id)
+                  onValueChanged(value, "jancode", product.index)
                 }
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
@@ -127,18 +140,18 @@ export default function ProductOneVariations({ props, onItemsChanged}) {
     onProcessVariationHtml(items);
     onProcessSVariationDetailsHtml(items);
   }
-  function onValueChanged(value, type, choice) {
-    console.log(value);
+  function onValueChanged(value, type, index) {
     items = items.map((product) => {
-      if (choice == product.choice) {
-        if (type == product.janCode) {
+      if(product.index == index){
+        if(type == 'jancode'){
           product.janCode = value;
-        } else if (type == product.stock) {
+        }
+        if(type == 'stock'){
           product.stock = value;
         }
-      }
-      if (type == product.choice) {
-        product.choice = value;
+        if(type == 'choice'){
+          product.choice = value;
+        }
       }
       return product;
     });
@@ -154,7 +167,7 @@ export default function ProductOneVariations({ props, onItemsChanged}) {
           <TextInput
             style={styles.textInput}
             value={product.choice}
-            onChangeText={(value) => onValueChanged(value, product.choice)}
+            onChangeText={(value) => onValueChanged(value, 'choice', product.index)}
           ></TextInput>
         </View>
       );

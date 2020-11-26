@@ -44,20 +44,22 @@ export default function SMSAuthentication(props) {
   }
 
   const phone = props.route.params.username;
+  const callingCode = props.route.params.callingCode;
   React.useEffect(() => {
     auth()
       .signOut()
       .then(() => {
-        signInWithPhoneNumber("+" + phone);
+        signInWithPhoneNumber("+" + callingCode + phone);
         auth().onAuthStateChanged((user) => {
           if (user) {
+            console.log("#21312");
             request
               .post("user/register", props.route.params)
-              .then(function(response) {
+              .then(function (response) {
                 response = response.data;
                 if (response.success) {
                   AsyncStorage.setItem("user", response.data.user.url).then(
-                    function(response) {
+                    function (response) {
                       if (props.route.params.authority == "general") {
                         props.navigation.navigate("RegisterCompletion", {
                           authority: props.route.params.authority,
@@ -132,7 +134,7 @@ export default function SMSAuthentication(props) {
             textAlign: "center",
           }}
         >
-          {Translate.t("sentVerificationCode")} +{phone}
+          {Translate.t("sentVerificationCode")} +{callingCode + phone}
         </Text>
         <TextInput
           style={styles.verificationCode}
@@ -150,13 +152,13 @@ export default function SMSAuthentication(props) {
                   .then(() => {
                     request
                       .post("user/register", props.route.params)
-                      .then(function(response) {
+                      .then(function (response) {
                         response = response.data;
                         if (response.success) {
                           AsyncStorage.setItem(
                             "user",
                             response.data.user.url
-                          ).then(function(response) {
+                          ).then(function (response) {
                             if (props.route.params.authority == "general") {
                               props.navigation.navigate("RegisterCompletion", {
                                 authority: props.route.params.authority,
@@ -206,7 +208,7 @@ export default function SMSAuthentication(props) {
                         }
                       });
                   })
-                  .catch(function(error) {
+                  .catch(function (error) {
                     // An error happened.
                   });
               });

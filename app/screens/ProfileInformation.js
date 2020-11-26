@@ -249,7 +249,7 @@ export default function ProfileInformation(props) {
             </View>
           )}
         </View>
-        <View style={styles.productInformationContainer}>
+        <View style={styles.ddproductInformationContainer}>
           <Text style={styles.productInformationTitle}>
             {Translate.t("gender")}
           </Text>
@@ -262,22 +262,57 @@ export default function ProfileInformation(props) {
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
                 paddingBottom: heightPercentageToDP("2%"),
+                zIndex: 1000
               }}
             >
-              <Picker
-                selectedValue={gender}
+              <DropDownPicker
+                // controller={(instance) => (controller = instance)}
                 style={{
-                  height: RFValue(50),
-                  width: RFValue(120),
+                  borderWidth: 1,
+                  backgroundColor: "transparent",
+                  borderColor: "transparent",
+                  color: "black",
+                  borderRadius: 0,
+                  fontSize: RFValue(12),
+                  height: heightPercentageToDP("5.5%"),
+                  paddingLeft: widthPercentageToDP("2%"),
+                  marginVertical: heightPercentageToDP("1%"),
                 }}
-                onValueChange={(value) => {
-                  onGenderChanged(value);
-                  updateUser(user, "gender", value);
+                items={[{
+                  "label" : "Female",
+                  "value" : "1"
+                },{
+                  "label" : "Male",
+                  "value" : "0"
+                }]}
+                defaultValue={(gender == 0 || gender == 1) ? (gender + "") : ""}
+                containerStyle={{ 
+                  paddingVertical: 0
+                 }}
+                labelStyle={{
+                  fontSize: RFValue(12),
+                  color: "gray",
                 }}
-              >
-                <Picker.Item label="Male" value="0" />
-                <Picker.Item label="Female" value="1" />
-              </Picker>
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.F0EEE9,
+                }}
+                placeholder={Translate.t("gender")}
+                dropDownStyle={{ 
+                  backgroundColor: "#FFFFFF",
+                  color: "black",
+                  zIndex: 1000,
+                  elevation: 1000 
+                }}
+                onChangeItem={(item) => {
+                  if (item) {
+                    onGenderChanged(item.value);
+                    updateUser(user, "gender", item.value);
+                  }
+                }}
+              />
             </View>
         </View>
         <View style={styles.productInformationContainer}>
@@ -297,7 +332,10 @@ export default function ProfileInformation(props) {
               }}
             >
               <DatePicker
-                style={{ width: widthPercentageToDP("50%") }}
+                style={{ 
+                  width: widthPercentageToDP("50%"),
+                  borderColor: "red"
+                 }}
                 date={birthday}
                 mode="date"
                 format="YYYY-MM-DD"
@@ -306,6 +344,7 @@ export default function ProfileInformation(props) {
                 customStyles={{
                   dateInput: {
                     marginRight: widthPercentageToDP("3%"),
+                    borderWidth: 0
                   },
                 }}
                 onDateChange={(date) => {
@@ -614,6 +653,17 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.F0EEE9,
     paddingBottom: heightPercentageToDP("2%"),
     // backgroundColor: "orange",
+  },
+  ddproductInformationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: heightPercentageToDP("2%"),
+    marginHorizontal: widthPercentageToDP("3%"),
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.F0EEE9,
+    paddingBottom: heightPercentageToDP("2%"),
+    // backgroundColor: "orange",
+    zIndex: 1000
   },
   productInformationTitle: {
     alignSelf: "center",

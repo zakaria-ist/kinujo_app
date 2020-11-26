@@ -13,6 +13,7 @@ import {
   Modal,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import DropDownPicker from "react-native-dropdown-picker";
 import { RadioButton } from "react-native-paper";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { SliderBox } from "react-native-image-slider-box";
@@ -46,6 +47,7 @@ const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 const ratioCancelIcon = win.width / 20 / 15;
+const cartItems = []
 
 let janCodes = {};
 let janCodeNames = {};
@@ -60,7 +62,7 @@ export default function HomeStoreList(props) {
   const [time, setTimePassed] = React.useState(false);
   const [XsShow, onXsShow] = React.useState(true);
   const [sShow, onSShow] = React.useState(true);
-  const [quantity, onQuantityChanged] = React.useState(1);
+  const [quantity, onQuantityChanged] = React.useState();
   const [mShow, onMShow] = React.useState(true);
   const [popupHtml, onPopupHtmlChanged] = React.useState([]);
   const [cartCount, onCartCountChanged] = React.useState(0);
@@ -127,6 +129,13 @@ export default function HomeStoreList(props) {
   }
 
   React.useEffect(() => {
+    for(var i=1; i<10; i++){
+      cartItems.push({
+        "value" : i+"",
+        "label" : i+""
+      })
+    }
+
     AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
@@ -216,8 +225,11 @@ export default function HomeStoreList(props) {
         onPopupHtmlChanged(populatePopupHtml(props, janCodes, ""));
 
         if (response.data.productImages.length > 0) {
+          let images = response.data.productImages.filter((productImage) => {
+            return productImage.is_hidden == 0;
+          })
           onImagesChanged(
-            response.data.productImages.map((productImage) => {
+            images.map((productImage) => {
               return productImage.image.image;
             })
           );
@@ -325,7 +337,7 @@ export default function HomeStoreList(props) {
             </Text>
             <Text style={styles.font_small}>
               {product.shipping_fee
-                ? Translate.t("shipping") + ": " + product.shipping_fee
+                ? Translate.t("shipping") + ": " + format.separator(product.shipping_fee)
                 : Translate.t("freeShipping")}
             </Text>
           </View>
@@ -438,10 +450,47 @@ export default function HomeStoreList(props) {
                   flex: 1,
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>
-                  {Translate.t("unit")}
-                </Text>
-                <Picker
+                <DropDownPicker
+                  style={{
+                    borderWidth: 1,
+                    backgroundColor: "transparent",
+                    borderColor: "transparent",
+                    color: "black",
+                    borderRadius: 0,
+                    fontSize: RFValue(12),
+                    height: heightPercentageToDP("5.5%"),
+                    paddingLeft: widthPercentageToDP("2%"),
+                    marginVertical: heightPercentageToDP("1%"),
+                  }}
+                  items={cartItems}
+                  placeholder={Translate.t("unit")}
+                  defaultValue={quantity ? (quantity + "") : ""}
+                  containerStyle={{ 
+                    paddingVertical: 0,
+                    width: widthPercentageToDP("25%")
+                    }}
+                  labelStyle={{
+                    fontSize: RFValue(12),
+                    color: "gray",
+                  }}
+                  itemStyle={{
+                    justifyContent: "flex-start",
+                  }}
+                  selectedtLabelStyle={{
+                    color: Colors.F0EEE9,
+                  }}
+                  dropDownStyle={{ 
+                    backgroundColor: "#FFFFFF",
+                    color: "black",
+                    zIndex: 1000
+                  }}
+                  onChangeItem={(item) => {
+                    if (item) {
+                      onQuantityChanged(item.value);
+                    }
+                  }}
+                />
+                {/* <Picker
                   selectedValue={quantity}
                   style={styles.picker}
                   onValueChange={(itemValue, itemIndex) => {
@@ -460,7 +509,7 @@ export default function HomeStoreList(props) {
                   <Picker.Item label="8" value="8" />
                   <Picker.Item label="9" value="9" />
                   <Picker.Item label="10" value="10" />
-                </Picker>
+                </Picker> */}
               </View>
               <View
                 style={{
