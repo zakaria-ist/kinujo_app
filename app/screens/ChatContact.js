@@ -11,9 +11,10 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Platform,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+import CheckBox from "@react-native-community/checkbox";
 import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -42,6 +43,7 @@ export default function ChatContact({
   seen,
   date,
   props,
+  showCheckBox,
 }) {
   AsyncStorage.getItem("user").then((url) => {
     let urls = url.split("/");
@@ -148,6 +150,16 @@ export default function ChatContact({
             </View>
           </TouchableHighlight>
           <View style={[isSelf ? styles.right_status : styles.left_status]}>
+            {showCheckBox ? (
+              <CheckBox
+                style={isSelf ? styles.checkBoxRight : styles.checkBoxLeft}
+                color={Colors.E6DADE}
+                uncheckedColor={Colors.E6DADE}
+                disabled={false}
+              />
+            ) : (
+              <View></View>
+            )}
             <Text
               style={[
                 isSelf ? styles.right_status_text : styles.left_status_text,
@@ -179,6 +191,14 @@ export default function ChatContact({
   );
 }
 const styles = StyleSheet.create({
+  checkBoxRight: {
+    position: "absolute",
+    right: 0,
+  },
+  checkBoxLeft: {
+    position: "absolute",
+    left: 0,
+  },
   container: {
     flex: 1,
     flexDirection: "row",

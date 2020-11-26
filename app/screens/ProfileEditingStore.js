@@ -11,7 +11,7 @@ import {
   Modal,
   TextInput,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { NavigationEvents } from "react-navigation";
@@ -65,7 +65,7 @@ export default function ProfileEditingGeneral(props) {
       request
         .get(url)
         .then(function (response) {
-          console.log(response.data)
+          console.log(response.data);
           onShopNameChanged(response.data.shop_name);
           onNickNameChanged(response.data.nickname);
           onUserChanged(response.data);
@@ -73,7 +73,7 @@ export default function ProfileEditingGeneral(props) {
           onEmailChanged(response.data.email);
           onAddingFriendsByIDChanged(response.data.allowed_by_id);
           onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
-          setWord(response.data.word)
+          setWord(response.data.word);
         })
         .catch(function (error) {
           if (
@@ -144,28 +144,30 @@ export default function ProfileEditingGeneral(props) {
           })
           .then((response) => {
             request
-            .post(user.url.replace("profiles", "updateProfileImage"), {
-              "image_id" : response.data.id,
-              "type" : type
-            })
-            .then(function (response) {
-              loadUser();
-            })
-            .catch(function (error) {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
-            });
+              .post(user.url.replace("profiles", "updateProfileImage"), {
+                image_id: response.data.id,
+                type: type,
+              })
+              .then(function (response) {
+                loadUser();
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[
+                      Object.keys(error.response.data)[0]
+                    ][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
           })
           .catch((error) => {
             alert.warning(JSON.stringify(error));
@@ -186,202 +188,142 @@ export default function ProfileEditingGeneral(props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <ScrollView style={{ flex: 1 }}>
-      {show == true ? (
-        <Modal
-          visible={true}
-          transparent={true}
-          presentationStyle="overFullScreen"
-        >
-          <SafeAreaView
-            style={{
-              flex: 1,
-              position: "absolute",
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 1,
-              backgroundColor: "#7d7d7d",
-              borderColor: "white",
-              margin: widthPercentageToDP("2%"),
-              backgroundColor: "#7d7d7d",
-              flex: 1,
-            }}
+      <ScrollView style={{ flex: 1 }}>
+        {show == true ? (
+          <Modal
+            visible={true}
+            transparent={true}
+            presentationStyle="overFullScreen"
           >
-            <View
+            <SafeAreaView
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                marginHorizontal: widthPercentageToDP("5%"),
-                marginTop: heightPercentageToDP("3%"),
-                height: heightPercentageToDP("5%"),
+                flex: 1,
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+                backgroundColor: "#7d7d7d",
+                borderColor: "white",
+                margin: widthPercentageToDP("2%"),
+                backgroundColor: "#7d7d7d",
+                flex: 1,
               }}
             >
-              <TouchableWithoutFeedback onPress={() => {
-                onShowChanged(false)
-                setWord(user.word);
-              }}>
-                <Image
-                  style={{
-                    width: win.width / 20,
-                    height: 15 * ratioCancelIcon,
-                  }}
-                  source={require("../assets/Images/cancelIcon.png")}
-                />
-              </TouchableWithoutFeedback>
-              <Text
+              <View
                 style={{
-                  fontSize: RFValue(14),
-                  color: "white",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  marginHorizontal: widthPercentageToDP("5%"),
+                  marginTop: heightPercentageToDP("3%"),
+                  height: heightPercentageToDP("5%"),
                 }}
               >
-                {word.length}/500
-              </Text>
-              <TouchableWithoutFeedback onPress={() => {
-                onShowChanged(false)
-                let tmpUser = user;
-                tmpUser.word = word;
-                onUserChanged(tmpUser);
-
-                updateUser(user, "word", word);
-              }}>
-                <Text style={{ fontSize: RFValue(14), color: "white" }}>
-                  {Translate.t("save")}
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    onShowChanged(false);
+                    setWord(user.word);
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: win.width / 20,
+                      height: 15 * ratioCancelIcon,
+                    }}
+                    source={require("../assets/Images/cancelIcon.png")}
+                  />
+                </TouchableWithoutFeedback>
+                <Text
+                  style={{
+                    fontSize: RFValue(14),
+                    color: "white",
+                  }}
+                >
+                  {word.length}/500
                 </Text>
-              </TouchableWithoutFeedback>
-            </View>
-            <View
-              style={{
-                alignItems: "center",
-                width: "100%",
-                height: "100%",
-                marginTop: heightPercentageToDP("15%"),
-                paddingHorizontal: widthPercentageToDP("5%"),
-              }}
-            >
-              <TextInput
-                placeholder="入力してください"
-                placeholderTextColor="white"
-                maxLength={500}
-                multiline={true}
-                autoFocus={true}
-                style={{
-                  textAlign: "center",
-                  width: "100%",
-                  fontSize: RFValue(14),
-                  color: "white",
-                }}
-                value={word}
-                onChangeText={(value) =>{
-                    setWord(value)
-                }}
-              ></TextInput>
-            </View>
-          </SafeAreaView>
-        </Modal>
-      ) : (
-        []
-      )}
-      <CustomHeader
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onBack={() => {
-          props.navigation.pop();
-        }}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        text={Translate.t("profile")}
-      />
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    onShowChanged(false);
+                    let tmpUser = user;
+                    tmpUser.word = word;
+                    onUserChanged(tmpUser);
 
-      <View>
-        {user && user.background_img && user.background_img.image ? (
-          <ImageBackground
-            style={{
-              width: widthPercentageToDP("100%"),
-              height: heightPercentageToDP("30%"),
-            }}
-            source={{"uri": user.background_img.image}}
-          >
-            <TouchableWithoutFeedback
-              onPress={() => {
-                handleChoosePhoto("background_img");
-              }}
-            >
-              <Image
+                    updateUser(user, "word", word);
+                  }}
+                >
+                  <Text style={{ fontSize: RFValue(14), color: "white" }}>
+                    {Translate.t("save")}
+                  </Text>
+                </TouchableWithoutFeedback>
+              </View>
+              <View
                 style={{
-                  position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("5%"),
-                  marginTop: heightPercentageToDP("1%"),
-                  width: win.width / 12,
-                  height: 23 * ratioCameraIcon,
+                  alignItems: "center",
+                  width: "100%",
+                  height: "100%",
+                  marginTop: heightPercentageToDP("15%"),
+                  paddingHorizontal: widthPercentageToDP("5%"),
                 }}
-                source={require("../assets/Images/cameraIcon.png")}
-              />
-            </TouchableWithoutFeedback>
-          </ImageBackground>
+              >
+                <TextInput
+                  placeholder="入力してください"
+                  placeholderTextColor="white"
+                  maxLength={500}
+                  multiline={true}
+                  autoFocus={true}
+                  style={{
+                    textAlign: "center",
+                    width: "100%",
+                    fontSize: RFValue(14),
+                    color: "white",
+                  }}
+                  value={word}
+                  onChangeText={(value) => {
+                    setWord(value);
+                  }}
+                ></TextInput>
+              </View>
+            </SafeAreaView>
+          </Modal>
         ) : (
-          <ImageBackground
-            style={{
-              width: widthPercentageToDP("100%"),
-              height: heightPercentageToDP("30%"),
-            }}
-            source={require("../assets/Images/cover_img.jpg")}
-          >
-            <TouchableWithoutFeedback
-              onPress={() => {
-                handleChoosePhoto("background_img");
-              }}
-            >
-              <Image
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("5%"),
-                  marginTop: heightPercentageToDP("1%"),
-                  width: win.width / 12,
-                  height: 23 * ratioCameraIcon,
-                }}
-                source={require("../assets/Images/cameraIcon.png")}
-              />
-            </TouchableWithoutFeedback>
-          </ImageBackground>
+          []
         )}
-      </View>
-      <View
-        style={{
-          marginTop: heightPercentageToDP("-7%"),
-          width: widthPercentageToDP("100%"),
-          left: 0,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            marginLeft: widthPercentageToDP("5%"),
+        <CustomHeader
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onBack={() => {
+            props.navigation.pop();
           }}
-        >
-          {user && user.image && user.image.image ? (
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          text={Translate.t("profile")}
+        />
+
+        <View>
+          {user && user.background_img && user.background_img.image ? (
             <ImageBackground
-              resizeMode="contain"
               style={{
-                width: widthPercentageToDP("22%"),
-                height: widthPercentageToDP("22%"),
-                borderWidth: 1,
-                borderColor: Colors.E6DADE,
-                backgroundColor: "white",
+                width: widthPercentageToDP("100%"),
+                height: heightPercentageToDP("30%"),
               }}
-              source={{"uri": user.image.image}}
+              source={{ uri: user.background_img.image }}
             >
               <TouchableWithoutFeedback
                 onPress={() => {
-                  handleChoosePhoto("image");
+                  handleChoosePhoto("background_img");
                 }}
               >
                 <Image
-                  style={styles.cameraIconInsideProfilePicture}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("5%"),
+                    marginTop: heightPercentageToDP("1%"),
+                    width: win.width / 12,
+                    height: 23 * ratioCameraIcon,
+                  }}
                   source={require("../assets/Images/cameraIcon.png")}
                 />
               </TouchableWithoutFeedback>
@@ -389,180 +331,189 @@ export default function ProfileEditingGeneral(props) {
           ) : (
             <ImageBackground
               style={{
-                width: widthPercentageToDP("22%"),
-                height: widthPercentageToDP("22%"),
-                borderWidth: 1,
-                borderColor: Colors.E6DADE,
-                backgroundColor: "white",
+                width: widthPercentageToDP("100%"),
+                height: heightPercentageToDP("30%"),
               }}
-              source={require("../assets/Images/avatar.jpg")}
+              source={require("../assets/Images/cover_img.jpg")}
             >
               <TouchableWithoutFeedback
                 onPress={() => {
-                  handleChoosePhoto("image");
+                  handleChoosePhoto("background_img");
                 }}
               >
                 <Image
-                  style={styles.cameraIconInsideProfilePicture}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("5%"),
+                    marginTop: heightPercentageToDP("1%"),
+                    width: win.width / 12,
+                    height: 23 * ratioCameraIcon,
+                  }}
                   source={require("../assets/Images/cameraIcon.png")}
                 />
               </TouchableWithoutFeedback>
             </ImageBackground>
           )}
-          <View
-            style={{
-              width: "100%",
-              marginLeft: widthPercentageToDP("3%"),
-              marginTop: heightPercentageToDP(".3%"),
-            }}
-          >
-            <TouchableWithoutFeedback onPress={() => onShowChanged(true)}>
-              <Image
-                style={{
-                  width: win.width / 24,
-                  height: 17 * ratioEditIcon,
-                }}
-                source={require("../assets/Images/editIcon.png")}
-              />
-            </TouchableWithoutFeedback>
-            <Text
-              style={{
-                fontSize: RFValue(12),
-                color: Colors.white,
-              }}
-            >
-              {user.word ? user.word.slice(0,30) : ""}
-            </Text>
-            <View
-              style={{
-                alignItems: "center",
-                position: "absolute",
-                bottom: 0,
-                flexDirection: "row",
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                }}
-              >
-                {user.nickname}
-              </Text>
-              <Image
-                style={{
-                  width: win.width / 18,
-                  height: 25 * ratioProfileEditingIcon,
-                  marginLeft: widthPercentageToDP("3%"),
-                }}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
-            </View>
-          </View>
         </View>
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: heightPercentageToDP("2%"),
+            marginTop: heightPercentageToDP("-7%"),
+            width: widthPercentageToDP("100%"),
+            left: 0,
           }}
         >
-          <Text
+          <View
             style={{
-              fontSize: RFValue(10),
+              flexDirection: "row",
               marginLeft: widthPercentageToDP("5%"),
             }}
           >
-            KINUJO ID : {user.user_code}
-          </Text>
+            {user && user.image && user.image.image ? (
+              <ImageBackground
+                resizeMode="contain"
+                style={{
+                  width: widthPercentageToDP("22%"),
+                  height: widthPercentageToDP("22%"),
+                  borderWidth: 1,
+                  borderColor: Colors.E6DADE,
+                  backgroundColor: "white",
+                }}
+                source={{ uri: user.image.image }}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    handleChoosePhoto("image");
+                  }}
+                >
+                  <Image
+                    style={styles.cameraIconInsideProfilePicture}
+                    source={require("../assets/Images/cameraIcon.png")}
+                  />
+                </TouchableWithoutFeedback>
+              </ImageBackground>
+            ) : (
+              <ImageBackground
+                style={{
+                  width: widthPercentageToDP("22%"),
+                  height: widthPercentageToDP("22%"),
+                  borderWidth: 1,
+                  borderColor: Colors.E6DADE,
+                  backgroundColor: "white",
+                }}
+                source={require("../assets/Images/avatar.jpg")}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    handleChoosePhoto("image");
+                  }}
+                >
+                  <Image
+                    style={styles.cameraIconInsideProfilePicture}
+                    source={require("../assets/Images/cameraIcon.png")}
+                  />
+                </TouchableWithoutFeedback>
+              </ImageBackground>
+            )}
+            <View
+              style={{
+                width: "100%",
+                marginLeft: widthPercentageToDP("3%"),
+                marginTop: heightPercentageToDP(".3%"),
+              }}
+            >
+              <TouchableWithoutFeedback onPress={() => onShowChanged(true)}>
+                <Image
+                  style={{
+                    width: win.width / 24,
+                    height: 17 * ratioEditIcon,
+                  }}
+                  source={require("../assets/Images/editIcon.png")}
+                />
+              </TouchableWithoutFeedback>
+              <Text
+                style={{
+                  marginTop: heightPercentageToDP(".5%"),
+                  fontSize: RFValue(12),
+                  color: Colors.white,
+                }}
+              >
+                {user.word ? user.word.slice(0, 30) : ""}
+              </Text>
+              <View
+                style={{
+                  alignItems: "center",
+                  position: "absolute",
+                  bottom: 0,
+                  flexDirection: "row",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                  }}
+                >
+                  {user.nickname}
+                </Text>
+                <Image
+                  style={{
+                    width: win.width / 18,
+                    height: 25 * ratioProfileEditingIcon,
+                    marginLeft: widthPercentageToDP("3%"),
+                  }}
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
+              </View>
+            </View>
+          </View>
           <View
             style={{
-              marginTop: heightPercentageToDP("1.5%"),
-              flexDirection: "row-reverse",
-              position: "absolute",
-              right: 0,
-              marginRight: widthPercentageToDP("4%"),
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: heightPercentageToDP("2%"),
             }}
           >
-            <Image
-              style={{
-                width: win.width / 20,
-                height: 24 * ratioApprovedIcon,
-              }}
-              source={require("../assets/Images/approvedIcon.png")}
-            />
             <Text
               style={{
                 fontSize: RFValue(10),
-                marginRight: widthPercentageToDP("2%"),
+                marginLeft: widthPercentageToDP("5%"),
               }}
             >
-              {Translate.t("storeApproved")}
+              KINUJO ID : {user.user_code}
             </Text>
-          </View>
-        </View>
-        {/* ALL TABS CONTAINER */}
-        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-          <View style={styles.tabContainer}>
-            <Text style={styles.textInContainerLeft}>
-              {Translate.t("name")}
-            </Text>
-            {editNickName == true ? (
-              <View
+            <View
+              style={{
+                marginTop: heightPercentageToDP("1.5%"),
+                flexDirection: "row-reverse",
+                position: "absolute",
+                right: 0,
+                marginRight: widthPercentageToDP("4%"),
+              }}
+            >
+              <Image
                 style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
+                  width: win.width / 20,
+                  height: 24 * ratioApprovedIcon,
+                }}
+                source={require("../assets/Images/approvedIcon.png")}
+              />
+              <Text
+                style={{
+                  fontSize: RFValue(10),
+                  marginRight: widthPercentageToDP("2%"),
                 }}
               >
-                <Icon
-                  reverse
-                  name="check"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => {
-                    onEditNickNameChanged(false);
-                    updateUser(user, "nickname", nickName);
-                  }}
-                />
-                <TextInput
-                  value={nickName}
-                  onChangeText={(value) => onNickNameChanged(value)}
-                  style={styles.textInputEdit}
-                />
-              </View>
-            ) : (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="pencil"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => onEditNickNameChanged(true)}
-                />
-                <Text style={{ fontSize: RFValue(12) }}>{nickName}</Text>
-              </View>
-            )}
+                {Translate.t("storeApproved")}
+              </Text>
+            </View>
           </View>
-          {user.is_seller == true ? (
+          {/* ALL TABS CONTAINER */}
+          <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
             <View style={styles.tabContainer}>
               <Text style={styles.textInContainerLeft}>
-                {Translate.t("shopName")}
+                {Translate.t("name")}
               </Text>
-              {editShopName == true ? (
+              {editNickName == true ? (
                 <View
                   style={{
                     position: "absolute",
@@ -571,7 +522,6 @@ export default function ProfileEditingGeneral(props) {
                     alignItems: "center",
                   }}
                 >
-                  <Text>sad</Text>
                   <Icon
                     reverse
                     name="check"
@@ -581,13 +531,13 @@ export default function ProfileEditingGeneral(props) {
                     color="transparent"
                     reverseColor="black"
                     onPress={() => {
-                      onEditShopNameChanged(false);
-                      updateUser(user, "shop_name", shopName);
+                      onEditNickNameChanged(false);
+                      updateUser(user, "nickname", nickName);
                     }}
                   />
                   <TextInput
-                    value={shopName}
-                    onChangeText={(value) => onShopNameChanged(value)}
+                    value={nickName}
+                    onChangeText={(value) => onNickNameChanged(value)}
                     style={styles.textInputEdit}
                   />
                 </View>
@@ -608,293 +558,350 @@ export default function ProfileEditingGeneral(props) {
                     underlayColor="transparent"
                     color="transparent"
                     reverseColor="black"
-                    onPress={() => onEditShopNameChanged(true)}
+                    onPress={() => onEditNickNameChanged(true)}
                   />
-                  <Text style={{ fontSize: RFValue(12) }}>{shopName}</Text>
+                  <Text style={{ fontSize: RFValue(12) }}>{nickName}</Text>
                 </View>
               )}
             </View>
-          ) : (
-            <View></View>
-          )}
+            {user.is_seller == true ? (
+              <View style={styles.tabContainer}>
+                <Text style={styles.textInContainerLeft}>
+                  {Translate.t("shopName")}
+                </Text>
+                {editShopName == true ? (
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: widthPercentageToDP("-4%"),
+                      flexDirection: "row-reverse",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text>sad</Text>
+                    <Icon
+                      reverse
+                      name="check"
+                      type="font-awesome"
+                      size={RFValue("12")}
+                      underlayColor="transparent"
+                      color="transparent"
+                      reverseColor="black"
+                      onPress={() => {
+                        onEditShopNameChanged(false);
+                        updateUser(user, "shop_name", shopName);
+                      }}
+                    />
+                    <TextInput
+                      value={shopName}
+                      onChangeText={(value) => onShopNameChanged(value)}
+                      style={styles.textInputEdit}
+                    />
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: widthPercentageToDP("-4%"),
+                      flexDirection: "row-reverse",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Icon
+                      reverse
+                      name="pencil"
+                      type="font-awesome"
+                      size={RFValue("12")}
+                      underlayColor="transparent"
+                      color="transparent"
+                      reverseColor="black"
+                      onPress={() => onEditShopNameChanged(true)}
+                    />
+                    <Text style={{ fontSize: RFValue(12) }}>{shopName}</Text>
+                  </View>
+                )}
+              </View>
+            ) : (
+              <View></View>
+            )}
 
-          <View style={styles.tabContainer}>
-            <Text style={styles.textInContainerLeft}>
-              {Translate.t("profileEditPhoneNumber")}
-            </Text>
-            {editPhoneNumber == true ? (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="check"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => {
-                    onEditPhoneNumberChanged(false);
-                    updateUser(user, "tel", phoneNumber);
-                  }}
-                />
-                <TextInput
-                  value={phoneNumber}
-                  onChangeText={(value) => onPhoneNumberChanged(value)}
-                  style={styles.textInputEdit}
-                />
-              </View>
-            ) : (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="pencil"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => onEditPhoneNumberChanged(true)}
-                />
-                <Text style={{ fontSize: RFValue(12) }}>{phoneNumber}</Text>
-              </View>
-            )}
-          </View>
-          <View style={styles.tabContainer}>
-            <Text style={styles.textInContainerLeft}>
-              {Translate.t("profileEditEmail")}
-            </Text>
-            {editEmail == true ? (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="check"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => {
-                    onEditEmailChanged(false);
-                    updateUser(user, "email", email);
-                  }}
-                />
-                <TextInput
-                  value={email}
-                  onChangeText={(value) => onEmailChanged(value)}
-                  style={styles.textInputEdit}
-                />
-              </View>
-            ) : (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="pencil"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => onEditEmailChanged(true)}
-                />
-                <Text style={{ fontSize: RFValue(12) }}>{email}</Text>
-              </View>
-            )}
-          </View>
-          <View style={styles.tabContainer}>
-            <Text style={styles.textInContainerLeft}>
-              {Translate.t("profileEditPassword")}
-            </Text>
-            {editPassword == true ? (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="check"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => {
-                    onEditPasswordChanged(false);
-                    updateUser(user, "password", password);
-                    onPasswordChanged("********");
-                  }}
-                />
-                <TextInput
-                  value={password}
-                  onChangeText={(value) => {
-                    onPasswordChanged(value);
-                  }}
-                  style={styles.textInputEdit}
-                />
-              </View>
-            ) : (
-              <View
-                style={{
-                  position: "absolute",
-                  right: widthPercentageToDP("-4%"),
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                }}
-              >
-                <Icon
-                  reverse
-                  name="pencil"
-                  type="font-awesome"
-                  size={RFValue("12")}
-                  underlayColor="transparent"
-                  color="transparent"
-                  reverseColor="black"
-                  onPress={() => {
-                    onEditPasswordChanged(true);
-                    onPasswordChanged("");
-                  }}
-                />
-                <Text style={{ fontSize: RFValue(12) }}>{password}</Text>
-              </View>
-            )}
-          </View>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              props.navigation.navigate("ProfileInformation", {
-                is_store: true,
-              })
-            }
-          >
             <View style={styles.tabContainer}>
               <Text style={styles.textInContainerLeft}>
-                {Translate.t("personalInformation")}
+                {Translate.t("profileEditPhoneNumber")}
               </Text>
-              <View
-                style={{
-                  position: "absolute",
-                  right: 0,
-                  flexDirection: "row",
-                }}
-              >
-                <Text
+              {editPhoneNumber == true ? (
+                <View
                   style={{
-                    marginRight: widthPercentageToDP("5%"),
-                    fontSize: RFValue(7),
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
                   }}
                 >
-                  {Translate.t("allIdentityInfo")}
-                </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
-              </View>
+                  <Icon
+                    reverse
+                    name="check"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => {
+                      onEditPhoneNumberChanged(false);
+                      updateUser(user, "tel", phoneNumber);
+                    }}
+                  />
+                  <TextInput
+                    value={phoneNumber}
+                    onChangeText={(value) => onPhoneNumberChanged(value)}
+                    style={styles.textInputEdit}
+                  />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                  }}
+                >
+                  <Icon
+                    reverse
+                    name="pencil"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => onEditPhoneNumberChanged(true)}
+                  />
+                  <Text style={{ fontSize: RFValue(12) }}>{phoneNumber}</Text>
+                </View>
+              )}
             </View>
-          </TouchableWithoutFeedback>
-          <View style={styles.tabContainer}>
-            <Text style={styles.textInContainerLeft}>
-              {Translate.t("profileEditAllowAddFriendByID")}
-            </Text>
-            <Switch
-              trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={Colors.D7CCA6}
-              style={styles.switch}
-              onValueChange={(value) => {
-                onAddingFriendsByIDChanged(value);
-                request
-                  .patch(user.url, {
-                    allowed_by_id: value ? 1 : 0,
-                  })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    if (
-                      error &&
-                      error.response &&
-                      error.response.data &&
-                      Object.keys(error.response.data).length > 0
-                    ) {
-                      alert.warning(
-                        error.response.data[
-                          Object.keys(error.response.data)[0]
-                        ][0]
-                      );
-                    }
-                  });
-              }}
-              value={addingFriendsByID}
-            />
-          </View>
-          <View style={styles.tabContainer}>
-            <Text style={styles.textInContainerLeft}>
-              {Translate.t("profileEditAllowAddFriendByPhoneNum")}
-            </Text>
-            <Switch
-              trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={Colors.D7CCA6}
-              style={styles.switch}
-              onValueChange={(value) => {
-                onAllowAddingFriendsByPhoneNumber(value);
-                request
-                  .patch(user.url, {
-                    allowed_by_tel: value ? 1 : 0,
-                  })
-                  .then(function (response) {})
-                  .catch(function (error) {
-                    if (
-                      error &&
-                      error.response &&
-                      error.response.data &&
-                      Object.keys(error.response.data).length > 0
-                    ) {
-                      alert.warning(
-                        error.response.data[
-                          Object.keys(error.response.data)[0]
-                        ][0]
-                      );
-                    }
-                  });
-              }}
-              value={allowAddingFriendsByPhoneNumber}
-            />
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInContainerLeft}>
+                {Translate.t("profileEditEmail")}
+              </Text>
+              {editEmail == true ? (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Icon
+                    reverse
+                    name="check"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => {
+                      onEditEmailChanged(false);
+                      updateUser(user, "email", email);
+                    }}
+                  />
+                  <TextInput
+                    value={email}
+                    onChangeText={(value) => onEmailChanged(value)}
+                    style={styles.textInputEdit}
+                  />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Icon
+                    reverse
+                    name="pencil"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => onEditEmailChanged(true)}
+                  />
+                  <Text style={{ fontSize: RFValue(12) }}>{email}</Text>
+                </View>
+              )}
+            </View>
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInContainerLeft}>
+                {Translate.t("profileEditPassword")}
+              </Text>
+              {editPassword == true ? (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Icon
+                    reverse
+                    name="check"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => {
+                      onEditPasswordChanged(false);
+                      updateUser(user, "password", password);
+                      onPasswordChanged("********");
+                    }}
+                  />
+                  <TextInput
+                    value={password}
+                    onChangeText={(value) => {
+                      onPasswordChanged(value);
+                    }}
+                    style={styles.textInputEdit}
+                  />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    position: "absolute",
+                    right: widthPercentageToDP("-4%"),
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Icon
+                    reverse
+                    name="pencil"
+                    type="font-awesome"
+                    size={RFValue("12")}
+                    underlayColor="transparent"
+                    color="transparent"
+                    reverseColor="black"
+                    onPress={() => {
+                      onEditPasswordChanged(true);
+                      onPasswordChanged("");
+                    }}
+                  />
+                  <Text style={{ fontSize: RFValue(12) }}>{password}</Text>
+                </View>
+              )}
+            </View>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                props.navigation.navigate("ProfileInformation", {
+                  is_store: true,
+                })
+              }
+            >
+              <View style={styles.tabContainer}>
+                <Text style={styles.textInContainerLeft}>
+                  {Translate.t("personalInformation")}
+                </Text>
+                <View
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text
+                    style={{
+                      marginRight: widthPercentageToDP("5%"),
+                      fontSize: RFValue(7),
+                    }}
+                  >
+                    {Translate.t("allIdentityInfo")}
+                  </Text>
+                  <Image
+                    style={styles.nextIcon}
+                    source={require("../assets/Images/next.png")}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInContainerLeft}>
+                {Translate.t("profileEditAllowAddFriendByID")}
+              </Text>
+              <Switch
+                trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
+                thumbColor={Colors.D7CCA6}
+                style={styles.switch}
+                onValueChange={(value) => {
+                  onAddingFriendsByIDChanged(value);
+                  request
+                    .patch(user.url, {
+                      allowed_by_id: value ? 1 : 0,
+                    })
+                    .then(function (response) {})
+                    .catch(function (error) {
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0]
+                        );
+                      }
+                    });
+                }}
+                value={addingFriendsByID}
+              />
+            </View>
+            <View style={styles.tabContainer}>
+              <Text style={styles.textInContainerLeft}>
+                {Translate.t("profileEditAllowAddFriendByPhoneNum")}
+              </Text>
+              <Switch
+                trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
+                thumbColor={Colors.D7CCA6}
+                style={styles.switch}
+                onValueChange={(value) => {
+                  onAllowAddingFriendsByPhoneNumber(value);
+                  request
+                    .patch(user.url, {
+                      allowed_by_tel: value ? 1 : 0,
+                    })
+                    .then(function (response) {})
+                    .catch(function (error) {
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0]
+                        );
+                      }
+                    });
+                }}
+                value={allowAddingFriendsByPhoneNumber}
+              />
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -91,6 +91,11 @@ export default function Home(props) {
           return 1;
         });
 
+        products = products.filter((product) => {
+          let date = new Date(product.is_opened);
+          return product.is_opened == 1 && ((new Date()) > date) && product.is_hidden == 0 && product.is_draft == 0;
+        })
+
         let kinujoProducts = products.filter((product) => {
           return product.user.authority.id == 1;
         });

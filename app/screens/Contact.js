@@ -334,7 +334,7 @@ export default function Contact(props) {
           let groups = [];
 
           querySnapshot.forEach((documentSnapshot) => {
-            if (documentSnapshot.data().users.length > 2) {
+            if (documentSnapshot.data().users.length > 2 || documentSnapshot.data().type == 'group') {
               groups.push({
                 id: documentSnapshot.id,
                 name: documentSnapshot.data().groupName,
@@ -391,6 +391,11 @@ export default function Contact(props) {
               ids.push(item.id);
             }
           });
+          console.log({
+            ids: ids,
+            userId: userId,
+            "type" : "contact"
+          })
           request
             .get("user/byIds/", {
               ids: ids,
@@ -398,8 +403,25 @@ export default function Contact(props) {
               "type" : "contact"
             })
             .then(function (response) {
-              globalUsers = response.data.users;
-              onUserHtmlChanged(processUserHtml(props, response.data.users));
+              response = response.data
+              if(response.success){
+                globalUsers = response.users;
+                onUserHtmlChanged(processUserHtml(props, response.users));
+              } else {
+                if (
+                  response.errors &&
+                  Object.keys(response.errors).length > 0
+                ) {
+                  alert.warning(
+                    response.errors[Object.keys(response.errors)[0]][0] +
+                      "(" +
+                      Object.keys(response.errors)[0] +
+                      ")"
+                  );
+                } else if (response.error) {
+                  alert.warning(response.error);
+                }
+              }
             })
             .catch(function (error) {
               console.log(error);

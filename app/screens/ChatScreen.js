@@ -54,6 +54,7 @@ import storage from "@react-native-firebase/storage";
 import Clipboard from "@react-native-community/clipboard";
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -103,10 +104,6 @@ function checkUpdateFriend(user1, user2) {
     updateFriend = true;
   }
 }
-// const fetchCopiedText = async () => {
-//   const text = await Clipboard.getString();
-//   setCopiedText(text);
-// };
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = React.useState(false);
   const [showPopUp, onShowPopUpChanged] = React.useState(false);
@@ -115,6 +112,7 @@ export default function ChatScreen(props) {
   const [messages, setMessages] = React.useState("");
   const [showEmoji, onShowEmojiChanged] = useState(false);
   const [prevEmoji, setPrevEmoji] = useState("");
+  const [showCheckBox, onShowCheckBoxChanged] = useState(false);
   const [users, onUserChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
   // const [user, processUser] = useState("");
@@ -180,7 +178,7 @@ export default function ChatScreen(props) {
   function handleEmojiIconPressed() {
     onShowEmojiChanged(true);
     setShouldShow(false);
-    setInputBarPosition(heightPercentageToDP("34%") - insets.top / 2);
+    setInputBarPosition(heightPercentageToDP("30%"));
     Keyboard.dismiss();
   }
   function hideEmoji() {
@@ -257,10 +255,14 @@ export default function ChatScreen(props) {
                   tmpChatHtml.push(
                     <TouchableWithoutFeedback
                       key={snapShot.id}
+                      delete={
+                        snapShot.data()["delete_" + userId] ? true : false
+                      }
                       onLongPress={() => {
                         onLongPressObjChanged({
                           id: snapShot.id,
                           message: snapShot.data().message,
+                          data: snapShot.data(),
                         });
                         onShowPopUpChanged(true);
                       }}
@@ -280,6 +282,7 @@ export default function ChatScreen(props) {
                             snapShot.data().image == null ? (
                               snapShot.data().contactID == null ? (
                                 <ChatText
+                                  showCheckBox={showCheckBox}
                                   date={tmpHours + ":" + tmpMinutes}
                                   isSelf="true"
                                   seen="true"
@@ -287,6 +290,7 @@ export default function ChatScreen(props) {
                                 />
                               ) : (
                                 <ChatContact
+                                  showCheckBox={showCheckBox}
                                   props={props}
                                   date={tmpHours + ":" + tmpMinutes}
                                   seen="true"
@@ -297,6 +301,7 @@ export default function ChatScreen(props) {
                               )
                             ) : (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
                                 seen="true"
@@ -306,12 +311,14 @@ export default function ChatScreen(props) {
                           ) : snapShot.data().image == null ? (
                             snapShot.data().contactID == null ? (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 text={snapShot.data().message}
                               />
                             ) : (
                               <ChatContact
+                                showCheckBox={showCheckBox}
                                 props={props}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
@@ -322,6 +329,7 @@ export default function ChatScreen(props) {
                             )
                           ) : (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               seen="true"
                               imageURL={snapShot.data().image}
@@ -332,12 +340,14 @@ export default function ChatScreen(props) {
                           snapShot.data().image == null ? (
                             snapShot.data().contactID == null ? (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
                                 text={snapShot.data().message}
                               />
                             ) : (
                               <ChatContact
+                                showCheckBox={showCheckBox}
                                 props={props}
                                 contactID={snapShot.data().contactID}
                                 date={tmpHours + ":" + tmpMinutes}
@@ -347,6 +357,7 @@ export default function ChatScreen(props) {
                             )
                           ) : (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               imageURL={snapShot.data().image}
@@ -355,11 +366,13 @@ export default function ChatScreen(props) {
                         ) : snapShot.data().image == null ? (
                           snapShot.data().contactID == null ? (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               text={snapShot.data().message}
                             />
                           ) : (
                             <ChatContact
+                              showCheckBox={showCheckBox}
                               props={props}
                               contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
@@ -369,6 +382,7 @@ export default function ChatScreen(props) {
                           )
                         ) : (
                           <ChatText
+                            showCheckBox={showCheckBox}
                             date={tmpHours + ":" + tmpMinutes}
                             imageURL={snapShot.data().image}
                           />
@@ -382,10 +396,14 @@ export default function ChatScreen(props) {
                   tmpChatHtml.push(
                     <TouchableWithoutFeedback
                       key={snapShot.id}
+                      delete={
+                        snapShot.data()["delete_" + userId] ? true : false
+                      }
                       onLongPress={() => {
                         onLongPressObjChanged({
                           id: snapShot.id,
                           message: snapShot.data().message,
+                          data: snapShot.data(),
                         });
                         onShowPopUpChanged(true);
                       }}
@@ -405,6 +423,7 @@ export default function ChatScreen(props) {
                             snapShot.data().image == null ? (
                               snapShot.data().contactID == null ? (
                                 <ChatText
+                                  showCheckBox={showCheckBox}
                                   date={tmpHours + ":" + tmpMinutes}
                                   isSelf="true"
                                   seen="true"
@@ -412,6 +431,7 @@ export default function ChatScreen(props) {
                                 />
                               ) : (
                                 <ChatContact
+                                  showCheckBox={showCheckBox}
                                   props={props}
                                   contactID={snapShot.data().contactID}
                                   date={tmpHours + ":" + tmpMinutes}
@@ -422,6 +442,7 @@ export default function ChatScreen(props) {
                               )
                             ) : (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
                                 seen="true"
@@ -431,12 +452,14 @@ export default function ChatScreen(props) {
                           ) : snapShot.data().image == null ? (
                             snapShot.data().contactID == null ? (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 text={snapShot.data().message}
                               />
                             ) : (
                               <ChatContact
+                                showCheckBox={showCheckBox}
                                 props={props}
                                 contactID={snapShot.data().contactID}
                                 date={tmpHours + ":" + tmpMinutes}
@@ -447,6 +470,7 @@ export default function ChatScreen(props) {
                             )
                           ) : (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               seen="true"
                               imageURL={snapShot.data().image}
@@ -457,12 +481,14 @@ export default function ChatScreen(props) {
                           snapShot.data().image == null ? (
                             snapShot.data().contactID == null ? (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
                                 text={snapShot.data().message}
                               />
                             ) : (
                               <ChatContact
+                                showCheckBox={showCheckBox}
                                 props={props}
                                 contactID={snapShot.data().contactID}
                                 date={tmpHours + ":" + tmpMinutes}
@@ -472,6 +498,7 @@ export default function ChatScreen(props) {
                             )
                           ) : (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               imageURL={snapShot.data().image}
@@ -480,11 +507,13 @@ export default function ChatScreen(props) {
                         ) : snapShot.data().image == null ? (
                           snapShot.data().contactID == null ? (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               text={snapShot.data().message}
                             />
                           ) : (
                             <ChatContact
+                              showCheckBox={showCheckBox}
                               props={props}
                               contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
@@ -494,6 +523,7 @@ export default function ChatScreen(props) {
                           )
                         ) : (
                           <ChatText
+                            showCheckBox={showCheckBox}
                             date={tmpHours + ":" + tmpMinutes}
                             imageURL={snapShot.data().image}
                           />
@@ -507,10 +537,14 @@ export default function ChatScreen(props) {
                   tmpChatHtml.push(
                     <TouchableWithoutFeedback
                       key={snapShot.id}
+                      delete={
+                        snapShot.data()["delete_" + userId] ? true : false
+                      }
                       onLongPress={() => {
                         onLongPressObjChanged({
                           id: snapShot.id,
                           message: snapShot.data().message,
+                          data: snapShot.data(),
                         });
                         onShowPopUpChanged(true);
                       }}
@@ -531,6 +565,7 @@ export default function ChatScreen(props) {
                             snapShot.data().image == null ? (
                               snapShot.data().contactID == null ? (
                                 <ChatText
+                                  showCheckBox={showCheckBox}
                                   date={tmpHours + ":" + tmpMinutes}
                                   isSelf="true"
                                   seen="true"
@@ -538,6 +573,7 @@ export default function ChatScreen(props) {
                                 />
                               ) : (
                                 <ChatContact
+                                  showCheckBox={showCheckBox}
                                   props={props}
                                   contactID={snapShot.data().contactID}
                                   date={tmpHours + ":" + tmpMinutes}
@@ -548,6 +584,7 @@ export default function ChatScreen(props) {
                               )
                             ) : (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
                                 seen="true"
@@ -557,12 +594,14 @@ export default function ChatScreen(props) {
                           ) : snapShot.data().image == null ? (
                             snapShot.data().contactID == null ? (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 seen="true"
                                 text={snapShot.data().message}
                               />
                             ) : (
                               <ChatContact
+                                showCheckBox={showCheckBox}
                                 props={props}
                                 contactID={snapShot.data().contactID}
                                 date={tmpHours + ":" + tmpMinutes}
@@ -573,6 +612,7 @@ export default function ChatScreen(props) {
                             )
                           ) : (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               seen="true"
                               imageURL={snapShot.data().image}
@@ -583,12 +623,14 @@ export default function ChatScreen(props) {
                           snapShot.data().image == null ? (
                             snapShot.data().contactID == null ? (
                               <ChatText
+                                showCheckBox={showCheckBox}
                                 date={tmpHours + ":" + tmpMinutes}
                                 isSelf="true"
                                 text={snapShot.data().message}
                               />
                             ) : (
                               <ChatContact
+                                showCheckBox={showCheckBox}
                                 props={props}
                                 contactID={snapShot.data().contactID}
                                 date={tmpHours + ":" + tmpMinutes}
@@ -598,6 +640,7 @@ export default function ChatScreen(props) {
                             )
                           ) : (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               isSelf="true"
                               imageURL={snapShot.data().image}
@@ -606,11 +649,13 @@ export default function ChatScreen(props) {
                         ) : snapShot.data().image == null ? (
                           snapShot.data().contactID == null ? (
                             <ChatText
+                              showCheckBox={showCheckBox}
                               date={tmpHours + ":" + tmpMinutes}
                               text={snapShot.data().message}
                             />
                           ) : (
                             <ChatContact
+                              showCheckBox={showCheckBox}
                               props={props}
                               contactID={snapShot.data().contactID}
                               date={tmpHours + ":" + tmpMinutes}
@@ -620,6 +665,7 @@ export default function ChatScreen(props) {
                           )
                         ) : (
                           <ChatText
+                            showCheckBox={showCheckBox}
                             date={tmpHours + ":" + tmpMinutes}
                             imageURL={snapShot.data().image}
                           />
@@ -636,7 +682,10 @@ export default function ChatScreen(props) {
                 }
               }
               messageID.push(snapShot.id);
-              onChatHtmlChanged(tmpChatHtml);
+              const resultChatHtml = tmpChatHtml.filter((html) => {
+                return !html.props["delete"];
+              });
+              onChatHtmlChanged(resultChatHtml);
             }
           });
         });
@@ -716,11 +765,17 @@ export default function ChatScreen(props) {
             onPress={() => props.navigation.navigate("Cart")}
           />
           <EmojiBoard
+            numCols={parseInt(heightPercentageToDP("30%")/60)}
             showBoard={showEmoji}
             style={{
-              height: heightPercentageToDP("30%"),
+              height: heightPercentageToDP("50%"),
               marginBottom: heightPercentageToDP("10%"),
             }}
+            containerStyle={
+              {
+                height: heightPercentageToDP("30%"),
+              }
+            }
             onClick={onClick}
             onRemove={onRemove}
           />
@@ -752,20 +807,22 @@ export default function ChatScreen(props) {
             </ScrollView>
           </LinearGradient>
           <View style={showPopUp == true ? styles.popUpView : styles.none}>
-            <View style={{
-              backgroundColor: "white",
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 1,
-              flex: 1,
-              marginHorizontal: widthPercentageToDP("15%"),
-              marginVertical: heightPercentageToDP("30%"),
-              borderWidth: 1,
-              borderColor: Colors.D7CCA6,
-              justifyContent: "space-evenly",
-            }}>
+            <View
+              style={{
+                backgroundColor: "white",
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                zIndex: 1,
+                flex: 1,
+                marginHorizontal: widthPercentageToDP("15%"),
+                marginVertical: heightPercentageToDP("34%"),
+                borderWidth: 1,
+                borderColor: Colors.D7CCA6,
+                justifyContent: "space-evenly",
+              }}
+            >
               <View
                 style={{
                   marginTop: heightPercentageToDP("1.5%"),
@@ -780,18 +837,76 @@ export default function ChatScreen(props) {
                   >
                     <Text style={styles.popUpText}>{Translate.t("copy")}</Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback>
-                    <Text style={styles.popUpText}>{Translate.t("forward")}</Text>
+                  <TouchableWithoutFeedback
+                    onPress={() =>
+                      props.navigation.navigate("ChatListForward", {
+                        message: longPressObj.message,
+                      })
+                    }
+                  >
+                    <Text style={styles.popUpText}>
+                      {Translate.t("forward")}
+                    </Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      let update = {};
+                      update["delete_" + userId] =
+                        longPressObj.data["delete_" + userId] == "" ||
+                        longPressObj.data["delete_" + userId]
+                          ? false
+                          : true;
+                      db.collection("chat")
+                        .doc(groupID)
+                        .collection("messages")
+                        .doc(longPressObj.id)
+                        .set(update, {
+                          merge: true,
+                        });
+                      onShowPopUpChanged(false);
+                    }}
+                  >
                     <Text style={styles.popUpText}>
                       {Translate.t("cancelOnlyMe")}
                     </Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback>
-                    <Text style={styles.popUpText}>{Translate.t("remove")}</Text>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      db.collection("chat")
+                        .doc(groupID)
+                        .collection("messages")
+                        .doc(longPressObj.id)
+                        .delete()
+                        .then(function () {
+                          unsubscribe();
+                          onShowPopUpChanged(false);
+                          onChatHtmlChanged([]);
+                          tmpChatHtml = [];
+                        });
+                    }}
+                  >
+                    <Text style={styles.popUpText}>
+                      {Translate.t("remove")}
+                    </Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      db.collection("users")
+                        .doc(userId)
+                        .collection("FavoriteChat")
+                        .doc(longPressObj.id)
+                        .set({
+                          createdAt: longPressObj.data.createdAt,
+                          favoriteMessage: longPressObj.message,
+                          groupID: groupID,
+                          groupName: groupName,
+                          timeStamp: longPressObj.data.timeStamp,
+                        })
+                        .then(function () {
+                          onShowPopUpChanged(false);
+                        });
+                    }}
+                  >
                     <Text style={styles.popUpText}>
                       {Translate.t("addToFav")}
                     </Text>
@@ -812,8 +927,7 @@ export default function ChatScreen(props) {
               bottom: inputBarPosition,
               left: 0,
               overflow: "hidden",
-            }}
-          >
+            }}>
             <View
               style={{
                 height: textInputHeight,
@@ -854,12 +968,13 @@ export default function ChatScreen(props) {
                     //   )
                     // }
                     onFocus={() => hideEmoji()}
-                    onBlur={() => hideEmoji()}
+                    // onBlur={() => hideEmoji()}
                     multiline={true}
                     value={messages}
                     onChangeText={(value) => setMessages(value)}
                     placeholder="Type a message"
                     style={{
+                      fontSize: RFValue(11),
                       width: widthPercentageToDP("15%"),
                       flexGrow: 1,
                       color: "black",
@@ -899,7 +1014,6 @@ export default function ChatScreen(props) {
                     minute +
                     ":" +
                     seconds;
-                  console.log(groupID);
                   tmpMessage != ""
                     ? db
                         .collection("chat")
@@ -1249,6 +1363,25 @@ export default function ChatScreen(props) {
 }
 
 const styles = StyleSheet.create({
+  textInputArea: {
+    height: heightPercentageToDP("7%"),
+    backgroundColor: "#F0EEE9",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  textInputAreaWithEmoji: {
+    height: heightPercentageToDP("7%"),
+    backgroundColor: "#F0EEE9",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    bottom: RFValue(35),
+  },
+  emojiBoard: {
+    bottom: 0,
+    height: heightPercentageToDP("30%"),
+  },
   modal_view: {
     position: "relative",
     zIndex: 10,
@@ -1312,7 +1445,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.D7CCA6,
     justifyContent: "space-evenly",
     width: widthPercentageToDP("100%"),
-    height:heightPercentageToDP("100%"),
+    height: heightPercentageToDP("100%"),
   },
   popUpText: {
     marginLeft: widthPercentageToDP("2%"),

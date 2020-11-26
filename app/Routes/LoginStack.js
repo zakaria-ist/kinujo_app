@@ -39,6 +39,7 @@ import MemoEdit from "../Screens/MemoEdit";
 import AdvanceSetting from "../Screens/AdvanceSetting";
 import ProductInformationAdd from "../Screens/ProductInformationAddNew";
 import ChatList from "../Screens/ChatList";
+import ChatListForward from "../Screens/ChatListForward";
 import Contact from "../Screens/Contact";
 import AdressManagement from "../Screens/AdressManagement";
 import ContactSearch from "../Screens/ContactSearch";
@@ -51,6 +52,7 @@ import GroupFolderCreateCompletion from "../Screens/GroupFolderCreateCompletion"
 import ContactShare from "../Screens/ContactShare";
 import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
 import ChatContact from "../Screens/ChatContact";
+import FavoriteChat from "../Screens/FavoriteChat";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
@@ -89,6 +91,14 @@ function BottomNavigationGeneral() {
         options={{
           tabBarLabel: "Contact",
           tabBarIcon: () => <PersonLogo width={25} height={25} />,
+        }}
+      />
+      <Tab.Screen
+        name="FavoriteChat"
+        component={FavoriteChat}
+        options={{
+          tabBarLabel: "FavoriteChat",
+          tabBarIcon: () => <StarLogo width={25} height={25} />,
         }}
       />
       <Tab.Screen
@@ -183,6 +193,14 @@ function BottomNavigationStore() {
         }}
       />
       <Tab.Screen
+        name="FavoriteChat"
+        component={FavoriteChat}
+        options={{
+          tabBarLabel: "FavoriteChat",
+          tabBarIcon: () => <StarLogo width={25} height={25} />,
+        }}
+      />
+      <Tab.Screen
         name="QRCode"
         component={QRCode}
         options={{
@@ -230,7 +248,7 @@ export default function LoginStack() {
           name="RegisterCompletion"
           component={RegisterCompletion}
         />
-
+        <Stack.Screen name="ChatListForward" component={ChatListForward} />
         <Stack.Screen name="TermsOfCondition" component={TermsOfCondition} />
         <Stack.Screen
           name="StoreAccountSelection"

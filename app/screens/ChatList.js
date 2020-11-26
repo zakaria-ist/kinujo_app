@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   Modal,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -26,7 +27,6 @@ import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { block } from "react-native-reanimated";
 import CustomAlert from "../lib/alert";
-import { ScrollView } from "react-native-gesture-handler";
 import Request from "../lib/request";
 import Clipboard from "@react-native-community/clipboard";
 const alert = new CustomAlert();

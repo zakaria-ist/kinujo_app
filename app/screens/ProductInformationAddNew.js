@@ -10,7 +10,9 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+import ImagePicker from "react-native-image-picker";
 import { RadioButton } from "react-native-paper";
+import Spinner from "react-native-loading-spinner-overlay";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -22,7 +24,7 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import ProductNoneVariations from "./ProductNoneVariations";
 import ProductOneVariations from "./ProductOneVariations";
 import ProductTwoVariations from "./ProductTwoVariations";
-import { ScrollView, TextInput } from "react-native-gesture-handler";
+import { ScrollView, TextInput, TouchableWithoutFeedback } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -55,10 +57,7 @@ export default function ProductInformationAdd(props) {
   const [pr, onPrChanged] = React.useState("");
   const [productId, onProductIdChanged] = React.useState("");
   const [productCategory, onProductCategoryChanged] = React.useState("");
-  const [productVariation, onProductVariationChanged] = React.useState("one");
-  const [oneItemList, onOneItemList] = React.useState("");
-  const [twoItemList, onTwoItemList] = React.useState("");
-  const [noneItemList, onNoneItemList] = React.useState("");
+  const [productVariation, onProductVariationChanged] = React.useState("none");
   const [publishState, onPublishStateChanged] = React.useState("");
   const [publishDate, onPublishDateChanged] = React.useState("");
   const [productStatus, onProductStatusChanged] = React.useState("");
@@ -70,44 +69,379 @@ export default function ProductInformationAdd(props) {
     productPageDisplayMethod,
     onProductPageDisplayMethodChanged,
   ] = React.useState("");
-  const [productImages, onProductImagesChanged] = React.useState("");
+  const [productImages, onProductImagesChanged] = React.useState([]);
+  const [productImageHtml, onProductImageHtmlChanged] = React.useState([]);
   const [productDescription, onProductDescriptionChanged] = React.useState("");
-  if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
+  const [spinner, onSpinnerChanged] = React.useState(false);
+  const [product, onProductChanged] = React.useState(false);
+  
+  function getId(url){
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
     });
+    let userId = urls[urls.length - 1];
+    return userId;
   }
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
+      if(props.route.params.url){
+        console.log(props.route.params.url)
+        request.get(props.route.params.url).then((response)=>{
+          onProductChanged(response.data)
+          onProductNameChanged(response.data.name)
+          onBrandNameChanged(response.data.brand_name)
+          onPrChanged(response.data.pr)
+          onProductIdChanged(response.data.url_str)
+          onPublishDateChanged(response.data.opened_date)
+          onPublishStateChanged(response.data.is_opened ? "published" : "unpublished")
+          onProductCategoryChanged(response.data.category)
+          onProductVariationChanged(response.data.variety == 0 ? "none" : (response.data.variety == 1 ? "one" : "two"))
+          onProductStatusChanged(response.data.is_used == 0 ? "new" : "secondHand")
+          onTargetUserChanged(response.data.target == 0 ? "allUser" : (response.data.target == 1 ?  "generalUser" : "storeUser"))
+          onPriceChanged(response.data.price.toString())
+          onStorePriceChanged(response.data.store_price)
+          onShippingChanged(response.data.shipping + "")
+          onProductDescriptionChanged(response.data.description)
+          onProductImagesChanged(response.data.productImages)
+
+          let tmpImages = response.data.productImages;
+          let html = []
+          tmpImages.map((image) => {
+            image = image.image;
+            html.push(<View
+              key={image.id}
+              style={{
+                marginTop: heightPercentageToDP("1%"),
+                height: 1,
+                width: "100%",
+                height: heightPercentageToDP("30%"),
+                borderRadius: 1,
+                borderWidth: 1,
+                borderColor: Colors.deepGrey,
+                borderStyle: "dashed",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Image
+                style={{
+                  width: "100%",
+                  height: heightPercentageToDP("30%"),
+                  position: "absolute",
+                }}
+                source={{ uri: image.image }}
+              />
+            </View>)
+          })
+          onProductImageHtmlChanged(html);
+
+          if(response.data.variety == 0){
+            let productVariety = response.data.productVarieties[0]
+            let productVarietySelection = productVariety.productVarietySelections[0]
+            let horizontal = productVarietySelection.jancode_horizontal[0]
+            onNoneVariationItemsChanged({
+              id: horizontal.id,
+              janCode: horizontal.jan_code,
+              stock: horizontal.stock
+            });
+          }  
+          if(response.data.variety == 1){
+            let tmpItems = {}
+            let productVariety = response.data.productVarieties[0]
+            tmpItems['name'] = productVariety['name']
+            tmpItems['items'] = []
+            for(var i=0; i<productVariety.productVarietySelections.length; i++){
+              let productVarietySelection = productVariety.productVarietySelections[i]
+              let vertical = productVarietySelection.jancode_vertical[0]
+              tmpItems['items'].push({
+                id: vertical.id,
+                index: i,
+                choice: productVarietySelection.selection,
+                stock: vertical.stock + "",
+                janCode: vertical.jan_code,
+              })
+            }
+            onOneVariationItemsChanged(tmpItems);
+          }  
+          if(response.data.variety == 2){
+            let firstProductVariety = response.data.productVarieties[0]
+            let secondProductVariety = response.data.productVarieties[1]
+
+            let tmpItems = {
+              "items" : [
+                {
+                  id: firstProductVariety['id'],
+                  index: 0,
+                  horizontalItem: firstProductVariety['name'],
+                  choices: [
+                  ],
+                },
+                {
+                  id: secondProductVariety['id'],
+                  index: 1,
+                  horizontalItem: secondProductVariety['name'],
+                  choices: [
+                  ],
+                },
+              ],
+              "mappingValue" : {}
+            }
+
+            rawMapping = {}
+
+            firstProductVariety.productVarietySelections.map((productVarietySelection) => {
+              rawMapping[productVarietySelection.id] = productVarietySelection.selection;
+              tmpItems['items'][0]['choices'].push({
+                choiceIndex: tmpItems['items'][0]['choices'].length,
+                choiceItem: productVarietySelection.selection,
+              })
+            })
+            secondProductVariety.productVarietySelections.map((productVarietySelection) => {
+              rawMapping[productVarietySelection.id] = productVarietySelection.selection;
+              tmpItems['items'][1]['choices'].push({
+                choiceIndex: tmpItems['items'][1]['choices'].length,
+                choiceItem: productVarietySelection.selection,
+              })
+            })
+
+            firstProductVariety.productVarietySelections.map((productVarietySelection) => {
+              productVarietySelection.jancode_horizontal.map((horizontal) => {
+                if(horizontal.horizontal && horizontal.vertical){
+                  let horizontalId = getId(horizontal.horizontal)
+                  let verticalId = getId(horizontal.vertical)
+                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
+                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                  }
+                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                    id: horizontal.id,
+                    stock: horizontal.stock + "",
+                    janCode: horizontal.jan_code
+                  }
+                }
+              })
+              productVarietySelection.jancode_vertical.map((vertical) => {
+                if(vertical.horizontal && vertical.vertical){
+                  let horizontalId = getId(vertical.horizontal)
+                  let verticalId = getId(vertical.vertical)
+                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
+                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                  }
+                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                    id: vertical.id,
+                    stock: vertical.stock + "",
+                    janCode: vertical.jan_code
+                  }
+                }
+              })
+            })
+            secondProductVariety.productVarietySelections.map((productVarietySelection) => {
+              productVarietySelection.jancode_horizontal.map((horizontal) => {
+                if(horizontal.horizontal && horizontal.vertical){
+                  let horizontalId = getId(horizontal.horizontal)
+                  let verticalId = getId(horizontal.vertical)
+                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
+                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                  }
+                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                    id: horizontal.id,
+                    stock: vertical.stock + "",
+                    janCode: vertical.jan_code
+                  }
+                }
+              })
+              productVarietySelection.jancode_vertical.map((vertical) => {
+                if(vertical.horizontal && vertical.vertical){
+                  let horizontalId = getId(vertical.horizontal)
+                  let verticalId = getId(vertical.vertical)
+                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
+                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                  }
+                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                    id: vertical.id,
+                    stock: vertical.stock + "",
+                    janCode: vertical.jan_code
+                  }
+                }
+              })
+            })
+            onTwoVariationItemsChanged(tmpItems);
+          }  
+        })
+      }
+    }, [])
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
     if (variant == "none") {
-      console.log("none");
     } else if (variant == "one") {
-      console.log("1");
     } else if (variant == "two") {
-      //   console.log("2");
     }
+  }
+
+  function createProduct(draft){
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+      onSpinnerChanged(true)
+      request.post("createProduct/" + userId + "/", {
+        productName: productName,
+        brandName: brandName,
+        pr: pr,
+        productId: productId,
+        productCategory: productCategory,
+        productVariation: productVariation,
+        oneVariationItems: oneVariationItems,
+        twoVariationItems: twoVariationItems,
+        noneVariationItems: noneVariationItems,
+        productStock: productStock,
+        publishState: publishState,
+        publishDate: publishDate,
+        price: price,
+        storePrice: storePrice,
+        shipping: shipping,
+        productPageDisplayMethod: productPageDisplayMethod,
+        productImages: productImages,
+        productDescription: productDescription,
+        targetUser: targetUser,
+        productStatus: productStatus,
+        draft: draft
+      }).then((response) => {
+        onSpinnerChanged(false);
+        response = response.data;
+        if(response.success){
+          props.navigation.pop();
+        } else {
+          if (
+            response.errors &&
+            Object.keys(response.errors).length > 0
+          ) {
+            alert.warning(
+              response.errors[Object.keys(response.errors)[0]][0] +
+                "(" +
+                Object.keys(response.errors)[0] +
+                ")"
+            );
+          } else if (response.error) {
+            alert.warning(response.error);
+          }
+        }
+      }).catch((error) => {
+        onSpinnerChanged(false);
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[
+              Object.keys(error.response.data)[0]
+            ][0]
+          );
+        }
+      })
+    });
+  }
+
+  function saveProduct(draft){
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+      onSpinnerChanged(true)
+      request.post("saveProduct/" + userId + "/", {
+        id:  product.id,
+        productName: productName,
+        brandName: brandName,
+        pr: pr,
+        productId: productId,
+        productCategory: productCategory,
+        productVariation: productVariation,
+        oneVariationItems: oneVariationItems,
+        twoVariationItems: twoVariationItems,
+        noneVariationItems: noneVariationItems,
+        productStock: productStock,
+        publishState: publishState,
+        publishDate: publishDate,
+        price: price,
+        storePrice: storePrice,
+        shipping: shipping,
+        productPageDisplayMethod: productPageDisplayMethod,
+        productImages: productImages,
+        productDescription: productDescription,
+        targetUser: targetUser,
+        productStatus: productStatus,
+        draft: draft
+      }).then((response) => {
+        onSpinnerChanged(false);
+        response = response.data;
+        if(response.success){
+          props.navigation.pop();
+        } else {
+          if (
+            response.errors &&
+            Object.keys(response.errors).length > 0
+          ) {
+            alert.warning(
+              response.errors[Object.keys(response.errors)[0]][0] +
+                "(" +
+                Object.keys(response.errors)[0] +
+                ")"
+            );
+          } else if (response.error) {
+            alert.warning(response.error);
+          }
+        }
+      }).catch((error) => {
+        onSpinnerChanged(false);
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[
+              Object.keys(error.response.data)[0]
+            ][0]
+          );
+        }
+      })
+    });
   }
   return (
     <SafeAreaView>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         text={Translate.t("productInformation")}
@@ -124,14 +458,17 @@ export default function ProductInformationAdd(props) {
             <TextInput
               style={styles.textInput}
               value={productName}
-              onValueChange={(value) => onProductNameChanged(value)}
+              onChangeText={(value) => {
+                console.log(value);
+                onProductNameChanged(value)
+              }}
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("brandName")}</Text>
             <TextInput
               style={styles.textInput}
               value={brandName}
-              onValueChange={(value) => onBrandNameChanged(value)}
+              onChangeText={(value) => onBrandNameChanged(value)}
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("prStatement")}</Text>
@@ -140,21 +477,21 @@ export default function ProductInformationAdd(props) {
               numberOfLines={4}
               style={styles.textInput}
               value={pr}
-              onValueChange={(value) => onPrChanged(value)}
+              onChangeText={(value) => onPrChanged(value)}
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("productIDURL")}</Text>
             <TextInput
               style={styles.textInput}
               value={productId}
-              onValueChange={(value) => onProductIdChanged(value)}
+              onChangeText={(value) => onProductIdChanged(value)}
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("productCategory")}</Text>
             <TextInput
               style={styles.textInput}
               value={productCategory}
-              onValueChange={(value) => onProductCategoryChanged(value)}
+              onChangeText={(value) => onProductCategoryChanged(value)}
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("variation")}</Text>
@@ -203,25 +540,27 @@ export default function ProductInformationAdd(props) {
 
             {/*1 項目*/}
             <View style={productVariation !== "one" ? styles.none : null}>
-              <ProductOneVariations onItemsChanged={
+              <ProductOneVariations pItems={oneVariationItems} onItemsChanged={
                 (items) => {
                   onOneVariationItemsChanged(items);
                 }
               }/>
             </View>
             <View style={productVariation !== "two" ? styles.none : null}>
-              <ProductTwoVariations onItemsChanged={
+              <ProductTwoVariations pItems={twoVariationItems} onItemsChanged={
                 (items) => {
                   onTwoVariationItemsChanged(items);
                 }
               }/>
             </View>
             <View style={productVariation !== "none" ? styles.none : null}>
-              <ProductNoneVariations onItemsChanged={
-                (items) => {
-                  onNoneVariationItemsChanged(items);
-                }
-              }/>
+              {
+                <ProductNoneVariations pItems={noneVariationItems} onItemsChanged={
+                  (items) => {
+                    onNoneVariationItemsChanged(items);
+                  }
+                }/>
+              }
             </View>
 
             <Text style={styles.text}>{Translate.t("publishState")}</Text>
@@ -356,111 +695,128 @@ export default function ProductInformationAdd(props) {
               </RadioButton.Group>
             </View>
             <Text style={styles.text}>{Translate.t("productImage")}</Text>
-            <View
-              style={{
-                marginTop: heightPercentageToDP("1%"),
-                height: 1,
-                width: "100%",
-                height: heightPercentageToDP("30%"),
-                borderRadius: 1,
-                borderWidth: 1,
-                borderColor: Colors.deepGrey,
-                borderStyle: "dashed",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {productImages == "" ? (
-                <Image
-                  style={{
-                    width: win.width / 10,
-                    height: 28 * ratioProductAddIcon,
-                    position: "absolute",
-                  }}
-                  source={require("../assets/Images/productAddIcon.png")}
-                />
-              ) : (
-                <Image
-                  style={{
-                    width: win.width / 10,
-                    height: 28 * ratioProductAddIcon,
-                    position: "absolute",
-                  }}
-                  source={{ uri: productImages }}
-                />
-              )}
-              <Text
+            {productImageHtml}
+              <View
                 style={{
-                  marginTop: heightPercentageToDP("15%"),
-                  fontSize: RFValue(12),
+                  marginTop: heightPercentageToDP("1%"),
+                  marginBottom: heightPercentageToDP("1%"),
+                  height: 1,
+                  width: "100%",
+                  height: heightPercentageToDP("30%"),
+                  borderRadius: 1,
+                  borderWidth: 1,
+                  borderColor: Colors.deepGrey,
+                  borderStyle: "dashed",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                {Translate.t("uploadAPhoto")}
-              </Text>
-            </View>
-            <View
-              style={{
-                width: "100%",
-                alignItems: "flex-end",
-                marginTop: heightPercentageToDP("2%"),
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
+              <TouchableWithoutFeedback style={
+                  {width: "100%",
+                  height: heightPercentageToDP("30%"),
+                  justifyContent: "center",
+                  alignItems: "center"}
+              } onPress={
+                ()=>{
                   const options = {
                     noData: true,
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
                     if (response.uri) {
-                      const reference = storage().ref(uuid.v4() + ".png");
-                      if (Platform.OS === "android") {
-                        RNFetchBlob.fs.stat(response.uri).then((stat) => {
-                          reference.putFile(stat.path).then((response) => {
-                            reference.getDownloadURL().then((url) => {
-                              onProductImagesChanged(url);
-                            });
-                          });
+                      const formData = new FormData();
+                      formData.append("image", {
+                        ...response,
+                        uri:
+                          Platform.OS === "android"
+                            ? response.uri
+                            : response.uri.replace("file://", ""),
+                        name: "mobile-" + uuid.v4() + ".jpg",
+                        type: "image/jpeg", // it may be necessary in Android.
+                      });
+                      request
+                        .post("images/", formData, {
+                          "Content-Type": "multipart/form-data",
+                        })
+                        .then((response) => {
+                          let tmpImages = productImages;
+                          tmpImages.push(response.data);
+                          onProductImagesChanged(tmpImages);
+                          let html = []
+                          tmpImages.map((image) => {
+                            html.push(<View
+                              key={image.id}
+                              style={{
+                                marginTop: heightPercentageToDP("1%"),
+                                height: 1,
+                                width: "100%",
+                                height: heightPercentageToDP("30%"),
+                                borderRadius: 1,
+                                borderWidth: 1,
+                                borderColor: Colors.deepGrey,
+                                borderStyle: "dashed",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <Image
+                                style={{
+                                  width: "100%",
+                                  height: heightPercentageToDP("30%"),
+                                  position: "absolute",
+                                }}
+                                source={{ uri: image.image }}
+                              />
+                            </View>)
+                          })
+                          onProductImageHtmlChanged(html);
+                        })
+                        .catch((error) => {
+                          alert.warning(JSON.stringify(error));
+                          if (
+                            error &&
+                            error.response &&
+                            error.response.data &&
+                            Object.keys(error.response.data).length > 0
+                          ) {
+                            alert.warning(
+                              error.response.data[Object.keys(error.response.data)[0]][0]
+                            );
+                          }
                         });
-                      } else {
-                        reference
-                          .putFile(response.uri.replace("file://", ""))
-                          .then((response) => {
-                            reference.getDownloadURL().then((url) => {
-                              onProductImagesChanged(url);
-                            });
-                          });
-                      }
                     }
                   });
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor: Colors.deepGrey,
-                    width: widthPercentageToDP("25%"),
-                    borderRadius: 5,
-                    alignItems: "center",
-                    padding: widthPercentageToDP("2%"),
-                  }}
-                >
-                  <Text style={styles.addProductButtonText}>
-                    +{Translate.t("add")}
+                }
+              }>
+                  <Image
+                    style={{
+                      width: win.width / 10,
+                      height: 28 * ratioProductAddIcon,
+                      position: "absolute",
+                    }}
+                    source={require("../assets/Images/productAddIcon.png")}
+                  />
+                  <Text
+                    style={{
+                      marginTop: heightPercentageToDP("15%"),
+                      fontSize: RFValue(12),
+                    }}
+                  >
+                    {Translate.t("uploadAPhoto")}
                   </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+              </TouchableWithoutFeedback>
+              </View>
             <Text style={styles.text}>{Translate.t("productDescription")}</Text>
             <TextInput
               style={styles.productDescriptionInput}
               multiline={true}
               value={productDescription}
-              onValueChange={(value) => onProductDescriptionChanged(value)}
+              onChangeText={(value) => onProductDescriptionChanged(value)}
             ></TextInput>
           </View>
           <View style={styles.allButtonContainer}>
             <TouchableOpacity onPress={
               ()=>{
-                console.log(oneVariationItems)
+                createProduct(1);
               }
             }>
               <View style={styles.buttonContainer}>
@@ -469,7 +825,11 @@ export default function ProductInformationAdd(props) {
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={
+              ()=>{
+                createProduct(0);
+              }
+            }>
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>{Translate.t("listing")}</Text>
               </View>

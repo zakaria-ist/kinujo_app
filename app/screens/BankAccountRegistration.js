@@ -10,7 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -108,127 +108,130 @@ export default function BankAccountRegistration(props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <ScrollView>
-      <CustomHeader
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onBack={() => {
-          props.navigation.pop();
-        }}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        text={Translate.t("bankAccount")}
-      />
-      <CustomSecondaryHeader
-        name={user.nickname}
-        accountType={
-          props.route.params.is_store ? Translate.t("storeAccount") : ""
-        }
-      />
-      <View style={styles.textInputContainer}>
-        <TextInput
-          placeholder={Translate.t("financialInstitutionName")}
-          placeholderTextColor={Colors.deepGrey}
-          style={styles.textInput}
-          onChangeText={(text) => onFinancialNameChanged(text)}
-          value={financialName}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("branchName")}
-          placeholderTextColor={Colors.deepGrey}
-          style={styles.textInput}
-          onChangeText={(text) => onBranchNameChanged(text)}
-          value={branchName}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("accountType")}
-          placeholderTextColor={Colors.deepGrey}
-          style={styles.textInput}
-          onChangeText={(text) => onAccountTypeChanged(text)}
-          value={accountType}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("accountNumber")}
-          placeholderTextColor={Colors.deepGrey}
-          style={styles.textInput}
-          onChangeText={(text) => onAccountNumberChanged(text)}
-          value={accountNumber}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("accountHolder")}
-          placeholderTextColor={Colors.deepGrey}
-          style={styles.textInput}
-          onChangeText={(text) => onAccountHolderChanged(text)}
-          value={accountHolder}
-        ></TextInput>
-      </View>
-      <Text style={styles.warningText}>
-        {Translate.t("bankRegistrationWarning")}
-      </Text>
-      <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            if (
-              financialName &&
-              branchName &&
-              accountType &&
-              accountNumber &&
-              accountHolder
-            ) {
-              AsyncStorage.getItem("user").then(function (url) {
-                url = url.replace("http://testserver", "http://127.0.0.1:8000");
-                let urls = url.split("/");
-                urls = urls.filter((url) => {
-                  return url;
-                });
-
-                request
-                  .post("financial_account/", {
-                    user: url.replace("testserver", "127.0.0.1:8000"),
-                    financial_name: financialName,
-                    account_type: accountType,
-                    branch_code: "000",
-                    branch_name: branchName,
-                    account_number: accountNumber,
-                    account_name: accountHolder,
-                    financial_code: "0000",
-                  })
-                  .then(function (response) {
-                    onAccountHolderChanged("");
-                    onAccountNumberChanged("");
-                    onBranchNameChanged("");
-                    onFinancialNameChanged("");
-                    onAccountTypeChanged("");
-                    props.navigation.pop();
-                  })
-                  .catch(function (error) {
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0]
-                    );
-                    onLoaded(true);
-                  });
-              });
-            } else {
-              alert.warning(Translate.t("fieldNotFilled"));
-            }
+      <ScrollView>
+        <CustomHeader
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onBack={() => {
+            props.navigation.pop();
           }}
-        >
-          <View style={styles.saveButtonContainer}>
-            <Text style={styles.saveButtonText}>{Translate.t("save")}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-    </ScrollView>
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          text={Translate.t("bankAccount")}
+        />
+        <CustomSecondaryHeader
+          name={user.nickname}
+          accountType={
+            props.route.params.is_store ? Translate.t("storeAccount") : ""
+          }
+        />
+        <View style={styles.textInputContainer}>
+          <TextInput
+            placeholder={Translate.t("financialInstitutionName")}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onFinancialNameChanged(text)}
+            value={financialName}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("branchName")}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onBranchNameChanged(text)}
+            value={branchName}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("accountType")}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onAccountTypeChanged(text)}
+            value={accountType}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("accountNumber")}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onAccountNumberChanged(text)}
+            value={accountNumber}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("accountHolder")}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onAccountHolderChanged(text)}
+            value={accountHolder}
+          ></TextInput>
+        </View>
+        <Text style={styles.warningText}>
+          {Translate.t("bankRegistrationWarning")}
+        </Text>
+        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if (
+                financialName &&
+                branchName &&
+                accountType &&
+                accountNumber &&
+                accountHolder
+              ) {
+                AsyncStorage.getItem("user").then(function (url) {
+                  url = url.replace(
+                    "http://testserver",
+                    "http://127.0.0.1:8000"
+                  );
+                  let urls = url.split("/");
+                  urls = urls.filter((url) => {
+                    return url;
+                  });
+
+                  request
+                    .post("financial_account/", {
+                      user: url.replace("testserver", "127.0.0.1:8000"),
+                      financial_name: financialName,
+                      account_type: accountType,
+                      branch_code: "000",
+                      branch_name: branchName,
+                      account_number: accountNumber,
+                      account_name: accountHolder,
+                      financial_code: "0000",
+                    })
+                    .then(function (response) {
+                      onAccountHolderChanged("");
+                      onAccountNumberChanged("");
+                      onBranchNameChanged("");
+                      onFinancialNameChanged("");
+                      onAccountTypeChanged("");
+                      props.navigation.pop();
+                    })
+                    .catch(function (error) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0]
+                      );
+                      onLoaded(true);
+                    });
+                });
+              } else {
+                alert.warning(Translate.t("fieldNotFilled"));
+              }
+            }}
+          >
+            <View style={styles.saveButtonContainer}>
+              <Text style={styles.saveButtonText}>{Translate.t("save")}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
   textInput: {
     backgroundColor: "white",
-    fontSize: RFValue(12),
+    fontSize: RFValue(9),
     height: heightPercentageToDP("5%"),
     paddingLeft: widthPercentageToDP("2%"),
     marginVertical: heightPercentageToDP("1%"),

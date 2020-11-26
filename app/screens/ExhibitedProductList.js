@@ -30,7 +30,7 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioNext = win.width / 40 / 8;
 
-function processProductHtml(products, status) {
+function processProductHtml(props, products, status) {
   let tmpProductHtml = [];
   let tmpProducts = products.filter((product) => {
     if (status == "published" && !product.is_draft) {
@@ -44,7 +44,20 @@ function processProductHtml(products, status) {
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
     tmpProductHtml.push(
-      <View key={i} style={styles.productTabContainer}>
+      <View 
+        key={i} style={styles.productTabContainer}>
+
+        <TouchableWithoutFeedback
+        onPress={() => {
+          props.navigation.navigate("ProductInformationAddNew", {
+            url: product.url,
+          });
+        }}>
+          <View style={
+            {
+              width: "100%"
+            }
+          }>
         <View
           style={{
             flexDirection: "row",
@@ -88,6 +101,8 @@ function processProductHtml(products, status) {
           style={styles.nextIcon}
           source={require("../assets/Images/next.png")}
         />
+        </View>
+        </TouchableWithoutFeedback>
       </View>
     );
   }
@@ -135,7 +150,7 @@ export default function ExhibitedProductList(props) {
         .then(function (response) {
           onProductsChanged(response.data.products);
           onProductHtmlChanged(
-            processProductHtml(response.data.products, status)
+            processProductHtml(props, response.data.products, status)
           );
           onLoaded(true);
         })
