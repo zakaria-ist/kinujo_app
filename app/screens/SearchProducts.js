@@ -56,8 +56,13 @@ export default function SearchProducts(props) {
 
     products = products.filter((product) => {
       let date = new Date(product.is_opened);
-      return product.is_opened == 1 && ((new Date()) > date) && product.is_hidden == 0 && product.is_draft == 0;
-    })
+      return (
+        product.is_opened == 1 &&
+        new Date() > date &&
+        product.is_hidden == 0 &&
+        product.is_draft == 0
+      );
+    });
 
     let kinujoProducts = products.filter((product) => {
       return product.user.authority.id == 1;
@@ -68,6 +73,10 @@ export default function SearchProducts(props) {
 
     let tmpKinujoHtml = [];
     kinujoProducts.map((product) => {
+      let images = product.productImages.filter((image) => {
+        return image.is_hidden == 0 && image.image.is_hidden == 0;
+      });
+
       tmpKinujoHtml.push(
         <HomeProducts
           product_id={product.id}
@@ -78,8 +87,8 @@ export default function SearchProducts(props) {
           }}
           idx={product.id}
           image={
-            product.productImages.length > 0
-              ? product.productImages[0].image.image
+            images.length > 0
+              ? images[0].image.image
               : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
           }
           office={product.brand_name}
@@ -97,7 +106,7 @@ export default function SearchProducts(props) {
           category={product.category.name}
           shipping={
             product.shipping_fee
-              ? "Shipping :" + format.separator(product.shipping_fee)
+              ? "Shipping :" + format.separator(product.shipping_fee) + "円"
               : "Free Shipping"
           }
         />
@@ -107,6 +116,10 @@ export default function SearchProducts(props) {
 
     let tmpFeaturedHtml = [];
     featuredProducts.map((product) => {
+      let images = product.productImages.filter((image) => {
+        return image.is_hidden == 0 && image.image.is_hidden == 0;
+      });
+
       tmpFeaturedHtml.push(
         <HomeProducts
           product_id={product.id}
@@ -117,8 +130,8 @@ export default function SearchProducts(props) {
           }}
           idx={product.id}
           image={
-            product.productImages.length > 0
-              ? product.productImages[0].image.image
+            images.length > 0
+              ? images[0].image.image
               : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
           }
           office={product.brand_name}
@@ -136,7 +149,7 @@ export default function SearchProducts(props) {
           category={product.category.name}
           shipping={
             product.shipping_fee
-              ? "Shipping: " + format.separator(product.shipping_fee)
+              ? "Shipping: " + format.separator(product.shipping_fee) + "円"
               : "Free Shipping"
           }
         />
@@ -290,11 +303,9 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchContactInput: {
-    alignItems: "center",
-    alignSelf: "center",
+    height: heightPercentageToDP("10%"),
     fontSize: RFValue(9),
     paddingLeft: widthPercentageToDP("5%"),
-    paddingRight: widthPercentageToDP("15%"),
     flex: 1,
   },
   searchIcon: {
@@ -312,7 +323,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("5.8%"),
   },
   none: {
     display: "none",

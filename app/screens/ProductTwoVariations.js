@@ -23,6 +23,8 @@ import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 import _ from "lodash";
+import CustomAlert from "../lib/alert";
+const alert = new CustomAlert();
 let items = [
   {
     index: 0,
@@ -112,13 +114,21 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
       choiceIndex: choiceIndex + 1,
       choiceItem: "",
     };
-    items.map((product) => {
-      if (index == product.index) {
-        product.choices.push(choiceObj);
-      }
-      return product;
-    });
-    
+
+      items.map((product) => {
+        if (index == product.index) {
+          let tmpChoices = product.choices.filter((item)=>{
+            return !item.choiceItem
+          })
+          if(tmpChoices.length == 0){
+            product.choices.push(choiceObj);
+          } else {
+            alert.warning("Please fill in the choice.")
+          }
+        }
+        return product;
+      });
+      
     populateMapping()
     onProcessVariationHtml(processVariationHtml(items));
     onLoaded(true);
@@ -235,25 +245,27 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
   function processDetailsVariationHtml(items) {
     let tmpVariationDetailsHtml = [];
     items[0].choices.map((choice) => {
-      tmpVariationDetailsHtml.push(
-        <View style={{ width: "100%" }} key={choice.choiceIndex}>
-          <View style={styles.icon_title_wrapper}>
-            <Text style={styles.variantName}>{choice.choiceItem}</Text>
-            <TouchableOpacity>
-              {false ? (
-                <ArrowDownIcon
-                  style={styles.widget_icon}
-                  resizeMode="contain"
-                />
-              ) : (
-                <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
-              )}
-            </TouchableOpacity>
+      if(choice.choiceItem){
+        tmpVariationDetailsHtml.push(
+          <View style={{ width: "100%" }} key={choice.choiceIndex}>
+            <View style={styles.icon_title_wrapper}>
+              <Text style={styles.variantName}>{choice.choiceItem}</Text>
+              <TouchableOpacity>
+                {false ? (
+                  <ArrowDownIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+                )}
+              </TouchableOpacity>
+            </View>
+            {populateChoiceDetailsHtml(choice.choiceItem, items[1].choices)}
+            <View style={styles.line} />
           </View>
-          {populateChoiceDetailsHtml(choice.choiceItem, items[1].choices)}
-          <View style={styles.line} />
-        </View>
-      );
+        );
+      }
     });
     return tmpVariationDetailsHtml;
   }

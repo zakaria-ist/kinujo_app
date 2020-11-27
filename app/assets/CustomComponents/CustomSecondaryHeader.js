@@ -36,7 +36,7 @@ export default function CustomKinujoWord({
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
         onUserChanged(response.data);
-      })
+      });
     });
   }, [isFocused]);
 
@@ -50,14 +50,26 @@ export default function CustomKinujoWord({
           height: heightPercentageToDP("10%"),
         }}
       >
-        <PersonIcon
-          style={{
-            borderRadius: win.width / 2,
-            marginLeft: widthPercentageToDP("8%"),
-          }}
-          width={RFValue(40)}
-          height={RFValue(40)}
-        />
+        {user && user.image ? (
+          <Image
+            style={{
+              borderRadius: win.width / 2,
+              marginLeft: widthPercentageToDP("8%"),
+            }}
+            source={{ uri: user.image.image }}
+            width={RFValue(40)}
+            height={RFValue(40)}
+          />
+        ) : (
+          <PersonIcon
+            style={{
+              borderRadius: win.width / 2,
+              marginLeft: widthPercentageToDP("8%"),
+            }}
+            width={RFValue(40)}
+            height={RFValue(40)}
+          />
+        )}
 
         <View style={{ marginLeft: widthPercentageToDP("3%") }}>
           {name ? (

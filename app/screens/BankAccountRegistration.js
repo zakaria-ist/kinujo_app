@@ -231,8 +231,9 @@ export default function BankAccountRegistration(props) {
 const styles = StyleSheet.create({
   textInput: {
     backgroundColor: "white",
+    alignItems: "center",
     fontSize: RFValue(9),
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("5.8%"),
     paddingLeft: widthPercentageToDP("2%"),
     marginVertical: heightPercentageToDP("1%"),
   },

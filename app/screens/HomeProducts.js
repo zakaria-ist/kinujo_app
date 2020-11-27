@@ -47,6 +47,35 @@ export default function HomeProducts({
   category,
   shipping,
 }) {
+  const [favourite, setFavourite] = React.useState(false);
+
+  function checkFavourite(product) {
+    AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+      db.collection("users")
+        .doc(userId)
+        .collection("favourite")
+        .doc(product.toString())
+        .get()
+        .then(function (doc) {
+          if (doc.exists) {
+            setFavourite(true);
+          }
+        });
+    });
+  }
+
+  React.useEffect(() => {
+    console.log(product_id);
+    console.log(userId);
+    if (product_id) {
+      checkFavourite(product_id);
+    }
+  }, [product_id, userId]);
   return (
     <SafeAreaView>
       <TouchableWithoutFeedback onPress={onPress}>
@@ -69,20 +98,34 @@ export default function HomeProducts({
                   });
                   let userId = urls[urls.length - 1];
 
-                  db.collection("users")
-                    .doc(userId.toString())
-                    .collection("favourite")
-                    .doc(product_id.toString())
-                    .set({
-                      status: "added",
-                    });
-
-                  alert.warning("Added to favourite");
+                  if (favourite) {
+                    db.collection("users")
+                      .doc(userId.toString())
+                      .collection("favourite")
+                      .doc(product_id.toString())
+                      .delete();
+                    alert.warning("Favourite removed.");
+                    setFavourite(false);
+                  } else {
+                    db.collection("users")
+                      .doc(userId.toString())
+                      .collection("favourite")
+                      .doc(product_id.toString())
+                      .set({
+                        status: "added",
+                      });
+                    alert.warning("Added to favourite.");
+                    setFavourite(true);
+                  }
                 });
               }}
             >
               <Image
-                source={require("../assets/Images/productFavorite.png")}
+                source={
+                  favourite
+                    ? require("../assets/Images/favoriteLove.png")
+                    : require("../assets/Images/productFavorite.png")
+                }
                 style={{
                   width: width / 14,
                   height: 26 * ratioFavorite,
@@ -106,7 +149,7 @@ export default function HomeProducts({
             {category}
           </Text>
           <Text style={styles.product_shipping}>
-            {Translate.t("shipping")}円
+            {Translate.t("shipping")}
           </Text>
         </View>
       </TouchableWithoutFeedback>

@@ -33,6 +33,7 @@ const ratioDownForMore = win.width / 26 / 9;
 const ratioNext = win.width / 38 / 8;
 
 function updateUser(user, field, value) {
+  if(!value) return;
   let obj = {};
   obj[field] = value;
   request

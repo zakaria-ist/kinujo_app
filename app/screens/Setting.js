@@ -30,6 +30,7 @@ const win = Dimensions.get("window");
 const ratioNext = win.width / 38 / 8;
 
 function updateUser(user, field, value) {
+  if(!value) return;
   let obj = {};
   obj[field] = value;
   request

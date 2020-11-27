@@ -816,7 +816,11 @@ export default function ProductInformationAdd(props) {
           <View style={styles.allButtonContainer}>
             <TouchableOpacity onPress={
               ()=>{
-                createProduct(1);
+                if(props.route.params.url){
+                  // saveProduct(1);
+                } else {
+                  createProduct(1);
+                }
               }
             }>
               <View style={styles.buttonContainer}>
@@ -827,7 +831,11 @@ export default function ProductInformationAdd(props) {
             </TouchableOpacity>
             <TouchableOpacity onPress={
               ()=>{
-                createProduct(0);
+                if(props.route.params.url){
+                  // saveProduct(0);
+                } else {
+                  createProduct(0);
+                }
               }
             }>
               <View style={styles.buttonContainer}>

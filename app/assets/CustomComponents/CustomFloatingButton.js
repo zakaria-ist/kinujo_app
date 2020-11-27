@@ -9,13 +9,13 @@ import {
   StatusBar,
   Platform,
   TouchableWithoutFeedback,
-  PixelRatio
+  PixelRatio,
 } from "react-native";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RFValue } from "react-native-responsive-fontsize";
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -26,35 +26,38 @@ export default function CustomBlackBackArrow({ onPress, icon }) {
   const insets = useSafeAreaInsets();
   return (
     <TouchableWithoutFeedback onPress={onPress}>
-        <View
+      <View
+        style={{
+          width: 50,
+          height: 50,
+          padding: 10,
+          borderRadius: win.width / 2,
+          backgroundColor: "#FFF",
+          position: "absolute",
+          bottom:
+            insets.bottom +
+            insets.top +
+            PixelRatio.roundToNearestPixel(120 / PixelRatio.get()),
+          right: 20,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 1,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          elevation: 5,
+        }}
+      >
+        <SearchIcon
           style={{
-            width: 50,
-            height: 50,
-            padding: 10,
-            borderRadius: win.width / 2,
-            backgroundColor: "#FFF",
-            position: "absolute",
-            bottom: insets.bottom + insets.top + PixelRatio.roundToNearestPixel(56/PixelRatio.get()),
-            right: 20,
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 1,
-              height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
+            width: 30,
+            height: 30,
           }}
-        >
-            <SearchIcon
-              style={{
-                width: 30,
-                height: 30,
-              }}
-              source={require("../icons/search.svg")}
-              resizeMode="contain"
-            />
-        </View>
+          source={require("../icons/search.svg")}
+          resizeMode="contain"
+        />
+      </View>
     </TouchableWithoutFeedback>
   );
 }

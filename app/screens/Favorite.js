@@ -41,6 +41,10 @@ const db = firebase.firestore();
 function processFavouriteHtml(props, user, products) {
   let tmpProductHtml = [];
   products.map((product) => {
+    let images = product.productImages.filter((image) => {
+      return image.is_hidden == 0 && image.image.is_hidden == 0;
+    });
+
     tmpProductHtml.push(
       <HomeProducts
         key={product.id}
@@ -52,8 +56,8 @@ function processFavouriteHtml(props, user, products) {
         }}
         idx={product.id}
         image={
-          product.productImages.length > 0
-            ? product.productImages[0].image.image
+          images.length > 0
+            ? images[0].image.image
             : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
         }
         office={product.brand_name}
@@ -67,7 +71,7 @@ function processFavouriteHtml(props, user, products) {
         category={product.category.name}
         shipping={
           product.shipping_fee
-            ? "Shipping: " + format.separator(product.shipping_fee)
+            ? "Shipping: " + format.separator(product.shipping_fee) + "円"
             : "Free Shipping"
         }
       />

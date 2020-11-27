@@ -47,13 +47,15 @@ const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 const ratioCancelIcon = win.width / 20 / 15;
-const cartItems = []
+const cartItems = [];
 
 let janCodes = {};
 let janCodeNames = {};
 
 export default function HomeStoreList(props) {
+  const [favourite, setFavourite] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
+  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState({});
   const [product, onProductChanged] = React.useState({});
   const [selectedJanCode, onSelectedJanCodeChanged] = React.useState({});
   const [images, onImagesChanged] = React.useState({});
@@ -129,18 +131,132 @@ export default function HomeStoreList(props) {
   }
 
   React.useEffect(() => {
-    for(var i=1; i<10; i++){
+    for (var i = 1; i < 10; i++) {
       cartItems.push({
-        "value" : i+"",
-        "label" : i+""
-      })
+        value: i + "",
+        label: i + "",
+      });
     }
 
     AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+
       request
         .get(url)
         .then(function (response) {
           onUserChanged(response.data);
+          request
+          .get(props.route.params.url)
+          .then(function (response) {
+            onProductChanged(response.data);
+
+            
+            db.collection("users")
+            .doc(userId)
+            .collection("favourite")
+            .doc(response.data.id.toString())
+            .get()
+            .then(function (doc) {
+              if (doc.exists) {
+                setFavourite(true);
+              }
+            });
+
+            response.data.productVarieties.map((productVariety) => {
+              productVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  janCodeNames[productVarietySelection.url] =
+                    productVarietySelection.selection;
+                }
+              );
+            });
+            response.data.productVarieties.map((productVariety) => {
+              productVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map((horizontal) => {
+                    let hoName = horizontal.horizontal
+                      ? janCodeNames[horizontal.horizontal]
+                      : "none";
+                    let veName = horizontal.vertical
+                      ? janCodeNames[horizontal.vertical]
+                      : "none";
+                    if (janCodes[hoName]) {
+                      janCodes[hoName][veName] = {
+                        stock: horizontal.stock,
+                        url: horizontal.url,
+                        id: horizontal.id,
+                      };
+                    } else {
+                      janCodes[hoName] = {};
+                      janCodes[hoName][veName] = {
+                        stock: horizontal.stock,
+                        url: horizontal.url,
+                        id: horizontal.id,
+                      };
+                    }
+                  });
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    let hoName = vertical.horizontal
+                      ? janCodeNames[vertical.horizontal]
+                      : "none";
+                    let veName = vertical.vertical
+                      ? janCodeNames[vertical.vertical]
+                      : "none";
+                    if (janCodes[hoName]) {
+                      janCodes[hoName][veName] = {
+                        stock: vertical.stock,
+                        url: vertical.url,
+                        id: vertical.id,
+                      };
+                    } else {
+                      janCodes[hoName] = {};
+                      janCodes[hoName][veName] = {
+                        stock: vertical.stock,
+                        url: vertical.url,
+                        id: vertical.id,
+                      };
+                    }
+                  });
+                }
+              );
+            });
+            onPopupHtmlChanged(populatePopupHtml(props, janCodes, ""));
+
+            if (response.data.productImages.length > 0) {
+              let images = response.data.productImages.filter((productImage) => {
+                return productImage.is_hidden == 0;
+              });
+              onImagesChanged(
+                images.map((productImage) => {
+                  return productImage.image.image;
+                })
+              );
+            } else {
+              onImagesChanged([
+                "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg",
+              ]);
+            }
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+          onUserAuthorityIDChanged(user.authority.id);
         })
         .catch(function (error) {
           if (
@@ -158,104 +274,10 @@ export default function HomeStoreList(props) {
           }
         });
     });
-
-    request
-      .get(props.route.params.url)
-      .then(function (response) {
-        onProductChanged(response.data);
-
-        response.data.productVarieties.map((productVariety) => {
-          productVariety.productVarietySelections.map(
-            (productVarietySelection) => {
-              janCodeNames[productVarietySelection.url] =
-                productVarietySelection.selection;
-            }
-          );
-        });
-        response.data.productVarieties.map((productVariety) => {
-          productVariety.productVarietySelections.map(
-            (productVarietySelection) => {
-              productVarietySelection.jancode_horizontal.map((horizontal) => {
-                let hoName = horizontal.horizontal
-                  ? janCodeNames[horizontal.horizontal]
-                  : "none";
-                let veName = horizontal.vertical
-                  ? janCodeNames[horizontal.vertical]
-                  : "none";
-                if (janCodes[hoName]) {
-                  janCodes[hoName][veName] = {
-                    stock: horizontal.stock,
-                    url: horizontal.url,
-                    id: horizontal.id,
-                  };
-                } else {
-                  janCodes[hoName] = {};
-                  janCodes[hoName][veName] = {
-                    stock: horizontal.stock,
-                    url: horizontal.url,
-                    id: horizontal.id,
-                  };
-                }
-              });
-              productVarietySelection.jancode_vertical.map((vertical) => {
-                let hoName = vertical.horizontal
-                  ? janCodeNames[vertical.horizontal]
-                  : "none";
-                let veName = vertical.vertical
-                  ? janCodeNames[vertical.vertical]
-                  : "none";
-                if (janCodes[hoName]) {
-                  janCodes[hoName][veName] = {
-                    stock: vertical.stock,
-                    url: vertical.url,
-                    id: vertical.id,
-                  };
-                } else {
-                  janCodes[hoName] = {};
-                  janCodes[hoName][veName] = {
-                    stock: vertical.stock,
-                    url: vertical.url,
-                    id: vertical.id,
-                  };
-                }
-              });
-            }
-          );
-        });
-        onPopupHtmlChanged(populatePopupHtml(props, janCodes, ""));
-
-        if (response.data.productImages.length > 0) {
-          let images = response.data.productImages.filter((productImage) => {
-            return productImage.is_hidden == 0;
-          })
-          onImagesChanged(
-            images.map((productImage) => {
-              return productImage.image.image;
-            })
-          );
-        } else {
-          onImagesChanged([
-            "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg",
-          ]);
-        }
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
-      });
   }, []);
-
+  const { width } = Dimensions.get("window");
+  const { height } = Dimensions.get("window");
+  const ratioFavorite = width / 29 / 12;
   return (
     <SafeAreaView>
       <CustomHeader
@@ -273,7 +295,12 @@ export default function HomeStoreList(props) {
       />
       <View style={styles.product_content}>
         <ScrollView>
-          <View style={{ width: "100%", height: width / 1.4 + 100 }}>
+          <View
+            style={{
+              width: "100%",
+              height: width / 1.4 + 100,
+            }}
+          >
             {/* Need Find Image Slider */}
             <SliderBox
               ImageComponent={FastImage}
@@ -299,6 +326,63 @@ export default function HomeStoreList(props) {
                 marginBottom: -60,
               }}
             />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                position: "absolute",
+                right: RFValue(5),
+                marginBottom: width / 5.5 + 20,
+                bottom: 0,
+                marginRight: widthPercentageToDP("2%"),
+              }}
+            >
+              <TouchableWithoutFeedback onPress={
+                ()=>{
+                  AsyncStorage.getItem("user").then((url) => {
+                    let urls = url.split("/");
+                    urls = urls.filter((url) => {
+                      return url;
+                    });
+                    let userId = urls[urls.length - 1];
+  
+                    if (favourite) {
+                      db.collection("users")
+                        .doc(user.id.toString())
+                        .collection("favourite")
+                        .doc(product.id.toString())
+                        .delete();
+                      alert.warning("Favourite removed.");
+                      setFavourite(false);
+                    } else {
+                      db.collection("users")
+                        .doc(user.id.toString())
+                        .collection("favourite")
+                        .doc(product.id.toString())
+                        .set({
+                          status: "added",
+                        });
+                      alert.warning("Added to favourite.");
+                      setFavourite(true);
+                    }
+                  });
+                }
+              }>
+                <Image
+                  style={{
+                    width: width / 12,
+                    height: 26 * ratioFavorite,
+                    marginRight: widthPercentageToDP("3%"),
+                  }}
+                  source={favourite ? require("../assets/Images/favoriteLove.png") :
+                  require("../assets/Images/productFavorite.png")}
+                />
+              </TouchableWithoutFeedback>
+              <Image
+                style={{ width: RFValue(25), height: RFValue(25) }}
+                source={require("../assets/Images/share.png")}
+              />
+            </View>
           </View>
           <View
             style={{
@@ -337,8 +421,11 @@ export default function HomeStoreList(props) {
             </Text>
             <Text style={styles.font_small}>
               {product.shipping_fee
-                ? Translate.t("shipping") + ": " + format.separator(product.shipping_fee)
+                ? Translate.t("shipping") +
+                  ": " +
+                  format.separator(product.shipping_fee) + "円"
                 : Translate.t("freeShipping")}
+              {Translate.t("yen")}
             </Text>
           </View>
 
@@ -464,11 +551,11 @@ export default function HomeStoreList(props) {
                   }}
                   items={cartItems}
                   placeholder={Translate.t("unit")}
-                  defaultValue={quantity ? (quantity + "") : ""}
-                  containerStyle={{ 
+                  defaultValue={quantity ? quantity + "" : ""}
+                  containerStyle={{
                     paddingVertical: 0,
-                    width: widthPercentageToDP("25%")
-                    }}
+                    width: widthPercentageToDP("25%"),
+                  }}
                   labelStyle={{
                     fontSize: RFValue(12),
                     color: "gray",
@@ -479,10 +566,10 @@ export default function HomeStoreList(props) {
                   selectedtLabelStyle={{
                     color: Colors.F0EEE9,
                   }}
-                  dropDownStyle={{ 
+                  dropDownStyle={{
                     backgroundColor: "#FFFFFF",
                     color: "black",
-                    zIndex: 1000
+                    zIndex: 1000,
                   }}
                   onChangeItem={(item) => {
                     if (item) {
@@ -627,35 +714,38 @@ export default function HomeStoreList(props) {
       ) : (
         <View></View>
       )}
+      {userAuthorityID <= 3 ? (
+        <View></View>
+      ) : (
+        <CartFloating
+          onPress={() => {
+            onShowChanged(true);
+            // db.collection("users")
+            //   .doc(user.id.toString())
+            //   .collection("carts")
+            //   .doc(product.id.toString())
+            //   .set({
+            //     quantity: 1,
+            //   });
+            // onShowText(true);
+            // setTimeout(
+            //   function () {
+            //     onShowText(false);
+            //   }.bind(this),
+            //   2000
+            // );
 
-      <CartFloating
-        onPress={() => {
-          onShowChanged(true);
-          // db.collection("users")
-          //   .doc(user.id.toString())
-          //   .collection("carts")
-          //   .doc(product.id.toString())
-          //   .set({
-          //     quantity: 1,
-          //   });
-          // onShowText(true);
-          // setTimeout(
-          //   function () {
-          //     onShowText(false);
-          //   }.bind(this),
-          //   2000
-          // );
-
-          // const subscriber = db
-          //   .collection("users")
-          //   .doc(user.id.toString())
-          //   .collection("carts")
-          //   .get()
-          //   .then((querySnapShot) => {
-          //     onCartCountChanged(querySnapShot.docs.length);
-          //   });
-        }}
-      />
+            // const subscriber = db
+            //   .collection("users")
+            //   .doc(user.id.toString())
+            //   .collection("carts")
+            //   .get()
+            //   .then((querySnapShot) => {
+            //     onCartCountChanged(querySnapShot.docs.length);
+            //   });
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
