@@ -51,23 +51,22 @@ export default function CustomKinujoWord({
   const ratioCart = win.width / 11 / 23;
   const isFocused = useIsFocused();
   const ratioBackArrow = win.width / 18 / 20;
+  const [user, onUserChanged] = React.useState({});
+  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState({});
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
+      request.get(url).then((response) => {
+        onUserChanged(response.data);
       });
-      userId = urls[urls.length - 1];
-
+      onUserAuthorityIDChanged(user.authority.id);
       onCartChanged(0);
       const subscriber = db
         .collection("users")
-        .doc(userId)
+        .doc(String(user.id))
         .collection("carts")
         .get()
         .then((querySnapShot) => {
           onCartChanged(querySnapShot.docs.length);
-          onCartCount(querySnapShot.docs.length);
         });
     });
   }, [isFocused]);
@@ -126,38 +125,42 @@ export default function CustomKinujoWord({
           alignItems: "center",
         }}
       >
-        <TouchableWithoutFeedback onPress={onPress}>
-          <View
-            style={{
-              width: win.width / 11,
-              height: 21 * ratioCart,
-              marginRight: widthPercentageToDP("3%"),
-            }}
-          >
-            {overrideCartCount || cartCount ? (
-              <View style={styles.notificationNumberContainer}>
-                <Text
-                  style={{
-                    alignSelf: "center",
-                    fontSize: RFValue(10),
-                    color: "white",
-                  }}
-                >
-                  {overrideCartCount ? overrideCartCount : cartCount}
-                </Text>
-              </View>
-            ) : (
-              <View></View>
-            )}
-            <CartIcon
+        {userAuthorityID <= 3 ? (
+          <View></View>
+        ) : (
+          <TouchableWithoutFeedback onPress={onPress}>
+            <View
               style={{
                 width: win.width / 11,
                 height: 21 * ratioCart,
-                marginRight: widthPercentageToDP("5%"),
+                marginRight: widthPercentageToDP("3%"),
               }}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+            >
+              {cartCount ? (
+                <View style={styles.notificationNumberContainer}>
+                  <Text
+                    style={{
+                      alignSelf: "center",
+                      fontSize: RFValue(10),
+                      color: "white",
+                    }}
+                  >
+                    {cartCount}
+                  </Text>
+                </View>
+              ) : (
+                <View></View>
+              )}
+              <CartIcon
+                style={{
+                  width: win.width / 11,
+                  height: 21 * ratioCart,
+                  marginRight: widthPercentageToDP("5%"),
+                }}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        )}
 
         {onFavoriteChanged == null ? (
           <TouchableWithoutFeedback onPress={onFavoritePress}>

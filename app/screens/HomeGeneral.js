@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
-import messaging from '@react-native-firebase/messaging';
+import messaging from "@react-native-firebase/messaging";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -46,7 +46,7 @@ async function requestUserPermission() {
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
-    console.log('Authorization status:', authStatus);
+    console.log("Authorization status:", authStatus);
   }
 }
 
@@ -93,8 +93,13 @@ export default function Home(props) {
 
         products = products.filter((product) => {
           let date = new Date(product.is_opened);
-          return product.is_opened == 1 && ((new Date()) > date) && product.is_hidden == 0 && product.is_draft == 0;
-        })
+          return (
+            product.is_opened == 1 &&
+            new Date() > date &&
+            product.is_hidden == 0 &&
+            product.is_draft == 0
+          );
+        });
 
         let kinujoProducts = products.filter((product) => {
           return product.user.authority.id == 1;
@@ -105,6 +110,10 @@ export default function Home(props) {
 
         let tmpKinujoHtml = [];
         kinujoProducts.map((product) => {
+          let images = product.productImages.filter((image) => {
+            return image.is_hidden == 0 && image.image.is_hidden == 0;
+          });
+
           tmpKinujoHtml.push(
             <HomeProducts
               key={product.id}
@@ -116,8 +125,8 @@ export default function Home(props) {
               }}
               idx={product.id}
               image={
-                product.productImages.length > 0
-                  ? product.productImages[0].image.image
+                images.length > 0
+                  ? images[0].image.image
                   : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
               }
               office={product.brand_name}
@@ -131,7 +140,7 @@ export default function Home(props) {
               category={product.category.name}
               shipping={
                 product.shipping_fee
-                  ? "Shipping: " + format.separator(product.shipping_fee)
+                  ? "Shipping: " + format.separator(product.shipping_fee) + "円"
                   : "Free Shipping"
               }
             />
@@ -141,6 +150,10 @@ export default function Home(props) {
 
         let tmpFeaturedHtml = [];
         featuredProducts.map((product) => {
+          let images = product.productImages.filter((image) => {
+            return image.is_hidden == 0 && image.image.is_hidden == 0;
+          });
+
           tmpFeaturedHtml.push(
             <HomeProducts
               key={product.id}
@@ -152,8 +165,8 @@ export default function Home(props) {
               }}
               idx={product.id}
               image={
-                product.productImages.length > 0
-                  ? product.productImages[0].image.image
+                images.length > 0
+                  ? images[0].image.image
                   : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
               }
               office={product.brand_name}
@@ -167,7 +180,7 @@ export default function Home(props) {
               category={product.category.name}
               shipping={
                 product.shipping_fee
-                  ? "Shipping: " + format.separator(product.shipping_fee)
+                  ? "Shipping: " + format.separator(product.shipping_fee) + "円"
                   : "Free Shipping"
               }
             />
@@ -203,7 +216,9 @@ export default function Home(props) {
 
       <CustomSecondaryHeader
         name={user.nickname}
-        accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
+        accountType={
+          user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
+        }
       />
       <View style={styles.discription_header}>
         <View>
@@ -275,7 +290,7 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
   },
   home_product_view: {
-    height: height - 48 - heightPercentageToDP("17%"),
+    height: heightPercentageToDP("82%"),
     padding: 15,
     paddingTop: 0,
     backgroundColor: "#FFF",

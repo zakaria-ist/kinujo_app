@@ -50,7 +50,7 @@ const ratioCreditCardIcon = win.width / 14 / 25;
 const ratioOtherIcon = win.width / 14 / 25;
 const ratioHelpIcon = win.width / 18 / 18;
 const ratioSignOut = win.width / 14 / 512;
-const ratioGlobe = win.width / 13 / 112;
+const ratioGlobe = win.width / 12 / 128;
 let defaultLanguage = Localization.locale;
 let controller;
 export default function SettingStore(props) {
@@ -336,12 +336,12 @@ export default function SettingStore(props) {
           >
             <Image
               source={require("../assets/Images/globe.png")}
-              style={{ width: win.width / 13, height: 107 * ratioGlobe }}
+              style={{ width: win.width / 12, height: 128 * ratioGlobe }}
             />
             <DropDownPicker
               zIndex={1000}
               controller={(instance) => {
-                controller = instance
+                controller = instance;
               }}
               items={[
                 {
@@ -383,10 +383,10 @@ export default function SettingStore(props) {
             <TouchableWithoutFeedback
               style={{
                 zIndex: -1,
-                elevation: -1
+                elevation: -1,
               }}
               onPress={() => {
-                if(!controller.isOpen()){
+                if (!controller.isOpen()) {
                   AsyncStorage.removeItem("user").then(() => {
                     props.navigation.navigate("LoginScreen");
                   });

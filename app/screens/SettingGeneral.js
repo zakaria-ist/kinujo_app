@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   DevSettings,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -40,7 +40,7 @@ const ratioPurchaseHistoryIcon = win.width / 14 / 25;
 const ratioOtherIcon = win.width / 14 / 25;
 const ratioHelpIcon = win.width / 18 / 18;
 const ratioSignOut = win.width / 14 / 512;
-const ratioGlobe = win.width / 13 / 112;
+const ratioGlobe = win.width / 12 / 128;
 let defaultLanguage = Localization.locale;
 let controller;
 export default function SettingGeneral(props) {
@@ -192,16 +192,18 @@ export default function SettingGeneral(props) {
             />
           </View>
         </TouchableWithoutFeedback>
-        <View style={{
+        <View
+          style={{
             flexDirection: "row",
             height: heightPercentageToDP("7.5%"),
             justifyContent: "flex-start",
             alignItems: "center",
             marginHorizontal: widthPercentageToDP("4%"),
-          }}>
+          }}
+        >
           <Image
             source={require("../assets/Images/globe.png")}
-            style={{ width: win.width / 13, height: 107 * ratioGlobe }}
+            style={{ width: win.width / 12, height: 128 * ratioGlobe }}
           />
           <DropDownPicker
             controller={(instance) => (controller = instance)}
@@ -240,7 +242,7 @@ export default function SettingGeneral(props) {
         </View>
         <TouchableWithoutFeedback
           onPress={() => {
-            if(!controller.isOpen()){
+            if (!controller.isOpen()) {
               AsyncStorage.removeItem("user").then(() => {
                 props.navigation.navigate("LoginScreen");
               });
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("4%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
-    zIndex: 2
+    zIndex: 2,
   },
   nextIcon: {
     width: win.width / 38,

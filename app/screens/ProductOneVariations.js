@@ -17,6 +17,8 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import CustomAlert from "../lib/alert";
+const alert = new CustomAlert();
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import { ScrollView, TextInput } from "react-native-gesture-handler";
@@ -54,20 +56,28 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   }, [pItems])
 
   function onUpdate() {
-    items.push({
-      index: items.length,
-      choice: "",
-      stock: 0,
-      janCode: "",
-    });
-    onItemsChanged({
-      "name" : itemName,
-      "items" : items
-    });
-    onChoiceChanged("");
-    onProcessVariationHtml(processVariationHtml(items));
-    onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
-    onLoaded(true);
+    let tmpItems = items.filter((item)=>{
+      return !item.choice || !item.janCode
+    })
+
+    if(tmpItems.length == 0){
+      items.push({
+        index: items.length,
+        choice: "",
+        stock: 0,
+        janCode: "",
+      });
+      onItemsChanged({
+        "name" : itemName,
+        "items" : items
+      });
+      onChoiceChanged("");
+      onProcessVariationHtml(processVariationHtml(items));
+      onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+      onLoaded(true);
+    } else {
+      alert.warning("Please fill in the choice.")
+    }
   }
   function onProcess(items) {
     onProcessVariationHtml(processVariationHtml(items));
@@ -76,60 +86,62 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   function processVariationDetailsHtml(items) {
     let tmpVariationDetailsHtml = [];
     items.map((product) => {
-      tmpVariationDetailsHtml.push(
-        <View style={{ width: "100%" }} key={product.index}>
-          <View style={styles.icon_title_wrapper}>
-            <Text style={styles.variantName}>{product.choice}</Text>
-            <TouchableOpacity>
-              {false ? (
-                <ArrowDownIcon
-                  style={styles.widget_icon}
-                  resizeMode="contain"
-                />
-              ) : (
-                <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
-              )}
-            </TouchableOpacity>
-          </View>
-          <View style={false ? styles.none : null}>
-            <View style={styles.subline} />
-            <View style={styles.variantContainer}>
-              <TextInput
-                style={styles.variantInput}
-                value={product.stock}
-                onChangeText={(value) =>
-                  onValueChanged(value, "stock", product.index)
-                }
-              ></TextInput>
-              <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+      if(product.choice) {
+        tmpVariationDetailsHtml.push(
+          <View style={{ width: "100%" }} key={product.index}>
+            <View style={styles.icon_title_wrapper}>
+              <Text style={styles.variantName}>{product.choice}</Text>
+              <TouchableOpacity>
+                {false ? (
+                  <ArrowDownIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+                )}
+              </TouchableOpacity>
             </View>
-            <View style={styles.variantContainer}>
-              <TextInput
-                style={styles.variantInput}
-                value={product.janCode}
-                onChangeText={(value) =>
-                  onValueChanged(value, "jancode", product.index)
-                }
-              ></TextInput>
-              <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-            </View>
-            <TouchableWithoutFeedback
-              onPress={() => deleteProduct(product.index)}
-            >
-              <View
-                style={[
-                  styles.variantContainer,
-                  { paddingBottom: heightPercentageToDP("1.5%") },
-                ]}
-              >
-                <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+            <View style={false ? styles.none : null}>
+              <View style={styles.subline} />
+              <View style={styles.variantContainer}>
+                <TextInput
+                  style={styles.variantInput}
+                  value={product.stock}
+                  onChangeText={(value) =>
+                    onValueChanged(value, "stock", product.index)
+                  }
+                ></TextInput>
+                <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
               </View>
-            </TouchableWithoutFeedback>
+              <View style={styles.variantContainer}>
+                <TextInput
+                  style={styles.variantInput}
+                  value={product.janCode}
+                  onChangeText={(value) =>
+                    onValueChanged(value, "jancode", product.index)
+                  }
+                ></TextInput>
+                <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+              </View>
+              <TouchableWithoutFeedback
+                onPress={() => deleteProduct(product.index)}
+              >
+                <View
+                  style={[
+                    styles.variantContainer,
+                    { paddingBottom: heightPercentageToDP("1.5%") },
+                  ]}
+                >
+                  <Text style={styles.variantText}>{Translate.t("delete")}</Text>
+                  <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+            <View style={styles.line} />
           </View>
-          <View style={styles.line} />
-        </View>
-      );
+        );
+      }
     });
     return tmpVariationDetailsHtml;
   }
@@ -252,7 +264,7 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
 
       <View style={styles.variantTitle}>
         <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>
-          {Translate.t("size")}
+          {itemName}
         </Text>
       </View>
 

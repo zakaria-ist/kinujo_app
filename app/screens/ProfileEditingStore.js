@@ -97,6 +97,7 @@ export default function ProfileEditingGeneral(props) {
   }
 
   function updateUser(user, field, value) {
+    if(!value) return;
     let obj = {};
     obj[field] = value;
     console.log(obj);
@@ -578,7 +579,6 @@ export default function ProfileEditingGeneral(props) {
                       alignItems: "center",
                     }}
                   >
-                    <Text>sad</Text>
                     <Icon
                       reverse
                       name="check"

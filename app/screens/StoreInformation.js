@@ -26,6 +26,7 @@ const alert = new CustomAlert();
 
 
 function updateUser(user, field, value){
+  if(!value) return;
   let obj = {};
   obj[field] = value;
   request

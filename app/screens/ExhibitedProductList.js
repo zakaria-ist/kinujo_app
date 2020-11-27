@@ -7,7 +7,8 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -15,6 +16,7 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -23,7 +25,6 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 const format = new Format();
-
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -33,75 +34,77 @@ const ratioNext = win.width / 40 / 8;
 function processProductHtml(props, products, status) {
   let tmpProductHtml = [];
   let tmpProducts = products.filter((product) => {
-    if (status == "published" && !product.is_draft) {
+    if (status == "published" && product.is_draft == 0) {
       return true;
     }
-    if (status == "unpublished" && product.is_draft) {
+    if (status == "unpublished" && product.is_draft == 1) {
       return true;
     }
     return false;
   });
+
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
     tmpProductHtml.push(
-      <View 
-        key={i} style={styles.productTabContainer}>
-
+      <View key={i} style={styles.productTabContainer}>
         <TouchableWithoutFeedback
-        onPress={() => {
-          props.navigation.navigate("ProductInformationAddNew", {
-            url: product.url,
-          });
-        }}>
-          <View style={
-            {
-              width: "100%"
-            }
-          }>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            left: 0,
+          onPress={() => {
+            props.navigation.navigate("ProductInformationAddNew", {
+              url: product.url,
+            });
           }}
         >
-          <Image
+          <View
             style={{
-              width: RFValue(30),
-              height: RFValue(30),
+              width: "100%",
             }}
-            source={require("../assets/Images/productListingIcon.png")}
-          />
-          <Text style={styles.productNameText}>{product.name}</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            position: "absolute",
-            right: 0,
-            alignItems: "center",
-            width: widthPercentageToDP("50%"),
-            justifyContent: "space-evenly",
-          }}
-        >
-          <Text style={styles.productTabContainerText}>
-            {product.created.split("T")[0]}
-          </Text>
-          <View>
-            <Text style={styles.productTabContainerText}>
-              {format.separator(product.price)}円
-            </Text>
-            <Text style={styles.productTabContainerText}>
-              {format.separator(product.store_price)}円
-            </Text>
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                left: 0,
+              }}
+            >
+              <Image
+                style={{
+                  width: RFValue(30),
+                  height: RFValue(30),
+                }}
+                source={require("../assets/Images/productListingIcon.png")}
+              />
+              <Text style={styles.productNameText}>{product.name}</Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                position: "absolute",
+                right: 0,
+                alignItems: "center",
+                width: widthPercentageToDP("50%"),
+                justifyContent: "space-evenly",
+              }}
+            >
+              <Text style={styles.productTabContainerText}>
+                {product.created.split("T")[0]}
+              </Text>
+              <View>
+                <Text style={styles.productTabContainerText}>
+                  {format.separator(product.price)}円
+                </Text>
+                <Text style={styles.productTabContainerText}>
+                  {format.separator(product.store_price)}円
+                </Text>
+              </View>
+              <Text style={styles.productTabContainerText}>
+                {product.store}
+              </Text>
+            </View>
+            <Image
+              style={styles.nextIcon}
+              source={require("../assets/Images/next.png")}
+            />
           </View>
-          <Text style={styles.productTabContainerText}>{product.store}</Text>
-        </View>
-        <Image
-          style={styles.nextIcon}
-          source={require("../assets/Images/next.png")}
-        />
-        </View>
         </TouchableWithoutFeedback>
       </View>
     );
@@ -115,6 +118,7 @@ export default function ExhibitedProductList(props) {
   const [loaded, onLoaded] = React.useState(false);
   const [productHtml, onProductHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
+  const insets = useSafeAreaInsets();
 
   AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
@@ -190,97 +194,108 @@ export default function ExhibitedProductList(props) {
           props.route.params.is_store ? Translate.t("storeAccount") : ""
         }
       />
-      <View
+      <ScrollView
         style={{
-          marginTop: heightPercentageToDP("3%"),
-          marginHorizontal: widthPercentageToDP("3%"),
-          paddingBottom: widthPercentageToDP("5%"),
+          height: heightPercentageToDP("85%") - insets.bottom,
         }}
       >
-        <View style={{ flexDirection: "row" }}>
-          <Text
-            onPress={() => {
-              onStatusChanged("published");
-              onProductHtmlChanged(processProductHtml(products, "published"));
-            }}
-            style={
-              status == "published"
-                ? styles.nonPublishedProductText
-                : styles.publishedProductText
-            }
-          >
-            {Translate.t("published")}
-          </Text>
-          <Text
-            onPress={() => {
-              onStatusChanged("unpublished");
-              onProductHtmlChanged(processProductHtml(products, "unpublished"));
-            }}
-            style={
-              status == "unpublished"
-                ? styles.nonPublishedProductText
-                : styles.publishedProductText
-            }
-          >
-            {Translate.t("nonPublished")}
-          </Text>
-        </View>
         <View
           style={{
-            backgroundColor: Colors.F6F6F6,
-            borderWidth: 2,
+            marginTop: heightPercentageToDP("3%"),
+            marginHorizontal: widthPercentageToDP("3%"),
             paddingBottom: widthPercentageToDP("5%"),
-            borderColor: Colors.D7CCA6,
           }}
         >
-          <View style={styles.productInformationContainer}>
-            <View style={styles.product}>
-              <Text style={styles.productInformationText}>
-                {Translate.t("product")}
-              </Text>
-            </View>
-            <View style={styles.productDetailsContainer}>
-              <Text style={styles.productInformationText}>
-                {Translate.t("createdDate")}
-              </Text>
-              <View style={{ alignItems: "center" }}>
+          <View style={{ flexDirection: "row" }}>
+            <Text
+              onPress={() => {
+                onStatusChanged("published");
+                onProductHtmlChanged(
+                  processProductHtml(props, products, "published")
+                );
+              }}
+              style={
+                status == "published"
+                  ? styles.nonPublishedProductText
+                  : styles.publishedProductText
+              }
+            >
+              {Translate.t("published")}
+            </Text>
+            <Text
+              onPress={() => {
+                onStatusChanged("unpublished");
+                onProductHtmlChanged(
+                  processProductHtml(props, products, "unpublished")
+                );
+              }}
+              style={
+                status == "unpublished"
+                  ? styles.nonPublishedProductText
+                  : styles.publishedProductText
+              }
+            >
+              {Translate.t("nonPublished")}
+            </Text>
+          </View>
+          <View
+            style={{
+              backgroundColor: Colors.F6F6F6,
+              borderWidth: 2,
+              paddingBottom: widthPercentageToDP("5%"),
+              borderColor: Colors.D7CCA6,
+            }}
+          >
+            <View style={styles.productInformationContainer}>
+              <View style={styles.product}>
                 <Text style={styles.productInformationText}>
-                  {Translate.t("sellingPrice")}
-                </Text>
-                <Text style={styles.productInformationText}>
-                  {Translate.t("corporatePrice")}
+                  {Translate.t("product")}
                 </Text>
               </View>
-              <Text style={styles.productInformationText}>
-                {Translate.t("inStock")}
-              </Text>
+              <View style={styles.productDetailsContainer}>
+                <Text style={styles.productInformationText}>
+                  {Translate.t("createdDate")}
+                </Text>
+                <View style={{ alignItems: "center" }}>
+                  <Text style={styles.productInformationText}>
+                    {Translate.t("sellingPrice")}
+                  </Text>
+                  <Text style={styles.productInformationText}>
+                    {Translate.t("corporatePrice")}
+                  </Text>
+                </View>
+                <Text style={styles.productInformationText}>
+                  {Translate.t("inStock")}
+                </Text>
+              </View>
             </View>
+            {productHtml}
           </View>
-          {productHtml}
         </View>
-      </View>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          props.navigation.navigate("ProductInformationAddNew", {
-            is_store: props.route.params.is_store,
-          });
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: Colors.D7CCA6,
-            marginHorizontal: widthPercentageToDP("3%"),
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: heightPercentageToDP("2%"),
-            height: heightPercentageToDP("5%"),
+        <TouchableWithoutFeedback
+          onPress={() => {
+            props.navigation.navigate("ProductInformationAddNew", {
+              is_store: props.route.params.is_store,
+            });
           }}
         >
-          <Text style={{ fontSize: RFValue(12), color: "white" }}>
-            + {Translate.t("productCreate")}
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
+          <View
+            style={{
+              marginBottom: heightPercentageToDP("10%"),
+              backgroundColor: Colors.D7CCA6,
+              marginHorizontal: widthPercentageToDP("3%"),
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: heightPercentageToDP("2%"),
+              height: heightPercentageToDP("5%"),
+            }}
+          >
+            <Text style={{ fontSize: RFValue(12), color: "white" }}>
+              + {Translate.t("productCreate")}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -86,6 +86,7 @@ export default function ProfileEditingGeneral(props) {
   }
 
   function updateUser(user, field, value) {
+    if(!value) return;
     let obj = {};
     obj[field] = value;
     request
