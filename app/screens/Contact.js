@@ -204,7 +204,7 @@ export default function Contact(props) {
   function processGroupHtml(props, groups, userId) {
     let tmpGroupHtml = [];
     groups = groups.filter((group)=>{
-      return !group.data['delete_' + userId];
+      return !group.data['delete_' + userId] && !group.data['hide_' + userId];
     });
     setGroupCount(groups.length);
     for (var i = 0; i < groups.length; i++) {
@@ -239,6 +239,18 @@ export default function Contact(props) {
     return tmpGroupHtml;
   }
   function processFolderHtml(props, folders) {
+    folders = folders.filter((folder) => {
+      return !folder.data['delete'] && !folder.data['hide'];
+    })
+    folders.sort((folder1, folder2) => {
+      if (!folder1.data["pinned"] && folder2.data["pinned"]) {
+        return 1;
+      }
+      if (folder1.data["pinned"] && !folder2.data["pinned"]) {
+        return -1;
+      }
+      return 0;
+    });
     setFolderCount(folders.length);
     let tmpFolderHtml = [];
     for (var i = 0; i < folders.length; i++) {
@@ -366,7 +378,6 @@ export default function Contact(props) {
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
             if (item.type == "user") {
-              setFriendCount(querySnapshot.size);
               ids.push(item.id);
             }
           });
@@ -416,7 +427,8 @@ export default function Contact(props) {
       onFriendLoaded(true);
     });
   }
-  React.useEffect(() => {
+
+  function populateFolder(){
     AsyncStorage.getItem("user").then(function (url) {
       let userId = getID(url);
       db.collection("users")
@@ -425,7 +437,6 @@ export default function Contact(props) {
         .get()
         .then((querySnapshot) => {
           let folders = [];
-          setFolderCount(querySnapshot.size);
 
           querySnapshot.forEach((documentSnapshot) => {
             if (documentSnapshot.data().type == "folder") {
@@ -433,6 +444,7 @@ export default function Contact(props) {
                 id: documentSnapshot.id,
                 folderId: documentSnapshot.id,
                 name: documentSnapshot.data().folderName,
+                data: documentSnapshot.data()
               });
             }
           });
@@ -441,6 +453,10 @@ export default function Contact(props) {
         });
       onFolderLoaded(true);
     });
+  }
+
+  React.useEffect(() => {
+    populateFolder()
   }, [isFocused]);
   React.useEffect(() => {
     populateGroup()
@@ -834,12 +850,12 @@ export default function Contact(props) {
                             ? false
                             : true;
                         db.collection("users")
-                        .doc(user.id)
+                        .doc(user.id.toString())
                         .collection('folders')
-                        .doc(longPressObj.data.id).set(update, {
+                        .doc(longPressObj.data.id.toString()).set(update, {
                           merge: true,
                         }).then(()=>{
-                          populateGroup();
+                          populateFolder();
                         })
                       } else if (longPressObj.type == 'group'){
                         let update = {};
@@ -893,7 +909,21 @@ export default function Contact(props) {
                             });
                           }
                         });
-                      } else if (longPressObj.type == 'folder'){     
+                      } else if (longPressObj.type == 'folder'){  
+                        let update = {};
+                        update["notify"] =
+                          (longPressObj.data.data["notify"] == "" ||
+                          longPressObj.data.data["notify"])
+                            ? false
+                            : true;
+                        db.collection("users")
+                        .doc(user.id.toString())
+                        .collection('folders')
+                        .doc(longPressObj.data.id.toString()).set(update, {
+                          merge: true,
+                        }).then(()=>{
+                          populateFolder();
+                        })
                       } else if (longPressObj.type == 'group'){   
                         console.log(longPressObj)
                         let update = {};
@@ -949,7 +979,20 @@ export default function Contact(props) {
                           }
                         });
                       } else if (longPressObj.type == 'folder'){
-
+                        let update = {};
+                        update["hide"] =
+                          (longPressObj.data.data["hide"] == "" ||
+                          longPressObj.data.data["hide"])
+                            ? false
+                            : true;
+                        db.collection("users")
+                        .doc(user.id.toString())
+                        .collection('folders')
+                        .doc(longPressObj.data.id.toString()).set(update, {
+                          merge: true,
+                        }).then(()=>{
+                          populateFolder();
+                        })
                       } else if (longPressObj.type == 'group'){
                         let update = {};
                         update["hide_" + user.id] =
@@ -1003,7 +1046,20 @@ export default function Contact(props) {
                           }
                         });
                       } else if (longPressObj.type == 'folder'){
-
+                        let update = {};
+                        update["delete"] =
+                          (longPressObj.data.data["delete"] == "" ||
+                          longPressObj.data.data["delete"])
+                            ? false
+                            : true;
+                        db.collection("users")
+                        .doc(user.id.toString())
+                        .collection('folders')
+                        .doc(longPressObj.data.id.toString()).set(update, {
+                          merge: true,
+                        }).then(()=>{
+                          populateFolder();
+                        })
                       } else if (longPressObj.type == 'group'){
                         let update = {};
                         update["delete_" + user.id] =

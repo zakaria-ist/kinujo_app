@@ -381,6 +381,7 @@ export default function ChatList(props) {
                     return 1;
                   }
                 }
+                return 0;
               });
               const resultChatHtml = tmpChatHtml.filter((html) => {
                 return !html.props["hide"] && !html.props["delete"];

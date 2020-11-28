@@ -52,13 +52,13 @@ export default function CustomKinujoWord({
   const isFocused = useIsFocused();
   const ratioBackArrow = win.width / 18 / 20;
   const [user, onUserChanged] = React.useState({});
-  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState({});
+  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
         onUserChanged(response.data);
+        onUserAuthorityIDChanged(response.data.authority.id);
       });
-      onUserAuthorityIDChanged(user.authority.id);
       onCartChanged(0);
       const subscriber = db
         .collection("users")

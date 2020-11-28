@@ -55,7 +55,7 @@ let janCodeNames = {};
 export default function HomeStoreList(props) {
   const [favourite, setFavourite] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
-  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState({});
+  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
   const [product, onProductChanged] = React.useState({});
   const [selectedJanCode, onSelectedJanCodeChanged] = React.useState({});
   const [images, onImagesChanged] = React.useState({});
@@ -76,10 +76,10 @@ export default function HomeStoreList(props) {
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
 
-  function populatePopupList(props, tmpJanCodes, selected) {
+  function populatePopupList(props, tmpProduct, tmpJanCodes, selected) {
     let tmpHtml = [];
     Object.keys(tmpJanCodes).map((key, index) => {
-      let tmpJanCode = tmpJanCodes[key];
+      let tmpJanCode = tmpJanCodes[key]['none'];
       tmpHtml.push(
         <View key={key} style={styles.variationTabs}>
           <RadioButton
@@ -87,7 +87,7 @@ export default function HomeStoreList(props) {
             onPress={() => {
               onSelectedJanCodeChanged(tmpJanCode.id);
               onPopupHtmlChanged(
-                populatePopupHtml(props, janCodes, tmpJanCode.id)
+                populatePopupHtml(props, tmpProduct, janCodes, tmpJanCode.id)
               );
             }}
           />
@@ -98,10 +98,10 @@ export default function HomeStoreList(props) {
     return tmpHtml;
   }
 
-  function populatePopupHtml(props, tmpJanCodes, selected) {
-    if (tmpJanCodes["none"]) {
-      return populatePopupList(props, tmpJanCodes["none"], selected);
-    } else if (tmpJanCodes[Object.keys(tmpJanCodes)[0]]["none"]) {
+  function populatePopupHtml(props, tmpProduct, tmpJanCodes, selected) {
+    if (tmpProduct.variety == 1) {
+      return populatePopupList(props, tmpProduct, tmpJanCodes, selected);
+    } else if (tmpProduct.variety == 0) {
       onSelectedJanCodeChanged(
         tmpJanCodes[Object.keys(tmpJanCodes)[0]]["none"].id
       );
@@ -123,7 +123,7 @@ export default function HomeStoreList(props) {
               <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
             </View>
           </TouchableWithoutFeedback>
-          {populatePopupList(props, tmpJanCodes[key], selected)}
+          {populatePopupList(props, tmpProduct, tmpJanCodes[key], selected)}
         </View>
       );
     });
@@ -149,114 +149,116 @@ export default function HomeStoreList(props) {
         .get(url)
         .then(function (response) {
           onUserChanged(response.data);
+          onUserAuthorityIDChanged(response.data.authority.id);
           request
-          .get(props.route.params.url)
-          .then(function (response) {
-            onProductChanged(response.data);
+            .get(props.route.params.url)
+            .then(function (response) {
+              onProductChanged(response.data);
+              db.collection("users")
+                .doc(userId)
+                .collection("favourite")
+                .doc(response.data.id.toString())
+                .get()
+                .then(function (doc) {
+                  if (doc.exists) {
+                    setFavourite(true);
+                  }
+                });
 
-            
-            db.collection("users")
-            .doc(userId)
-            .collection("favourite")
-            .doc(response.data.id.toString())
-            .get()
-            .then(function (doc) {
-              if (doc.exists) {
-                setFavourite(true);
+              response.data.productVarieties.map((productVariety) => {
+                productVariety.productVarietySelections.map(
+                  (productVarietySelection) => {
+                    janCodeNames[productVarietySelection.url] =
+                      productVarietySelection.selection;
+                  }
+                );
+              });
+              response.data.productVarieties.map((productVariety) => {
+                productVariety.productVarietySelections.map(
+                  (productVarietySelection) => {
+                    productVarietySelection.jancode_horizontal.map(
+                      (horizontal) => {
+                        let hoName = horizontal.horizontal
+                          ? janCodeNames[horizontal.horizontal]
+                          : "none";
+                        let veName = horizontal.vertical
+                          ? janCodeNames[horizontal.vertical]
+                          : "none";
+                        if (janCodes[hoName]) {
+                          janCodes[hoName][veName] = {
+                            stock: horizontal.stock,
+                            url: horizontal.url,
+                            id: horizontal.id,
+                          };
+                        } else {
+                          janCodes[hoName] = {};
+                          janCodes[hoName][veName] = {
+                            stock: horizontal.stock,
+                            url: horizontal.url,
+                            id: horizontal.id,
+                          };
+                        }
+                      }
+                    );
+                    productVarietySelection.jancode_vertical.map((vertical) => {
+                      let hoName = vertical.horizontal
+                        ? janCodeNames[vertical.horizontal]
+                        : "none";
+                      let veName = vertical.vertical
+                        ? janCodeNames[vertical.vertical]
+                        : "none";
+                      if (janCodes[hoName]) {
+                        janCodes[hoName][veName] = {
+                          stock: vertical.stock,
+                          url: vertical.url,
+                          id: vertical.id,
+                        };
+                      } else {
+                        janCodes[hoName] = {};
+                        janCodes[hoName][veName] = {
+                          stock: vertical.stock,
+                          url: vertical.url,
+                          id: vertical.id,
+                        };
+                      }
+                    });
+                  }
+                );
+              });
+              onPopupHtmlChanged(populatePopupHtml(props, response.data, janCodes, ""));
+
+              if (response.data.productImages.length > 0) {
+                let images = response.data.productImages.filter(
+                  (productImage) => {
+                    return productImage.is_hidden == 0;
+                  }
+                );
+                onImagesChanged(
+                  images.map((productImage) => {
+                    return productImage.image.image;
+                  })
+                );
+              } else {
+                onImagesChanged([
+                  "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg",
+                ]);
+              }
+            })
+            .catch(function (error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
               }
             });
-
-            response.data.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  janCodeNames[productVarietySelection.url] =
-                    productVarietySelection.selection;
-                }
-              );
-            });
-            response.data.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map((horizontal) => {
-                    let hoName = horizontal.horizontal
-                      ? janCodeNames[horizontal.horizontal]
-                      : "none";
-                    let veName = horizontal.vertical
-                      ? janCodeNames[horizontal.vertical]
-                      : "none";
-                    if (janCodes[hoName]) {
-                      janCodes[hoName][veName] = {
-                        stock: horizontal.stock,
-                        url: horizontal.url,
-                        id: horizontal.id,
-                      };
-                    } else {
-                      janCodes[hoName] = {};
-                      janCodes[hoName][veName] = {
-                        stock: horizontal.stock,
-                        url: horizontal.url,
-                        id: horizontal.id,
-                      };
-                    }
-                  });
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    let hoName = vertical.horizontal
-                      ? janCodeNames[vertical.horizontal]
-                      : "none";
-                    let veName = vertical.vertical
-                      ? janCodeNames[vertical.vertical]
-                      : "none";
-                    if (janCodes[hoName]) {
-                      janCodes[hoName][veName] = {
-                        stock: vertical.stock,
-                        url: vertical.url,
-                        id: vertical.id,
-                      };
-                    } else {
-                      janCodes[hoName] = {};
-                      janCodes[hoName][veName] = {
-                        stock: vertical.stock,
-                        url: vertical.url,
-                        id: vertical.id,
-                      };
-                    }
-                  });
-                }
-              );
-            });
-            onPopupHtmlChanged(populatePopupHtml(props, janCodes, ""));
-
-            if (response.data.productImages.length > 0) {
-              let images = response.data.productImages.filter((productImage) => {
-                return productImage.is_hidden == 0;
-              });
-              onImagesChanged(
-                images.map((productImage) => {
-                  return productImage.image.image;
-                })
-              );
-            } else {
-              onImagesChanged([
-                "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg",
-              ]);
-            }
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-          onUserAuthorityIDChanged(user.authority.id);
         })
         .catch(function (error) {
           if (
@@ -337,15 +339,15 @@ export default function HomeStoreList(props) {
                 marginRight: widthPercentageToDP("2%"),
               }}
             >
-              <TouchableWithoutFeedback onPress={
-                ()=>{
+              <TouchableWithoutFeedback
+                onPress={() => {
                   AsyncStorage.getItem("user").then((url) => {
                     let urls = url.split("/");
                     urls = urls.filter((url) => {
                       return url;
                     });
                     let userId = urls[urls.length - 1];
-  
+
                     if (favourite) {
                       db.collection("users")
                         .doc(user.id.toString())
@@ -366,16 +368,19 @@ export default function HomeStoreList(props) {
                       setFavourite(true);
                     }
                   });
-                }
-              }>
+                }}
+              >
                 <Image
                   style={{
                     width: width / 12,
                     height: 26 * ratioFavorite,
                     marginRight: widthPercentageToDP("3%"),
                   }}
-                  source={favourite ? require("../assets/Images/favoriteLove.png") :
-                  require("../assets/Images/productFavorite.png")}
+                  source={
+                    favourite
+                      ? require("../assets/Images/favoriteLove.png")
+                      : require("../assets/Images/productFavorite.png")
+                  }
                 />
               </TouchableWithoutFeedback>
               <Image
@@ -423,7 +428,8 @@ export default function HomeStoreList(props) {
               {product.shipping_fee
                 ? Translate.t("shipping") +
                   ": " +
-                  format.separator(product.shipping_fee) + "円"
+                  format.separator(product.shipping_fee) +
+                  "円"
                 : Translate.t("freeShipping")}
               {Translate.t("yen")}
             </Text>
@@ -714,7 +720,7 @@ export default function HomeStoreList(props) {
       ) : (
         <View></View>
       )}
-      {userAuthorityID <= 3 ? (
+      {false && userAuthorityID <= 3 ? (
         <View></View>
       ) : (
         <CartFloating
