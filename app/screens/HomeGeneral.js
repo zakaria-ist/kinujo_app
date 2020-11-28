@@ -33,28 +33,31 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const format = new Format();
-
+const db = firebase.firestore();
 const request = new Request();
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
-async function requestUserPermission() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-  if (enabled) {
-    console.log("Authorization status:", authStatus);
-  }
-}
 
 export default function Home(props) {
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
   const isFocused = useIsFocused();
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    if (enabled) {
+      console.log("Authorization status:", authStatus);
+      const deviceToken = await messaging().getToken();
+      db.collection("users").doc(String(user.id)).collection("token").add({
+        tokenID: deviceToken,
+      });
+    }
+  }
   React.useEffect(() => {
     requestUserPermission();
     AsyncStorage.getItem("user").then(function (url) {

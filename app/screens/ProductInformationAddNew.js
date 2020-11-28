@@ -174,7 +174,7 @@ export default function ProductInformationAdd(props) {
             tmpItems['items'] = []
             for(var i=0; i<productVariety.productVarietySelections.length; i++){
               let productVarietySelection = productVariety.productVarietySelections[i]
-              let vertical = productVarietySelection.jancode_vertical[0]
+              let vertical = productVarietySelection.jancode_horizontal[0]
               tmpItems['items'].push({
                 id: vertical.id,
                 index: i,
