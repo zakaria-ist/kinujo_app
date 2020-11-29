@@ -142,7 +142,7 @@ export default function AdvanceSetting(props) {
               <TextInput
                 value={displayName}
                 onChangeText={(value) => onDisplayNameChanged(value)}
-                style={{ borderWidth: 1, borderColor: "black" }}
+                style={styles.textInputEdit}
               />
             </View>
           ) : (
@@ -220,8 +220,8 @@ export default function AdvanceSetting(props) {
           />
         </View>
       </View>
-      <TouchableWithoutFeedback onPress={
-        () => {
+      <TouchableWithoutFeedback
+        onPress={() => {
           db.collection("users")
             .doc(userId)
             .collection("customers")
@@ -231,7 +231,6 @@ export default function AdvanceSetting(props) {
             'userId' : customerId,
             'parentId' : userId
           }).then(function(response){
-            console.log(response);
           })
         }
       }>
@@ -255,12 +254,11 @@ export default function AdvanceSetting(props) {
 const styles = StyleSheet.create({
   textInTabs: {
     fontSize: RFValue(14),
+    color: "black"
   },
   firstTabContainer: {
-    height: heightPercentageToDP("5%"),
     flexDirection: "row",
     alignItems: "center",
-    borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: Colors.E6DADE,
     marginHorizontal: widthPercentageToDP("5%"),
@@ -269,7 +267,6 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     marginTop: heightPercentageToDP("1%"),
-    height: heightPercentageToDP("5%"),
     flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
@@ -277,5 +274,13 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("5%"),
     paddingTop: heightPercentageToDP("3%"),
     paddingBottom: heightPercentageToDP("3%"),
+  },
+  textInputEdit: {
+    borderRadius: 10,
+    fontSize: RFValue(8),
+    borderWidth: 1,
+    borderColor: "black",
+    height: heightPercentageToDP("4%"),
+    width: widthPercentageToDP("30%"),
   },
 });

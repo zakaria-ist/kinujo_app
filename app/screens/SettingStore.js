@@ -49,8 +49,8 @@ const ratioProfileEditingIcon = win.width / 16 / 22;
 const ratioCreditCardIcon = win.width / 14 / 25;
 const ratioOtherIcon = win.width / 14 / 25;
 const ratioHelpIcon = win.width / 18 / 18;
-const ratioSignOut = win.width / 14 / 512;
-const ratioGlobe = win.width / 12 / 128;
+const ratioSignOut = win.width / 16 / 512;
+const ratioGlobe = win.width / 14 / 128;
 let defaultLanguage = Localization.locale;
 let controller;
 export default function SettingStore(props) {
@@ -104,30 +104,34 @@ export default function SettingStore(props) {
       });
     }
   }, [isFocused]);
+  if (!isFocused) {
+    controller.close();
+  }
   return (
-    <SafeAreaView>
-      <CustomHeader
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onBack={() => {
-          props.navigation.pop();
-        }}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        text={Translate.t("setting")}
-      />
-      <CustomSecondaryHeader
-        editProfile="editProfile"
-        onPress={() => {
-          props.navigation.navigate("ProfileEditingStore", {
-            is_store: true,
-          });
-        }}
-        name={user.nickname}
-        accountType={Translate.t("storeAccount")}
-      />
-      <View style={{ marginTop: heightPercentageToDP("1%") }}>
-        {/* <View style={styles.totalSalesDateContainer}>
+    <TouchableWithoutFeedback onPress={() => controller.close()}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <CustomHeader
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onBack={() => {
+            props.navigation.pop();
+          }}
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          text={Translate.t("setting")}
+        />
+        <CustomSecondaryHeader
+          editProfile="editProfile"
+          onPress={() => {
+            props.navigation.navigate("ProfileEditingStore", {
+              is_store: true,
+            });
+          }}
+          name={user.nickname}
+          accountType={Translate.t("storeAccount")}
+        />
+        <View style={{ marginTop: heightPercentageToDP("1%") }}>
+          {/* <View style={styles.totalSalesDateContainer}>
           <Text style={{ fontSize: RFValue(13) }}>2020年0月</Text>
           <Image
             style={{
@@ -137,284 +141,288 @@ export default function SettingStore(props) {
             source={require("../assets/Images/downForMoreIcon.png")}
           />
         </View> */}
-        <TouchableWithoutFeedback
-          onPress={() =>
-            props.navigation.navigate("SalesManagement", {
-              is_store: 1,
-            })
-          }
-        >
-          <View style={styles.totalSalesContainer}>
-            <Text
-              style={{
-                fontSize: RFValue(13),
-                marginLeft: widthPercentageToDP("3%"),
-              }}
-            >
-              売上合計 :
-            </Text>
-            <Text
-              style={{
-                fontSize: RFValue(13),
-                marginLeft: widthPercentageToDP("1%"),
-              }}
-            >
-              {format.separator(user.profit)}円
-            </Text>
-            <Image
-              style={{
-                width: win.width / 38,
-                height: 15 * ratioNext,
-                position: "absolute",
-                right: 0,
-                alignSelf: "center",
-                marginRight: widthPercentageToDP("3%"),
-              }}
-              source={require("../assets/Images/next.png")}
-            />
-          </View>
-        </TouchableWithoutFeedback>
-        {/* ALL TABLS CONTAINER */}
-        <View style={{ marginTop: heightPercentageToDP("2%") }}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              props.navigation.navigate("CustomerList", {
-                is_store: true,
-                other_Value: "asdad",
-              });
-            }}
-          >
-            <View style={styles.tabContainer}>
-              <Image
-                style={{
-                  width: win.width / 14,
-                  height: 24 * ratioCustomerList,
-                }}
-                source={require("../assets/Images/customerListIcon.png")}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("customerList")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-
-          <TouchableWithoutFeedback
-            onPress={() => {
-              props.navigation.navigate("ExhibitedProductList", {
-                is_store: true,
-              });
-            }}
-          >
-            <View style={styles.tabContainer}>
-              <Image
-                style={{
-                  width: win.width / 14,
-                  height: 20 * ratioProductList,
-                }}
-                source={require("../assets/Images/productListIcon.png")}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("productListManagement")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-
-          <TouchableWithoutFeedback
-            onPress={() => {
-              props.navigation.navigate("PurchaseHistory", {
-                is_store: true,
-              });
-            }}
-          >
-            <View style={styles.tabContainer}>
-              <Image
-                style={{
-                  width: win.width / 14,
-                  height: 25 * ratioPurchaseHistoryIcon,
-                }}
-                source={require("../assets/Images/purchaseHistoryIcon.png")}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("purchaseHistory")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-          </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() =>
-              props.navigation.navigate("Setting", {
-                is_store: true,
+              props.navigation.navigate("SalesManagement", {
+                is_store: 1,
               })
             }
           >
-            <View style={styles.tabContainer}>
-              <Image
+            <View style={styles.totalSalesContainer}>
+              <Text
                 style={{
-                  width: win.width / 14,
-                  height: 25 * ratioOtherIcon,
-                }}
-                source={require("../assets/Images/otherIcon.png")}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("setting")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              props.navigation.navigate("BankAccountRegistration", {
-                is_store: true,
-              })
-            }
-          >
-            <View style={styles.tabContainer}>
-              <Image
-                style={{
-                  width: win.width / 14,
-                  height: 20 * ratioCreditCardIcon,
-                }}
-                source={require("../assets/Images/creditCardIcon.png")}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("registeredbank/creditcard")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              props.navigation.navigate("ShippingList", {
-                is_store: true,
-              })
-            }
-          >
-            <View style={styles.tabContainer}>
-              <Image
-                style={{
-                  width: win.width / 16,
-                  height: 25 * ratioProfileEditingIcon,
-                }}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
-              <Text style={styles.textInLeftContainer}>
-                {Translate.t("shippingList")}
-              </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-          <View
-            style={{
-              flexDirection: "row",
-              height: heightPercentageToDP("7%"),
-              justifyContent: "flex-start",
-              alignItems: "center",
-              marginHorizontal: widthPercentageToDP("4%"),
-              // borderBottomWidth: 1,
-              // borderBottomColor: Colors.F0EEE9,
-            }}
-          >
-            <Image
-              source={require("../assets/Images/globe.png")}
-              style={{ width: win.width / 12, height: 128 * ratioGlobe }}
-            />
-            <DropDownPicker
-              zIndex={1000}
-              controller={(instance) => {
-                controller = instance;
-              }}
-              items={[
-                {
-                  label: "English",
-                  value: "en",
-                },
-                {
-                  label: "Japanese",
-                  value: "ja",
-                },
-              ]}
-              defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
-              containerStyle={{
-                height: heightPercentageToDP("5%"),
-                width: widthPercentageToDP("80%"),
-                marginLeft: widthPercentageToDP("4%"),
-              }}
-              style={{
-                backgroundColor: "white",
-              }}
-              itemStyle={{
-                justifyContent: "flex-start",
-              }}
-              labelStyle={{
-                fontSize: RFValue(12),
-                color: Colors.D7CCA6,
-              }}
-              selectedtLabelStyle={{
-                color: Colors.D7CCA6,
-              }}
-              dropDownStyle={{
-                backgroundColor: "black",
-                color: "white",
-              }}
-              onChangeItem={(item) => onValueChanged(item)}
-            />
-          </View>
-          <View>
-            <TouchableWithoutFeedback
-              style={{
-                zIndex: -1,
-                elevation: -1,
-              }}
-              onPress={() => {
-                if (!controller.isOpen()) {
-                  AsyncStorage.removeItem("user").then(() => {
-                    props.navigation.navigate("LoginScreen");
-                  });
-                }
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                  height: heightPercentageToDP("7%"),
-                  justifyContent: "flex-start",
-                  alignItems: "center",
-                  marginHorizontal: widthPercentageToDP("5.2%"),
+                  fontSize: RFValue(13),
+                  marginLeft: widthPercentageToDP("3%"),
                 }}
               >
+                {Translate.t("totalSale")} :
+              </Text>
+              <Text
+                style={{
+                  fontSize: RFValue(13),
+                  marginLeft: widthPercentageToDP("1%"),
+                }}
+              >
+                {format.separator(user.profit)}円
+              </Text>
+              <Image
+                style={{
+                  width: win.width / 38,
+                  height: 15 * ratioNext,
+                  position: "absolute",
+                  right: 0,
+                  alignSelf: "center",
+                  marginRight: widthPercentageToDP("3%"),
+                }}
+                source={require("../assets/Images/next.png")}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+          {/* ALL TABLS CONTAINER */}
+          <View style={{ marginTop: heightPercentageToDP("2%") }}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                props.navigation.navigate("CustomerList", {
+                  is_store: true,
+                  other_Value: "asdad",
+                });
+              }}
+            >
+              <View style={styles.tabContainer}>
                 <Image
-                  source={require("../assets/Images/signout.png")}
-                  style={{ width: win.width / 14, height: 512 * ratioSignOut }}
+                  style={{
+                    width: win.width / 14,
+                    height: 24 * ratioCustomerList,
+                  }}
+                  source={require("../assets/Images/customerListIcon.png")}
                 />
                 <Text style={styles.textInLeftContainer}>
-                  {Translate.t("logout")}
+                  {Translate.t("customerList")}
                 </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
               </View>
             </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback
+              onPress={() => {
+                props.navigation.navigate("ExhibitedProductList", {
+                  is_store: true,
+                });
+              }}
+            >
+              <View style={styles.tabContainer}>
+                <Image
+                  style={{
+                    width: win.width / 14,
+                    height: 20 * ratioProductList,
+                  }}
+                  source={require("../assets/Images/productListIcon.png")}
+                />
+                <Text style={styles.textInLeftContainer}>
+                  {Translate.t("productListManagement")}
+                </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback
+              onPress={() => {
+                props.navigation.navigate("PurchaseHistory", {
+                  is_store: true,
+                });
+              }}
+            >
+              <View style={styles.tabContainer}>
+                <Image
+                  style={{
+                    width: win.width / 14,
+                    height: 25 * ratioPurchaseHistoryIcon,
+                  }}
+                  source={require("../assets/Images/purchaseHistoryIcon.png")}
+                />
+                <Text style={styles.textInLeftContainer}>
+                  {Translate.t("purchaseHistory")}
+                </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                props.navigation.navigate("Setting", {
+                  is_store: true,
+                })
+              }
+            >
+              <View style={styles.tabContainer}>
+                <Image
+                  style={{
+                    width: win.width / 14,
+                    height: 25 * ratioOtherIcon,
+                  }}
+                  source={require("../assets/Images/otherIcon.png")}
+                />
+                <Text style={styles.textInLeftContainer}>
+                  {Translate.t("setting")}
+                </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                props.navigation.navigate("BankAccountRegistration", {
+                  is_store: true,
+                })
+              }
+            >
+              <View style={styles.tabContainer}>
+                <Image
+                  style={{
+                    width: win.width / 14,
+                    height: 20 * ratioCreditCardIcon,
+                  }}
+                  source={require("../assets/Images/creditCardIcon.png")}
+                />
+                <Text style={styles.textInLeftContainer}>
+                  {Translate.t("registeredbank/creditcard")}
+                </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                props.navigation.navigate("ShippingList", {
+                  is_store: true,
+                })
+              }
+            >
+              <View style={styles.tabContainer}>
+                <Image
+                  style={{
+                    width: win.width / 16,
+                    height: 25 * ratioProfileEditingIcon,
+                  }}
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
+                <Text style={styles.textInLeftContainer}>
+                  {Translate.t("shippingList")}
+                </Text>
+                <Image
+                  style={styles.nextIcon}
+                  source={require("../assets/Images/next.png")}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+            <View
+              style={{
+                flexDirection: "row",
+                height: heightPercentageToDP("7%"),
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginHorizontal: widthPercentageToDP("4%"),
+                // borderBottomWidth: 1,
+                // borderBottomColor: Colors.F0EEE9,
+              }}
+            >
+              <Image
+                source={require("../assets/Images/globe.png")}
+                style={{ width: win.width / 14, height: 128 * ratioGlobe }}
+              />
+              <DropDownPicker
+                zIndex={1000}
+                controller={(instance) => {
+                  controller = instance;
+                }}
+                items={[
+                  {
+                    label: "English",
+                    value: "en",
+                  },
+                  {
+                    label: "Japanese",
+                    value: "ja",
+                  },
+                ]}
+                defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
+                containerStyle={{
+                  height: heightPercentageToDP("5%"),
+                  width: widthPercentageToDP("80%"),
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+                style={{
+                  backgroundColor: "white",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                labelStyle={{
+                  fontSize: RFValue(12),
+                  color: Colors.D7CCA6,
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.D7CCA6,
+                }}
+                dropDownStyle={{
+                  backgroundColor: "black",
+                  color: "white",
+                }}
+                onChangeItem={(item) => onValueChanged(item)}
+              />
+            </View>
+            <View>
+              <TouchableWithoutFeedback
+                style={{
+                  zIndex: -1,
+                  elevation: -1,
+                }}
+                onPress={() => {
+                  if (!controller.isOpen()) {
+                    AsyncStorage.removeItem("user").then(() => {
+                      props.navigation.navigate("LoginScreen");
+                    });
+                  }
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    height: heightPercentageToDP("7%"),
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                    marginHorizontal: widthPercentageToDP("5.2%"),
+                  }}
+                >
+                  <Image
+                    source={require("../assets/Images/signout.png")}
+                    style={{
+                      width: win.width / 16,
+                      height: 512 * ratioSignOut,
+                    }}
+                  />
+                  <Text style={styles.textInLeftContainer}>
+                    {Translate.t("logout")}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
           </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 const styles = StyleSheet.create({

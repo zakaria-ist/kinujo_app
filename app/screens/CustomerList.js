@@ -7,7 +7,7 @@ import {
   Dimensions,
   TextInput,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -176,9 +176,10 @@ export default function CustomerList(props) {
           placeholder="髪長"
           placeholderTextColor={Colors.grey}
           style={{
+            height: heightPercentageToDP("5.8%"),
             flex: 1,
             paddingLeft: widthPercentageToDP("5%"),
-            fontSize: RFValue(11),
+            fontSize: RFValue(9),
           }}
           value={search}
           onChangeText={(value) => {
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("5.8%"),
   },
   searchIcon: {
     width: win.width / 19,

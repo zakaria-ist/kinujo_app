@@ -18,6 +18,7 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useIsFocused } from "@react-navigation/native";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -29,7 +30,7 @@ import CheckBox from "@react-native-community/checkbox";
 import ArrowDownLogo from "../assets/icons/arrow_down.svg";
 let userId;
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig, 'kinujo');
 }
 let ids = [];
 let tmpFriend = [];
@@ -44,6 +45,7 @@ const ratioProfile = win.width / 13 / 22;
 const ratioDown = win.width / 32 / 8;
 const ratioNext = win.width / 38 / 8;
 export default function FolderMemberSelection(props) {
+  const isFocused = useIsFocused();
   const [friendChatShow, onFriendChatShowChanged] = React.useState(true);
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
@@ -62,80 +64,82 @@ export default function FolderMemberSelection(props) {
   ).current;
   React.useEffect(() => {
     AsyncStorage.getItem("tmpIds").then((friendIds) => {
-      tmpFriendIds = JSON.parse(friendIds);
-    });
-    AsyncStorage.getItem("user").then(function (url) {
-      request.get(url);
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
-      db.collection("users")
-        .doc(userId)
-        .collection("friends")
-        .get()
-        .then((querySnapshot) => {
-          let items = [];
-          querySnapshot.forEach((documentSnapshot) => {
-            let item = documentSnapshot.data();
-            if (item.type == "user") {
-              if (tmpFriendIds == null) {
-                ids.push(item.id);
-                items.push({
-                  id: item.id,
-                  checkStatus: false,
-                });
-              } else {
-                if (tmpFriendIds.includes(item.id)) {
-                  ids.push(item.id);
-                  items.push({
-                    id: item.id,
-                    checkStatus: true,
-                  });
-                } else {
+      if(friendIds){
+        tmpFriendIds = JSON.parse(friendIds);
+      }
+      AsyncStorage.getItem("user").then(function (url) {
+        request.get(url);
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
+        db.collection("users")
+          .doc(userId)
+          .collection("friends")
+          .get()
+          .then((querySnapshot) => {
+            let items = [];
+            querySnapshot.forEach((documentSnapshot) => {
+              let item = documentSnapshot.data();
+              if (item.type == "user") {
+                if (tmpFriendIds == null) {
                   ids.push(item.id);
                   items.push({
                     id: item.id,
                     checkStatus: false,
                   });
+                } else {
+                  if (tmpFriendIds.includes(item.id)) {
+                    ids.push(item.id);
+                    items.push({
+                      id: item.id,
+                      checkStatus: true,
+                    });
+                  } else {
+                    ids.push(item.id);
+                    items.push({
+                      id: item.id,
+                      checkStatus: false,
+                    });
+                  }
                 }
               }
-            }
-            tmpFriend = items;
-            //item to indicate checkbox status and id
-          });
-          request
-            .get("user/byIds/", {
-              ids: ids,
-              userId: userId,
-              "type" : "contact"
-            })
-            .then(function (response) {
-              //response = get use details from url
-              onUserHtmlChanged(
-                processUserHtml(props, response.data.users, tmpFriend)
-              );
-            })
-            .catch(function (error) {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
+              tmpFriend = items;
+              //item to indicate checkbox status and id
             });
-        });
-      onLoaded(true);
+            request
+              .get("user/byIds/", {
+                ids: ids,
+                userId: userId,
+                "type" : "contact"
+              })
+              .then(function (response) {
+                //response = get use details from url
+                onUserHtmlChanged(
+                  processUserHtml(props, response.data.users, tmpFriend)
+                );
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
+          });
+        onLoaded(true);
+      });
     });
-  }, []);
+  }, [isFocused]);
   function onValueChange(friendID) {
     tmpFriend = tmpFriend.map((friend) => {
       if (friendID == friend.id) {

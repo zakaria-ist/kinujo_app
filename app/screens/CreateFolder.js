@@ -61,7 +61,6 @@ export default function CreateFolder(props) {
   });
   React.useEffect(() => {
     let routes = props.navigation.dangerouslyGetState().routes;
-    console.log(routes);
     AsyncStorage.getItem("ids")
       .then((val) => {
         friendIds = JSON.parse(val);
@@ -109,20 +108,25 @@ export default function CreateFolder(props) {
     if (folderName != "") {
       AsyncStorage.removeItem("tmpIds");
       if (friendIds) {
-        db.collection("users").doc(userId).collection("folders").add({
-          folderName: folderName,
-          type: "folder",
-          users: friendIds,
-          usersName: friendNames,
-        });
-
-        props.navigation.navigate("GroupFolderCreateCompletion", {
-          type: "folder",
-          groupName: folderName,
-          friendNames: friendNames,
-          friendIds: friendIds,
-          ownUserID: userId,
-        });
+        db.collection("users")
+          .doc(userId)
+          .collection("folders")
+          .add({
+            folderName: folderName,
+            type: "folder",
+            users: friendIds,
+            usersName: friendNames,
+          })
+          .then((docRef) => {
+            props.navigation.navigate("GroupFolderCreateCompletion", {
+              groupDocumentID: docRef.id,
+              type: "folder",
+              groupName: folderName,
+              friendNames: friendNames,
+              friendIds: friendIds,
+              ownUserID: userId,
+            });
+          });
       }
     } else {
       alert.warning("Please fill in the folder name");

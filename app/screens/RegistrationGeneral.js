@@ -91,7 +91,7 @@ export default function RegistrationGeneral(props) {
               source={require("../assets/Images/tripleWhiteDot.png")}
             />
           </View>
-          <View>
+          <View style={{ marginHorizontal: widthPercentageToDP("10%") }}>
             <TextInput
               style={styles.ニックネーム}
               placeholderTextColor={Colors.white}
@@ -118,29 +118,24 @@ export default function RegistrationGeneral(props) {
             <View
               style={{
                 flexDirection: "row",
-                justifyContent: "center",
-                marginHorizontal: widthPercentageToDP("10%"),
+                alignItems: "flex-end",
               }}
             >
-              <View
-                style={{
-                  alignSelf: "flex-end",
-                  width: widthPercentageToDP("22%"),
+              <CountryPicker
+                withCallingCode
+                withFilter
+                withFlag
+                placeholder={callingCode ? " + " + callingCode : "+"}
+                onSelect={(val) => processCountryCode(val)}
+                containerButtonStyle={{
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: "white",
+                  paddingLeft: widthPercentageToDP("1%"),
+                  paddingVertical: heightPercentageToDP(".6%"),
+                  width: widthPercentageToDP("15%"),
                 }}
-              >
-                <CountryPicker
-                  withCallingCode
-                  withFilter
-                  withFlag
-                  placeholder={callingCode ? " + " + callingCode : "Country"}
-                  onSelect={(val) => processCountryCode(val)}
-                  containerButtonStyle={{
-                    borderWidth: 1,
-                    borderColor: "white",
-                    paddingVertical: heightPercentageToDP("1%"),
-                  }}
-                />
-              </View>
+              />
               <TextInput
                 style={styles.携帯電話番号}
                 placeholderTextColor={Colors.white}
@@ -171,10 +166,9 @@ export default function RegistrationGeneral(props) {
                           // onPhoneChanged("")
                           AsyncStorage.getItem("referUser", function (item) {
                             props.navigation.navigate("SMSAuthentication", {
-                              callingCode: callingCode,
                               nickname: nickname,
                               real_name: nickname,
-                              username: phone,
+                              username: callingCode + phone,
                               password: password,
                               authority: "general",
                               introducer: item,
@@ -247,7 +241,7 @@ export default function RegistrationGeneral(props) {
 const styles = StyleSheet.create({
   ニックネーム: {
     borderBottomWidth: 1,
-    marginHorizontal: widthPercentageToDP("10%"),
+    // marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
     fontSize: RFValue(12),
@@ -255,7 +249,7 @@ const styles = StyleSheet.create({
   },
   パスワード: {
     borderBottomWidth: 1,
-    marginHorizontal: widthPercentageToDP("10%"),
+    // marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
     fontSize: RFValue(12),
@@ -263,17 +257,17 @@ const styles = StyleSheet.create({
   },
   パスワード確認: {
     borderBottomWidth: 1,
-    marginHorizontal: widthPercentageToDP("10%"),
+    // marginHorizontal: widthPercentageToDP("10%"),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
     fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },
   携帯電話番号: {
+    flex: 1,
+    marginLeft: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
-    marginLeft: widthPercentageToDP("1%"),
-    paddingBottom: RFValue(15),
-    paddingRight: widthPercentageToDP("10%"),
+    // paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
     fontSize: RFValue(12),
     borderBottomColor: Colors.white,

@@ -34,7 +34,7 @@ export default function ReceiptView(props) {
   const [user, onUserChanged] = React.useState({});
   const [order, onOrderChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
-
+  const issueName = props.route.params.issueName;
   if (!loaded) {
     request
       .get(props.route.params.url)
@@ -85,6 +85,7 @@ export default function ReceiptView(props) {
     });
   }
   return (
+    <SafeAreaView style={{flex:1}}>
     <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
       <CustomHeader
         onFavoriteChanged="noFavorite"
@@ -101,10 +102,10 @@ export default function ReceiptView(props) {
       <View style={styles.receiptEditingContainer}>
         <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}</Text>
         <View style={styles.invoiceInputContainer}>
-          <Text style={{ fontSize: RFValue(24) }}>{user.nickname}</Text>
+          <Text style={{ fontSize: RFValue(24) }}>{issueName}</Text>
           <Text
             style={{
-              fontSize: RFValue(18),
+              fontSize: RFValue(14),
               marginLeft: widthPercentageToDP("3%"),
             }}
           >
@@ -223,6 +224,7 @@ export default function ReceiptView(props) {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

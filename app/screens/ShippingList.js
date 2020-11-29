@@ -8,8 +8,9 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -69,12 +70,24 @@ function processAddressHtml(props, addresses, status = "") {
                 onPress={() => {
                   request
                     .delete(address.url)
-                    .then(function(response) {
+                    .then(function (response) {
                       load();
                     })
-                    .catch(function(error) {
-                      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    .catch(function (error) {
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0] +
+                            "(" +
+                            Object.keys(error.response.data)[0] +
+                            ")"
+                        );
                       }
                     });
                 }}
@@ -96,8 +109,11 @@ export default function ShippingList(props) {
   const [addresses, onAddressesChanged] = React.useState([]);
   const [addressHtml, onAddressHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
-
-
+  function setDefaultAddress(url) {
+    AsyncStorage.setItem("defaultAddress", url).then(function () {
+      props.navigation.navigate("Cart");
+    });
+  }
   function load() {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -114,11 +130,16 @@ export default function ShippingList(props) {
           for (var i = 0; i < response.data.addresses.length; i++) {
             let address = response.data.addresses[i];
             tmpAddresses.push(
-              <TouchableWithoutFeedback key={i}>
+              <TouchableWithoutFeedback
+                key={i}
+                onPress={() => setDefaultAddress(address.url)}
+              >
                 <View style={styles.tabContainer}>
                   <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
                   <Text style={styles.textInTabContainer}>{address.zip1}</Text>
-                  <Text style={styles.textInTabContainer}>{address.address1}</Text>
+                  <Text style={styles.textInTabContainer}>
+                    {address.address1}
+                  </Text>
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Text
                       style={{
@@ -143,19 +164,33 @@ export default function ShippingList(props) {
                         }}
                       >
                         <View style={styles.buttonContainer}>
-                          <Text style={styles.buttonText}>{Translate.t("edit")}</Text>
+                          <Text style={styles.buttonText}>
+                            {Translate.t("edit")}
+                          </Text>
                         </View>
                       </TouchableWithoutFeedback>
                       <TouchableWithoutFeedback
                         onPress={() => {
                           request
                             .delete(address.url)
-                            .then(function(response) {
+                            .then(function (response) {
                               load();
                             })
-                            .catch(function(error) {
-                              if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                                alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                            .catch(function (error) {
+                              if (
+                                error &&
+                                error.response &&
+                                error.response.data &&
+                                Object.keys(error.response.data).length > 0
+                              ) {
+                                alert.warning(
+                                  error.response.data[
+                                    Object.keys(error.response.data)[0]
+                                  ][0] +
+                                    "(" +
+                                    Object.keys(error.response.data)[0] +
+                                    ")"
+                                );
                               }
                             });
                         }}
@@ -174,16 +209,26 @@ export default function ShippingList(props) {
           onAddressHtmlChanged(tmpAddresses);
         })
         .catch((error) => {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });
   }
   const isFocused = useIsFocused();
-  React.useEffect(()=>{
+  React.useEffect(() => {
     load();
-  }, [isFocused])
+  }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -194,35 +239,39 @@ export default function ShippingList(props) {
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
       />
-      <View style={styles.allTabsContainer}>
-        {addressHtml}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: heightPercentageToDP("2%"),
-          }}
-        >
-          <Image
-            style={{ width: win.width / 21, height: 14 * ratioAdd }}
-            source={require("../assets/Images/addAddressIcon.png")}
-          />
+      <ScrollView>
+        <View style={styles.allTabsContainer}>
+          {addressHtml}
           <TouchableWithoutFeedback
             onPress={() => {
               props.navigation.navigate("AdressManagement");
             }}
           >
-            <Text
+            <View
               style={{
-                fontSize: RFValue(12),
-                marginLeft: widthPercentageToDP("2%"),
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: widthPercentageToDP("5%"),
+                marginTop: heightPercentageToDP("2%"),
               }}
             >
-              {Translate.t("registerNewAddress")}
-            </Text>
+              <Image
+                style={{ width: win.width / 21, height: 14 * ratioAdd }}
+                source={require("../assets/Images/addAddressIcon.png")}
+              />
+
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  marginLeft: widthPercentageToDP("2%"),
+                }}
+              >
+                {Translate.t("registerNewAddress")}
+              </Text>
+            </View>
           </TouchableWithoutFeedback>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -232,6 +281,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP(".5%"),
   },
   allTabsContainer: {
+    // backgroundColor: "orange",
     marginTop: heightPercentageToDP("5%"),
     marginHorizontal: widthPercentageToDP("5%"),
   },

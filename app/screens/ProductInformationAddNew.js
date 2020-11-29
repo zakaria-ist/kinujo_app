@@ -107,7 +107,6 @@ export default function ProductInformationAdd(props) {
           });
       });
       if(props.route.params.url){
-        console.log(props.route.params.url)
         request.get(props.route.params.url).then((response)=>{
           onProductChanged(response.data)
           onProductNameChanged(response.data.name)
@@ -181,6 +180,7 @@ export default function ProductInformationAdd(props) {
                 choice: productVarietySelection.selection,
                 stock: vertical.stock + "",
                 janCode: vertical.jan_code,
+                hidden: vertical.is_hidden ? true : false
               })
             }
             onOneVariationItemsChanged(tmpItems);
@@ -237,7 +237,8 @@ export default function ProductInformationAdd(props) {
                   tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
                     id: horizontal.id,
                     stock: horizontal.stock + "",
-                    janCode: horizontal.jan_code
+                    janCode: horizontal.jan_code,
+                    delete: horizontal.is_hidden ? true: false
                   }
                 }
               })
@@ -251,7 +252,8 @@ export default function ProductInformationAdd(props) {
                   tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
                     id: vertical.id,
                     stock: vertical.stock + "",
-                    janCode: vertical.jan_code
+                    janCode: vertical.jan_code,
+                    delete: vertical.is_hidden ? true: false
                   }
                 }
               })
@@ -266,8 +268,9 @@ export default function ProductInformationAdd(props) {
                   }
                   tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
                     id: horizontal.id,
-                    stock: vertical.stock + "",
-                    janCode: vertical.jan_code
+                    stock: horizontal.stock + "",
+                    janCode: horizontal.jan_code,
+                    delete: horizontal.is_hidden ? true: false
                   }
                 }
               })
@@ -281,7 +284,8 @@ export default function ProductInformationAdd(props) {
                   tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
                     id: vertical.id,
                     stock: vertical.stock + "",
-                    janCode: vertical.jan_code
+                    janCode: vertical.jan_code,
+                    delete: vertical.is_hidden ? true: false
                   }
                 }
               })
@@ -459,7 +463,6 @@ export default function ProductInformationAdd(props) {
               style={styles.textInput}
               value={productName}
               onChangeText={(value) => {
-                console.log(value);
                 onProductNameChanged(value)
               }}
             ></TextInput>

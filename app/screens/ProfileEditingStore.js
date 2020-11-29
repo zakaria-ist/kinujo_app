@@ -65,7 +65,6 @@ export default function ProfileEditingGeneral(props) {
       request
         .get(url)
         .then(function (response) {
-          console.log(response.data);
           onShopNameChanged(response.data.shop_name);
           onNickNameChanged(response.data.nickname);
           onUserChanged(response.data);
@@ -97,10 +96,9 @@ export default function ProfileEditingGeneral(props) {
   }
 
   function updateUser(user, field, value) {
-    if(!value) return;
+    if (!value) return;
     let obj = {};
     obj[field] = value;
-    console.log(obj);
     request
       .patch(user.url, obj)
       .then(function (response) {
@@ -839,7 +837,7 @@ export default function ProfileEditingGeneral(props) {
               </Text>
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={Colors.D7CCA6}
+                thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : "grey"}
                 style={styles.switch}
                 onValueChange={(value) => {
                   onAddingFriendsByIDChanged(value);
@@ -872,7 +870,9 @@ export default function ProfileEditingGeneral(props) {
               </Text>
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={Colors.D7CCA6}
+                thumbColor={
+                  allowAddingFriendsByPhoneNumber == 1 ? Colors.D7CCA6 : "grey"
+                }
                 style={styles.switch}
                 onValueChange={(value) => {
                   onAllowAddingFriendsByPhoneNumber(value);

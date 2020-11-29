@@ -259,13 +259,16 @@
   "addToCartBtn":"Add to cart",
   "yen":"Yen",
   "pleaseEnter":"Please Enter",
-  "confrmPayment":"Confirm Payment",
+  "confirmPayment":"Confirm Payment",
   "cardNotComplete":"Card Not Complete",
   "purchaseCompletion":"Order Completed",
   "thankYouForOrder":"Thank you for your order!",
   "waitUntilDelivery":"Please wait for a while until delivery.",
   "searchProduct":"Search Products",
-  "itemAddedToCart":"The product is in!",
-  "shopName":"Shop Name"
-
+  "itemAddedToCart":"Product Added!",
+  "shopName":"Shop Name",
+    "favorite":"Favorite",
+    "addedToFavorite":"Added to favorite",
+    "removeFavorite":"Removed from favorite",
+    "payment":"Payment"
 }

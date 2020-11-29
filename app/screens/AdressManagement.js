@@ -10,7 +10,8 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -106,7 +107,7 @@ export default function AddressManagement(props) {
     );
   }, []);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
@@ -126,135 +127,101 @@ export default function AddressManagement(props) {
         }}
         text={Translate.t("addressee")}
       />
-      <View style={styles.textInputContainer}>
-        <TextInput
-          placeholder={Translate.t("name")}
-          placeholderTextColor={Colors.D7CCA6}
-          style={styles.textInput}
-          value={name}
-          onChangeText={(text) => onNameChanged(text)}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("postalCode")}
-          placeholderTextColor={Colors.D7CCA6}
-          style={styles.textInput}
-          value={zipcode}
-          onChangeText={(text) => {
-            onZipcodeChanged(text);
-            postal_code(text).then((address) => {
-              if (address && address.prefecture) {
-                let tmpPrefectures = prefectures.filter((prefecture) => {
-                  return prefecture.label == address.prefecture;
-                });
+      <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            placeholder={Translate.t("name")}
+            placeholderTextColor={Colors.D7CCA6}
+            style={styles.textInput}
+            value={name}
+            onChangeText={(text) => onNameChanged(text)}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("postalCode")}
+            placeholderTextColor={Colors.D7CCA6}
+            style={styles.textInput}
+            value={zipcode}
+            onChangeText={(text) => {
+              onZipcodeChanged(text);
+              postal_code(text).then((address) => {
+                if (address && address.prefecture) {
+                  let tmpPrefectures = prefectures.filter((prefecture) => {
+                    return prefecture.label == address.prefecture;
+                  });
 
-                if (tmpPrefectures.length > 0) {
-                  onPrefectureChanged(tmpPrefectures[0].value);
-                }
-              }
-            });
-          }}
-        ></TextInput>
-        <DropDownPicker
-          // controller={(instance) => (controller = instance)}
-          style={styles.textInput}
-          items={prefectures ? prefectures : []}
-          defaultValue={prefecture ? prefecture : ""}
-          containerStyle={{ height: heightPercentageToDP("8%") }}
-          labelStyle={{
-            fontSize: RFValue(12),
-            color: Colors.F0EEE9,
-          }}
-          itemStyle={{
-            justifyContent: "flex-start",
-          }}
-          selectedtLabelStyle={{
-            color: Colors.F0EEE9,
-          }}
-          placeholder={Translate.t("prefecture")}
-          dropDownStyle={{ backgroundColor: "#000000" }}
-          onChangeItem={(item) => {
-            if (item) {
-              onPrefectureChanged(item.value);
-            }
-          }}
-        />
-        <TextInput
-          placeholder={Translate.t("address1")}
-          placeholderTextColor={Colors.D7CCA6}
-          style={styles.textInput}
-          value={add}
-          onChangeText={(text) => onAddChanged(text)}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("address2")}
-          placeholderTextColor={Colors.D7CCA6}
-          style={styles.textInput}
-          value={buildingName}
-          onChangeText={(text) => onBuildingNameChanged(text)}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("profileEditPhoneNumber")}
-          placeholderTextColor={Colors.D7CCA6}
-          style={styles.textInput}
-          value={phoneNumber}
-          onChangeText={(text) => onPhoneNumberChanged(text)}
-        ></TextInput>
-      </View>
-      <TouchableWithoutFeedback
-        onPress={() => {
-          if (props.route.params && props.route.params.url) {
-            request
-              .patch(props.route.params.url.replace("addresses", "insertAddresses"), {
-                address1: add,
-                address2: add,
-                address_name: buildingName,
-                name: name,
-                prefecture: prefecture,
-                tel: phoneNumber,
-                zip1: zipcode,
-              })
-              .then(function (response) {
-                props.navigation.pop();
-              })
-              .catch(function (error) {
-                if (
-                  error &&
-                  error.response &&
-                  error.response.data &&
-                  Object.keys(error.response.data).length > 0
-                ) {
-                  alert.warning(
-                    error.response.data[
-                      Object.keys(error.response.data)[0]
-                    ][0] +
-                      "(" +
-                      Object.keys(error.response.data)[0] +
-                      ")"
-                  );
+                  if (tmpPrefectures.length > 0) {
+                    onPrefectureChanged(tmpPrefectures[0].value);
+                  }
                 }
               });
-          } else {
-            AsyncStorage.getItem("user").then(function (url) {
+            }}
+          ></TextInput>
+          <DropDownPicker
+            // controller={(instance) => (controller = instance)}
+            style={styles.textInput}
+            items={prefectures ? prefectures : []}
+            defaultValue={prefecture ? prefecture : ""}
+            containerStyle={{ height: heightPercentageToDP("8%") }}
+            labelStyle={{
+              fontSize: RFValue(12),
+              color: Colors.F0EEE9,
+            }}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            selectedtLabelStyle={{
+              color: Colors.F0EEE9,
+            }}
+            placeholder={Translate.t("prefecture")}
+            dropDownStyle={{ backgroundColor: "#000000" }}
+            onChangeItem={(item) => {
+              if (item) {
+                onPrefectureChanged(item.value);
+              }
+            }}
+          />
+          <TextInput
+            placeholder={Translate.t("address1")}
+            placeholderTextColor={Colors.D7CCA6}
+            style={styles.textInput}
+            value={add}
+            onChangeText={(text) => onAddChanged(text)}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("address2")}
+            placeholderTextColor={Colors.D7CCA6}
+            style={styles.textInput}
+            value={buildingName}
+            onChangeText={(text) => onBuildingNameChanged(text)}
+          ></TextInput>
+          <TextInput
+            placeholder={Translate.t("profileEditPhoneNumber")}
+            placeholderTextColor={Colors.D7CCA6}
+            style={styles.textInput}
+            value={phoneNumber}
+            onChangeText={(text) => onPhoneNumberChanged(text)}
+          ></TextInput>
+        </View>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (props.route.params && props.route.params.url) {
               request
-                .post("insertAddresses/", {
-                  address1: add,
-                  address2: add,
-                  address_name: buildingName,
-                  name: name,
-                  prefecture: prefecture,
-                  tel: phoneNumber,
-                  user: url,
-                  zip1: zipcode,
-                })
+                .patch(
+                  props.route.params.url.replace(
+                    "addresses",
+                    "insertAddresses"
+                  ),
+                  {
+                    address1: add,
+                    address2: add,
+                    address_name: buildingName,
+                    name: name,
+                    prefecture: prefecture,
+                    tel: phoneNumber,
+                    zip1: zipcode,
+                  }
+                )
                 .then(function (response) {
-                  onNameChanged("");
-                  onZipcodeChanged("");
-                  onPrefectureChanged(null);
-                  onAddChanged("");
-                  onBuildingNameChanged("");
-                  onPhoneNumberChanged("");
-                  onPrefecturesChanged([]);
-                  onPrefectureLoadedChanged(false);
                   props.navigation.pop();
                 })
                 .catch(function (error) {
@@ -274,16 +241,59 @@ export default function AddressManagement(props) {
                     );
                   }
                 });
-            });
-          }
-        }}
-      >
-        <View style={styles.buttonContainer}>
-          <Text style={styles.buttonText}>
-            {Translate.t("addressRegister")}
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
+            } else {
+              AsyncStorage.getItem("user").then(function (url) {
+                request
+                  .post("insertAddresses/", {
+                    address1: add,
+                    address2: add,
+                    address_name: buildingName,
+                    name: name,
+                    prefecture: prefecture,
+                    tel: phoneNumber,
+                    user: url,
+                    zip1: zipcode,
+                  })
+                  .then(function (response) {
+                    AsyncStorage.setItem("defaultAddress", response.data.url);
+                    // onNameChanged("");
+                    // onZipcodeChanged("");
+                    // onPrefectureChanged(null);
+                    // onAddChanged("");
+                    // onBuildingNameChanged("");
+                    // onPhoneNumberChanged("");
+                    // onPrefecturesChanged([]);
+                    // onPrefectureLoadedChanged(false);
+                    props.navigation.pop();
+                  })
+                  .catch(function (error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0] +
+                          "(" +
+                          Object.keys(error.response.data)[0] +
+                          ")"
+                      );
+                    }
+                  });
+              });
+            }
+          }}
+        >
+          <View style={styles.buttonContainer}>
+            <Text style={styles.buttonText}>
+              {Translate.t("addressRegister")}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -293,8 +303,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderColor: "transparent",
     borderRadius: 0,
-    fontSize: RFValue(12),
-    height: heightPercentageToDP("5.5%"),
+    fontSize: RFValue(9),
+    height: heightPercentageToDP("5.8%"),
     paddingLeft: widthPercentageToDP("2%"),
     marginVertical: heightPercentageToDP("1%"),
   },
@@ -306,6 +316,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
   },
   buttonContainer: {
+    marginBottom: heightPercentageToDP("5%"),
     backgroundColor: Colors.E6DADE,
     marginHorizontal: widthPercentageToDP("25%"),
     borderRadius: 5,

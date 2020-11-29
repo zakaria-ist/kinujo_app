@@ -89,7 +89,6 @@ export default function Contact(props) {
           for (var i = 0; i < users.length; i++) {
             if (users[i] == friendID) {
               groupID = snapShot.doc.id;
-              groupName = snapShot.doc.data().groupName;
             }
           }
         });
@@ -106,13 +105,13 @@ export default function Contact(props) {
             );
           props.navigation.navigate("ChatScreen", {
             groupID: groupID,
-            groupName: groupName,
+            groupName: friendName,
           });
         } else {
           let ownMessageUnseenField = "unseenMessageCount_" + userId;
           let friendMessageUnseenField = "unseenMessageCount_" + friendID;
-          let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
-          let friendTotalMessageReadField = "totalMessageRead_" + chatPersonID;
+          let ownTotalMessageReadField = "totalMessageRead_" + userId;
+          let friendTotalMessageReadField = "totalMessageRead_" + friendID;
           db.collection("chat")
             .add({
               groupName: friendName,
@@ -123,45 +122,48 @@ export default function Contact(props) {
               [ownTotalMessageReadField]: 0,
               [friendTotalMessageReadField]: 0,
             })
-            .then(function () {
-              navigateToChatScreen(friendID);
+            .then(function (docRef) {
+              props.navigation.navigate("ChatScreen", {
+                groupID: docRef.id,
+                groupName: friendName,
+              });
             });
         }
       });
   }
-  function navigateToChatScreen(friendID) {
-    let groupID;
-    let groupName;
-    db.collection("chat")
-      .where("users", "array-contains", userId)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == friendID) {
-              groupID = snapShot.doc.id;
-              groupName = snapShot.doc.data().groupName;
-            }
-          }
-          if (groupID != null) {
-            props.navigation.navigate("ChatScreen", {
-              groupID: groupID,
-              groupName: groupName,
-            });
-          }
-        });
-      });
-  }
+  // function navigateToChatScreen(friendID) {
+  //   let groupID;
+  //   let groupName;
+  //   db.collection("chat")
+  //     .where("users", "array-contains", userId)
+  //     .get()
+  //     .then((querySnapshot) => {
+  //       querySnapshot.docChanges().forEach((snapShot) => {
+  //         let users = snapShot.doc.data().users;
+  //         for (var i = 0; i < users.length; i++) {
+  //           if (users[i] == friendID) {
+  //             groupID = snapShot.doc.id;
+  //             groupName = snapShot.doc.data().groupName;
+  //           }
+  //         }
+  //         if (groupID != null) {
+  //           props.navigation.navigate("ChatScreen", {
+  //             groupID: groupID,
+  //             groupName: groupName,
+  //           });
+  //         }
+  //       });
+  //     });
+  // }
   function navigateToChatScreenWithGroupID(groupID, groupName) {
     props.navigation.navigate("ChatScreen", {
       groupID: groupID,
       groupName: groupName,
     });
   }
-  function getName(obj){
-    if(obj.data){
-      if(obj.type == 'user'){
+  function getName(obj) {
+    if (obj.data) {
+      if (obj.type == "user") {
         return obj.data.real_name ? obj.data.real_name : obj.data.nickname;
       }
       return obj.data.name;
@@ -176,14 +178,17 @@ export default function Contact(props) {
         <TouchableWithoutFeedback
           onLongPress={() => {
             onLongPressObjChanged({
-              "type" : "user",
-              "data" : user
+              type: "user",
+              data: user,
             });
             onShowChanged(true);
           }}
           key={user.id}
           onPress={() => {
-            redirectToChat(user.id, user.real_name ? user.real_name : user.nickname);
+            redirectToChat(
+              user.id,
+              user.real_name ? user.real_name : user.nickname
+            );
           }}
         >
           <View style={styles.contactTabContainer}>
@@ -194,7 +199,9 @@ export default function Contact(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
-            <Text style={styles.tabLeftText}>{user.real_name ? user.real_name : user.nickname}</Text>
+            <Text style={styles.tabLeftText}>
+              {user.real_name ? user.real_name : user.nickname}
+            </Text>
           </View>
         </TouchableWithoutFeedback>
       );
@@ -203,8 +210,8 @@ export default function Contact(props) {
   }
   function processGroupHtml(props, groups, userId) {
     let tmpGroupHtml = [];
-    groups = groups.filter((group)=>{
-      return !group.data['delete_' + userId] && !group.data['hide_' + userId];
+    groups = groups.filter((group) => {
+      return !group.data["delete_" + userId] && !group.data["hide_" + userId];
     });
     setGroupCount(groups.length);
     for (var i = 0; i < groups.length; i++) {
@@ -213,8 +220,8 @@ export default function Contact(props) {
         <TouchableWithoutFeedback
           onLongPress={() => {
             onLongPressObjChanged({
-              "type" : "group",
-              "data" : group
+              type: "group",
+              data: group,
             });
             onShowChanged(true);
           }}
@@ -240,8 +247,8 @@ export default function Contact(props) {
   }
   function processFolderHtml(props, folders) {
     folders = folders.filter((folder) => {
-      return !folder.data['delete'] && !folder.data['hide'];
-    })
+      return !folder.data["delete"] && !folder.data["hide"];
+    });
     folders.sort((folder1, folder2) => {
       if (!folder1.data["pinned"] && folder2.data["pinned"]) {
         return 1;
@@ -259,8 +266,8 @@ export default function Contact(props) {
         <TouchableWithoutFeedback
           onLongPress={() => {
             onLongPressObjChanged({
-              "type" : "folder",
-              "data" : folder
+              type: "folder",
+              data: folder,
             });
             onShowChanged(true);
           }}
@@ -311,36 +318,39 @@ export default function Contact(props) {
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
 
-  function populateGroup(){
+  function populateGroup() {
     AsyncStorage.getItem("user").then(function (url) {
       let userId = getID(url);
       db.collection("chat")
-      .where("users", "array-contains", String(userId))
-      .get()
-      .then((querySnapshot) => {
-        let ids = [];
-        let items = [];
-        let total = 0;
-        let groups = [];
+        .where("users", "array-contains", String(userId))
+        .get()
+        .then((querySnapshot) => {
+          let ids = [];
+          let items = [];
+          let total = 0;
+          let groups = [];
 
-        querySnapshot.forEach((documentSnapshot) => {
-          if (documentSnapshot.data().users.length > 2 || documentSnapshot.data().type == 'group') {
-            groups.push({
-              id: documentSnapshot.id,
-              name: documentSnapshot.data().groupName,
-              data: documentSnapshot.data()
-            });
-            total += 1;
-          }
+          querySnapshot.forEach((documentSnapshot) => {
+            if (
+              documentSnapshot.data().users.length > 2 ||
+              documentSnapshot.data().type == "group"
+            ) {
+              groups.push({
+                id: documentSnapshot.id,
+                name: documentSnapshot.data().groupName,
+                data: documentSnapshot.data(),
+              });
+              total += 1;
+            }
+          });
+          globalGroups = groups;
+          onGroupHtmlChanged(processGroupHtml(props, groups, userId));
         });
-        globalGroups = groups;
-        onGroupHtmlChanged(processGroupHtml(props, groups, userId));
-      });
       onGroupLoaded(true);
     });
   }
 
-  function populateUser(){
+  function populateUser() {
     AsyncStorage.getItem("user").then(function (url) {
       let userId = getID(url);
       request
@@ -385,11 +395,11 @@ export default function Contact(props) {
             .get("user/byIds/", {
               ids: ids,
               userId: userId,
-              "type" : "contact"
+              type: "contact",
             })
             .then(function (response) {
-              response = response.data
-              if(response.success){
+              response = response.data;
+              if (response.success) {
                 globalUsers = response.users;
                 onUserHtmlChanged(processUserHtml(props, response.users));
               } else {
@@ -428,7 +438,7 @@ export default function Contact(props) {
     });
   }
 
-  function populateFolder(){
+  function populateFolder() {
     AsyncStorage.getItem("user").then(function (url) {
       let userId = getID(url);
       db.collection("users")
@@ -444,7 +454,7 @@ export default function Contact(props) {
                 id: documentSnapshot.id,
                 folderId: documentSnapshot.id,
                 name: documentSnapshot.data().folderName,
-                data: documentSnapshot.data()
+                data: documentSnapshot.data(),
               });
             }
           });
@@ -456,13 +466,13 @@ export default function Contact(props) {
   }
 
   React.useEffect(() => {
-    populateFolder()
+    populateFolder();
   }, [isFocused]);
   React.useEffect(() => {
-    populateGroup()
+    populateGroup();
   }, [isFocused]);
   React.useEffect(() => {
-    populateUser()
+    populateUser();
   }, [isFocused]);
 
   return (
@@ -475,7 +485,9 @@ export default function Contact(props) {
         />
         <CustomSecondaryHeader
           name={user.nickname}
-          accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
+          accountType={
+            user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
+          }
         />
         <ScrollView>
           <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
@@ -782,38 +794,38 @@ export default function Contact(props) {
           </View>
         </ScrollView>
         <View style={show == true ? styles.popUp : styles.none}>
-        <View style={
-          {
-            zIndex: 1,
-            borderWidth: 1,
-            backgroundColor: "white",
-            alignSelf: "center",
-            marginTop: heightPercentageToDP("30%"),
-            borderColor: Colors.D7CCA6,
-            alignItems: "flex-start",
-            paddingLeft: widthPercentageToDP("5%"),
-            paddingRight: widthPercentageToDP("25%")
-          }
-        }>
+          <View
+            style={{
+              zIndex: 1,
+              borderWidth: 1,
+              backgroundColor: "white",
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("30%"),
+              borderColor: Colors.D7CCA6,
+              alignItems: "flex-start",
+              paddingLeft: widthPercentageToDP("5%"),
+              paddingRight: widthPercentageToDP("25%"),
+            }}
+          >
+            <View
+              style={{
+                marginTop: heightPercentageToDP("3%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(14) }}>
+                {getName(longPressObj)}
+              </Text>
               <View
                 style={{
-                  marginTop: heightPercentageToDP("3%"),
+                  marginTop: heightPercentageToDP("2%"),
+                  justifyContent: "space-evenly",
+                  height: heightPercentageToDP("35%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(14) }}>
-                  {getName(longPressObj)}
-                </Text>
-                <View
-                  style={{
-                    marginTop: heightPercentageToDP("2%"),
-                    justifyContent: "space-evenly",
-                    height: heightPercentageToDP("35%"),
-                  }}
-                >
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      if(longPressObj.type == 'user'){
-                        db.collection("users")
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    if (longPressObj.type == "user") {
+                      db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.data.id))
@@ -836,51 +848,57 @@ export default function Contact(props) {
                                   {
                                     merge: true,
                                   }
-                                ).then(()=>{
+                                )
+                                .then(() => {
                                   populateUser();
-                                })
+                                });
                             });
                           }
                         });
-                      } else if (longPressObj.type == 'folder'){
-                        let update = {};
-                        update["pinned"] =
-                          (longPressObj.data.data["pinned"] == "" ||
-                          longPressObj.data.data["pinned"])
-                            ? false
-                            : true;
-                        db.collection("users")
+                    } else if (longPressObj.type == "folder") {
+                      let update = {};
+                      update["pinned"] =
+                        longPressObj.data.data["pinned"] == "" ||
+                        longPressObj.data.data["pinned"]
+                          ? false
+                          : true;
+                      db.collection("users")
                         .doc(user.id.toString())
-                        .collection('folders')
-                        .doc(longPressObj.data.id.toString()).set(update, {
+                        .collection("folders")
+                        .doc(longPressObj.data.id.toString())
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
+                        })
+                        .then(() => {
                           populateFolder();
-                        })
-                      } else if (longPressObj.type == 'group'){
-                        let update = {};
-                        update["pinned_" + user.id] =
-                          (longPressObj.data.data["pinned_" + user.id] == "" ||
-                          longPressObj.data.data["pinned_" + user.id])
-                            ? false
-                            : true;
-                        db.collection("chat").doc(longPressObj.data.id).set(update, {
+                        });
+                    } else if (longPressObj.type == "group") {
+                      let update = {};
+                      update["pinned_" + user.id] =
+                        longPressObj.data.data["pinned_" + user.id] == "" ||
+                        longPressObj.data.data["pinned_" + user.id]
+                          ? false
+                          : true;
+                      db.collection("chat")
+                        .doc(longPressObj.data.id)
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
-                          populateGroup();
                         })
-                      }
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("upperFixed")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      if(longPressObj.type == 'user'){
-                        db.collection("users")
+                        .then(() => {
+                          populateGroup();
+                        });
+                    }
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("upperFixed")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    if (longPressObj.type == "user") {
+                      db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.id))
@@ -903,53 +921,59 @@ export default function Contact(props) {
                                   {
                                     merge: true,
                                   }
-                                ).then(()=>{
+                                )
+                                .then(() => {
                                   populateUser();
-                                })
+                                });
                             });
                           }
                         });
-                      } else if (longPressObj.type == 'folder'){  
-                        let update = {};
-                        update["notify"] =
-                          (longPressObj.data.data["notify"] == "" ||
-                          longPressObj.data.data["notify"])
-                            ? false
-                            : true;
-                        db.collection("users")
+                    } else if (longPressObj.type == "folder") {
+                      let update = {};
+                      update["notify"] =
+                        longPressObj.data.data["notify"] == "" ||
+                        longPressObj.data.data["notify"]
+                          ? false
+                          : true;
+                      db.collection("users")
                         .doc(user.id.toString())
-                        .collection('folders')
-                        .doc(longPressObj.data.id.toString()).set(update, {
+                        .collection("folders")
+                        .doc(longPressObj.data.id.toString())
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
+                        })
+                        .then(() => {
                           populateFolder();
-                        })
-                      } else if (longPressObj.type == 'group'){   
-                        console.log(longPressObj)
-                        let update = {};
-                        update["notify_" + user.id] =
-                          ((longPressObj.data.data["notify_" + user.id] == "" ||
-                          longPressObj.data.data["notify_" + user.id])
-                            ? false
-                            : true);
-                        console.log(update)
-                        db.collection("chat").doc(longPressObj.data.id).set(update, {
+                        });
+                    } else if (longPressObj.type == "group") {
+                      // console.log(longPressObj)
+                      let update = {};
+                      update["notify_" + user.id] =
+                        longPressObj.data.data["notify_" + user.id] == "" ||
+                        longPressObj.data.data["notify_" + user.id]
+                          ? false
+                          : true;
+                      // console.log(update)
+                      db.collection("chat")
+                        .doc(longPressObj.data.id)
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
-                          populateGroup();
                         })
-                      }
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("notification")}OFF
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      if(longPressObj.type == 'user'){
-                        db.collection("users")
+                        .then(() => {
+                          populateGroup();
+                        });
+                    }
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("notification")}OFF
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    if (longPressObj.type == "user") {
+                      db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.id))
@@ -972,51 +996,57 @@ export default function Contact(props) {
                                   {
                                     merge: true,
                                   }
-                                ).then(()=>{
+                                )
+                                .then(() => {
                                   populateUser();
-                                })
+                                });
                             });
                           }
                         });
-                      } else if (longPressObj.type == 'folder'){
-                        let update = {};
-                        update["hide"] =
-                          (longPressObj.data.data["hide"] == "" ||
-                          longPressObj.data.data["hide"])
-                            ? false
-                            : true;
-                        db.collection("users")
+                    } else if (longPressObj.type == "folder") {
+                      let update = {};
+                      update["hide"] =
+                        longPressObj.data.data["hide"] == "" ||
+                        longPressObj.data.data["hide"]
+                          ? false
+                          : true;
+                      db.collection("users")
                         .doc(user.id.toString())
-                        .collection('folders')
-                        .doc(longPressObj.data.id.toString()).set(update, {
+                        .collection("folders")
+                        .doc(longPressObj.data.id.toString())
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
+                        })
+                        .then(() => {
                           populateFolder();
-                        })
-                      } else if (longPressObj.type == 'group'){
-                        let update = {};
-                        update["hide_" + user.id] =
-                          (longPressObj.data.data["hide_" + user.id] == "" ||
-                          longPressObj.data.data["hide_" + user.id])
-                            ? false
-                            : true;
-                        db.collection("chat").doc(longPressObj.data.id).set(update, {
+                        });
+                    } else if (longPressObj.type == "group") {
+                      let update = {};
+                      update["hide_" + user.id] =
+                        longPressObj.data.data["hide_" + user.id] == "" ||
+                        longPressObj.data.data["hide_" + user.id]
+                          ? false
+                          : true;
+                      db.collection("chat")
+                        .doc(longPressObj.data.id)
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
-                          populateGroup();
                         })
-                      }
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("nonRepresent")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      if(longPressObj.type == 'user'){
-                        db.collection("users")
+                        .then(() => {
+                          populateGroup();
+                        });
+                    }
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("nonRepresent")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    if (longPressObj.type == "user") {
+                      db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.id))
@@ -1039,68 +1069,84 @@ export default function Contact(props) {
                                   {
                                     merge: true,
                                   }
-                                ).then(()=>{
-                                  populateUser()
+                                )
+                                .then(() => {
+                                  populateUser();
                                 });
                             });
                           }
                         });
-                      } else if (longPressObj.type == 'folder'){
-                        let update = {};
-                        update["delete"] =
-                          (longPressObj.data.data["delete"] == "" ||
-                          longPressObj.data.data["delete"])
-                            ? false
-                            : true;
-                        db.collection("users")
+                    } else if (longPressObj.type == "folder") {
+                      let update = {};
+                      update["delete"] =
+                        longPressObj.data.data["delete"] == "" ||
+                        longPressObj.data.data["delete"]
+                          ? false
+                          : true;
+                      db.collection("users")
                         .doc(user.id.toString())
-                        .collection('folders')
-                        .doc(longPressObj.data.id.toString()).set(update, {
+                        .collection("folders")
+                        .doc(longPressObj.data.id.toString())
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
+                        })
+                        .then(() => {
                           populateFolder();
-                        })
-                      } else if (longPressObj.type == 'group'){
-                        let update = {};
-                        update["delete_" + user.id] =
-                          (longPressObj.data.data["delete_" + user.id] == "" ||
-                          longPressObj.data.data["delete_" + user.id])
-                            ? false
-                            : true;
-                        db.collection("chat").doc(longPressObj.data.id).set(update, {
+                        });
+                    } else if (longPressObj.type == "group") {
+                      let update = {};
+                      update["delete_" + user.id] =
+                        longPressObj.data.data["delete_" + user.id] == "" ||
+                        longPressObj.data.data["delete_" + user.id]
+                          ? false
+                          : true;
+                      db.collection("chat")
+                        .doc(longPressObj.data.id)
+                        .set(update, {
                           merge: true,
-                        }).then(()=>{
-                          populateGroup();
                         })
-                      }
-                      onShowChanged(false);
-                    }}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("remove")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPressIn={() => onShowChanged(false)}
-                    onPress={() =>
-                      props.navigation.navigate("GroupChatCreation")
+                        .then(() => {
+                          populateGroup();
+                        });
                     }
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("groupChatCreate")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPressIn={() => onShowChanged(false)}
-                    onPress={() => props.navigation.navigate("CreateFolder")}
-                  >
-                    <Text style={styles.longPressText}>
-                      {Translate.t("createFolder")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                </View>
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("remove")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    AsyncStorage.setItem('ids', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
+                      AsyncStorage.setItem('tmpIds', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
+                        props.navigation.navigate("GroupChatCreation")
+                      });
+                    });
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("groupChatCreate")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    AsyncStorage.setItem('ids', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
+                      AsyncStorage.setItem('tmpIds', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
+                        props.navigation.navigate("CreateFolder")
+                      });
+                    });
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("createFolder")}
+                  </Text>
+                </TouchableWithoutFeedback>
               </View>
             </View>
+          </View>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -1172,7 +1218,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignSelf: "center",
     width: widthPercentageToDP("100%"),
-    height:heightPercentageToDP("100%"),
+    height: heightPercentageToDP("100%"),
     borderColor: Colors.D7CCA6,
     alignItems: "flex-start",
   },

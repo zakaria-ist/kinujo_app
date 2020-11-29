@@ -77,6 +77,12 @@ export default function Payment(props) {
 
               if (card && card.valid) {
                 onSpinnerChanged(true);
+                console.log({
+                  card: card.values,
+                  products: props.route.params.products,
+                  address: props.route.params.address,
+                  tax: props.route.params.tax,
+                })
                 request
                   .post("pay/" + userId + "/", {
                     card: card.values,
@@ -86,6 +92,7 @@ export default function Payment(props) {
                   })
                   .then(function (response) {
                     onSpinnerChanged(false);
+                    console.log(response);
                     response = response.data;
                     if (response.success) {
                       db.collection("users")
@@ -121,6 +128,7 @@ export default function Payment(props) {
                     }
                   })
                   .catch(function (error) {
+                    console.log(error);
                     onSpinnerChanged(false);
                     if (
                       error &&

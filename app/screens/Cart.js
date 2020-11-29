@@ -29,7 +29,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 import RemoveLogo from "../assets/icons/removeIcon.svg";
-
+import UpArrowLogo from "../assets/icons/up_whiteArrow.svg";
 import CheckBox from "@react-native-community/checkbox";
 import Format from "../lib/format";
 const format = new Format();
@@ -50,6 +50,7 @@ const ratioAdd = win.width / 21 / 14;
 const ratioRemove = win.width / 20 / 16;
 let taxObj = {};
 let productLoaded = false;
+
 export default function Cart(props) {
   const [cartItemShow, onCartItemShowChanged] = React.useState(true);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
@@ -76,56 +77,75 @@ export default function Cart(props) {
   const isFocused = useIsFocused();
   const [selected, onSelectedChanged] = React.useState("");
   const [addressHtml, onAddressHtmlChanged] = React.useState([]);
-  const cartItems = []
+  const cartItems = [];
   function getAddressHtml(pAddresses, pSelected) {
     let tmpAddresses = [];
-    pAddresses.map((address) => {
-      tmpAddresses.push(
-        <TouchableWithoutFeedback key={address.id}>
-          <View
+    // pAddresses.map((address) => {
+    // console.log(pAddresses.name);
+    tmpAddresses.push(
+      <View style={styles.deliveryTabContainer} key={pAddresses.id}>
+        <View
+          style={{
+            position: "absolute",
+            marginLeft: widthPercentageToDP("7%"),
+          }}
+        >
+          <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
+          <TouchableWithoutFeedback
+            onPress={() => props.navigation.navigate("ShippingList")}
+          >
+            <View
+              style={{
+                fontSize: RFValue(11),
+                color: "white",
+                backgroundColor: Colors.deepGrey,
+                paddingHorizontal: widthPercentageToDP("2%"),
+                paddingVertical: heightPercentageToDP(".5%"),
+                borderRadius: 5,
+                marginTop: heightPercentageToDP("1%"),
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                Change
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+        <View
+          style={{
+            marginRight: widthPercentageToDP("5%"),
+            position: "absolute",
+            right: 0,
+            justifyContent: "center",
+          }}
+        >
+          <Text
             style={{
-              justifyContent: "center",
+              fontSize: RFValue(12),
+              // backgroundColor: "orange",
+              width: widthPercentageToDP("45%"),
             }}
           >
-            <View style={styles.tabContainer}>
-              <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
-              <Text style={styles.textInTabContainer}>{address.zip1}</Text>
-              <Text style={styles.textInTabContainer}>{address.address1}</Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: RFValue(12),
-                    marginTop: heightPercentageToDP(".5%"),
-                  }}
-                >
-                  {address.prefecture.name}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.checkBoxContainer}>
-              <CheckBox
-                color={Colors.E6DADE}
-                uncheckedColor={Colors.E6DADE}
-                disabled={false}
-                value={pSelected == address["id"]}
-                onPress={() => {
-                  alert.warning("PRESS");
-                }}
-                onValueChange={(value) => {
-                  if (value) {
-                    onSelectedChanged(address["id"]);
-                    onAddressHtmlChanged(
-                      getAddressHtml(pAddresses, address["id"])
-                    );
-                  }
-                }}
-              />
-            </View>
+            {pAddresses.name}
+          </Text>
+          <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
+          <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text
+              style={{
+                fontSize: RFValue(12),
+                marginTop: heightPercentageToDP(".5%"),
+              }}
+            >
+              {pAddresses.prefecture.name}
+            </Text>
           </View>
-        </TouchableWithoutFeedback>
-      );
-    });
-    return tmpAddresses;
+        </View>
+      </View>
+    );
+    // });
+    return tmpAddresses[0];
   }
 
   function onValueChanged(id, itemValue, is_store) {
@@ -141,26 +161,29 @@ export default function Cart(props) {
   function processCartHtml(props, products, maps, is_store = false) {
     productLoaded = false;
     let tmpCartHtml = [];
-    for (i = 0; i < djangoProducts.length; i++) {
-      let product = products[i];
-      let item = maps.filter((tmp) => {
-        return tmp.id == product.id;
+    for (i = 0; i < maps.length; i++) {
+      console.log(maps);
+      let item = maps[i];
+      let tmpProducts = products.filter((product) => {
+        return product.id == item.product_id;
       });
-      let quantity = item[0].quantity;
-      let key = "key_" + product.id;
-      let realIndex = 1000-i;
-      console.log(quantity);
+      let product = tmpProducts[0];
+      let quantity = item.quantity;
+      let realIndex = 1000 - i;
       // onShippingChanged(product.shipping_fee);
       tmpCartHtml.push(
-        <View key={i} style={{
-          flexDirection: "row",
-          backgroundColor: Colors.F0EEE9,
-          height: heightPercentageToDP("18%"),
-          marginTop: heightPercentageToDP("2%"),
-          paddingHorizontal: widthPercentageToDP("4%"),
-          paddingBottom: heightPercentageToDP("14%"),
-          zIndex: realIndex
-        }}>
+        <View
+          key={i}
+          style={{
+            flexDirection: "row",
+            backgroundColor: Colors.F0EEE9,
+            height: heightPercentageToDP("18%"),
+            marginTop: heightPercentageToDP("2%"),
+            paddingHorizontal: widthPercentageToDP("4%"),
+            paddingBottom: heightPercentageToDP("14%"),
+            zIndex: realIndex,
+          }}
+        >
           <View
             style={{
               width: widthPercentageToDP("60%"),
@@ -173,16 +196,17 @@ export default function Cart(props) {
                 : format.separator(product.price)}
               円
             </Text>
+            <Text style={styles.cartTabText}>{item.name}</Text>
           </View>
           <View style={styles.tabRightContainer}>
             <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
-            <View style={
-              {
+            <View
+              style={{
                 position: "absolute",
                 zIndex: 1000,
-                top: heightPercentageToDP("4.5%")
-              }
-            }>
+                top: heightPercentageToDP("4.5%"),
+              }}
+            >
               <DropDownPicker
                 style={{
                   borderWidth: 1,
@@ -196,11 +220,11 @@ export default function Cart(props) {
                   marginVertical: heightPercentageToDP("1%"),
                 }}
                 items={cartItems}
-                defaultValue={quantity ? (quantity + "") : ""}
-                containerStyle={{ 
+                defaultValue={quantity ? quantity + "" : ""}
+                containerStyle={{
                   paddingVertical: 0,
-                  width: widthPercentageToDP("20%")
-                  }}
+                  width: widthPercentageToDP("20%"),
+                }}
                 labelStyle={{
                   fontSize: RFValue(12),
                   color: "gray",
@@ -212,14 +236,14 @@ export default function Cart(props) {
                   color: Colors.F0EEE9,
                 }}
                 placeholder={Translate.t("unit")}
-                dropDownStyle={{ 
+                dropDownStyle={{
                   backgroundColor: "#FFFFFF",
                   color: "black",
-                  zIndex: 1000
+                  zIndex: 1000,
                 }}
-                onChangeItem={(item) => {
-                  if (item) {
-                    onValueChanged(product.id, item.value, is_store);
+                onChangeItem={(ci) => {
+                  if (ci) {
+                    onValueChanged(item.id, ci.value, is_store);
                   }
                 }}
               />
@@ -318,20 +342,20 @@ export default function Cart(props) {
         );
         productLoaded = true;
         let tmpProducts = response.data.products;
-        ids.map((id) => {
-          let tmpQuantities = firebaseProducts.filter((product) => {
-            return (product.product_id = id);
-          });
-          let quantity = tmpQuantities[0].quantity;
+
+        total = 0;
+        firebaseProducts.filter((fbProduct) => {
+          let quantity = fbProduct.quantity;
           let tmpProduct = tmpProducts.filter((product) => {
-            return (product.product_id = id);
+            return (product.id = fbProduct.id);
           });
           tmpProduct = tmpProduct[0];
 
-          onSubTotalChanged(
-            (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity
-          );
+          total +=
+            (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
         });
+
+        onSubTotalChanged(total);
       })
       .catch(function (error) {
         if (
@@ -351,11 +375,11 @@ export default function Cart(props) {
   }
 
   React.useEffect(() => {
-    for(var i=1; i<100; i++){
+    for (var i = 1; i < 100; i++) {
       cartItems.push({
-        "value" : i+"",
-        "label" : i+""
-      })
+        value: i + "",
+        label: i + "",
+      });
     }
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -372,40 +396,49 @@ export default function Cart(props) {
           let tmpIds = [];
           let items = [];
           querySnapshot.forEach((documentSnapshot) => {
-            tmpIds = tmpIds.concat(documentSnapshot.id);
+            tmpIds = tmpIds.concat(documentSnapshot.data().id);
             items.push({
-              product_id: documentSnapshot.id.toString(),
+              product_id: documentSnapshot.data().id.toString(),
               id: documentSnapshot.id.toString(),
               quantity: documentSnapshot.data().quantity,
               varietyId: documentSnapshot.data().url,
+              name: documentSnapshot.data().name,
             });
           });
           ids = tmpIds;
-          console.log(items);
           firebaseProducts = items;
           onUpdate(tmpIds, items, false);
         });
-
-      request
-        .get("addressList/" + userId + "/")
-        .then((response) => {
-          onAddressHtmlChanged(getAddressHtml(response.data.addresses, ""));
-        })
-        .catch((error) => {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
+      AsyncStorage.getItem("defaultAddress").then((address) => {
+        if (address != null) {
+          // console.log({ address });
+          request.get(address).then((response) => {
+            // console.log(response.data);
+            onAddressHtmlChanged(getAddressHtml(response.data, ""));
+          });
+        }
+      });
+      // request
+      //   .get("addressList/" + userId + "/")
+      //   .then((response) => {
+      //     // console.log(response.data);
+      //     onAddressHtmlChanged(getAddressHtml(response.data.addresses, ""));
+      //   })
+      //   .catch((error) => {
+      //     if (
+      //       error &&
+      //       error.response &&
+      //       error.response.data &&
+      //       Object.keys(error.response.data).length > 0
+      //     ) {
+      //       alert.warning(
+      //         error.response.data[Object.keys(error.response.data)[0]][0] +
+      //           "(" +
+      //           Object.keys(error.response.data)[0] +
+      //           ")"
+      //       );
+      //     }
+      //   });
 
       request
         .get("tax_rates/")
@@ -451,75 +484,65 @@ export default function Cart(props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <View style={{ paddingBottom: heightPercentageToDP("10%"), flexGrow: 1 }}>
-      <CustomHeader
-        text={Translate.t("cart")}
-        onBack={() => {
-          props.navigation.pop();
-        }}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-      />
-      <ScrollView>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            cartItemShow == true
-              ? Animated.parallel([
-                  Animated.timing(cartItemHeight, {
-                    toValue: heightPercentageToDP("0%"),
-                    duration: 500,
-                    useNativeDriver: false,
-                  }),
-                  Animated.timing(cartItemOpacity, {
-                    toValue: heightPercentageToDP("0%"),
-                    duration: 100,
-                    useNativeDriver: false,
-                  }),
-                ]).start(() => {}, onCartItemShowChanged(false))
-              : Animated.parallel([
-                  Animated.timing(cartItemHeight, {
-                    toValue: heightPercentageToDP("50%"),
-                    duration: 500,
-                    useNativeDriver: false,
-                  }),
-                  Animated.timing(cartItemOpacity, {
-                    toValue: heightPercentageToDP("100%"),
-                    duration: 30000,
-                    useNativeDriver: false,
-                  }),
-                ]).start(() => {}, onCartItemShowChanged(true));
+      <View style={{ paddingBottom: heightPercentageToDP("10%"), flexGrow: 1 }}>
+        <CustomHeader
+          text={Translate.t("cart")}
+          onBack={() => {
+            props.navigation.pop();
           }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              backgroundColor: Colors.D7CCA6,
-              height: heightPercentageToDP("6%"),
-              alignItems: "center",
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+        />
+        <ScrollView>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              cartItemShow == true
+                ? Animated.parallel([
+                    Animated.timing(cartItemOpacity, {
+                      toValue: heightPercentageToDP("0%"),
+                      duration: 100,
+                      useNativeDriver: false,
+                    }),
+                  ]).start(() => {}, onCartItemShowChanged(false))
+                : Animated.parallel([
+                    Animated.timing(cartItemOpacity, {
+                      toValue: heightPercentageToDP("100%"),
+                      duration: 30000,
+                      useNativeDriver: false,
+                    }),
+                  ]).start(() => {}, onCartItemShowChanged(true));
             }}
           >
-            <Text
+            <View
               style={{
-                fontSize: RFValue(14),
-                color: "white",
-                marginLeft: widthPercentageToDP("4%"),
+                flexDirection: "row",
+                // height:
+                backgroundColor: Colors.D7CCA6,
+                height: heightPercentageToDP("6%"),
+                alignItems: "center",
               }}
             >
-              KINUJO official shop
-            </Text>
-            <Image
-              source={require("../assets/icons/up_whiteArrow.svg")}
-              style={styles.upWhiteArrow}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+              <Text
+                style={{
+                  fontSize: RFValue(14),
+                  color: "white",
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+              >
+                KINUJO official shop
+              </Text>
+              <UpArrowLogo width={18} height={18} style={styles.upWhiteArrow} />
+            </View>
+          </TouchableWithoutFeedback>
 
-        <View style={{ 
-          marginHorizontal: widthPercentageToDP("5%")
-         }}>
-          {/* <Animated.View
+          <View
+            style={{
+              marginHorizontal: widthPercentageToDP("5%"),
+            }}
+          >
+            {/* <Animated.View
             style={{
               opacity: cartItemOpacity,
               borderBottomWidth: 1,
@@ -528,8 +551,45 @@ export default function Cart(props) {
             }}
           >
           </Animated.View> */}
-          <View>
-            {cartHtml}
+            <View>
+              {cartHtml}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  marginTop: heightPercentageToDP("2%"),
+                }}
+              >
+                <View
+                  style={{
+                    marginRight: widthPercentageToDP("10%"),
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Text style={styles.totalText}>
+                    {Translate.t("Subtotal")}
+                  </Text>
+                  <Text style={styles.totalText}>{Translate.t("gst")}</Text>
+                  <Text style={styles.totalText}>
+                    {Translate.t("shippingFee")}
+                  </Text>
+                </View>
+                <View style={{ alignItems: "flex-end" }}>
+                  <Text style={styles.totalText}>
+                    {format.separator(subtotal)}円
+                  </Text>
+                  <Text style={styles.totalText}>
+                    {taxObj
+                      ? format.separator(parseInt(taxObj.tax_rate * subtotal))
+                      : 0}
+                    円
+                  </Text>
+                  <Text style={styles.totalText}>
+                    {format.separator(shipping)}円
+                  </Text>
+                </View>
+              </View>
+            </View>
             <View
               style={{
                 flexDirection: "row",
@@ -537,113 +597,71 @@ export default function Cart(props) {
                 marginTop: heightPercentageToDP("2%"),
               }}
             >
-              <View
+              <Text
                 style={{
-                  marginRight: widthPercentageToDP("10%"),
-                  alignItems: "flex-end",
+                  fontSize: RFValue(14),
+                  marginRight: widthPercentageToDP("15%"),
                 }}
               >
-                <Text style={styles.totalText}>{Translate.t("Subtotal")}</Text>
-                <Text style={styles.totalText}>{Translate.t("gst")}</Text>
-                <Text style={styles.totalText}>
-                  {Translate.t("shippingFee")}
-                </Text>
-              </View>
-              <View style={{ alignItems: "flex-end" }}>
-                <Text style={styles.totalText}>
-                  {format.separator(subtotal)}円
-                </Text>
-                <Text style={styles.totalText}>
-                  {taxObj
-                    ? format.separator(parseInt(taxObj.tax_rate * subtotal))
-                    : 0}
-                  円
-                </Text>
-                <Text style={styles.totalText}>
-                  {format.separator(shipping)}円
-                </Text>
-              </View>
+                {Translate.t("total")}
+              </Text>
+              <Text style={{ fontSize: RFValue(14) }}>
+                {format.separator(
+                  subtotal +
+                    (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) +
+                    shipping
+                )}
+                円
+              </Text>
             </View>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "flex-end",
-              marginTop: heightPercentageToDP("2%"),
-            }}
-          >
-            <Text
-              style={{
-                fontSize: RFValue(14),
-                marginRight: widthPercentageToDP("15%"),
-              }}
-            >
-              {Translate.t("total")}
-            </Text>
-            <Text style={{ fontSize: RFValue(14) }}>
-              {format.separator(
-                subtotal +
-                  (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) +
-                  shipping
-              )}
-              円
-            </Text>
-          </View>
-          <View style={styles.allTabsContainer}>
-            {addressHtml}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: heightPercentageToDP("2%"),
-              }}
-            >
-              <Image
-                style={{ width: win.width / 21, height: 14 * ratioAdd }}
-                source={require("../assets/Images/addAddressIcon.png")}
-              />
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  props.navigation.navigate("AdressManagement");
+
+            <View style={styles.allTabsContainer}>
+              {/* {addressHtml} */}
+              <View
+                style={{
+                  backgroundColor: Colors.D7CCA6,
+                  justifyContent: "center",
+                  height: heightPercentageToDP("5%"),
                 }}
               >
                 <Text
                   style={{
-                    fontSize: RFValue(12),
-                    marginLeft: widthPercentageToDP("2%"),
+                    fontSize: RFValue(14),
+                    color: "white",
+                    marginLeft: widthPercentageToDP("3%"),
                   }}
                 >
-                  {Translate.t("registerNewAddress")}
-                </Text>
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              if (firebaseProducts.length > 0 && selected) {
-                props.navigation.navigate("Payment", {
-                  products: firebaseProducts,
-                  address: selected,
-                  tax: taxObj.id,
-                });
-              } else {
-                alert.warning(
-                  "You must have items in cart and select an address."
-                );
-              }
-            }}
-          >
-            <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
-              <View style={styles.orderConfirmButtonContainer}>
-                <Text style={styles.orderConfirmButtonText}>
-                  {Translate.t("confirmOrder")}
+                  Delivery address
                 </Text>
               </View>
+              {addressHtml}
             </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </ScrollView>
-    </View>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                if (firebaseProducts.length > 0 && selected) {
+                  props.navigation.navigate("Payment", {
+                    products: firebaseProducts,
+                    address: selected,
+                    tax: taxObj.id,
+                  });
+                } else {
+                  alert.warning(
+                    "You must have items in cart and select an address."
+                  );
+                }
+              }}
+            >
+              <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
+                <View style={styles.orderConfirmButtonContainer}>
+                  <Text style={styles.orderConfirmButtonText}>
+                    {Translate.t("confirmOrder")}
+                  </Text>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -698,8 +716,9 @@ const styles = StyleSheet.create({
   },
 
   deliveryTabContainer: {
+    justifyContent: "center",
     backgroundColor: Colors.F0EEE9,
-    height: heightPercentageToDP("12%"),
+    height: heightPercentageToDP("18%"),
     paddingLeft: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.CECECE,
@@ -735,10 +754,10 @@ const styles = StyleSheet.create({
     right: 0,
     paddingRight: widthPercentageToDP("4%"),
     alignItems: "flex-end",
-    zIndex: 1000
+    zIndex: 1000,
   },
   upWhiteArrow: {
-    width: width / 24,
+    width: win.width / 24,
     height: 10 * ratioUpWhiteArrow,
     position: "absolute",
     right: 0,
@@ -789,6 +808,7 @@ const styles = StyleSheet.create({
   },
 
   textInTabContainer: {
+    width: widthPercentageToDP("45%"),
     fontSize: RFValue(12),
     marginTop: heightPercentageToDP(".5%"),
   },

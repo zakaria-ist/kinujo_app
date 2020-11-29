@@ -89,43 +89,54 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
       if(product.choice) {
         tmpVariationDetailsHtml.push(
           <View style={{ width: "100%" }} key={product.index}>
-            <View style={styles.icon_title_wrapper}>
-              <Text style={styles.variantName}>{product.choice}</Text>
-              <TouchableOpacity>
-                {false ? (
-                  <ArrowDownIcon
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
-                )}
-              </TouchableOpacity>
-            </View>
-            <View style={false ? styles.none : null}>
-              <View style={styles.subline} />
-              <View style={styles.variantContainer}>
-                <TextInput
-                  style={styles.variantInput}
-                  value={product.stock}
-                  onChangeText={(value) =>
-                    onValueChanged(value, "stock", product.index)
-                  }
-                ></TextInput>
-                <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+          <View style ={
+            {
+              opacity: product.delete ? 0.3 : 1
+            }
+          }>
+              <View style={styles.icon_title_wrapper}>
+                <Text style={styles.variantName}>{product.choice}</Text>
+                <TouchableOpacity>
+                  {false ? (
+                    <ArrowDownIcon
+                      style={styles.widget_icon}
+                      resizeMode="contain"
+                    />
+                  ) : (
+                    <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+                  )}
+                </TouchableOpacity>
               </View>
-              <View style={styles.variantContainer}>
-                <TextInput
-                  style={styles.variantInput}
-                  value={product.janCode}
-                  onChangeText={(value) =>
-                    onValueChanged(value, "jancode", product.index)
-                  }
-                ></TextInput>
-                <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+              <View style={false ? styles.none : null}>
+                <View style={styles.subline} />
+                <View style={styles.variantContainer}>
+                  <TextInput
+                    style={styles.variantInput}
+                    value={product.stock}
+                    onChangeText={(value) =>
+                      onValueChanged(value, "stock", product.index)
+                    }
+                  ></TextInput>
+                  <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+                </View>
+                <View style={styles.variantContainer}>
+                  <TextInput
+                    style={styles.variantInput}
+                    value={product.janCode}
+                    onChangeText={(value) =>
+                      onValueChanged(value, "jancode", product.index)
+                    }
+                  ></TextInput>
+                  <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+                </View>
               </View>
-              <TouchableWithoutFeedback
-                onPress={() => deleteProduct(product.index)}
+              
+              </View>
+
+              {!product.delete ? (<TouchableWithoutFeedback
+                onPress={() => {
+                  onValueChanged(true, "delete", product.index)
+                }}
               >
                 <View
                   style={[
@@ -136,8 +147,21 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
                   <Text style={styles.variantText}>{Translate.t("delete")}</Text>
                   <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
                 </View>
-              </TouchableWithoutFeedback>
-            </View>
+              </TouchableWithoutFeedback>) : (<TouchableWithoutFeedback
+                onPress={() => {
+                  onValueChanged(false, "delete", product.index)
+                }}
+              >
+                <View
+                  style={[
+                    styles.variantContainer,
+                    { paddingBottom: heightPercentageToDP("1.5%") },
+                  ]}
+                >
+                  <Text style={styles.variantText}>Show</Text>
+                  <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+                </View>
+              </TouchableWithoutFeedback>)}
             <View style={styles.line} />
           </View>
         );
@@ -163,6 +187,9 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
         }
         if(type == 'choice'){
           product.choice = value;
+        }
+        if(type == 'delete'){
+          product.delete = value;
         }
       }
       return product;

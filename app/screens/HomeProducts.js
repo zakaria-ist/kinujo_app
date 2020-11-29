@@ -17,14 +17,17 @@ import {
 } from "react-native-responsive-screen";
 import AsyncStorage from "@react-native-community/async-storage";
 import Translate from "../assets/Translates/Translate";
+import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Format from "../lib/format";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import CustomAlert from "../lib/alert";
+import { Colors } from "../assets/Colors";
 const alert = new CustomAlert();
 const format = new Format();
+const win = Dimensions.get("window");
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const ratioFavorite = width / 29 / 14;
@@ -47,8 +50,9 @@ export default function HomeProducts({
   category,
   shipping,
 }) {
+  const isFocused = useIsFocused();
   const [favourite, setFavourite] = React.useState(false);
-
+  const [favoriteText, showFavoriteText] = React.useState(false);
   function checkFavourite(product) {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -68,16 +72,14 @@ export default function HomeProducts({
         });
     });
   }
-
+  // console.log(category);
   React.useEffect(() => {
-    console.log(product_id);
-    console.log(userId);
     if (product_id) {
       checkFavourite(product_id);
     }
-  }, [product_id, userId]);
+  }, [product_id, isFocused]);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ marginBottom: heightPercentageToDP("5%") }}>
       <TouchableWithoutFeedback onPress={onPress}>
         <View
           style={idx % 2 == 0 ? styles.products_left : styles.products_right}
@@ -104,7 +106,6 @@ export default function HomeProducts({
                       .collection("favourite")
                       .doc(product_id.toString())
                       .delete();
-                    alert.warning("Favourite removed.");
                     setFavourite(false);
                   } else {
                     db.collection("users")
@@ -114,6 +115,7 @@ export default function HomeProducts({
                       .set({
                         status: "added",
                       });
+
                     alert.warning("Added to favourite.");
                     setFavourite(true);
                   }
@@ -148,9 +150,7 @@ export default function HomeProducts({
           <Text numberOfLines={2} style={styles.product_category}>
             {category}
           </Text>
-          <Text style={styles.product_shipping}>
-            {Translate.t("shipping")}
-          </Text>
+          <Text style={styles.product_shipping}>{Translate.t("shipping")}</Text>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

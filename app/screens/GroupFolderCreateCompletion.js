@@ -110,6 +110,13 @@ export default function GroupFolderCreateCompletion(props) {
   }
   function cancelHanlder() {
     AsyncStorage.removeItem("ids");
+    if (type == "folder" && groupDocumentID != "") {
+      db.collection("users")
+        .doc(ownUserID)
+        .collection("folders")
+        .doc(groupDocumentID)
+        .delete();
+    }
     let routes = props.navigation.dangerouslyGetState().routes;
     props.navigation.pop(2);
     // props.navigation.navigate("Contact");

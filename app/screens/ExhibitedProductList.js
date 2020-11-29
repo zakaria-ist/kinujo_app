@@ -56,13 +56,17 @@ function processProductHtml(props, products, status) {
         >
           <View
             style={{
+              flexDirection: "row",
               width: "100%",
+              alignItems: "center",
             }}
           >
             <View
               style={{
+                // backgroundColor: "blue",
                 flexDirection: "row",
                 alignItems: "center",
+                width: widthPercentageToDP("33%"),
                 left: 0,
               }}
             >
@@ -77,12 +81,11 @@ function processProductHtml(props, products, status) {
             </View>
             <View
               style={{
+                // backgroundColor: "orange",
                 flexDirection: "row",
-                position: "absolute",
-                right: 0,
                 alignItems: "center",
-                width: widthPercentageToDP("50%"),
-                justifyContent: "space-evenly",
+                width: widthPercentageToDP("48%"),
+                justifyContent: "space-between",
               }}
             >
               <Text style={styles.productTabContainerText}>

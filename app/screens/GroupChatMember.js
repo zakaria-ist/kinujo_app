@@ -208,9 +208,11 @@ export default function FolderMemberSelection(props) {
           style={{
             fontSize: RFValue(12),
             right: 0,
-            position: "absolute",
-            marginTop: heightPercentageToDP("8%"),
-            marginRight: widthPercentageToDP("8%"),
+            marginLeft: widthPercentageToDP("83%"),
+            // position: "absolute",
+            marginTop: heightPercentageToDP("3%"),
+            // backgroundColor: "orange",
+            // marginRight: widthPercentageToDP("8%"),
           }}
         >
           {Translate.t("next")}
@@ -219,7 +221,6 @@ export default function FolderMemberSelection(props) {
       <View
         style={{
           marginHorizontal: widthPercentageToDP("4%"),
-          marginTop: widthPercentageToDP("2%"),
         }}
       >
         <View>
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   searchInputContainer: {
-    marginTop: heightPercentageToDP("5%"),
+    marginTop: heightPercentageToDP("2%"),
     borderWidth: 1,
     borderColor: "white",
     backgroundColor: Colors.F6F6F6,

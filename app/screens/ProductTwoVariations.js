@@ -273,49 +273,80 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
     let tmpChoiceDetailsHtml = [];
     choices.map((choice) => {
       tmpChoiceDetailsHtml.push(
-        <View style={false ? styles.none : null}>
+        <View style={{
+        }}>
           <View style={styles.subline} />
-          <View style={styles.variantContainer}>
-            <Text style={styles.colorText}>{choice.choiceItem}</Text>
-            {/* onValueChanged(value, "choice", index, choice.choiceIndex) */}
-            <TextInput
-              style={styles.variantStockInput}
-              value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['stock'] : ""}
-              onChangeText={(value) => {
-                globalMappingValue[choice1Item][choice.choiceItem]['stock'] = value;
-                onProcessVariationHtml(processVariationHtml(items));
-                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
-              }}
-            ></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
-          </View>
-          <View style={styles.variantContainer}>
-            <TextInput
-              style={styles.variantInput}
-              value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['janCode'] : ""}
-              onChangeText={(value) => {
-                globalMappingValue[choice1Item][choice.choiceItem]['janCode'] = value;
-                onProcessVariationHtml(processVariationHtml(items));
-                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
-              }}
-            ></TextInput>
-            <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              deleteProduct(index, choice.choiceIndex)
-            }}
-          >
-            <View
-              style={[
-                styles.variantContainer,
-                { paddingBottom: heightPercentageToDP("1.5%") },
-              ]}
-            >
-              <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-              <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+          <View style ={
+            {
+              opacity: globalMappingValue[choice1Item][choice.choiceItem]['delete'] ? 0.3 : 1
+            }
+          }>
+            <View style={styles.variantContainer}>
+              <Text style={styles.colorText}>{choice.choiceItem}</Text>
+              {/* onValueChanged(value, "choice", index, choice.choiceIndex) */}
+              <TextInput
+                style={styles.variantStockInput}
+                editable={!globalMappingValue[choice1Item][choice.choiceItem]['delete']}
+                value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['stock'] : ""}
+                onChangeText={(value) => {
+                  globalMappingValue[choice1Item][choice.choiceItem]['stock'] = value;
+                  onProcessVariationHtml(processVariationHtml(items));
+                  onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+                }}
+              ></TextInput>
+              <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
             </View>
-          </TouchableOpacity>
+            <View style={styles.variantContainer}>
+              <TextInput
+                style={styles.variantInput}
+                editable={!globalMappingValue[choice1Item][choice.choiceItem]['delete']}
+                value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['janCode'] : ""}
+                onChangeText={(value) => {
+                  globalMappingValue[choice1Item][choice.choiceItem]['janCode'] = value;
+                  onProcessVariationHtml(processVariationHtml(items));
+                  onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+                }}
+              ></TextInput>
+              <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+            </View>
+          </View>
+          {!globalMappingValue[choice1Item][choice.choiceItem]['delete'] ? (
+            <TouchableOpacity
+              onPress={() => {
+                globalMappingValue[choice1Item][choice.choiceItem]['delete'] = true;
+                onProcessVariationHtml(processVariationHtml(items));
+                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+              }}
+            >
+              <View
+                style={[
+                  styles.variantContainer,
+                  { paddingBottom: heightPercentageToDP("1.5%") },
+                ]}
+              >
+                <Text style={styles.variantText}>{Translate.t("delete")}</Text>
+                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => {
+                globalMappingValue[choice1Item][choice.choiceItem]['delete'] = false;
+                onProcessVariationHtml(processVariationHtml(items));
+                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+              }}
+            >
+              <View
+                style={[
+                  styles.variantContainer,
+                  { paddingBottom: heightPercentageToDP("1.5%") },
+                ]}
+              >
+                <Text style={styles.variantText}>Show</Text>
+                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
       );
     });

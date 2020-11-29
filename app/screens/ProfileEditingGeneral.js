@@ -67,7 +67,7 @@ export default function ProfileEditingGeneral(props) {
           onEmailChanged(response.data.email);
           onAddingFriendsByIDChanged(response.data.allowed_by_id);
           onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
-          setWord(response.data.word)
+          setWord(response.data.word);
         })
         .catch(function (error) {
           if (
@@ -86,7 +86,7 @@ export default function ProfileEditingGeneral(props) {
   }
 
   function updateUser(user, field, value) {
-    if(!value) return;
+    if (!value) return;
     let obj = {};
     obj[field] = value;
     request
@@ -676,7 +676,7 @@ export default function ProfileEditingGeneral(props) {
             </Text>
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={Colors.D7CCA6}
+              thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : "black"}
               style={styles.switch}
               onValueChange={(value) => {
                 onAddingFriendsByIDChanged(value);
@@ -712,7 +712,9 @@ export default function ProfileEditingGeneral(props) {
             </Text>
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={Colors.D7CCA6}
+              thumbColor={
+                allowAddingFriendsByPhoneNumber == 1 ? Colors.D7CCA6 : "grey"
+              }
               style={styles.switch}
               onValueChange={(value) => {
                 onAllowAddingFriendsByPhoneNumber(value);
@@ -808,6 +810,7 @@ const styles = StyleSheet.create({
     height: 23 * ratioCameraIconInsideProfilePicture,
   },
   textInputEdit: {
+    borderRadius: 10,
     fontSize: RFValue(8),
     borderWidth: 1,
     borderColor: "black",

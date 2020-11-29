@@ -57,7 +57,6 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
         });
     });
   }, [isFocused]);
-
   return (
     <SafeAreaView
       style={{

@@ -72,22 +72,20 @@ export default function CustomKinujoWord({
         )}
 
         <View style={{ marginLeft: widthPercentageToDP("3%") }}>
-          {name ? (
+          {user.nickname ? (
             <Text
               style={{
                 fontSize: RFValue(12),
               }}
             >
-              {name}
+              {name ? name : user.nickname}
             </Text>
           ) : (
             <Text
               style={{
                 fontSize: RFValue(12),
               }}
-            >
-              {user.nickname}
-            </Text>
+            ></Text>
           )}
           <Text
             style={{

@@ -7,7 +7,7 @@ import {
   Dimensions,
   TextInput,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -31,9 +31,9 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 9;
 const ratioNext = win.width / 38 / 8;
-
+let controller;
 function updateUser(user, field, value) {
-  if(!value) return;
+  if (!value) return;
   let obj = {};
   obj[field] = value;
   request
@@ -74,6 +74,7 @@ export default function ProfileInformation(props) {
   const [prefecture, onPrefectureChanged] = React.useState("");
   const [address1, onAddress1Changed] = React.useState("");
   const [address2, onAddress2Changed] = React.useState("");
+  const [pickerShow, onPickerShow] = React.useState(false);
 
   if (!user.url) {
     AsyncStorage.getItem("user").then(function (url) {
@@ -108,188 +109,198 @@ export default function ProfileInformation(props) {
     });
   }
 
+  if (
+    editName == true ||
+    editNickname == true ||
+    editGender == true ||
+    editBirthday == true ||
+    editPostalCode == true ||
+    editPrefecture == true ||
+    editAddress1 == true ||
+    editAddress2 == true
+  ) {
+    controller.close();
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <ScrollView>
-      <CustomHeader
-        onFavoriteChanged="noFavorite"
-        onBack={() => {
-          props.navigation.pop();
-        }}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        text={Translate.t("personalInformation")}
-      />
-      <CustomSecondaryHeader name={user.nickname} />
-      <View
-        style={{
-          marginTop: heightPercentageToDP("2%"),
-          paddingBottom: heightPercentageToDP("5%"),
-        }}
-      >
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("nameOfSeller")}
-          </Text>
-          {editName == true ? (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-                paddingBottom: heightPercentageToDP("2%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditNameChanged(false);
-                  updateUser(user, "real_name", name);
+      <ScrollView>
+        <CustomHeader
+          onFavoriteChanged="noFavorite"
+          onBack={() => {
+            props.navigation.pop();
+          }}
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          text={Translate.t("personalInformation")}
+        />
+        <CustomSecondaryHeader name={user.nickname} />
+        <View
+          style={{
+            marginTop: heightPercentageToDP("2%"),
+            paddingBottom: heightPercentageToDP("5%"),
+          }}
+        >
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("nameOfSeller")}
+            </Text>
+            {editName == true ? (
+              <View
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                  paddingBottom: heightPercentageToDP("2%"),
                 }}
-              />
-              <TextInput
-                value={name}
-                onChangeText={(value) => onNameChanged(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-                paddingBottom: heightPercentageToDP("2%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditNameChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{name}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("name")}
-          </Text>
-          {editNickname == true ? (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-                paddingBottom: heightPercentageToDP("2%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditNicknameChanged(false);
-                  updateUser(user, "nickname", nickname);
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditNameChanged(false);
+                    updateUser(user, "real_name", name);
+                  }}
+                />
+                <TextInput
+                  value={name}
+                  onChangeText={(value) => onNameChanged(value)}
+                  style={styles.textInput}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                  paddingBottom: heightPercentageToDP("2%"),
                 }}
-              />
-              <TextInput
-                value={nickname}
-                onChangeText={(value) => onNicknameChanged(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-                paddingBottom: heightPercentageToDP("2%"),
-              }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditNameChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{name}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("name")}
+            </Text>
+            {editNickname == true ? (
+              <View
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                  paddingBottom: heightPercentageToDP("2%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditNicknameChanged(false);
+                    updateUser(user, "nickname", nickname);
+                  }}
+                />
+                <TextInput
+                  value={nickname}
+                  onChangeText={(value) => onNicknameChanged(value)}
+                  style={styles.textInput}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                  paddingBottom: heightPercentageToDP("2%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditNicknameChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{nickname}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.ddproductInformationContainer}>
+            <Text
+              style={
+                pickerShow == false
+                  ? styles.genderTitle
+                  : styles.genderTitleWithDropDown
+              }
             >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditNicknameChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{nickname}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.ddproductInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("gender")}
-          </Text>
+              {Translate.t("gender")}
+            </Text>
             <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-                paddingBottom: heightPercentageToDP("2%"),
-                zIndex: 1000
-              }}
+              style={
+                pickerShow == false ? styles.normalDropDown : styles.dropDown
+              }
             >
               <DropDownPicker
-                // controller={(instance) => (controller = instance)}
+                onClose={() => onPickerShow(false)}
+                onOpen={() => onPickerShow(true)}
+                // zIndex={9999}
+                controller={(instance) => (controller = instance)}
                 style={{
                   borderWidth: 1,
                   backgroundColor: "transparent",
                   borderColor: "transparent",
                   color: "black",
-                  borderRadius: 0,
-                  fontSize: RFValue(12),
-                  height: heightPercentageToDP("5.5%"),
-                  paddingLeft: widthPercentageToDP("2%"),
-                  marginVertical: heightPercentageToDP("1%"),
+                  width: widthPercentageToDP("30%"),
                 }}
-                items={[{
-                  "label" : "Female",
-                  "value" : "1"
-                },{
-                  "label" : "Male",
-                  "value" : "0"
-                }]}
-                defaultValue={(gender == 0 || gender == 1) ? (gender + "") : ""}
-                containerStyle={{ 
-                  paddingVertical: 0
-                 }}
+                items={[
+                  {
+                    label: "Female",
+                    value: "1",
+                  },
+                  {
+                    label: "Male",
+                    value: "0",
+                  },
+                ]}
+                defaultValue={gender == "0" || gender == "1" ? gender + "" : ""}
                 labelStyle={{
                   fontSize: RFValue(12),
                   color: "gray",
@@ -301,345 +312,345 @@ export default function ProfileInformation(props) {
                   color: Colors.F0EEE9,
                 }}
                 placeholder={Translate.t("gender")}
-                dropDownStyle={{ 
+                dropDownStyle={{
+                  width: widthPercentageToDP("30%"),
                   backgroundColor: "#FFFFFF",
                   color: "black",
-                  zIndex: 1000,
-                  elevation: 1000 
                 }}
                 onChangeItem={(item) => {
                   if (item) {
+                    console.log(item);
                     onGenderChanged(item.value);
                     updateUser(user, "gender", item.value);
                   }
                 }}
               />
             </View>
-        </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("birthday")}
-          </Text>
-          {birthday == null ? (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-2%"),
-              }}
-            >
-              <DatePicker
-                style={{ 
-                  width: widthPercentageToDP("50%"),
-                  borderColor: "red"
-                 }}
-                date={birthday}
-                mode="date"
-                format="YYYY-MM-DD"
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                customStyles={{
-                  dateInput: {
-                    marginRight: widthPercentageToDP("3%"),
-                    borderWidth: 0
-                  },
-                }}
-                onDateChange={(date) => {
-                  onBirthdayChanged(date);
-                  updateUser(user, "birthday", date);
-                }}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-              }}
-            >
-              <DatePicker
-                disabled={true}
+          </View>
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("birthday")}
+            </Text>
+            {birthday == null ? (
+              <View
                 style={{
-                  width: widthPercentageToDP("6%"),
-                }}
-                customStyles={{
-                  dateIcon: {
-                    width: RFValue(30),
-                    height: RFValue(30),
-                  },
-                  dateInput: {
-                    display: "none",
-                  },
-                }}
-                onDateChange={(date) => {
-                  this.setState({ dateFrom: date });
-                }}
-              />
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                  marginRight: widthPercentageToDP("3%"),
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-2%"),
                 }}
               >
-                {birthday}
-              </Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("postalCode")}
-          </Text>
-          {editPostalCode == true ? (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditPostalCodeChanged(false);
-                  updateUser(user, "zipcode", postalCode);
+                <DatePicker
+                  style={{
+                    width: widthPercentageToDP("50%"),
+                    borderColor: "red",
+                  }}
+                  date={birthday}
+                  mode="date"
+                  format="YYYY-MM-DD"
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    dateInput: {
+                      marginRight: widthPercentageToDP("3%"),
+                      borderWidth: 0,
+                    },
+                  }}
+                  onDateChange={(date) => {
+                    onBirthdayChanged(date);
+                    updateUser(user, "birthday", date);
+                  }}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
                 }}
-              />
-              <TextInput
-                value={postalCode}
-                onChangeText={(value) => onPostalCodeChanged(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditPostalCodeChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{postalCode}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("prefecture")}
-          </Text>
-          {editPrefecture == true ? (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditPrefectureChanged(false);
-                  updateUser(user, "prefecture_id", prefecture);
+              >
+                <DatePicker
+                  disabled={true}
+                  style={{
+                    width: widthPercentageToDP("6%"),
+                  }}
+                  customStyles={{
+                    dateIcon: {
+                      width: RFValue(30),
+                      height: RFValue(30),
+                    },
+                    dateInput: {
+                      display: "none",
+                    },
+                  }}
+                  onDateChange={(date) => {
+                    this.setState({ dateFrom: date });
+                  }}
+                />
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    marginRight: widthPercentageToDP("3%"),
+                  }}
+                >
+                  {birthday}
+                </Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("postalCode")}
+            </Text>
+            {editPostalCode == true ? (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
                 }}
-              />
-              <TextInput
-                value={prefecture}
-                onChangeText={(value) => onPrefectureChanged(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditPrefectureChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{prefecture}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("address1")}
-          </Text>
-          {editAddress1 == true ? (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditAddress1Changed(false);
-                  updateUser(user, "address1", address1);
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditPostalCodeChanged(false);
+                    updateUser(user, "zipcode", postalCode);
+                  }}
+                />
+                <TextInput
+                  value={postalCode}
+                  onChangeText={(value) => onPostalCodeChanged(value)}
+                  style={styles.textInput}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
                 }}
-              />
-              <TextInput
-                value={address1}
-                onChangeText={(value) => onAddress1Changed(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditAddress1Changed(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{address1}</Text>
-            </View>
-          )}
-        </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationTitle}>
-            {Translate.t("address2")}
-          </Text>
-          {editAddress2 == true ? (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditAddress2Changed(false);
-                  updateUser(user, "address2", address2);
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditPostalCodeChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{postalCode}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("prefecture")}
+            </Text>
+            {editPrefecture == true ? (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
                 }}
-              />
-              <TextInput
-                value={address2}
-                onChangeText={(value) => onAddress2Changed(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                paddingBottom: heightPercentageToDP("2%"),
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditAddress2Changed(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{address2}</Text>
-            </View>
-          )}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditPrefectureChanged(false);
+                    updateUser(user, "prefecture_id", prefecture);
+                  }}
+                />
+                <TextInput
+                  value={prefecture}
+                  onChangeText={(value) => onPrefectureChanged(value)}
+                  style={styles.textInput}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditPrefectureChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{prefecture}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("address1")}
+            </Text>
+            {editAddress1 == true ? (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditAddress1Changed(false);
+                    updateUser(user, "address1", address1);
+                  }}
+                />
+                <TextInput
+                  value={address1}
+                  onChangeText={(value) => onAddress1Changed(value)}
+                  style={styles.textInput}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditAddress1Changed(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{address1}</Text>
+              </View>
+            )}
+          </View>
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationTitle}>
+              {Translate.t("address2")}
+            </Text>
+            {editAddress2 == true ? (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    onEditAddress2Changed(false);
+                    updateUser(user, "address2", address2);
+                  }}
+                />
+                <TextInput
+                  value={address2}
+                  onChangeText={(value) => onAddress2Changed(value)}
+                  style={styles.textInput}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  paddingBottom: heightPercentageToDP("2%"),
+                  position: "absolute",
+                  right: 0,
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  marginRight: widthPercentageToDP("-3%"),
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditAddress2Changed(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>{address2}</Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -656,19 +667,28 @@ const styles = StyleSheet.create({
     // backgroundColor: "orange",
   },
   ddproductInformationContainer: {
+    justifyContent: "space-between",
     flexDirection: "row",
     alignItems: "center",
     marginTop: heightPercentageToDP("2%"),
     marginHorizontal: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
-    paddingBottom: heightPercentageToDP("2%"),
-    // backgroundColor: "orange",
-    zIndex: 1000
+    // paddingBottom: heightPercentageToDP("2%"),
+    zIndex: 999999,
   },
   productInformationTitle: {
     alignSelf: "center",
     fontSize: RFValue(12),
+  },
+  genderTitle: {
+    alignSelf: "center",
+    fontSize: RFValue(12),
+  },
+  genderTitleWithDropDown: {
+    alignSelf: "center",
+    fontSize: RFValue(12),
+    paddingBottom: heightPercentageToDP("10%"),
   },
   productInformationDetails: {
     paddingBottom: heightPercentageToDP("2%"),
@@ -696,5 +716,17 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
     alignSelf: "center",
+  },
+  dropDown: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingBottom: heightPercentageToDP("10%"),
+  },
+  normalDropDown: {
+    flexDirection: "row-reverse",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    // paddingBottom: heightPercentageToDP("10%"),
   },
 });

@@ -70,7 +70,6 @@ export default function GroupChatCreation(props) {
         memberCount = friendIds.length;
       })
       .then(function () {
-        console.log({ friendIds });
         request
           .get("user/byIds/", {
             ids: friendIds,
@@ -111,6 +110,7 @@ export default function GroupChatCreation(props) {
       AsyncStorage.removeItem("tmpIds");
       if (friendIds) {
         props.navigation.navigate("GroupFolderCreateCompletion", {
+          groupDocumentID: "",
           type: "group",
           groupName: groupName,
           friendNames: friendNames,
