@@ -48,7 +48,6 @@ export default function FavoriteChat(props) {
       loadFavoriteChat(userID);
     });
   function loadFavoriteChat(userID) {
-    console.log(userID);
     let tmpFavoriteChatHtml = [];
     db.collection("users")
       .doc(String(userID))

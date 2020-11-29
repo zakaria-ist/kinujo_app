@@ -73,9 +73,16 @@ async function init(props, foreground) {
       .get(url)
       .then(function (response) {
         if (response.data.is_seller) {
-          props.navigation.navigate("HomeStore");
+                   
+          props.navigation.reset({
+            index: 0,
+            routes: [{name: 'HomeStore'}],
+          });
         } else {
-          props.navigation.navigate("HomeGeneral");
+          props.navigation.reset({
+            index: 0,
+            routes: [{name: 'HomeGeneral'}],
+          });
         }
       })
       .catch(function (error) {
@@ -210,12 +217,14 @@ export default function LoginScreen(props) {
                           authority: "store",
                         });
                       } else if (!user.is_seller && !user.is_master) {
-                        props.navigation.navigate("HomeGeneral", {
-                          authority: "store",
+                        props.navigation.reset({
+                          index: 0,
+                          routes: [{name: 'HomeGeneral'}],
                         });
                       } else if (user.is_seller ) {
-                        props.navigation.navigate("HomeStore", {
-                          authority: "store",
+                        props.navigation.reset({
+                          index: 0,
+                          routes: [{name: 'HomeStore'}],
                         });
                       }
                     });

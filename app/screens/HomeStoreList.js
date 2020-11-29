@@ -12,6 +12,7 @@ import {
   Animated,
   Modal,
 } from "react-native";
+import Share from 'react-native-share';
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { RadioButton } from "react-native-paper";
@@ -35,6 +36,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import Format from "../lib/format";
 import Translate from "../assets/Translates/Translate";
+import dynamicLinks from "@react-native-firebase/dynamic-links";
 const format = new Format();
 
 if (!firebase.apps.length) {
@@ -58,6 +60,7 @@ export default function HomeStoreList(props) {
   const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
   const [product, onProductChanged] = React.useState({});
   const [selectedJanCode, onSelectedJanCodeChanged] = React.useState({});
+  const [selectedName, onSelectedNameChanged] = React.useState("");
   const [images, onImagesChanged] = React.useState({});
   const [show, onShowChanged] = React.useState({});
   const [showText, onShowText] = React.useState(false);
@@ -76,24 +79,67 @@ export default function HomeStoreList(props) {
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
 
-  function populatePopupList(props, tmpProduct, tmpJanCodes, selected) {
+  async function share(productId){
+    let url = await AsyncStorage.getItem('user');
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    let userId = urls[urls.length - 1];
+
+    const link = await dynamicLinks().buildShortLink(
+      {
+        link:
+          "https://kinujo.page.link?userId=" + userId + "&is_store=0&product_id" + productId,
+        // domainUriPrefix is created in your Firebase console
+        domainUriPrefix: "https://kinujo.page.link",
+        android: {
+          packageName: "com.example.kinujo",
+        },
+        ios: {
+          appStoreId: "123123123",
+          bundleId: "com.example.kinujo",
+        },
+      },
+      dynamicLinks.ShortLinkType.UNGUESSABLE
+    );
+    const shareOptions = {
+      title: '',
+      message: link + "&kinujoId=" + userId,
+    };
+    Share.open(shareOptions)
+    .then((res) => {
+    })
+    .catch((err) => {
+    });
+  }
+
+  function populatePopupList(props, tmpProduct, tmpJanCodes, selected, name = "") {
     let tmpHtml = [];
     Object.keys(tmpJanCodes).map((key, index) => {
-      let tmpJanCode = tmpJanCodes[key]['none'];
-      tmpHtml.push(
-        <View key={key} style={styles.variationTabs}>
-          <RadioButton
-            status={selected === tmpJanCode.id ? "checked" : "unchecked"}
-            onPress={() => {
-              onSelectedJanCodeChanged(tmpJanCode.id);
-              onPopupHtmlChanged(
-                populatePopupHtml(props, tmpProduct, janCodes, tmpJanCode.id)
-              );
-            }}
-          />
-          <Text style={styles.variationTabsText}>{key}</Text>
-        </View>
-      );
+      let tmpJanCode = tmpProduct.variety == 2 ? tmpJanCodes[key] : tmpJanCodes[key]['none'];
+      console.log(tmpJanCode)
+      if(!tmpJanCode.is_hidden){
+        tmpHtml.push(
+          <View key={key} style={styles.variationTabs}>
+            <RadioButton
+              status={selected === tmpJanCode.id ? "checked" : "unchecked"}
+              onPress={() => {
+                onSelectedJanCodeChanged(tmpJanCode.id);
+                if(tmpProduct.variety == 2){
+                  onSelectedNameChanged(name + " x " + key);
+                } else {
+                  onSelectedNameChanged(key);
+                }
+                onPopupHtmlChanged(
+                  populatePopupHtml(props, tmpProduct, janCodes, tmpJanCode.id)
+                );
+              }}
+            />
+            <Text style={styles.variationTabsText}>{key}</Text>
+          </View>
+        );
+      }
     });
     return tmpHtml;
   }
@@ -123,7 +169,7 @@ export default function HomeStoreList(props) {
               <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
             </View>
           </TouchableWithoutFeedback>
-          {populatePopupList(props, tmpProduct, tmpJanCodes[key], selected)}
+          {populatePopupList(props, tmpProduct, tmpJanCodes[key], selected, key)}
         </View>
       );
     });
@@ -173,6 +219,7 @@ export default function HomeStoreList(props) {
                   }
                 );
               });
+              janCodes = {}
               response.data.productVarieties.map((productVariety) => {
                 productVariety.productVarietySelections.map(
                   (productVarietySelection) => {
@@ -189,6 +236,7 @@ export default function HomeStoreList(props) {
                             stock: horizontal.stock,
                             url: horizontal.url,
                             id: horizontal.id,
+                            is_hidden: horizontal.is_hidden
                           };
                         } else {
                           janCodes[hoName] = {};
@@ -196,6 +244,7 @@ export default function HomeStoreList(props) {
                             stock: horizontal.stock,
                             url: horizontal.url,
                             id: horizontal.id,
+                            is_hidden: horizontal.is_hidden
                           };
                         }
                       }
@@ -212,6 +261,7 @@ export default function HomeStoreList(props) {
                           stock: vertical.stock,
                           url: vertical.url,
                           id: vertical.id,
+                          is_hidden: vertical.is_hidden
                         };
                       } else {
                         janCodes[hoName] = {};
@@ -219,13 +269,16 @@ export default function HomeStoreList(props) {
                           stock: vertical.stock,
                           url: vertical.url,
                           id: vertical.id,
+                          is_hidden: vertical.is_hidden
                         };
                       }
                     });
                   }
                 );
               });
-              onPopupHtmlChanged(populatePopupHtml(props, response.data, janCodes, ""));
+              onPopupHtmlChanged(
+                populatePopupHtml(props, response.data, janCodes, "")
+              );
 
               if (response.data.productImages.length > 0) {
                 let images = response.data.productImages.filter(
@@ -279,9 +332,55 @@ export default function HomeStoreList(props) {
   }, []);
   const { width } = Dimensions.get("window");
   const { height } = Dimensions.get("window");
+  const [favoriteText, showFavoriteText] = React.useState(false);
   const ratioFavorite = width / 29 / 12;
   return (
     <SafeAreaView>
+      {favoriteText == true ? (
+        <View
+          style={{
+            borderRadius: win.width / 2,
+            borderWidth: 1,
+            backgroundColor: Colors.E6DADE,
+            borderColor: "transparent",
+            zIndex: 1,
+            elevation: 1,
+            position: "absolute",
+            right: widthPercentageToDP("13%"),
+            borderStyle: "solid",
+            paddingVertical: widthPercentageToDP("1%"),
+            paddingHorizontal: widthPercentageToDP("7%"),
+            marginTop: heightPercentageToDP("6.2%"),
+          }}
+        >
+          <View
+            style={{
+              width: 0,
+              height: 0,
+              borderBottomWidth: RFValue(20),
+              borderRightWidth: RFValue(12),
+              borderLeftWidth: RFValue(12),
+              borderLeftColor: "transparent",
+              borderRightColor: "transparent",
+              borderBottomColor: Colors.E6DADE,
+              top: RFValue(-15),
+              position: "absolute",
+              right: RFValue(9),
+            }}
+          ></View>
+          <Text
+            style={{
+              fontSize: RFValue(10),
+              color: "black",
+              alignSelf: "flex-start",
+            }}
+          >
+            {Translate.t("addedToFavorite")}
+          </Text>
+        </View>
+      ) : (
+        <View></View>
+      )}
       <CustomHeader
         onPress={() => {
           props.navigation.navigate("Cart");
@@ -354,7 +453,7 @@ export default function HomeStoreList(props) {
                         .collection("favourite")
                         .doc(product.id.toString())
                         .delete();
-                      alert.warning("Favourite removed.");
+
                       setFavourite(false);
                     } else {
                       db.collection("users")
@@ -364,7 +463,13 @@ export default function HomeStoreList(props) {
                         .set({
                           status: "added",
                         });
-                      alert.warning("Added to favourite.");
+                      showFavoriteText(true);
+                      setTimeout(
+                        function () {
+                          showFavoriteText(false);
+                        }.bind(this),
+                        2000
+                      );
                       setFavourite(true);
                     }
                   });
@@ -383,10 +488,17 @@ export default function HomeStoreList(props) {
                   }
                 />
               </TouchableWithoutFeedback>
-              <Image
-                style={{ width: RFValue(25), height: RFValue(25) }}
-                source={require("../assets/Images/share.png")}
-              />
+              
+              <TouchableWithoutFeedback onPress={
+                ()=>{
+                  share(product.id)
+                }
+              }>
+                <Image
+                  style={{ width: RFValue(25), height: RFValue(25) }}
+                  source={require("../assets/Images/share.png")}
+                />
+              </TouchableWithoutFeedback>
             </View>
           </View>
           <View
@@ -431,7 +543,6 @@ export default function HomeStoreList(props) {
                   format.separator(product.shipping_fee) +
                   "円"
                 : Translate.t("freeShipping")}
-              {Translate.t("yen")}
             </Text>
           </View>
 
@@ -449,6 +560,8 @@ export default function HomeStoreList(props) {
 
           <View
             style={{
+              // backgroundColor: "orange",
+              marginBottom: heightPercentageToDP("8%"),
               width: "100%",
               paddingTop: 20,
             }}
@@ -539,10 +652,18 @@ export default function HomeStoreList(props) {
                 style={{
                   justifyContent: "center",
                   flexDirection: "row",
-                  alignItems: "flex-end",
+                  alignItems: "center",
                   flex: 1,
                 }}
               >
+                <Text
+                  style={{
+                    fontSize: RFValue(10),
+                    marginLeft: widthPercentageToDP("1.3%"),
+                  }}
+                >
+                  Quantity
+                </Text>
                 <DropDownPicker
                   style={{
                     borderWidth: 1,
@@ -618,7 +739,7 @@ export default function HomeStoreList(props) {
                       db.collection("users")
                         .doc(user.id.toString())
                         .collection("carts")
-                        .doc(product.id.toString())
+                        .doc(selectedJanCode.toString())
                         .get()
                         .then((snapshot) => {
                           let tmpQuantity = parseInt(quantity);
@@ -628,10 +749,12 @@ export default function HomeStoreList(props) {
                           db.collection("users")
                             .doc(user.id.toString())
                             .collection("carts")
-                            .doc(product.id.toString())
+                            .doc(selectedJanCode.toString())
                             .set({
+                              id: product.id,
                               quantity: tmpQuantity,
                               url: selectedJanCode,
+                              name: selectedName
                             });
                         });
                       onShowText(true);
@@ -665,7 +788,7 @@ export default function HomeStoreList(props) {
                       marginHorizontal: widthPercentageToDP("5%"),
                     }}
                   >
-                    <Text style={{ fontSize: RFValue(11) }}>
+                    <Text style={{ fontSize: RFValue(11), color: "white" }}>
                       {Translate.t("addToCartBtn")}
                     </Text>
                   </View>
@@ -720,7 +843,7 @@ export default function HomeStoreList(props) {
       ) : (
         <View></View>
       )}
-      {false && userAuthorityID <= 3 ? (
+      {userAuthorityID <= 3 ? (
         <View></View>
       ) : (
         <CartFloating
@@ -823,7 +946,8 @@ const styles = StyleSheet.create({
     height: width / 1.4 - 30,
   },
   product_content: {
-    height: height - heightPercentageToDP(10),
+    // backgroundColor: "orange",
+    height: heightPercentageToDP("100%"),
     overflow: "scroll",
     width: "100%",
     padding: 15,

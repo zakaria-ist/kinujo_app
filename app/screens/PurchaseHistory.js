@@ -76,7 +76,13 @@ export default function PurchaseHistory(props) {
                   }}
                   source={require("../assets/Images/profileEditingIcon.png")}
                 />
-                <View style={{ marginLeft: widthPercentageToDP("3%") }}>
+                <View
+                  style={{
+                    marginLeft: widthPercentageToDP("3%"),
+
+                    width: widthPercentageToDP("57%"),
+                  }}
+                >
                   <Text style={styles.productInformationText}>
                     {order.product_jan_code.horizontal
                       ? order.product_jan_code.horizontal.product_variety
@@ -91,10 +97,13 @@ export default function PurchaseHistory(props) {
                   source={require("../assets/Images/next.png")}
                 />
               </View>
+
               <TouchableWithoutFeedback
                 onPress={() => {
+                  lastId = 0;
+                  lastOrderReceipt = {}
                   props.navigation.navigate("PurchaseHistoryDetails", {
-                    url: order.url,
+                    url: order.url
                   });
                 }}
               >
@@ -342,136 +351,136 @@ export default function PurchaseHistory(props) {
             }
           />
           <Animated.View
+            style={{
+              zIndex: 1,
+              height: heightPercentageToDP("100%"),
+              alignSelf: "center",
+              width: widthPercentageToDP("80%"),
+              position: "absolute",
+              right: right,
+              backgroundColor: "white",
+            }}
+          >
+            <View
               style={{
-                zIndex: 1,
-                height: heightPercentageToDP("100%"),
-                alignSelf: "center",
-                width: widthPercentageToDP("80%"),
-                position: "absolute",
-                right: right,
                 backgroundColor: "white",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
               }}
             >
-              <View
+              <Text
                 style={{
-                  backgroundColor: "white",
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.D7CCA6,
+                  alignSelf: "center",
+                  fontSize: RFValue(14),
+                  paddingTop: heightPercentageToDP("2%"),
+                  paddingBottom: heightPercentageToDP("2%"),
                 }}
               >
-                <Text
-                  style={{
-                    alignSelf: "center",
-                    fontSize: RFValue(14),
-                    paddingTop: heightPercentageToDP("2%"),
-                    paddingBottom: heightPercentageToDP("2%"),
-                  }}
-                >
-                  {Translate.t("narrowDown")}
-                </Text>
-              </View>
-              <View
+                {Translate.t("narrowDown")}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingVertical: heightPercentageToDP("2%"),
+                backgroundColor: "white",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                marginHorizontal: widthPercentageToDP("1.5%"),
+              }}
+            >
+              <Image
                 style={{
-                  flexDirection: "row",
-                  paddingVertical: heightPercentageToDP("2%"),
-                  backgroundColor: "white",
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.D7CCA6,
-                  marginHorizontal: widthPercentageToDP("1.5%"),
+                  width: win.width / 24,
+                  height: ratioSearch * 19,
+                  position: "absolute",
+                  left: 0,
+                  marginLeft: widthPercentageToDP("4%"),
+                  alignSelf: "center",
                 }}
-              >
-                <Image
-                  style={{
-                    width: win.width / 24,
-                    height: ratioSearch * 19,
-                    position: "absolute",
-                    left: 0,
-                    marginLeft: widthPercentageToDP("4%"),
-                    alignSelf: "center",
-                  }}
-                  source={require("../assets/Images/searchIcon.png")}
-                />
-                <TextInput
-                  placeholder="Product Name"
-                  style={{
-                    paddingVertical: heightPercentageToDP("1%"),
-                    width: "100%",
-                    backgroundColor: Colors.F6F6F6,
-                    fontSize: RFValue(14),
-                    borderWidth: 1,
-                    paddingLeft: widthPercentageToDP("10%"),
-                    borderRadius: 5,
-                    borderColor: "transparent",
-                  }}
-                />
-                <Image
-                  style={{
-                    width: win.width / 24,
-                    height: ratioSearch * 19,
-                    position: "absolute",
-                    right: 0,
-                    marginRight: widthPercentageToDP("4%"),
-                    alignSelf: "center",
-                  }}
-                  source={require("../assets/Images/cancelIcon.png")}
-                />
-              </View>
-              <View
+                source={require("../assets/Images/searchIcon.png")}
+              />
+              <TextInput
+                placeholder="Product Name"
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingVertical: heightPercentageToDP("2%"),
-                  marginHorizontal: widthPercentageToDP("1.5%"),
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.D7CCA6,
+                  paddingVertical: heightPercentageToDP("1%"),
+                  width: "100%",
+                  backgroundColor: Colors.F6F6F6,
+                  fontSize: RFValue(14),
+                  borderWidth: 1,
+                  paddingLeft: widthPercentageToDP("10%"),
+                  borderRadius: 5,
+                  borderColor: "transparent",
                 }}
-              >
-                <Text style={styles.dateTabText}>Release Date</Text>
-                <Image
-                  style={{
-                    width: win.width / 24,
-                    height: ratioSearch * 8,
-                    position: "absolute",
-                    right: 0,
-                    marginRight: widthPercentageToDP("4%"),
-                    alignSelf: "center",
-                  }}
-                  source={require("../assets/Images/upIcon.png")}
-                />
-              </View>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  onLoaded(false);
+              />
+              <Image
+                style={{
+                  width: win.width / 24,
+                  height: ratioSearch * 19,
+                  position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("4%"),
+                  alignSelf: "center",
+                }}
+                source={require("../assets/Images/cancelIcon.png")}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: heightPercentageToDP("2%"),
+                marginHorizontal: widthPercentageToDP("1.5%"),
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+              }}
+            >
+              <Text style={styles.dateTabText}>Release Date</Text>
+              <Image
+                style={{
+                  width: win.width / 24,
+                  height: ratioSearch * 8,
+                  position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("4%"),
+                  alignSelf: "center",
+                }}
+                source={require("../assets/Images/upIcon.png")}
+              />
+            </View>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onLoaded(false);
 
-                  AsyncStorage.getItem("user").then(function (url) {
-                    let urls = url.split("/");
-                    urls = urls.filter((url) => {
-                      return url;
-                    });
-                    let userId = urls[urls.length - 1];
-                    Animated.timing(right, {
-                      toValue: widthPercentageToDP("-80%"),
-                      duration: 500,
-                      useNativeDriver: false,
-                    }).start();
-                    loadOrder(userId, "past_6_months");
+                AsyncStorage.getItem("user").then(function (url) {
+                  let urls = url.split("/");
+                  urls = urls.filter((url) => {
+                    return url;
                   });
-                }}
-              >
-                <View style={styles.dateTabContainer}>
-                  <Text style={styles.dateTabText}>Past 6 Month</Text>
-                </View>
-              </TouchableWithoutFeedback>
-              {yearHtml}
-              <View
-                style={{
-                  alignItems: "flex-start",
-                  borderBottomWidth: 1,
-                  borderBottomColor: Colors.D7CCA6,
-                  paddingVertical: heightPercentageToDP("1.5%"),
-                }}
-              >
-                {/* <Text
+                  let userId = urls[urls.length - 1];
+                  Animated.timing(right, {
+                    toValue: widthPercentageToDP("-80%"),
+                    duration: 500,
+                    useNativeDriver: false,
+                  }).start();
+                  loadOrder(userId, "past_6_months");
+                });
+              }}
+            >
+              <View style={styles.dateTabContainer}>
+                <Text style={styles.dateTabText}>Past 6 Month</Text>
+              </View>
+            </TouchableWithoutFeedback>
+            {yearHtml}
+            <View
+              style={{
+                alignItems: "flex-start",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+              }}
+            >
+              {/* <Text
               style={{
                 marginLeft: widthPercentageToDP("8%"),
                 borderBottomWidth: 1,
@@ -483,19 +492,19 @@ export default function PurchaseHistory(props) {
             >
               2015 年 3月以前
             </Text> */}
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  flex: 1,
-                  marginTop: heightPercentageToDP("30%"),
-                  marginHorizontal: widthPercentageToDP("1%"),
-                  justifyContent: "space-between",
-                  backgroundColor: "white",
-                }}
-              >
-                {/* <Image
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                flex: 1,
+                marginTop: heightPercentageToDP("30%"),
+                marginHorizontal: widthPercentageToDP("1%"),
+                justifyContent: "space-between",
+                backgroundColor: "white",
+              }}
+            >
+              {/* <Image
               style={{
                 width: win.width / 42,
                 height: ratioCancel * 15,
@@ -505,7 +514,7 @@ export default function PurchaseHistory(props) {
               }}
               source={require("../assets/Images/blackCancelIcon.png")}
             /> */}
-                {/* <Text
+              {/* <Text
               style={{
                 fontSize: RFValue(14),
                 marginLeft: widthPercentageToDP("8%"),
@@ -528,8 +537,8 @@ export default function PurchaseHistory(props) {
                 <Text style={styles.dateTabText}>Done</Text>
               </View>
             </TouchableOpacity> */}
-              </View>
-            </Animated.View>
+            </View>
+          </Animated.View>
           <ScrollView style={{ flexGrow: 1 }}>
             <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
               <TouchableWithoutFeedback
@@ -589,12 +598,15 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP("3%"),
   },
   nextIcon: {
+    paddingBottom: heightPercentageToDP("3%"),
     width: win.width / 50,
     height: 15 * ratioNext,
     position: "absolute",
     right: 0,
   },
   purchaseHistoryProductContainer: {
+    // backgroundColor: "orange",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: Colors.D7CCA6,
     backgroundColor: Colors.F6F6F6,
@@ -602,6 +614,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP("1%"),
   },
   productInformationContainer: {
+    // backgroundColor: "orange",
     flexDirection: "row",
     alignItems: "center",
     marginTop: heightPercentageToDP("2%"),

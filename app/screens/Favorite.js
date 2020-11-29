@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -86,14 +86,14 @@ export default function Favorite(props) {
   const [user, onUserChanged] = React.useState({});
 
   const isFocused = useIsFocused();
-  React.useEffect(()=>{
-    AsyncStorage.getItem("user").then(function(url) {
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
-  
+
       request
         .get(url)
         .then(function (response) {
@@ -101,29 +101,41 @@ export default function Favorite(props) {
           onUserChanged(response.data);
 
           db.collection("users")
-          .doc(userId)
-          .collection("favourite")
-          .get()
-          .then((querySnapshot) => {
-            let ids = [];
-            querySnapshot.forEach((documentSnapshot) => {
-              ids.push(documentSnapshot.id);
-            });
-            request
-              .get("product/byIds/", {
-                ids: ids,
-              })
-              .then(function(response) {
-                onFavouriteHtmlChanged(
-                  processFavouriteHtml(props, tmpUser, response.data.products)
-                );
-              })
-              .catch(function(error) {
-                if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                  alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-                }
+            .doc(userId)
+            .collection("favourite")
+            .get()
+            .then((querySnapshot) => {
+              let ids = [];
+              querySnapshot.forEach((documentSnapshot) => {
+                ids.push(documentSnapshot.id);
               });
-          });
+              request
+                .get("product/byIds/", {
+                  ids: ids,
+                })
+                .then(function (response) {
+                  onFavouriteHtmlChanged(
+                    processFavouriteHtml(props, tmpUser, response.data.products)
+                  );
+                })
+                .catch(function (error) {
+                  if (
+                    error &&
+                    error.response &&
+                    error.response.data &&
+                    Object.keys(error.response.data).length > 0
+                  ) {
+                    alert.warning(
+                      error.response.data[
+                        Object.keys(error.response.data)[0]
+                      ][0] +
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
+                    );
+                  }
+                });
+            });
         })
         .catch(function (error) {
           if (
@@ -141,11 +153,11 @@ export default function Favorite(props) {
           }
         });
     });
-  }, [isFocused])
+  }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
-        text="お気に入り"
+        text={Translate.t("favorite")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => props.navigation.pop()}

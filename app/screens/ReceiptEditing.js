@@ -7,7 +7,8 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -16,40 +17,139 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useIsFocused } from "@react-navigation/native";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+import CustomAlert from "../lib/alert";
+import Format from "../lib/format";
+const format = new Format();
+var kanjidate = require("kanjidate");
+const request = new Request();
+const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioKinujo = win.width / 4 / 151;
 
-export default function ReceiptEditing(props) {
+export default function ReceiptView(props) {
+  const isFocused = useIsFocused();
+  const [user, onUserChanged] = React.useState({});
+  const [order, onOrderChanged] = React.useState({});
+  const [orderReceipt, onOrderReceiptChanged] = React.useState({});
+  const [loaded, onLoaded] = React.useState(false);
+  const [issueName, onIssueNameChange] = React.useState("");
+
+  React.useEffect(()=>{
+    request
+    .get(props.route.params.url)
+    .then(function (response) {
+      onOrderChanged(response.data);
+
+      lastId = 0;
+      lastOrderReceipt = {}
+      response.data.order.orderReceipts.map((tmpOrderReceipt) => {
+        if(tmpOrderReceipt.id > lastId){
+          lastOrderReceipt= tmpOrderReceipt;
+          lastId = tmpOrderReceipt.id;
+        }
+      })
+      onOrderReceiptChanged(lastOrderReceipt);
+      onIssueNameChange(lastOrderReceipt.to_name)
+      onLoaded(true);
+    })
+    .catch(function (error) {
+      onLoaded(true);
+      if (
+        error &&
+        error.response &&
+        error.response.data &&
+        Object.keys(error.response.data).length > 0
+      ) {
+        alert.warning(
+          error.response.data[Object.keys(error.response.data)[0]][0] +
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
+        );
+      }
+    });
+
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
+  }, [isFocused])
+  function issueClicked() {
+    if(orderReceipt){
+      request.patch(orderReceipt.url, {
+        "to_name" : issueName
+      }).then(()=>{
+        props.navigation.navigate("ReceiptView", {
+          url: props.route.params.url,
+          issueName: issueName,
+        });
+      })
+    } else {
+      props.navigation.navigate("ReceiptView", {
+        url: props.route.params.url,
+        issueName: issueName,
+      });
+    }
+  }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex:1}}>
+    <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
       <CustomHeader
-        text={Translate.t("invoiceIssue")}
         onFavoriteChanged="noFavorite"
+        text={Translate.t("invoiceIssue")}
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
         onBack={() => props.navigation.pop()}
       />
       <CustomSecondaryHeader
-        name="髪長絹子 さん"
+        name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />
       <View style={styles.receiptEditingContainer}>
         <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}</Text>
         <View style={styles.invoiceInputContainer}>
-          <TextInput style={styles.invoiceTextInput}></TextInput>
+          <TextInput
+            style={styles.invoiceTextInput}
+            value={issueName}
+            onChangeText={(value) => onIssueNameChange(value)}
+          ></TextInput>
           <Text
             style={{
-              fontSize: RFValue(18),
-              marginLeft: widthPercentageToDP("3%"),
+              fontSize: RFValue(14),
+              // marginLeft: widthPercentageToDP("3%"),
             }}
           >
             {Translate.t("nameTitle")}
           </Text>
         </View>
-        <Text style={styles.receivedMoneyText}>￥18,000 ー</Text>
+
+        <Text style={styles.receivedMoneyText}>
+          {format.separator(order.total_price)} 円
+        </Text>
         <Text
           style={{
             fontSize: RFValue(12),
@@ -58,58 +158,78 @@ export default function ReceiptEditing(props) {
         >
           {Translate.t("justReceivedAbove")}
         </Text>
-        <View style={{ width: "100%", marginTop: heightPercentageToDP("3%") }}>
+        <View style={{ width: "100%", marginTop: heightPercentageToDP("5%") }}>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("issueDate")} :
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>0000年00月00日</Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("orderDate")} :
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>0000年00月00日</Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("orderNumber")} :
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>A-0000000A</Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("productName")} :
+              {Translate.t("issueDate")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              KINUJO W-world widemodel-
+              {kanjidate.format(
+                "{Y:4}年{M:2}月{D:2}日",
+                new Date(order.created)
+              )}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("seller")} :
+              {Translate.t("orderDate")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              KINUJO ONLINE STORE
+              {kanjidate.format(
+                "{Y:4}年{M:2}月{D:2}日",
+                new Date(order.created)
+              )}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("deliveryAddress")} :
+              {Translate.t("orderNumber")} :{" "}
             </Text>
-            <Text style={styles.receiptEditingDetailsText}>髪長絹子</Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order ? order.id : ""}
+            </Text>
           </View>
-
-          <Text style={styles.receiptEditingDetailsText}>000-0000</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.receiptEditingDetailsText}>
+              {Translate.t("productName")} :{" "}
+            </Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order && order.product_jan_code
+                ? order.product_jan_code.horizontal
+                  ? order.product_jan_code.horizontal.product_variety.product
+                      .name
+                  : order.product_jan_code.vertical.product_variety.product.name
+                : ""}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.receiptEditingDetailsText}>
+              {Translate.t("seller")} :{" "}
+            </Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order && order.order ? order.order.seller.nickname : ""}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.receiptEditingDetailsText}>
+              {Translate.t("deliveryAddress")} :{" "}
+            </Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order && order.order ? order.order.name : ""}
+            </Text>
+          </View>
           <Text style={styles.receiptEditingDetailsText}>
-            東京都〇〇区△△0-0-0
+            {order && order.order ? order.order.tel : ""}
+          </Text>
+          <Text style={styles.receiptEditingDetailsText}>
+            {order && order.order ? order.order.address1 : ""}
           </Text>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("paymentMethod")} :
+              {Translate.t("paymentMethod")} :{" "}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              AmericanExpress
+              {order && order.order ? order.order.payment : ""}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
@@ -125,7 +245,8 @@ export default function ReceiptEditing(props) {
             right: 0,
             bottom: 0,
             marginRight: widthPercentageToDP("5%"),
-            paddingBottom: heightPercentageToDP("1%"),
+            marginTop: heightPercentageToDP("19%"),
+            paddingBottom: heightPercentageToDP("2%"),
           }}
         >
           <Image
@@ -138,7 +259,7 @@ export default function ReceiptEditing(props) {
           <Text style={styles.receiptEditingDetailsText}>03-0000-0000</Text>
         </View>
       </View>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => issueClicked()}>
         <View style={styles.issueButtonContainer}>
           <Text style={styles.issueButtonText}> {Translate.t("issue")}</Text>
         </View>
@@ -146,24 +267,28 @@ export default function ReceiptEditing(props) {
       <Text style={styles.issueInvoiceWarningText}>
         {Translate.t("invoiceWarningText")}
       </Text>
+    </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   invoiceInputContainer: {
+    // marginHorizontal: widthPercentageToDP("20%"),
     flexDirection: "row",
     marginTop: heightPercentageToDP("2%"),
     justifyContent: "center",
     alignItems: "center",
-    width: "100%",
   },
   invoiceTextInput: {
+    fontSize: RFValue(10),
+    // marginLeft: widthPercentageToDP("5%"),
     borderWidth: 2,
     borderColor: "#dddddd",
     backgroundColor: "white",
-
-    paddingHorizontal: widthPercentageToDP("7%"),
+    paddingLeft: widthPercentageToDP("3%"),
+    width: widthPercentageToDP("55%"),
+    // paddingHorizontal: widthPercentageToDP("10%"),
     height: heightPercentageToDP("5%"),
   },
   receivedMoneyText: {
@@ -188,21 +313,22 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   issueInvoiceWarningText: {
+    marginBottom: heightPercentageToDP("5%"),
+    textAlign: "center",
     fontSize: RFValue(10),
     alignSelf: "center",
     marginTop: heightPercentageToDP("2%"),
-    textAlign: "center",
-    paddingHorizontal: widthPercentageToDP("15%"),
   },
   receiptEditingContainer: {
     marginTop: heightPercentageToDP("1.5%"),
     borderWidth: 1,
     borderColor: Colors.grey,
     padding: widthPercentageToDP("3%"),
-    paddingBottom: heightPercentageToDP("9%"),
+    paddingBottom: heightPercentageToDP("15%"),
     marginHorizontal: widthPercentageToDP("3%"),
     paddingTop: widthPercentageToDP("3%"),
     alignItems: "center",
+    // backgroundColor: "orange",
   },
   receiptEditingDetailsText: {
     fontSize: RFValue(12),

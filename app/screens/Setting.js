@@ -514,8 +514,8 @@ export default function Setting(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={Colors.D7CCA6}
-              style={{ position: "absolute", right: 0 }}
               onValueChange={(value) => {
+                console.log(value);
                 onAddingFriendsByIDChanged(value);
                 request
                   .patch(user.url, {
@@ -552,7 +552,6 @@ export default function Setting(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={Colors.D7CCA6}
-              style={{ position: "absolute", right: 0 }}
               onValueChange={(value) => {
                 onAllowAddingFriendsByPhoneNumber(value);
                 request

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  BackHandler,
 } from "react-native";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -29,6 +30,7 @@ import { Colors } from "../assets/Colors";
 import Format from "../lib/format";
 import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
+import {NavigationActions} from 'react-navigation';   
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -41,24 +43,32 @@ const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 
 export default function Home(props) {
+  const [favoriteText, showFavoriteText] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
   const isFocused = useIsFocused();
+
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
       authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
     if (enabled) {
-      console.log("Authorization status:", authStatus);
       const deviceToken = await messaging().getToken();
-      db.collection("users").doc(String(user.id)).collection("token").add({
-        tokenID: deviceToken,
-      });
+      db.collection("users")
+        .doc(String(user.id))
+        .collection("token")
+        .doc(deviceToken)
+        .set({
+          tokenID: deviceToken,
+        });
     }
   }
+
   React.useEffect(() => {
+    onFeaturedHtmlChanged([]);
+    onKinujoHtmlChanged([]);
     requestUserPermission();
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -130,7 +140,7 @@ export default function Home(props) {
               image={
                 images.length > 0
                   ? images[0].image.image
-                  : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+                  : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
               }
               office={product.brand_name}
               name={product.name}
@@ -149,10 +159,12 @@ export default function Home(props) {
             />
           );
         });
+
         onKinujoHtmlChanged(tmpKinujoHtml);
 
         let tmpFeaturedHtml = [];
         featuredProducts.map((product) => {
+          // console.log(product.name);
           let images = product.productImages.filter((image) => {
             return image.is_hidden == 0 && image.image.is_hidden == 0;
           });
@@ -160,7 +172,7 @@ export default function Home(props) {
           tmpFeaturedHtml.push(
             <HomeProducts
               key={product.id}
-              product_id={product.id}
+              product_id={product.category}
               onPress={() => {
                 props.navigation.navigate("HomeStoreList", {
                   url: product.url,
@@ -170,7 +182,7 @@ export default function Home(props) {
               image={
                 images.length > 0
                   ? images[0].image.image
-                  : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+                  : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
               }
               office={product.brand_name}
               name={product.name}
@@ -184,7 +196,7 @@ export default function Home(props) {
               shipping={
                 product.shipping_fee
                   ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-                  : "Free Shipping"
+                  : Translate.t("freeShipping")
               }
             />
           );
@@ -293,11 +305,13 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
   },
   home_product_view: {
+    // paddingBottom: heightPercentageToDP("15%"),
     height: heightPercentageToDP("82%"),
     padding: 15,
     paddingTop: 0,
     backgroundColor: "#FFF",
     overflow: "scroll",
+    // backgroundColor: "orange",
   },
   section_header: {
     width: "100%",

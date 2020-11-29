@@ -6,7 +6,7 @@ import {
   View,
   Dimensions,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -144,7 +144,7 @@ export default function PurchaseHistoryDetails(props) {
         </View>
         <TouchableWithoutFeedback
           onPress={() => {
-            props.navigation.navigate("ReceiptView", {
+            props.navigation.navigate("ReceiptEditing", {
               url: props.route.params.url,
             });
           }}
@@ -186,6 +186,7 @@ export default function PurchaseHistoryDetails(props) {
 
 const styles = StyleSheet.create({
   productInformationContainer: {
+    // backgroundColor: "orange",
     flexDirection: "row",
     alignItems: "center",
     marginTop: heightPercentageToDP("2%"),
@@ -198,7 +199,11 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   productSourceText: {
+    paddingBottom: heightPercentageToDP("2%"),
+    width: widthPercentageToDP("55%"),
+    // backgroundColor: "blue",
     fontSize: RFValue(12),
+    left: 0,
     marginLeft: widthPercentageToDP("35%"),
     position: "absolute",
   },

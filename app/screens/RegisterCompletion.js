@@ -25,7 +25,6 @@ import Translate from "../assets/Translates/Translate";
 export default function RegisterCompletion(props) {
   async function updateProfile(nextPage) {
     AsyncStorage.getItem("user").then(function (url) {
-      console.log(url);
       request
         .get(url)
         .then(function (response) {
@@ -47,8 +46,10 @@ export default function RegisterCompletion(props) {
               payload: payload,
             })
             .then(function (response) {
-              console.log("1");
-              props.navigation.navigate(nextPage);
+              props.navigation.reset({
+                index: 0,
+                routes: [{name: nextPage}],
+              });
             })
             .catch(function (error) {
               if (
@@ -122,7 +123,6 @@ export default function RegisterCompletion(props) {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            console.log(props.route.params.authority);
             if (props.route.params.authority == "general") {
               updateProfile("HomeGeneral");
             } else {

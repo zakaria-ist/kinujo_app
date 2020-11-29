@@ -147,7 +147,6 @@ export default function PasswordReset(props) {
                       } else {
                         alert.warning(response.error);
                       }
-                      console.log();
                     })
                     .catch(function(error) {
                       if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){

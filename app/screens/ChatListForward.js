@@ -333,8 +333,6 @@ export default function ChatList(props) {
     onForwardChatHtmlChanged(processForwardChatHtml(tmpChats));
   }
   function forwardMessage() {
-    console.log(messageToForward);
-    console.log(ownUserID);
     tmpChats.map((chat) => {
       if (chat.checkBoxStatus == true) {
         let createdAt =

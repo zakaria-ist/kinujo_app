@@ -78,6 +78,7 @@ async function getName(ownId, data) {
   });
   if (users.length > 0) {
     let user = users[0];
+    console.log({ user });
     user = await request.get("profiles/" + user);
     user = user.data;
     return user.real_name ? user.real_name : user.nickname;
@@ -530,9 +531,8 @@ export default function ChatList(props) {
                     let update = {};
                     update["delete_" + ownUserID] =
                       longPressObj.data["delete_" + ownUserID] == "" ||
-                      longPressObj.data["delete_" + ownUserID]
-                        ? false
-                        : true;
+                      longPressObj.data["delete_" + ownUserID] == false;
+                    longPressObj.data["delete_" + ownUserID] ? false : true;
                     db.collection("chat").doc(longPressObj.id).set(update, {
                       merge: true,
                     });
@@ -547,7 +547,14 @@ export default function ChatList(props) {
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
-                    props.navigation.navigate("GroupChatCreation");
+                    let tmpUsers = longPressObj.data.users.filter((user)=>{
+                      return user != ownUserID;
+                    })
+                    AsyncStorage.setItem('ids', JSON.stringify(tmpUsers)).then(()=>{
+                      AsyncStorage.setItem('tmpIds', JSON.stringify(tmpUsers)).then(()=>{
+                        props.navigation.navigate("GroupChatCreation")
+                      });
+                    });
                   }}
                 >
                   <Text style={styles.longPressText}>
@@ -558,7 +565,14 @@ export default function ChatList(props) {
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
-                    props.navigation.navigate("CreateFolder");
+                    let tmpUsers = longPressObj.data.users.filter((user)=>{
+                      return user != ownUserID;
+                    })
+                    AsyncStorage.setItem('ids', JSON.stringify(tmpUsers)).then(()=>{
+                      AsyncStorage.setItem('tmpIds', JSON.stringify(tmpUsers)).then(()=>{
+                        props.navigation.navigate("CreateFolder")
+                      })
+                    })
                   }}
                 >
                   <Text style={styles.longPressText}>

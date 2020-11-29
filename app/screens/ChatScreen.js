@@ -47,7 +47,7 @@ import CameraLogo from "../assets/icons/camera.svg";
 import GalleryLogo from "../assets/icons/gallery.svg";
 import ContactLogo from "../assets/icons/contact.svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import _ from "lodash";
+import _, { sample } from "lodash";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import storage from "@react-native-firebase/storage";
@@ -123,41 +123,30 @@ export default function ChatScreen(props) {
   groupName = props.route.params.groupName;
   groupType = props.route.params.type;
   const [longPressObj, onLongPressObjChanged] = React.useState({});
+  const [name, onNameChanged] = React.useState("");
   const insets = useSafeAreaInsets();
-  function processUserHtml(props, users) {
-    users.map((user) => {
-      finalGroupName = user.real_name ? user.real_name : user.nickname;
+  // function processUserHtml(props, users) {
+  //   h = users.map((user) => {
+  //     return user.real_name ? user.real_name : user.nickname;
+  //   });
+  // }
+  async function getName(ownId, data) {
+    if (data.type && data.type == "group") {
+      return data.groupName;
+    }
+    if (data.users.length > 2) return data.groupName;
+
+    let users = data.users.filter((user) => {
+      return user != ownId;
     });
-  }
-  function getGroupName() {
-    let users;
-    db.collection("chat")
-      .doc(groupID)
-      .get()
-      .then((snapShot) => {
-        let ids = [];
-        users = snapShot.data().users;
-        if (
-          snapShot.data().type == null ||
-          snapShot.data().type != "group" ||
-          snapShot.data().type != "folder"
-        ) {
-          for (var i in users) {
-            if (users[i] != userId) {
-              chatPersonID = users[i];
-            }
-            ids.push(chatPersonID);
-          }
-          request
-            .get("user/byIds/", {
-              ids: ids,
-            })
-            .then(function (response) {
-              processUserHtml(props, response.data.users);
-            });
-        }
-      });
-    return finalGroupName;
+    if (users.length > 0) {
+      let user = users[0];
+      console.log({ user });
+      user = await request.get("profiles/" + user);
+      user = user.data;
+      return user.real_name ? user.real_name : user.nickname;
+    }
+    return "";
   }
   const onClick = (emoji) => {
     {
@@ -185,7 +174,7 @@ export default function ChatScreen(props) {
     onShowEmojiChanged(false);
     setInputBarPosition(-2);
   }
-  async function firstLoad() {
+  async function firstLoad(data) {
     const updateHtml = [];
     onChatHtmlChanged(updateHtml);
     let url = await AsyncStorage.getItem("user");
@@ -194,6 +183,11 @@ export default function ChatScreen(props) {
       return url;
     });
     userId = urls[urls.length - 1];
+
+    getName(userId, data).then((name) => {
+      onNameChanged(name);
+    });
+
     userTotalReadMessageField = "totalMessageRead_" + userId;
 
     let documentSnapshot = await chatsRef.doc(groupID).get();
@@ -693,7 +687,6 @@ export default function ChatScreen(props) {
   }
 
   React.useEffect(() => {
-    firstLoad();
     chatsRef
       .doc(groupID)
       .get()
@@ -701,6 +694,7 @@ export default function ChatScreen(props) {
         if (doc.exists) {
           if (doc.id == groupID) {
             totalMessageCount = doc.data().totalMessage;
+            firstLoad(doc.data());
           }
         }
       })
@@ -750,7 +744,6 @@ export default function ChatScreen(props) {
       }
     };
   }, []);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
@@ -765,27 +758,19 @@ export default function ChatScreen(props) {
             onPress={() => props.navigation.navigate("Cart")}
           />
           <EmojiBoard
-            numCols={parseInt(heightPercentageToDP("30%")/60)}
+            numCols={parseInt(heightPercentageToDP("30%") / 60)}
             showBoard={showEmoji}
             style={{
               height: heightPercentageToDP("50%"),
               marginBottom: heightPercentageToDP("10%"),
             }}
-            containerStyle={
-              {
-                height: heightPercentageToDP("30%"),
-              }
-            }
+            containerStyle={{
+              height: heightPercentageToDP("30%"),
+            }}
             onClick={onClick}
             onRemove={onRemove}
           />
-          <CustomSecondaryHeader
-            name={
-              groupType == "group" || groupType == "folder"
-                ? groupName
-                : getGroupName()
-            }
-          />
+          <CustomSecondaryHeader name={name} />
           <LinearGradient
             colors={[Colors.E4DBC0, Colors.C2A059]}
             start={[0, 0]}
@@ -927,7 +912,8 @@ export default function ChatScreen(props) {
               bottom: inputBarPosition,
               left: 0,
               overflow: "hidden",
-            }}>
+            }}
+          >
             <View
               style={{
                 height: textInputHeight,
@@ -1128,7 +1114,6 @@ export default function ChatScreen(props) {
                               });
                             })
                             .catch((error) => {
-                              console.log(error);
                             });
                         });
                       } else {
@@ -1185,7 +1170,6 @@ export default function ChatScreen(props) {
                             });
                           })
                           .catch((error) => {
-                            console.log(error);
                           });
                       }
                     }
@@ -1262,7 +1246,6 @@ export default function ChatScreen(props) {
                               });
                             })
                             .catch((error) => {
-                              console.log(error);
                             });
                         });
                       } else {
@@ -1320,7 +1303,6 @@ export default function ChatScreen(props) {
                             });
                           })
                           .catch((error) => {
-                            console.log(error);
                           });
                       }
                     }

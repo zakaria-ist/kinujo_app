@@ -1,4 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
+import {useRoute} from '@react-navigation/native';
 import LoginScreen from "../Screens/LoginScreen";
 import SearchProducts from "../Screens/SearchProducts";
 import RegistrationGeneral from "../Screens/RegistrationGeneral";
@@ -17,6 +18,7 @@ import HomeStoreList from "../Screens/HomeStoreList";
 import ChatScreen from "../Screens/ChatScreen";
 import FolderContactList from "../Screens/FolderContactList";
 import ReceiptView from "../Screens/ReceiptView";
+import ReceiptEditing from "../Screens/ReceiptEditing";
 import QRCode from "../Screens/QRCode";
 import SettingGeneral from "../Screens/SettingGeneral";
 import SettingStore from "../Screens/SettingStore";
@@ -33,6 +35,7 @@ import StoreInformation from "../Screens/StoreInformation";
 import ShippingList from "../Screens/ShippingList";
 import PurchaseHistoryDetails from "../Screens/PurchaseHistoryDetails";
 import SalesManagement from "../Screens/SalesManagement";
+import SalesManagementBottom from "../Screens/SalesManagementBottom";
 import Cart from "../Screens/Cart";
 import Favorite from "../Screens/Favorite";
 import MemoEdit from "../Screens/MemoEdit";
@@ -66,8 +69,11 @@ import ChatLogo from "../assets/icons/chat.svg";
 import QRCodeLogo from "../assets/icons/qrcode.svg";
 import SettingLogo from "../assets/icons/setting.svg";
 import StarLogo from "../assets/icons/star.svg";
+import MoneyLogo from "../assets/icons/money.svg";
 
 function BottomNavigationGeneral() {
+  const route = useRoute();
+  console.log(route.name)
   return (
     <Tab.Navigator
       initialRouteName="HomeGeneral"
@@ -102,6 +108,14 @@ function BottomNavigationGeneral() {
         }}
       />
       <Tab.Screen
+        name="SalesManagementBottom"
+        component={SalesManagementBottom}
+        options={{
+          tabBarLabel: "SalesManagementBottom",
+          tabBarIcon: () => <MoneyLogo width={25} height={25} />,
+        }}
+      />
+      <Tab.Screen
         name="Chat"
         component={ChatList}
         options={{
@@ -129,38 +143,74 @@ function BottomNavigationGeneral() {
     </Tab.Navigator>
   );
 }
-function ChatNavigator() {
-  return (
-    <Tab.Navigator
-      initialRouteName="ChatList"
-      tabBarOptions={{
-        showLabel: false,
-        showIcon: true,
-        activeTintColor: "#e91e63",
-      }}
-    >
-      <Tab.Screen
-        name="QRCode"
-        component={QRCode}
-        options={{
-          tabBarLabel: "QRCode",
-          tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
+
+function BottomNavigationStore(props) {
+  const route = useRoute();
+  const name = route.name
+  console.log(props)
+  const isShow = props.navigation.state == 2;
+  if(isShow){
+    return (
+      <Tab.Navigator
+        initialRouteName="HomeStore"
+        tabBarOptions={{
+          showLabel: false,
+          showIcon: true,
+          activeTintColor: "#e91e63",
         }}
-      />
-      <Tab.Screen
-        name="SettingStore"
-        component={SettingStore}
-        options={{
-          tabBarLabel: "Setting",
-          tabBarIcon: () => <SettingLogo width={25} height={25} />,
-        }}
-      />
-    </Tab.Navigator>
-  );
-}
-function BottomNavigationStore() {
-  return (
-    <Tab.Navigator
+      >
+        <Tab.Screen
+          name="HomeStore"
+          component={HomeGeneral}
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: () => <HomeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="ContactStore"
+          component={Contact}
+          options={{
+            tabBarLabel: "Contact",
+            tabBarIcon: () => <PersonLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="Chat"
+          component={ChatList}
+          options={{
+            tabBarLabel: "Chat",
+            tabBarIcon: () => <ChatLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="FavoriteChat"
+          component={FavoriteChat}
+          options={{
+            tabBarLabel: "FavoriteChat",
+            tabBarIcon: () => <StarLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="QRCode"
+          component={QRCode}
+          options={{
+            tabBarLabel: "QRCode",
+            tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="SettingStore"
+          component={SettingStore}
+          options={{
+            tabBarLabel: "Setting",
+            tabBarIcon: () => <SettingLogo width={25} height={25} />,
+          }}
+        />
+      </Tab.Navigator>
+    );
+  } else {
+    return (      <Tab.Navigator
       initialRouteName="HomeStore"
       tabBarOptions={{
         showLabel: false,
@@ -216,8 +266,8 @@ function BottomNavigationStore() {
           tabBarIcon: () => <SettingLogo width={25} height={25} />,
         }}
       />
-    </Tab.Navigator>
-  );
+    </Tab.Navigator>)
+  }
 }
 
 export default function LoginStack() {
@@ -294,6 +344,7 @@ export default function LoginStack() {
         />
         <Stack.Screen name="StoreInformation" component={StoreInformation} />
         <Stack.Screen name="SalesManagement" component={SalesManagement} />
+        <Stack.Screen name="SalesManagementBottom" component={BottomNavigationStore} />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Favorite" component={Favorite} />
         <Stack.Screen name="MemoEdit" component={MemoEdit} />
@@ -321,6 +372,7 @@ export default function LoginStack() {
         <Stack.Screen name="GroupChatMember" component={GroupChatMember} />
         <Stack.Screen name="AdressManagement" component={AdressManagement} />
         <Stack.Screen name="ReceiptView" component={ReceiptView} />
+        <Stack.Screen name="ReceiptEditing" component={ReceiptEditing} />
         <Stack.Screen name="ContactShare" component={ContactShare} />
         <Stack.Screen name="SearchProducts" component={SearchProducts} />
         <Stack.Screen name="Payment" component={Payment} />
