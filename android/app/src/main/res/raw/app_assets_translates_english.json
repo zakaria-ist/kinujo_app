@@ -270,5 +270,7 @@
     "favorite":"Favorite",
     "addedToFavorite":"Added to favorite",
     "removeFavorite":"Removed from favorite",
-    "payment":"Payment"
+    "payment":"Payment",
+    "person":"Person"
+
 }
