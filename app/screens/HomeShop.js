@@ -14,7 +14,7 @@ import {
   TouchableWithoutFeedback,
   TextInput,
 } from "react-native";
-import CustomHeader from "../assets/CustomComponents/CustomHeader";
+import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import CustomFloatingButton from "../assets/CustomComponents/CustomFloatingButton";
 import HomeProducts from "./HomeProducts";
@@ -34,7 +34,6 @@ import Format from "../lib/format";
 import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
-import { hide } from "expo-splash-screen";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -45,46 +44,56 @@ const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
-let kinujoProducts;
 let featuredProducts;
 export default function Home(props) {
   const [favoriteText, showFavoriteText] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
-  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
   const [showCategory, onCategoryShow] = React.useState(false);
   const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
+  const [showSorting, onSortingShow] = React.useState(false);
   const isFocused = useIsFocused();
-  const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
-    .current;
-  async function requestUserPermission() {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-    if (enabled) {
-      const deviceToken = await messaging().getToken();
-      db.collection("users")
-        .doc(String(user.id))
-        .collection("token")
-        .doc(deviceToken)
-        .set({
-          tokenID: deviceToken,
-        });
-    }
-  }
-  function featuredProductNavigation(url, seller, userShopName) {
-    console.log(user.is_seller);
-    if (seller) {
-      props.navigation.navigate("HomeShop", {
-        shopName: userShopName,
+  const rightCategory = React.useRef(
+    new Animated.Value(widthPercentageToDP("-80%"))
+  ).current;
+  const rightSorting = React.useRef(
+    new Animated.Value(widthPercentageToDP("-80%"))
+  ).current;
+  const shopName = props.route.params.shopName;
+  function filterProductsBySorting(type) {
+    let tmpFeaturedProducts = featuredProducts;
+    if (type == "latestFirst") {
+      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+        let date1 = new Date(a.created);
+        let date2 = new Date(b.created);
+        if (date1 < date2) {
+          return -1;
+        }
+        if (date1 > date2) {
+          return 1;
+        }
+        return 0;
       });
-    } else {
-      props.navigation.navigate("HomeStoreList", {
-        url: url,
-      });
+
+      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
     }
+    if (type == "HighToLow") {
+      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+        return a.store_price - b.store_price;
+      });
+
+      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+    }
+    if (type == "LowToHigh") {
+      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+        return b.store_price - a.store_price;
+      });
+
+      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+    }
+    hideSortingAnimation();
   }
+
   function processFeaturedProductHtml(featuredProducts) {
     let tmpFeaturedHtml = [];
     let idx = 0;
@@ -93,17 +102,15 @@ export default function Home(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+
       tmpFeaturedHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.category}
           onPress={() => {
-            console.log(product.user.shop_name);
-            featuredProductNavigation(
-              product.url,
-              user.is_seller,
-              product.user.shop_name
-            );
+            props.navigation.navigate("HomeStoreList", {
+              url: product.url,
+            });
           }}
           idx={idx++}
           image={
@@ -134,92 +141,40 @@ export default function Home(props) {
     return tmpFeaturedHtml;
   }
 
-  function processKinujoProductHtml(kinujoProducts) {
-    let tmpKinujoHtml = [];
-    let idx = 0;
-    kinujoProducts.map((product) => {
-      let images = product.productImages.filter((image) => {
-        return image.is_hidden == 0 && image.image.is_hidden == 0;
-      });
-
-      tmpKinujoHtml.push(
-        <HomeProducts
-          key={product.id}
-          product_id={product.id}
-          onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
-              url: product.url,
-            });
-          }}
-          idx={idx++}
-          image={
-            images.length > 0
-              ? images[0].image.image
-              : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
-          }
-          office={product.brand_name}
-          name={product.name}
-          seller={product.user.shop_name}
-          price={
-            (user.is_seller
-              ? format.separator(product.store_price)
-              : format.separator(product.price)) + " 円"
-          }
-          category={product.category.name}
-          shipping={
-            product.shipping_fee
-              ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-              : "Free Shipping"
-          }
-          addFavourite={(favorite) => {
-            showFavoriteText(favorite);
-          }}
-        />
-      );
+  function filterProductsByCateogry(categories, categoryID) {
+    let tmpFeaturedProducts = featuredProducts;
+    tmpFeaturedProducts = featuredProducts.filter((featured) => {
+      return featured.category.id == categoryID;
     });
-    return tmpKinujoHtml;
+    onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+    hideCategoryAnimation();
   }
-  // function filterProductsByCateogry(categories, categoryID) {
-  //   let tmpKinujoProducts = kinujoProducts;
-  //   let tmpFeaturedProducts = featuredProducts;
-  //   tmpKinujoProducts = kinujoProducts.filter((kinujo) => {
-  //     return kinujo.category.id == categoryID;
-  //   });
-  //   tmpFeaturedProducts = featuredProducts.filter((featured) => {
-  //     return featured.category.id == categoryID;
-  //   });
-  //   onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
-  //   onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
-  //   hideCategoryAnimation();
-  // }
   function processCategoryHtml(categories) {
     let tmpCategoryHtml = [];
     categories.map((category) => {
-      // tmpCategoryHtml.push(
-      //   <TouchableWithoutFeedback
-      //     onPress={() => filterProductsByCateogry(categories, category.id)}
-      //   >
-      //     <View style={styles.categoryContainer} key={category.id}>
-      //       <Text>{category.name}</Text>
-      //     </View>
-      //   </TouchableWithoutFeedback>
-      // );
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
-          onPress={() => navigateToCategorisePage(category.id, category.name)}
+          onPress={() => filterProductsByCateogry(categories, category.id)}
         >
           <View style={styles.categoryContainer} key={category.id}>
             <Text>{category.name}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
+      //   tmpCategoryHtml.push(
+      //     <TouchableWithoutFeedback
+      //       onPress={() => navigateToCategorisePage(category.id, category.name)}
+      //     >
+      //       <View style={styles.categoryContainer} key={category.id}>
+      //         <Text>{category.name}</Text>
+      //       </View>
+      //     </TouchableWithoutFeedback>
+      //   );
     });
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
     onFeaturedHtmlChanged([]);
-    onKinujoHtmlChanged([]);
-    requestUserPermission();
     AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
@@ -266,13 +221,11 @@ export default function Home(props) {
           );
         });
 
-        kinujoProducts = products.filter((product) => {
-          return product.user.authority.id == 1;
-        });
         featuredProducts = products.filter((product) => {
-          return product.user.authority.id != 1;
+          if (product.user.shop_name == shopName) {
+            return product.user.authority.id != 1;
+          }
         });
-        onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
         onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
       })
       .catch(function (error) {
@@ -293,7 +246,7 @@ export default function Home(props) {
   }, [isFocused]);
   function showCategoryAnimation() {
     onCategoryShow(true);
-    Animated.timing(right, {
+    Animated.timing(rightCategory, {
       toValue: 0,
       duration: 500,
       useNativeDriver: false,
@@ -301,26 +254,46 @@ export default function Home(props) {
   }
   function hideCategoryAnimation() {
     onCategoryShow(false),
-      Animated.timing(right, {
+      Animated.timing(rightCategory, {
         toValue: widthPercentageToDP("-80%"),
         duration: 500,
         useNativeDriver: false,
       }).start();
   }
-  function navigateToCategorisePage(categoryId, categoryName) {
-    hideCategoryAnimation();
-    props.navigation.navigate("HomeByCategory", {
-      categoryID: categoryId,
-      categoryName: categoryName,
-    });
+
+  function showSortingAnimation() {
+    onCategoryShow(true);
+    Animated.timing(rightSorting, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
   }
+  function hideSortingAnimation() {
+    onCategoryShow(false),
+      Animated.timing(rightSorting, {
+        toValue: widthPercentageToDP("-80%"),
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+  }
+  //   function navigateToCategorisePage(categoryId, categoryName) {
+  //     hideCategoryAnimation();
+  //     props.navigation.navigate("HomeByCategory", {
+  //       categoryID: categoryId,
+  //       categoryName: categoryName,
+  //     });
+  //   }
   return (
     <SafeAreaView>
       <CustomHeader
-        text="Home"
+        text="Product List"
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => {
           props.navigation.navigate("Cart");
+        }}
+        onBack={() => {
+          props.navigation.pop();
         }}
       />
 
@@ -332,18 +305,37 @@ export default function Home(props) {
       />
       <View style={styles.discription_header}>
         <View>
-          {/* <Text style={styles.disc_title_text}>
-            {"Seller: KINUJO Offical Product"}
-          </Text> */}
+          <Text style={styles.disc_title_text}>{"Seller:" + shopName}</Text>
         </View>
 
-        <View style={{ position: "absolute", right: 0, paddingRight: 15 }}>
+        <View
+          style={{
+            position: "absolute",
+            right: 0,
+            paddingRight: 15,
+          }}
+        >
           <Button
             title={Translate.t("category")}
             color="#E6DADE"
+            backgroundColor="#000"
             onPress={() => showCategoryAnimation()}
           />
         </View>
+      </View>
+      <View
+        style={{
+          position: "absolute",
+          right: 150,
+          paddingRight: 15,
+          marginTop: heightPercentageToDP("20%"),
+        }}
+      >
+        <Button
+          title={Translate.t("sorting")}
+          color="#E6DADE"
+          onPress={() => showSortingAnimation()}
+        />
       </View>
       {favoriteText == "true" ? (
         <View
@@ -398,7 +390,7 @@ export default function Home(props) {
           alignSelf: "center",
           width: widthPercentageToDP("80%"),
           position: "absolute",
-          right: right,
+          right: rightCategory,
           backgroundColor: "white",
         }}
       >
@@ -431,22 +423,66 @@ export default function Home(props) {
         </TouchableWithoutFeedback>
       </Animated.View>
       {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <ScrollView style={styles.home_product_view}>
-        {kinujoHtml.length > 0 ? (
-          <View style={styles.section_header}>
-            <Text style={styles.section_header_text}>
-              {"KINUJO official product"}
-            </Text>
+      <Animated.View
+        style={{
+          zIndex: 1,
+          height: heightPercentageToDP("100%"),
+          alignSelf: "center",
+          width: widthPercentageToDP("80%"),
+          position: "absolute",
+          right: rightSorting,
+          backgroundColor: "white",
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.D7CCA6,
+          }}
+        >
+          <Text style={styles.categoryTitle}>{Translate.t("sorting")}</Text>
+        </View>
+        <TouchableWithoutFeedback
+          onPress={() => filterProductsBySorting("latestFirst")}
+        >
+          <View style={styles.categoryContainer}>
+            <Text>Latest First</Text>
           </View>
-        ) : (
-          <View></View>
-        )}
-        {kinujoHtml.length > 0 ? (
-          <View style={styles.section_product}>{kinujoHtml}</View>
-        ) : (
-          <View></View>
-        )}
-
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => filterProductsBySorting("LowToHigh")}
+        >
+          <View style={styles.categoryContainer}>
+            <Text>Price Low to High</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={() => filterProductsBySorting("HighToLow")}
+        >
+          <View style={styles.categoryContainer}>
+            <Text>Price High to Low</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
+          <View
+            style={{
+              position: "absolute",
+              bottom: heightPercentageToDP("8%"),
+              right: widthPercentageToDP("3%"),
+              borderWidth: 1,
+              borderRadius: 5,
+              backgroundColor: "white",
+              alignItems: "center",
+              paddingVertical: heightPercentageToDP(".7%"),
+              paddingHorizontal: widthPercentageToDP("2%"),
+            }}
+          >
+            <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </Animated.View>
+      <ScrollView style={styles.home_product_view}>
         {featuredHtml.length > 0 ? (
           <View style={styles.section_header}>
             <Text style={styles.section_header_text}>

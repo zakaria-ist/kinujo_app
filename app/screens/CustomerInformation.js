@@ -9,7 +9,7 @@ import {
   TextInput,
   ImageBackground,
   TouchableWithoutFeedback,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -48,10 +48,9 @@ export default function CustomerInformation(props) {
   const [customerId, onCustomerIdChanged] = React.useState("");
   const [memo, onMemoChanged] = React.useState("");
   const [modal, onModalChanged] = React.useState(false);
-
+  const [existsFlag, onExistsFlag] = React.useState(false);
   chatPersonID = user.id;
   groupName = user.real_name;
-
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
@@ -155,6 +154,37 @@ export default function CustomerInformation(props) {
         }
       });
   };
+  function addFriend() {
+    let exists = false;
+    db.collection("users")
+      .doc(userId)
+      .collection("friends")
+      .get()
+      .then((snapShot) => {
+        snapShot.forEach((docRef) => {
+          if (docRef.data().id == String(chatPersonID)) {
+            sendMessageHandler();
+            exists = true;
+          }
+        });
+        console.log(exists);
+        if (exists == false) {
+          db.collection("users")
+            .doc(userId)
+            .collection("friends")
+            .add({
+              type: "user",
+              id: String(chatPersonID),
+            })
+            .then(sendMessageHandler());
+        }
+      });
+    // .add({
+    //   type: "user",
+    //   id: String(chatPersonID),
+    // })
+    // .then(sendMessageHandler());
+  }
   AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
@@ -205,8 +235,7 @@ export default function CustomerInformation(props) {
               backgroundColor: "white",
             }}
             source={require("../assets/Images/profileEditingIcon.png")}
-          >
-          </ImageBackground>
+          ></ImageBackground>
           <View
             style={{
               width: "100%",
@@ -348,18 +377,20 @@ export default function CustomerInformation(props) {
               </Text>
             </View>
           </TouchableWithoutFeedback>
-          <View style={{ alignItems: "center" }}>
-            <Image
-              style={{
-                width: win.width / 13,
-                height: 21 * ratioQRIcon,
-              }}
-              source={require("../assets/Images/QRIcon.png")}
-            />
-            <Text style={styles.textForQRandMessage}>
-              {Translate.t("QRCode")}
-            </Text>
-          </View>
+          <TouchableWithoutFeedback onPress={() => addFriend()}>
+            <View style={{ alignItems: "center" }}>
+              <Image
+                style={{
+                  width: win.width / 13,
+                  height: 21 * ratioQRIcon,
+                }}
+                source={require("../assets/Images/QRIcon.png")}
+              />
+              <Text style={styles.textForQRandMessage}>
+                {Translate.t("QRCode")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </View>
       <Modal
@@ -400,9 +431,15 @@ export default function CustomerInformation(props) {
                   .collection("customers")
                   .doc(customerId)
                   .set({
-                    secretMode: firebaseUser.secretMode ? firebaseUser.secretMode : false,
-                    blockMode: firebaseUser.blockMode ? firebaseUser.blockMode : false,
-                    displayName: firebaseUser.displayName ? firebaseUser.displayName : "",
+                    secretMode: firebaseUser.secretMode
+                      ? firebaseUser.secretMode
+                      : false,
+                    blockMode: firebaseUser.blockMode
+                      ? firebaseUser.blockMode
+                      : false,
+                    displayName: firebaseUser.displayName
+                      ? firebaseUser.displayName
+                      : "",
                     memo: memo,
                   });
               }}

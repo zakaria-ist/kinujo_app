@@ -108,10 +108,11 @@ export default function ChatText({
                   style={{
                     width: width / 35,
                     height: ratioSeenTick * 10,
+                    resizeMode: "stretch",
                   }}
                 />
               ) : (
-                ""
+                ''
               )}
             </Text>
           ) : (
@@ -126,10 +127,11 @@ export default function ChatText({
                   style={{
                     width: width / 35,
                     height: ratioSeenTick * 10,
+                    resizeMode: "stretch",
                   }}
                 />
               ) : (
-                ""
+                ''
               )}
             </Text>
           )}
@@ -295,18 +297,14 @@ const styles = StyleSheet.create({
   },
   left_status_text: {
     position: "absolute",
-    textAlign: "left",
-    width: 60,
     paddingLeft: 10,
     fontSize: RFValue(8),
     bottom: 12,
-    left: 0,
+    left: 10,
     marginBottom: heightPercentageToDP("2%"),
   },
   right_status_text: {
     position: "absolute",
-    textAlign: "right",
-    width: 60,
     paddingRight: 10,
     fontSize: RFValue(8),
     bottom: 12,
@@ -315,25 +313,21 @@ const styles = StyleSheet.create({
   },
   left_status_text_image: {
     position: "absolute",
-    textAlign: "left",
-    width: 60,
     paddingLeft: 10,
     fontSize: RFValue(8),
     bottom: 12,
-    left: 0,
+    left: 10,
     marginBottom: heightPercentageToDP("2%"),
-    marginLeft: widthPercentageToDP("30%"),
+    marginLeft: widthPercentageToDP("33%"),
   },
   right_status_text_image: {
     position: "absolute",
-    textAlign: "right",
-    width: 60,
     paddingRight: 10,
     fontSize: RFValue(8),
     bottom: 12,
     right: 0,
     marginBottom: heightPercentageToDP("2%"),
-    marginRight: widthPercentageToDP("30%"),
+    marginRight: widthPercentageToDP("33%"),
   },
   left_status_time: {
     position: "absolute",

@@ -66,14 +66,12 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
   );
   
   React.useEffect(()=>{
-    if(pItems && pItems.mappingValue){
+    if(pItems && pItems.mappingValue && pItems.items){
       globalMappingValue = pItems.mappingValue
-    }
-    if(pItems && pItems.items){
       items = pItems.items
+      onProcessVariationHtml(processVariationHtml(items));
+      onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
     }
-    onProcessVariationHtml(processVariationHtml(items));
-    onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
   }, [pItems])
 
   function populateMapping(){
@@ -272,13 +270,14 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
   function populateChoiceDetailsHtml(choice1Item, choices) {
     let tmpChoiceDetailsHtml = [];
     choices.map((choice) => {
+      let isDelete = globalMappingValue[choice1Item][choice.choiceItem]['delete'];
       tmpChoiceDetailsHtml.push(
         <View style={{
         }}>
           <View style={styles.subline} />
           <View style ={
             {
-              opacity: globalMappingValue[choice1Item][choice.choiceItem]['delete'] ? 0.3 : 1
+              opacity: isDelete ? 0.3 : 1
             }
           }>
             <View style={styles.variantContainer}>
@@ -286,7 +285,7 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
               {/* onValueChanged(value, "choice", index, choice.choiceIndex) */}
               <TextInput
                 style={styles.variantStockInput}
-                editable={!globalMappingValue[choice1Item][choice.choiceItem]['delete']}
+                editable={!isDelete}
                 value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['stock'] : ""}
                 onChangeText={(value) => {
                   globalMappingValue[choice1Item][choice.choiceItem]['stock'] = value;
@@ -299,7 +298,7 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
             <View style={styles.variantContainer}>
               <TextInput
                 style={styles.variantInput}
-                editable={!globalMappingValue[choice1Item][choice.choiceItem]['delete']}
+                editable={!isDelete}
                 value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['janCode'] : ""}
                 onChangeText={(value) => {
                   globalMappingValue[choice1Item][choice.choiceItem]['janCode'] = value;
@@ -310,7 +309,7 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
               <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
             </View>
           </View>
-          {!globalMappingValue[choice1Item][choice.choiceItem]['delete'] ? (
+          {!isDelete ? (
             <TouchableOpacity
               onPress={() => {
                 globalMappingValue[choice1Item][choice.choiceItem]['delete'] = true;

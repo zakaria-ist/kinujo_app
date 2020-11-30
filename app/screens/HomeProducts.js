@@ -49,9 +49,11 @@ export default function HomeProducts({
   price,
   category,
   shipping,
+  addFavourite,
 }) {
   const isFocused = useIsFocused();
   const [favourite, setFavourite] = React.useState(false);
+  const [favoriteGet, onFavorite] = React.useState("");
   const [favoriteText, showFavoriteText] = React.useState(false);
   function checkFavourite(product) {
     AsyncStorage.getItem("user").then((url) => {
@@ -115,8 +117,16 @@ export default function HomeProducts({
                       .set({
                         status: "added",
                       });
+                    if (addFavourite) {
+                      addFavourite("true");
+                      setTimeout(
+                        function () {
+                          addFavourite("false");
+                        }.bind(this),
+                        2000
+                      );
+                    }
 
-                    alert.warning("Added to favourite.");
                     setFavourite(true);
                   }
                 });
@@ -150,7 +160,7 @@ export default function HomeProducts({
           <Text numberOfLines={2} style={styles.product_category}>
             {category}
           </Text>
-          <Text style={styles.product_shipping}>{Translate.t("shipping")}</Text>
+          <Text style={styles.product_shipping}>{shipping}</Text>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

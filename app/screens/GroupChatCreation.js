@@ -140,9 +140,10 @@ export default function GroupChatCreation(props) {
           style={{
             fontSize: RFValue(14),
             right: 0,
-            position: "absolute",
-            marginTop: heightPercentageToDP("10%"),
-            marginRight: widthPercentageToDP("8%"),
+            // position: "absolute",
+            marginTop: heightPercentageToDP("3%"),
+            marginLeft: widthPercentageToDP("75%"),
+            // marginRight: widthPercentageToDP("8%"),
           }}
         >
           {Translate.t("create")}
@@ -150,7 +151,7 @@ export default function GroupChatCreation(props) {
       </TouchableWithoutFeedback>
       <View
         style={{
-          marginTop: heightPercentageToDP("8%"),
+          marginTop: heightPercentageToDP("3%"),
           marginHorizontal: widthPercentageToDP("4%"),
         }}
       >

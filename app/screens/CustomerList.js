@@ -168,7 +168,8 @@ export default function CustomerList(props) {
       />
 
       <Text style={styles.totalNumberOfCustomer}>
-        {Translate.t("customerTotal")} : {customers.length} 人
+        {Translate.t("customerTotal")} : {customers.length}{" "}
+        {Translate.t("person")}
       </Text>
 
       <View style={styles.searchInputContainer}>

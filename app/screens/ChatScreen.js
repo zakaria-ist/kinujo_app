@@ -125,11 +125,6 @@ export default function ChatScreen(props) {
   const [longPressObj, onLongPressObjChanged] = React.useState({});
   const [name, onNameChanged] = React.useState("");
   const insets = useSafeAreaInsets();
-  // function processUserHtml(props, users) {
-  //   h = users.map((user) => {
-  //     return user.real_name ? user.real_name : user.nickname;
-  //   });
-  // }
   async function getName(ownId, data) {
     if (data.type && data.type == "group") {
       return data.groupName;
@@ -139,6 +134,19 @@ export default function ChatScreen(props) {
     let users = data.users.filter((user) => {
       return user != ownId;
     });
+    let snapShot = await db
+      .collection("users")
+      .doc(ownId)
+      .collection("customers")
+      .get();
+
+    tmpName = "";
+    snapShot.forEach((docRef) => {
+      if (docRef.data().displayName && docRef.id == users) {
+        tmpName = docRef.data().displayName;
+      }
+    });
+    if (tmpName) return tmpName;
     if (users.length > 0) {
       let user = users[0];
       console.log({ user });
@@ -1031,6 +1039,7 @@ export default function ChatScreen(props) {
                             .then(function () {
                               chatsRef.doc(groupID).update({
                                 totalMessage: totalMessageCount + 1,
+                                userTotalReadMessageField: totalMessage,
                               });
                             });
                         })
@@ -1113,8 +1122,7 @@ export default function ChatScreen(props) {
                                   });
                               });
                             })
-                            .catch((error) => {
-                            });
+                            .catch((error) => {});
                         });
                       } else {
                         reference
@@ -1169,8 +1177,7 @@ export default function ChatScreen(props) {
                                 });
                             });
                           })
-                          .catch((error) => {
-                          });
+                          .catch((error) => {});
                       }
                     }
                   });
@@ -1245,8 +1252,7 @@ export default function ChatScreen(props) {
                                   });
                               });
                             })
-                            .catch((error) => {
-                            });
+                            .catch((error) => {});
                         });
                       } else {
                         reference
@@ -1302,8 +1308,7 @@ export default function ChatScreen(props) {
                                 });
                             });
                           })
-                          .catch((error) => {
-                          });
+                          .catch((error) => {});
                       }
                     }
                   });

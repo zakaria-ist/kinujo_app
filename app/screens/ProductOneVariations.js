@@ -36,6 +36,7 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   const [janCode, onJanCodeChanged] = React.useState(123456789);
   const [stock, onStockChanged] = React.useState(1);
   const [itemName, onItemNameChanged] = React.useState("");
+  const [id, onIdChanged] = React.useState("");
   const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
   const [variationDetailsHtml, onProcessSVariationDetailsHtml] = React.useState(
     <View></View>
@@ -45,6 +46,11 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
 
   React.useEffect(()=>{
     if(pItems && pItems.name){
+      onItemNameChanged(pItems.name)
+      onIdChanged(pItems.id)
+    }
+
+    if(pItems && pItems.id){
       onItemNameChanged(pItems.name)
     }
 
@@ -68,6 +74,7 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
         janCode: "",
       });
       onItemsChanged({
+        "id" : id,
         "name" : itemName,
         "items" : items
       });
@@ -236,7 +243,14 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
           <TextInput
             style={styles.textInput}
             value={itemName}
-            onChangeText={(value) => onItemNameChanged(value)}
+            onChangeText={(value) => {
+              onItemNameChanged(value)
+              onItemsChanged({
+                "id" : id,
+                "name" : value,
+                "items" : items
+              });
+            }}
           ></TextInput>
           <ScrollView>
             <View>{variationHtml}</View>

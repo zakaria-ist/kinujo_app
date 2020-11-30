@@ -42,132 +42,21 @@ export default function SMSAuthentication(props) {
     // console.log(phoneNumber);
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
     console.log(confirmation);
-    setConfirm("C" + confirmation);
+    setConfirm(confirmation);
   }
 
+  function signInWithPhoneNumber2(phoneNumber){
+    console.log(phoneNumber)
+    signInWithPhoneNumber(phoneNumber).then(()=>{
+
+    }).catch((error)=>{
+      console.log(error)
+      signInWithPhoneNumber2(phoneNumber)
+    })
+  }
   const phone = props.route.params.username;
   React.useEffect(() => {
-    if (currentUser != null) {
-      auth()
-        .signOut()
-        .then(() => {
-          signInWithPhoneNumber("+" + phone);
-          auth().onAuthStateChanged((user) => {
-            if (user) {
-              request
-                .post("user/register", props.route.params)
-                .then(function (response) {
-                  response = response.data;
-                  if (response.success) {
-                    AsyncStorage.setItem("user", response.data.user.url).then(
-                      function (response) {
-                        console.log("32132");
-                        if (props.route.params.authority == "general") {
-                          props.navigation.navigate("RegisterCompletion", {
-                            authority: props.route.params.authority,
-                          });
-                        } else if (props.route.params.authority == "store") {
-                          props.navigation.navigate("StoreAccountSelection", {
-                            authority: props.route.params.authority,
-                          });
-                        }
-                      }
-                    );
-                  } else {
-                    if (
-                      response.errors &&
-                      Object.keys(response.errors).length > 0
-                    ) {
-                      alert.warning(
-                        response.errors[Object.keys(response.errors)[0]][0] +
-                          "(" +
-                          Object.keys(response.errors)[0] +
-                          ")"
-                      );
-                    }
-                  }
-                })
-                .catch((error) => {
-                  if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    Object.keys(error.response.data).length > 0
-                  ) {
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0] +
-                        "(" +
-                        Object.keys(error.response.data)[0] +
-                        ")"
-                    );
-                  }
-                });
-            } else {
-              console.log("Dsadsadsa");
-            }
-          });
-        });
-    } else {
-      signInWithPhoneNumber("+" + phone);
-      auth().onAuthStateChanged((user) => {
-        console.log("user" + user);
-        console.log("ddd");
-        if (user) {
-          request
-            .post("user/register", props.route.params)
-            .then(function (response) {
-              response = response.data;
-              if (response.success) {
-                AsyncStorage.setItem("user", response.data.user.url).then(
-                  function (response) {
-                    console.log("4444");
-                    if (props.route.params.authority == "general") {
-                      props.navigation.navigate("RegisterCompletion", {
-                        authority: props.route.params.authority,
-                      });
-                    } else if (props.route.params.authority == "store") {
-                      props.navigation.navigate("StoreAccountSelection", {
-                        authority: props.route.params.authority,
-                      });
-                    }
-                  }
-                );
-              } else {
-                if (
-                  response.errors &&
-                  Object.keys(response.errors).length > 0
-                ) {
-                  alert.warning(
-                    response.errors[Object.keys(response.errors)[0]][0] +
-                      "(" +
-                      Object.keys(response.errors)[0] +
-                      ")"
-                  );
-                }
-              }
-            })
-            .catch((error) => {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
-            });
-        } else {
-          console.log("Dsadsadsa");
-        }
-      });
-    }
+    signInWithPhoneNumber2("+" + props.route.params.username)
   }, []);
   return (
     <LinearGradient
@@ -213,67 +102,82 @@ export default function SMSAuthentication(props) {
                   .signOut()
                   .then(() => {
                     request
-                      .post("user/register", props.route.params)
-                      .then(function (response) {
-                        response = response.data;
-                        if (response.success) {
-                          AsyncStorage.setItem(
-                            "user",
-                            response.data.user.url
-                          ).then(function (response) {
-                            if (props.route.params.authority == "general") {
-                              props.navigation.navigate("RegisterCompletion", {
-                                authority: props.route.params.authority,
-                              });
-                            } else if (
-                              props.route.params.authority == "store"
-                            ) {
-                              props.navigation.navigate(
-                                "StoreAccountSelection",
-                                {
-                                  authority: props.route.params.authority,
-                                }
-                              );
-                            }
-                          });
-                        } else {
-                          if (
-                            response.errors &&
-                            Object.keys(response.errors).length > 0
+                    .post("user/register", props.route.params)
+                    .then(function (response) {
+                      console.log(response)
+                      response = response.data;
+                      if (response.success) {
+                        AsyncStorage.setItem(
+                          "user",
+                          response.data.user.url
+                        ).then(function (response) {
+                          if (props.route.params.authority == "general") {
+                            props.navigation.navigate("RegisterCompletion", {
+                              authority: props.route.params.authority,
+                            });
+                          } else if (
+                            props.route.params.authority == "store"
                           ) {
-                            alert.warning(
-                              response.errors[
-                                Object.keys(response.errors)[0]
-                              ][0] +
-                                "(" +
-                                Object.keys(response.errors)[0] +
-                                ")"
+                            props.navigation.navigate(
+                              "StoreAccountSelection",
+                              {
+                                authority: props.route.params.authority,
+                              }
                             );
                           }
-                        }
-                      })
-                      .catch((error) => {
+                        });
+                      } else {
                         if (
-                          error &&
-                          error.response &&
-                          error.response.data &&
-                          Object.keys(error.response.data).length > 0
+                          response.errors &&
+                          Object.keys(response.errors).length > 0
                         ) {
                           alert.warning(
-                            error.response.data[
-                              Object.keys(error.response.data)[0]
+                            response.errors[
+                              Object.keys(response.errors)[0]
                             ][0] +
                               "(" +
-                              Object.keys(error.response.data)[0] +
+                              Object.keys(response.errors)[0] +
                               ")"
                           );
                         }
-                      });
+                      }
+                    })
+                    .catch((error) => {
+                      console.log(error)
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0] +
+                            "(" +
+                            Object.keys(error.response.data)[0] +
+                            ")"
+                        );
+                      }
+                    });
                   })
                   .catch(function (error) {
                     // An error happened.
+                    console.log(error)
                   });
-              });
+              }).catch((error)=>{
+                console.log(error)
+              })
+            } else {
+              confirm.confirm(code).then(() => {
+                AsyncStorage.setItem('verified', "1").then(()=>{
+                  props.navigation.pop();
+                })
+              }).catch((error)=>{
+                AsyncStorage.setItem('verified', "0").then(()=>{
+                  props.navigation.pop();
+                })
+              })
             }
           }}
         >
@@ -285,7 +189,9 @@ export default function SMSAuthentication(props) {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            props.navigation.pop();
+            AsyncStorage.setItem('verified', "1").then(()=>{
+              props.navigation.pop();
+            })
           }}
         >
           <View style={styles.smsCancelButton}>

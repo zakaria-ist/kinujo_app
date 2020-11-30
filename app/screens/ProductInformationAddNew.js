@@ -13,6 +13,7 @@ import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
 import { RadioButton } from "react-native-paper";
 import Spinner from "react-native-loading-spinner-overlay";
+import DropDownPicker from "react-native-dropdown-picker";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -74,6 +75,7 @@ export default function ProductInformationAdd(props) {
   const [productDescription, onProductDescriptionChanged] = React.useState("");
   const [spinner, onSpinnerChanged] = React.useState(false);
   const [product, onProductChanged] = React.useState(false);
+  const [productCategories, onProductCategoriesChanged] = React.useState([]);
   
   function getId(url){
     let urls = url.split("/");
@@ -108,6 +110,21 @@ export default function ProductInformationAdd(props) {
       });
       if(props.route.params.url){
         request.get(props.route.params.url).then((response)=>{
+          let tmpProduct = response.data;
+
+          request.get('product_categories/').then((response) => {
+            let categories = response.data.map((category) => {
+              return {
+                "label" : category.name,
+                "value" : category.url
+              }
+            })
+            onProductCategoriesChanged(categories)
+            onProductCategoryChanged(tmpProduct.category.url)
+          }).catch((error)=>{
+            console.log(error)
+          })
+
           onProductChanged(response.data)
           onProductNameChanged(response.data.name)
           onBrandNameChanged(response.data.brand_name)
@@ -115,16 +132,20 @@ export default function ProductInformationAdd(props) {
           onProductIdChanged(response.data.url_str)
           onPublishDateChanged(response.data.opened_date)
           onPublishStateChanged(response.data.is_opened ? "published" : "unpublished")
-          onProductCategoryChanged(response.data.category)
           onProductVariationChanged(response.data.variety == 0 ? "none" : (response.data.variety == 1 ? "one" : "two"))
           onProductStatusChanged(response.data.is_used == 0 ? "new" : "secondHand")
           onTargetUserChanged(response.data.target == 0 ? "allUser" : (response.data.target == 1 ?  "generalUser" : "storeUser"))
           onPriceChanged(response.data.price.toString())
           onStorePriceChanged(response.data.store_price)
-          onShippingChanged(response.data.shipping + "")
+          onShippingChanged(response.data.shipping_fee + "")
           onProductDescriptionChanged(response.data.description)
-          onProductImagesChanged(response.data.productImages)
-
+          let oldImages = response.data.productImages.map((image) => {
+            let tmpImage = image.image;
+            tmpImage['is_old'] = true;
+            return tmpImage;
+          })
+          onProductImagesChanged(oldImages)
+          onProductPageDisplayMethodChanged("slidingType")
           let tmpImages = response.data.productImages;
           let html = []
           tmpImages.map((image) => {
@@ -170,6 +191,7 @@ export default function ProductInformationAdd(props) {
             let tmpItems = {}
             let productVariety = response.data.productVarieties[0]
             tmpItems['name'] = productVariety['name']
+            tmpItems['id'] = productVariety['id']
             tmpItems['items'] = []
             for(var i=0; i<productVariety.productVarietySelections.length; i++){
               let productVarietySelection = productVariety.productVarietySelections[i]
@@ -216,6 +238,7 @@ export default function ProductInformationAdd(props) {
               tmpItems['items'][0]['choices'].push({
                 choiceIndex: tmpItems['items'][0]['choices'].length,
                 choiceItem: productVarietySelection.selection,
+                id: productVarietySelection.id
               })
             })
             secondProductVariety.productVarietySelections.map((productVarietySelection) => {
@@ -223,6 +246,7 @@ export default function ProductInformationAdd(props) {
               tmpItems['items'][1]['choices'].push({
                 choiceIndex: tmpItems['items'][1]['choices'].length,
                 choiceItem: productVarietySelection.selection,
+                id: productVarietySelection.id
               })
             })
 
@@ -379,7 +403,8 @@ export default function ProductInformationAdd(props) {
       });
       let userId = urls[urls.length - 1];
       onSpinnerChanged(true)
-      request.post("saveProduct/" + userId + "/", {
+      console.log(twoVariationItems)
+      request.post("editProduct/" + userId + "/", {
         id:  product.id,
         productName: productName,
         brandName: brandName,
@@ -405,8 +430,9 @@ export default function ProductInformationAdd(props) {
       }).then((response) => {
         onSpinnerChanged(false);
         response = response.data;
+        console.log(response)
         if(response.success){
-          props.navigation.pop();
+          // props.navigation.pop();
         } else {
           if (
             response.errors &&
@@ -491,17 +517,44 @@ export default function ProductInformationAdd(props) {
             ></TextInput>
 
             <Text style={styles.text}>{Translate.t("productCategory")}</Text>
-            <TextInput
-              style={styles.textInput}
-              value={productCategory}
-              onChangeText={(value) => onProductCategoryChanged(value)}
-            ></TextInput>
+            <DropDownPicker
+                style={styles.text}
+                items={productCategories}
+                defaultValue={productCategory ? productCategory : null}
+                containerStyle={{
+                  paddingVertical: 0,
+                  width: widthPercentageToDP("86%")
+                }}
+                labelStyle={{
+                  fontSize: RFValue(12),
+                  color: "gray",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.F0EEE9,
+                }}
+                placeholder={Translate.t("unit")}
+                dropDownStyle={{
+                  backgroundColor: "#FFFFFF",
+                  color: "black",
+                  zIndex: 1000,
+                }}
+                onChangeItem={(ci) => {
+                  onProductCategoryChanged(ci.value)
+                }}
+              />
 
             <Text style={styles.text}>{Translate.t("variation")}</Text>
             <View style={styles.radioGroupContainer}>
               <RadioButton.Group
                 style={{ alignItems: "flex-start" }}
-                onValueChange={(variant) => onValueChanged(variant)}
+                onValueChange={(variant) => {
+                  if(!props.route.params.url){
+                    onValueChanged(variant)
+                  }
+                }}
                 value={productVariation}
               >
                 <View style={styles.radionButtonLabel}>
@@ -668,7 +721,7 @@ export default function ProductInformationAdd(props) {
               <View style={styles.productPricingContainer}>
                 <TextInput
                   style={styles.productPricingTextInput}
-                  value={shipping}
+                  value={shipping ? shipping : 0}
                   onChangeText={(value) => onShippingChanged(value)}
                 ></TextInput>
                 <Text style={styles.productPricingText}>
@@ -820,7 +873,7 @@ export default function ProductInformationAdd(props) {
             <TouchableOpacity onPress={
               ()=>{
                 if(props.route.params.url){
-                  // saveProduct(1);
+                  saveProduct(1);
                 } else {
                   createProduct(1);
                 }
@@ -835,7 +888,7 @@ export default function ProductInformationAdd(props) {
             <TouchableOpacity onPress={
               ()=>{
                 if(props.route.params.url){
-                  // saveProduct(0);
+                  saveProduct(0);
                 } else {
                   createProduct(0);
                 }
@@ -884,6 +937,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: RFValue(14),
     marginBottom: heightPercentageToDP("2%"),
+    width: "100%"
   },
   radioButtonText: {
     fontSize: RFValue(10),

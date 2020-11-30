@@ -50,7 +50,7 @@ const ratioAdd = win.width / 21 / 14;
 const ratioRemove = win.width / 20 / 16;
 let taxObj = {};
 let productLoaded = false;
-
+let controller;
 export default function Cart(props) {
   const [cartItemShow, onCartItemShowChanged] = React.useState(true);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
@@ -77,74 +77,114 @@ export default function Cart(props) {
   const isFocused = useIsFocused();
   const [selected, onSelectedChanged] = React.useState("");
   const [addressHtml, onAddressHtmlChanged] = React.useState([]);
+  const [dropDownPickerOpen, onDropDownPickerOpen] = React.useState(false);
   const cartItems = [];
+  // if (this.controller.isOpen()) {
+  //   onDropDownPickerOpen(true);
+  // }
+  // this.controller.isOpen();
   function getAddressHtml(pAddresses, pSelected) {
     let tmpAddresses = [];
     // pAddresses.map((address) => {
     // console.log(pAddresses.name);
-    tmpAddresses.push(
-      <View style={styles.deliveryTabContainer} key={pAddresses.id}>
-        <View
-          style={{
-            position: "absolute",
-            marginLeft: widthPercentageToDP("7%"),
-          }}
-        >
-          <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
-          <TouchableWithoutFeedback
-            onPress={() => props.navigation.navigate("ShippingList")}
-          >
-            <View
-              style={{
-                fontSize: RFValue(11),
-                color: "white",
-                backgroundColor: Colors.deepGrey,
-                paddingHorizontal: widthPercentageToDP("2%"),
-                paddingVertical: heightPercentageToDP(".5%"),
-                borderRadius: 5,
-                marginTop: heightPercentageToDP("1%"),
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ fontSize: RFValue(11), color: "white" }}>
-                Change
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-        <View
-          style={{
-            marginRight: widthPercentageToDP("5%"),
-            position: "absolute",
-            right: 0,
-            justifyContent: "center",
-          }}
-        >
-          <Text
+
+    if(!pAddresses){
+      tmpAddresses.push(
+        <View style={styles.deliveryTabContainer} key={pAddresses.id}>
+          <View
             style={{
-              fontSize: RFValue(12),
-              // backgroundColor: "orange",
-              width: widthPercentageToDP("45%"),
+              marginHorizontal: widthPercentageToDP("7%"),
+              alignItems: "center"
             }}
           >
-            {pAddresses.name}
-          </Text>
-          <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
-          <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={{ fontSize: RFValue(12) }}>No Address</Text>
+            <TouchableWithoutFeedback
+              onPress={() => props.navigation.navigate("ShippingList")}
+            >
+              <View
+                style={{
+                  fontSize: RFValue(11),
+                  color: "white",
+                  backgroundColor: Colors.deepGrey,
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP(".5%"),
+                  borderRadius: 5,
+                  marginTop: heightPercentageToDP("1%"),
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                  Add Address
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
+      );
+    } else {
+      tmpAddresses.push(
+        <View style={styles.deliveryTabContainer} key={pAddresses.id}>
+          <View
+            style={{
+              position: "absolute",
+              marginLeft: widthPercentageToDP("7%"),
+            }}
+          >
+            <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
+            <TouchableWithoutFeedback
+              onPress={() => props.navigation.navigate("ShippingList")}
+            >
+              <View
+                style={{
+                  fontSize: RFValue(11),
+                  color: "white",
+                  backgroundColor: Colors.deepGrey,
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP(".5%"),
+                  borderRadius: 5,
+                  marginTop: heightPercentageToDP("1%"),
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                  Change
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+          <View
+            style={{
+              marginRight: widthPercentageToDP("5%"),
+              position: "absolute",
+              right: 0,
+              justifyContent: "center",
+            }}
+          >
             <Text
               style={{
                 fontSize: RFValue(12),
-                marginTop: heightPercentageToDP(".5%"),
+                // backgroundColor: "orange",
+                width: widthPercentageToDP("45%"),
               }}
             >
-              {pAddresses.prefecture.name}
+              {pAddresses.name}
             </Text>
+            <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
+            <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  marginTop: heightPercentageToDP(".5%"),
+                }}
+              >
+                {pAddresses.prefecture.name}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-    );
-    // });
+      );
+    }
     return tmpAddresses[0];
   }
 
@@ -161,6 +201,7 @@ export default function Cart(props) {
   function processCartHtml(props, products, maps, is_store = false) {
     productLoaded = false;
     let tmpCartHtml = [];
+    let isVis = [];
     for (i = 0; i < maps.length; i++) {
       console.log(maps);
       let item = maps[i];
@@ -170,161 +211,173 @@ export default function Cart(props) {
       let product = tmpProducts[0];
       let quantity = item.quantity;
       let realIndex = 1000 - i;
+      let idx = i;
+      isVis[idx] = false;
       // onShippingChanged(product.shipping_fee);
       tmpCartHtml.push(
-        <View
-          key={i}
-          style={{
-            flexDirection: "row",
-            backgroundColor: Colors.F0EEE9,
-            height: heightPercentageToDP("18%"),
-            marginTop: heightPercentageToDP("2%"),
-            paddingHorizontal: widthPercentageToDP("4%"),
-            paddingBottom: heightPercentageToDP("14%"),
-            zIndex: realIndex,
-          }}
-        >
+        <TouchableWithoutFeedback onPress={() => this.controller.close()}>
           <View
+            key={i}
             style={{
-              width: widthPercentageToDP("60%"),
+              flexDirection: "row",
+              backgroundColor: Colors.F0EEE9,
+              height: heightPercentageToDP("18%"),
+              marginTop: heightPercentageToDP("2%"),
+              paddingHorizontal: widthPercentageToDP("4%"),
+              paddingBottom: heightPercentageToDP("14%"),
+              zIndex: realIndex,
             }}
           >
-            <Text style={styles.cartTabText}>{product.name}</Text>
-            <Text style={styles.cartTabText}>
-              {is_store
-                ? format.separator(product.store_price)
-                : format.separator(product.price)}
-              円
-            </Text>
-            <Text style={styles.cartTabText}>{item.name}</Text>
-          </View>
-          <View style={styles.tabRightContainer}>
-            <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
             <View
               style={{
-                position: "absolute",
-                zIndex: 1000,
-                top: heightPercentageToDP("4.5%"),
+                width: widthPercentageToDP("60%"),
               }}
             >
-              <DropDownPicker
+              <Text style={styles.cartTabText}>{product.name}</Text>
+              <Text style={styles.cartTabText}>
+                {is_store
+                  ? format.separator(product.store_price)
+                  : format.separator(product.price)}
+                円
+              </Text>
+              <Text style={styles.cartTabText}>{item.name}</Text>
+            </View>
+            <View style={styles.tabRightContainer}>
+              <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
+              <View
                 style={{
-                  borderWidth: 1,
-                  backgroundColor: "transparent",
-                  borderColor: "transparent",
-                  color: "black",
-                  borderRadius: 0,
-                  fontSize: RFValue(12),
-                  height: heightPercentageToDP("5.5%"),
-                  paddingLeft: widthPercentageToDP("2%"),
-                  marginVertical: heightPercentageToDP("1%"),
-                }}
-                items={cartItems}
-                defaultValue={quantity ? quantity + "" : ""}
-                containerStyle={{
-                  paddingVertical: 0,
-                  width: widthPercentageToDP("20%"),
-                }}
-                labelStyle={{
-                  fontSize: RFValue(12),
-                  color: "gray",
-                }}
-                itemStyle={{
-                  justifyContent: "flex-start",
-                }}
-                selectedtLabelStyle={{
-                  color: Colors.F0EEE9,
-                }}
-                placeholder={Translate.t("unit")}
-                dropDownStyle={{
-                  backgroundColor: "#FFFFFF",
-                  color: "black",
+                  position: "absolute",
                   zIndex: 1000,
+                  top: heightPercentageToDP("4.5%"),
                 }}
-                onChangeItem={(ci) => {
-                  if (ci) {
-                    onValueChanged(item.id, ci.value, is_store);
+              >
+                <DropDownPicker
+                  style={{
+                    borderWidth: 1,
+                    backgroundColor: "transparent",
+                    borderColor: "transparent",
+                    color: "black",
+                    borderRadius: 0,
+                    fontSize: RFValue(12),
+                    height: heightPercentageToDP("5.5%"),
+                    paddingLeft: widthPercentageToDP("2%"),
+                    marginVertical: heightPercentageToDP("1%"),
+                  }}
+                  items={cartItems}
+                  controller={instance => isVis[idx] = instance}
+                  defaultValue={quantity ? quantity + "" : ""}
+                  containerStyle={{
+                    paddingVertical: 0,
+                    width: widthPercentageToDP("20%"),
+                  }}
+                  labelStyle={{
+                    fontSize: RFValue(12),
+                    color: "gray",
+                  }}
+                  itemStyle={{
+                    justifyContent: "flex-start",
+                  }}
+                  selectedtLabelStyle={{
+                    color: Colors.F0EEE9,
+                  }}
+                  placeholder={Translate.t("unit")}
+                  dropDownStyle={{
+                    backgroundColor: "#FFFFFF",
+                    color: "black",
+                    zIndex: 1000,
+                  }}
+                  onOpen={() => {
+                    for(let j = 0 ; j < isVis.length ; j++) {
+                      if(idx !== j) {
+                        isVis[j].close();
+                      }
+                    }
+                  }}
+                  onChangeItem={(ci) => {
+                    if (ci) {
+                      onValueChanged(item.id, ci.value, is_store);
+                    }
+                  }}
+            />
+              </View>
+              {/* <Picker
+                selectedValue={quantity}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) => {
+                  if (productLoaded) {
+                    onValueChanged(product.id, itemValue, is_store);
                   }
                 }}
-              />
-            </View>
-            {/* <Picker
-              selectedValue={quantity}
-              style={styles.picker}
-              onValueChange={(itemValue, itemIndex) => {
-                if (productLoaded) {
-                  onValueChanged(product.id, itemValue, is_store);
-                }
-              }}
-              mode="dropdown"
-            >
-              <Picker.Item key="1" label="1" value="1" />
-              <Picker.Item key="2" label="2" value="2" />
-              <Picker.Item key="3" label="3" value="3" />
-              <Picker.Item key="4" label="4" value="4" />
-              <Picker.Item key="5" label="5" value="5" />
-              <Picker.Item key="6" label="6" value="6" />
-              <Picker.Item key="7" label="7" value="7" />
-              <Picker.Item key="8" label="8" value="8" />
-              <Picker.Item key="9" label="9" value="9" />
-              <Picker.Item key="10" label="10" value="10" />
-            </Picker> */}
-            <View
-              style={{
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  let tmpFirebaseProducts = firebaseProducts.filter(
-                    (tmpProduct) => {
-                      return product.product_id == tmpProduct.product_id;
-                    }
-                  );
-                  let firebaseProduct = tmpFirebaseProducts[0];
-                  db.collection("users")
-                    .doc(userId)
-                    .collection("carts")
-                    .doc(product.product_id)
-                    .set({
-                      quantity: firebaseProduct.quantity,
+                mode="dropdown"
+              >
+                <Picker.Item key="1" label="1" value="1" />
+                <Picker.Item key="2" label="2" value="2" />
+                <Picker.Item key="3" label="3" value="3" />
+                <Picker.Item key="4" label="4" value="4" />
+                <Picker.Item key="5" label="5" value="5" />
+                <Picker.Item key="6" label="6" value="6" />
+                <Picker.Item key="7" label="7" value="7" />
+                <Picker.Item key="8" label="8" value="8" />
+                <Picker.Item key="9" label="9" value="9" />
+                <Picker.Item key="10" label="10" value="10" />
+              </Picker> */}
+              <View
+                style={{
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let tmpFirebaseProducts = firebaseProducts.filter(
+                      (tmpProduct) => {
+                        return product.product_id == tmpProduct.product_id;
+                      }
+                    );
+                    let firebaseProduct = tmpFirebaseProducts[0];
+                    db.collection("users")
+                      .doc(userId)
+                      .collection("carts")
+                      .doc(product.product_id)
+                      .set({
+                        quantity: firebaseProduct.quantity,
+                      });
+                    alert.warning("Cart Updated.");
+                  }}
+                >
+                  <View style={styles.buttonContainer}>
+                    <Text style={styles.buttonText}>{Translate.t("change")}</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    firebaseProducts = firebaseProducts.filter(
+                      (firebaseProduct) => {
+                        return firebaseProduct.id != product.id;
+                      }
+                    );
+                    let tmpIds = ids.filter((id) => {
+                      return id != product.id;
                     });
-                  alert.warning("Cart Updated.");
-                }}
-              >
-                <View style={styles.buttonContainer}>
-                  <Text style={styles.buttonText}>{Translate.t("change")}</Text>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  firebaseProducts = firebaseProducts.filter(
-                    (firebaseProduct) => {
-                      return firebaseProduct.id != product.id;
-                    }
-                  );
-                  let tmpIds = ids.filter((id) => {
-                    return id != product.id;
-                  });
-                  ids = tmpIds;
-                  onUpdate(tmpIds, firebaseProducts, false);
-                  db.collection("users")
-                    .doc(userId)
-                    .collection("carts")
-                    .doc(product.product_id)
-                    .delete();
-                }}
-              >
-                <RemoveLogo
-                  source={require("../assets/icons/removeIcon.svg")}
-                  style={styles.removeIcon}
-                />
-              </TouchableWithoutFeedback>
+                    ids = tmpIds;
+                    onUpdate(tmpIds, firebaseProducts, false);
+                    db.collection("users")
+                      .doc(userId.toString())
+                      .collection("carts")
+                      .doc(product.id.toString())
+                      .delete();
+                  }}
+                >
+                  <RemoveLogo
+                    source={require("../assets/icons/removeIcon.svg")}
+                    style={styles.removeIcon}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
             </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       );
     }
     return tmpCartHtml;
@@ -411,34 +464,38 @@ export default function Cart(props) {
         });
       AsyncStorage.getItem("defaultAddress").then((address) => {
         if (address != null) {
-          // console.log({ address });
           request.get(address).then((response) => {
-            // console.log(response.data);
             onAddressHtmlChanged(getAddressHtml(response.data, ""));
           });
+          onSelectedChanged(address)
+        } else {
+          request
+            .get("addressList/" + userId + "/")
+            .then((response) => {
+              if(response.data.addresses.length > 0){
+                onAddressHtmlChanged(getAddressHtml(response.data.addresses[0], ""));
+                onSelectedChanged(response.data.addresses[0].url)
+              } else {
+                onAddressHtmlChanged(getAddressHtml(null, ""));
+              }
+            })
+            .catch((error) => {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
         }
       });
-      // request
-      //   .get("addressList/" + userId + "/")
-      //   .then((response) => {
-      //     // console.log(response.data);
-      //     onAddressHtmlChanged(getAddressHtml(response.data.addresses, ""));
-      //   })
-      //   .catch((error) => {
-      //     if (
-      //       error &&
-      //       error.response &&
-      //       error.response.data &&
-      //       Object.keys(error.response.data).length > 0
-      //     ) {
-      //       alert.warning(
-      //         error.response.data[Object.keys(error.response.data)[0]][0] +
-      //           "(" +
-      //           Object.keys(error.response.data)[0] +
-      //           ")"
-      //       );
-      //     }
-      //   });
 
       request
         .get("tax_rates/")

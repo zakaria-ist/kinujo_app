@@ -30,6 +30,7 @@ export default function ProductNoneVariations({ props, pItems, onItemsChanged })
   const [invt, hideInvt] = React.useState(false);
   const [janCode, setJanCode] = React.useState("");
   const [stock, setStock] = React.useState("");
+  const [id, setId] = React.useState("");
 
   React.useEffect(()=>{
     if(pItems){
@@ -37,6 +38,7 @@ export default function ProductNoneVariations({ props, pItems, onItemsChanged })
       if(pItems.stock){
         setStock(pItems.stock);
       }
+      setStock(pItems.id);
     }
   }, [pItems])
 
@@ -64,6 +66,7 @@ export default function ProductNoneVariations({ props, pItems, onItemsChanged })
                 setStock(stock)
                 if(onItemsChanged){
                   onItemsChanged({
+                    "id" : id,
                     "janCode" : janCode,
                     "stock" : value
                   })

@@ -131,30 +131,7 @@ export default function Contact(props) {
         }
       });
   }
-  // function navigateToChatScreen(friendID) {
-  //   let groupID;
-  //   let groupName;
-  //   db.collection("chat")
-  //     .where("users", "array-contains", userId)
-  //     .get()
-  //     .then((querySnapshot) => {
-  //       querySnapshot.docChanges().forEach((snapShot) => {
-  //         let users = snapShot.doc.data().users;
-  //         for (var i = 0; i < users.length; i++) {
-  //           if (users[i] == friendID) {
-  //             groupID = snapShot.doc.id;
-  //             groupName = snapShot.doc.data().groupName;
-  //           }
-  //         }
-  //         if (groupID != null) {
-  //           props.navigation.navigate("ChatScreen", {
-  //             groupID: groupID,
-  //             groupName: groupName,
-  //           });
-  //         }
-  //       });
-  //     });
-  // }
+
   function navigateToChatScreenWithGroupID(groupID, groupName) {
     props.navigation.navigate("ChatScreen", {
       groupID: groupID,
@@ -170,41 +147,64 @@ export default function Contact(props) {
     }
     return "";
   }
+  async function getFriendName(userID, realName) {
+    let snapShot = await db
+      .collection("users")
+      .doc(String(user.id))
+      .collection("customers")
+      .get();
+
+    tmpName = "";
+    snapShot.forEach((docRef) => {
+      if (docRef.data().displayName && docRef.id == userID) {
+        console.log("#21" + docRef.data().displayName);
+        tmpName = docRef.data().displayName;
+      }
+    });
+    if (tmpName) return tmpName;
+    else return realName;
+  }
   function processUserHtml(props, users) {
     setFriendCount(users.length);
     let tmpUserHtml = [];
     users.map((user) => {
-      tmpUserHtml.push(
-        <TouchableWithoutFeedback
-          onLongPress={() => {
-            onLongPressObjChanged({
-              type: "user",
-              data: user,
-            });
-            onShowChanged(true);
-          }}
-          key={user.id}
-          onPress={() => {
-            redirectToChat(
-              user.id,
-              user.real_name ? user.real_name : user.nickname
-            );
-          }}
-        >
-          <View style={styles.contactTabContainer}>
-            <Image
-              style={{
-                width: win.width / 13,
-                height: ratioProfile * 25,
-              }}
-              source={require("../assets/Images/profileEditingIcon.png")}
-            />
-            <Text style={styles.tabLeftText}>
-              {user.real_name ? user.real_name : user.nickname}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      );
+      getFriendName(
+        user.id,
+        user.real_name ? user.real_name : user.nickname
+      ).then((name) => {
+        tmpUserHtml.push(
+          <TouchableWithoutFeedback
+            onLongPress={() => {
+              onLongPressObjChanged({
+                type: "user",
+                data: user,
+              });
+              onShowChanged(true);
+            }}
+            key={user.id}
+            onPress={() => {
+              redirectToChat(
+                user.id,
+                user.real_name ? user.real_name : user.nickname
+              );
+            }}
+          >
+            <View style={styles.contactTabContainer}>
+              <Image
+                style={{
+                  width: win.width / 13,
+                  height: ratioProfile * 25,
+                }}
+                source={require("../assets/Images/profileEditingIcon.png")}
+              />
+              <Text style={styles.tabLeftText}>
+                {/* {user.real_name ? user.real_name : user.nickname} */}
+                {name}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      });
     });
     return tmpUserHtml;
   }
@@ -502,7 +502,6 @@ export default function Contact(props) {
                   value={searchText}
                   onChangeText={(value) => {
                     onSearchTextChanged(value);
-
                     onUserHtmlChanged(
                       processUserHtml(
                         props,
@@ -1116,12 +1115,18 @@ export default function Contact(props) {
                     {Translate.t("remove")}
                   </Text>
                 </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                {longPressObj.type == 'user' ? (<TouchableWithoutFeedback
                   onPressIn={() => onShowChanged(false)}
                   onPress={() => {
-                    AsyncStorage.setItem('ids', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
-                      AsyncStorage.setItem('tmpIds', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
-                        props.navigation.navigate("GroupChatCreation")
+                    AsyncStorage.setItem(
+                      "ids",
+                      JSON.stringify([longPressObj.data.id.toString()])
+                    ).then(() => {
+                      AsyncStorage.setItem(
+                        "tmpIds",
+                        JSON.stringify([longPressObj.data.id.toString()])
+                      ).then(() => {
+                        props.navigation.navigate("GroupChatCreation");
                       });
                     });
                   }}
@@ -1129,13 +1134,19 @@ export default function Contact(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("groupChatCreate")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableWithoutFeedback>) : (null)}
+                {longPressObj.type == 'user' ? (<TouchableWithoutFeedback
                   onPressIn={() => onShowChanged(false)}
                   onPress={() => {
-                    AsyncStorage.setItem('ids', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
-                      AsyncStorage.setItem('tmpIds', JSON.stringify([longPressObj.data.id.toString()])).then(()=>{
-                        props.navigation.navigate("CreateFolder")
+                    AsyncStorage.setItem(
+                      "ids",
+                      JSON.stringify([longPressObj.data.id.toString()])
+                    ).then(() => {
+                      AsyncStorage.setItem(
+                        "tmpIds",
+                        JSON.stringify([longPressObj.data.id.toString()])
+                      ).then(() => {
+                        props.navigation.navigate("CreateFolder");
                       });
                     });
                   }}
@@ -1143,7 +1154,7 @@ export default function Contact(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("createFolder")}
                   </Text>
-                </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>) : (null)}
               </View>
             </View>
           </View>

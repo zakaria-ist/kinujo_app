@@ -22,6 +22,7 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import Translate from "../assets/Translates/Translate";
+import auth from "@react-native-firebase/auth";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -33,6 +34,15 @@ export default function PasswordReset(props) {
   const [code, onCodeChanged] = React.useState("");
   const [password, onPasswordChanged] = React.useState("");
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
+  const [confirm, setConfirm] = React.useState(null);
+
+
+  async function signInWithPhoneNumber(phoneNumber) {
+    // console.log(phoneNumber);
+    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    console.log(confirmation);
+    setConfirm(confirmation);
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -58,7 +68,11 @@ export default function PasswordReset(props) {
           onChangeText={(text) => onPhoneChanged(text)}
           value={phone}
         ></TextInput>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={
+          ()=>{
+            signInWithPhoneNumber("+" + phone)
+          }
+        }>
           <View style={styles.sendVerificationCodeButton}>
             <Text style={styles.sendVerificationCodeButtonText}>
               {Translate.t("sendVerificatioCode")}
@@ -127,37 +141,51 @@ export default function PasswordReset(props) {
         <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
           <TouchableOpacity
             onPress={() => {
-              if (password && confirm_password) {
-                if (password == confirm_password) {
-                  request
-                    .post("password/reset", {
-                      tel: phone,
-                      password: password,
-                      confirm_password: confirm_password,
-                    })
-                    .then(function(response) {
-                      response = response.data;
-
-                      if (response.success) {
-                        onCodeChanged("");
-                        onConfirmPasswordChanged("");
-                        onPasswordChanged("");
-                        onPhoneChanged("");
-                        props.navigation.navigate("PasswordResetCompletion");
+              if(confirm){
+                confirm.confirm(code).then(()=>{
+                  auth()
+                  .signOut()
+                  .then(() => {
+                    if (password && confirm_password) {
+                      if (password == confirm_password) {
+                        request
+                          .post("password/reset", {
+                            tel: phone,
+                            password: password,
+                            confirm_password: confirm_password,
+                          })
+                          .then(function(response) {
+                            response = response.data;
+      
+                            if (response.success) {
+                              onCodeChanged("");
+                              onConfirmPasswordChanged("");
+                              onPasswordChanged("");
+                              onPhoneChanged("");
+                              props.navigation.navigate("PasswordResetCompletion");
+                            } else {
+                              alert.warning(response.error);
+                            }
+                          })
+                          .catch(function(error) {
+                            if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                              alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                            }
+                          });
                       } else {
-                        alert.warning(response.error);
+                        alert.warning("password_mismatch");
                       }
-                    })
-                    .catch(function(error) {
-                      if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-                        alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-                      }
-                    });
-                } else {
-                  alert.warning("password_mismatch");
-                }
+                    } else {
+                      alert.warning("must_filled");
+                    }
+                  }).catch((error)=>{
+                    alert.warning("Invalid code")
+                  })
+                }).catch((error)=>{
+                  alert.warning("Invalid code")
+                })
               } else {
-                alert.warning("must_filled");
+                alert.warning("Please enter phone number to get the code")
               }
             }}
           >

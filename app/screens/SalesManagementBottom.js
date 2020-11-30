@@ -7,6 +7,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -15,16 +16,18 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
-import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
+import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 import DropDownPicker from "react-native-dropdown-picker";
+import DatePicker from "react-native-datepicker";
 const format = new Format();
 var kanjidate = require("kanjidate");
-
+let commissionProducts;
+let salesProducts;
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -122,11 +125,16 @@ function processCommissionHtml(commissions) {
   }
   return tmpCommissionHtml;
 }
+let userID;
+let year = new Date().getFullYear();
+let month = new Date().getMonth() + 1;
+let day = new Date().getDate();
 export default function SalesManagement(props) {
   const [status, onStatusChanged] = React.useState("commission");
   const [sales, onSalesChanged] = React.useState({});
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
+  const [date, onDateChange] = React.useState(year + "-" + month + "-" + day);
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
   );
@@ -143,7 +151,7 @@ export default function SalesManagement(props) {
       return url;
     });
     let userId = urls[urls.length - 1];
-
+    userID = userId;
     if (!user.url) {
       request
         .get(url)
@@ -172,6 +180,7 @@ export default function SalesManagement(props) {
         .get("commissionProducts/" + userId + "/")
         .then(function (response) {
           onCommissionsChanged(response.data.commissionProducts);
+          commissionProducts = response.data.commissionProducts;
           onComissionHtmlChanged(
             processCommissionHtml(response.data.commissionProducts, status)
           );
@@ -206,6 +215,7 @@ export default function SalesManagement(props) {
         .get("saleProducts/" + userId + "/")
         .then(function (response) {
           onSalesChanged(response.data.saleProducts);
+          salesProducts = response.data.saleProducts;
           onSaleHtmlChanged(
             processSaleHtml(response.data.saleProducts, status)
           );
@@ -239,8 +249,47 @@ export default function SalesManagement(props) {
         });
     }
   });
+
+  function onUpdate(date) {
+    onDateChange(date);
+    request.get("commissionProducts/" + userID + "/").then(function (response) {
+      onCommissionsChanged(response.data.commissionProducts);
+      commissionProducts = response.data.commissionProducts;
+      commissionProducts = commissionProducts.filter((commission) => {
+        // console.log(commission.order_product.order.created.split("T")[0]);
+        let productDate = commission.order_product.order.created.split("T")[0];
+        return productDate == date;
+      });
+      onComissionHtmlChanged(processCommissionHtml(commissionProducts, status));
+      let total = 0;
+      response.data.commissionProducts.map((commission) => {
+        total += commission.amount;
+      });
+      onTotalCommissionChanged(total);
+      onTotalChanged(totalCommission + totalSale);
+      onCommissionLoaded(true);
+    });
+    request.get("saleProducts/" + userID + "/").then(function (response) {
+      onSalesChanged(response.data.saleProducts);
+      salesProducts = response.data.saleProducts;
+      salesProducts = salesProducts.filter((sales) => {
+        let productDate = sales.order.created.split("T")[0];
+        return productDate == date;
+      });
+      onSaleHtmlChanged(processSaleHtml(salesProducts, status));
+      let total = 0;
+      response.data.saleProducts.map((sale) => {
+        total += sale.unit_price;
+      });
+      onTotalSaleChanged(total);
+      onTotalChanged(
+        format.separator(parseFloat(totalCommission) + parseFloat(totalSale))
+      );
+      onSaleLoaded(true);
+    });
+  }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         text={Translate.t("salesManagement")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -251,10 +300,13 @@ export default function SalesManagement(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader
-        name={user.nickname}
-      />
-      <View style={{ marginHorizontal: widthPercentageToDP("3%") }}>
+      <CustomSecondaryHeader name={user.nickname} />
+
+      <ScrollView
+        style={{
+          marginHorizontal: widthPercentageToDP("3%"),
+        }}
+      >
         {/* <View
           style={{
             flexDirection: "row",
@@ -271,41 +323,30 @@ export default function SalesManagement(props) {
             source={require("../assets/Images/downForMoreIcon.png")}
           />
         </View> */}
-        <View style={{ marginTop: heightPercentageToDP("3%") }}>
-          <DropDownPicker
-            style={{ borderColor: "transparent", borderWidth: 0 }}
-            items={[
-              {
-                label: "USA",
-                value: "usa",
-                hidden: true,
+        <View
+          style={{
+            marginTop: heightPercentageToDP("3%"),
+          }}
+        >
+          <DatePicker
+            style={{
+              width: widthPercentageToDP("50%"),
+              borderColor: "red",
+            }}
+            date={date}
+            mode="date"
+            format="YYYY-MM-DD"
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              dateInput: {
+                marginRight: widthPercentageToDP("3%"),
+                borderWidth: 0,
               },
-              {
-                label: "UK",
-                value: "uk",
-              },
-              {
-                label: "France",
-                value: "france",
-              },
-            ]}
-            defaultValue={"usa"}
-            containerStyle={{
-              height: heightPercentageToDP("5%"),
-              width: widthPercentageToDP("35%"),
             }}
-            arrowSize={RFValue(20)}
-            labelStyle={{
-              fontSize: RFValue(11),
-              color: "black",
+            onDateChange={(date) => {
+              onUpdate(date);
             }}
-            itemStyle={{
-              justifyContent: "flex-start",
-            }}
-            selectedtLabelStyle={{
-              color: "black",
-            }}
-            dropDownStyle={{ backgroundColor: "white" }}
           />
           <View
             style={{
@@ -470,7 +511,7 @@ export default function SalesManagement(props) {
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

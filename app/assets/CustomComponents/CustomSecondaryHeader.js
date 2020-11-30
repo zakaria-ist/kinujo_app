@@ -85,7 +85,9 @@ export default function CustomKinujoWord({
               style={{
                 fontSize: RFValue(12),
               }}
-            ></Text>
+            >
+              {name}
+            </Text>
           )}
           <Text
             style={{

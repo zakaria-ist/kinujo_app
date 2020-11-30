@@ -130,7 +130,7 @@ export default function ReceiptView(props) {
         accountType={Translate.t("storeAccount")}
       />
       <View style={styles.receiptEditingContainer}>
-        <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}</Text>
+      <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}{lastOrderReceipt.is_copy ? Translate.t("reissue") : ""}</Text>
         <View style={styles.invoiceInputContainer}>
           <TextInput
             style={styles.invoiceTextInput}
