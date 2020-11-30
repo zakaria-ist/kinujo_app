@@ -23,9 +23,11 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.example.kinujo</string>
+				<string>com.googleusercontent.apps.510807835075-a970uj8rrl0vmpdugi8iequ35bg1s1o8</string>
 			</array>
 		</dict>
 	</array>

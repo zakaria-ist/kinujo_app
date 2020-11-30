@@ -23,6 +23,7 @@ import firebase from "firebase/app";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import { block } from "react-native-reanimated";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -173,7 +174,7 @@ export default function AdvanceSetting(props) {
           <Text style={styles.textInTabs}>Secret mode</Text>
           <Switch
             trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-            thumbColor={Colors.D7CCA6}
+            thumbColor={secretMode ? Colors.D7CCA6 : "grey"}
             style={{
               position: "absolute",
               right: 0,
@@ -198,7 +199,7 @@ export default function AdvanceSetting(props) {
           <Text style={styles.textInTabs}>Block</Text>
           <Switch
             trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-            thumbColor={Colors.D7CCA6}
+            thumbColor={blockMode ? Colors.D7CCA6 : "grey"}
             style={{
               position: "absolute",
               right: 0,
@@ -226,14 +227,15 @@ export default function AdvanceSetting(props) {
             .doc(userId)
             .collection("customers")
             .doc(customerId)
-            .delete()
-          request.post('removeReferral/', {
-            'userId' : customerId,
-            'parentId' : userId
-          }).then(function(response){
-          })
-        }
-      }>
+            .delete();
+          request
+            .post("removeReferral/", {
+              userId: customerId,
+              parentId: userId,
+            })
+            .then(function (response) {});
+        }}
+      >
         <View
           style={{
             backgroundColor: Colors.D7CCA6,
@@ -254,7 +256,7 @@ export default function AdvanceSetting(props) {
 const styles = StyleSheet.create({
   textInTabs: {
     fontSize: RFValue(14),
-    color: "black"
+    color: "black",
   },
   firstTabContainer: {
     flexDirection: "row",

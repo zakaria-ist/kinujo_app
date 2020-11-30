@@ -34,12 +34,24 @@ export default function ReceiptView(props) {
   const [user, onUserChanged] = React.useState({});
   const [order, onOrderChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
+  const [orderReceipt, onOrderReceiptChanged] = React.useState({});
   const issueName = props.route.params.issueName;
   if (!loaded) {
     request
       .get(props.route.params.url)
       .then(function (response) {
         onOrderChanged(response.data);
+
+        lastId = 0;
+        lastOrderReceipt = {}
+        response.data.order.orderReceipts.map((tmpOrderReceipt) => {
+          if(tmpOrderReceipt.id > lastId){
+            lastOrderReceipt= tmpOrderReceipt;
+            lastId = tmpOrderReceipt.id;
+          }
+        })
+        onOrderReceiptChanged(lastOrderReceipt);
+
         onLoaded(true);
       })
       .catch(function (error) {
@@ -100,7 +112,7 @@ export default function ReceiptView(props) {
         accountType={Translate.t("storeAccount")}
       />
       <View style={styles.receiptEditingContainer}>
-        <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}</Text>
+      <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}{lastOrderReceipt.is_copy ? Translate.t("reissue") : ""}</Text>
         <View style={styles.invoiceInputContainer}>
           <Text style={{ fontSize: RFValue(24) }}>{issueName}</Text>
           <Text

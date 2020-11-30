@@ -87,7 +87,7 @@ export default function HomeStoreList(props) {
     });
     let userId = urls[urls.length - 1];
 
-    const link = await dynamicLinks().buildShortLink(
+    const link = await dynamicLinks().buildLink(
       {
         link:
           "https://kinujo.page.link?userId=" + userId + "&is_store=0&product_id" + productId,
@@ -488,7 +488,7 @@ export default function HomeStoreList(props) {
                   }
                 />
               </TouchableWithoutFeedback>
-              
+
               <TouchableWithoutFeedback onPress={
                 ()=>{
                   share(product.id)
@@ -555,6 +555,7 @@ export default function HomeStoreList(props) {
             <Text style={styles.product_title}>
               {Translate.t("productFeatures")}
             </Text>
+            <View style={styles.line} />
             <Text style={styles.product_description}>{product.pr}</Text>
           </View>
 
@@ -569,6 +570,7 @@ export default function HomeStoreList(props) {
             <Text style={styles.product_title}>
               {Translate.t("productDetails")}
             </Text>
+            <View style={styles.line} />
             <Text style={styles.product_description}>
               {product.description}
             </Text>
@@ -580,7 +582,7 @@ export default function HomeStoreList(props) {
         transparent={true}
         presentationStyle="overFullScreen"
       >
-        <SafeAreaView
+        <ScrollView
           style={{
             backgroundColor: Colors.F0EEE9,
             top: 0,
@@ -592,6 +594,7 @@ export default function HomeStoreList(props) {
             flexGrow: 1,
             marginHorizontal: widthPercentageToDP("10%"),
             marginVertical: heightPercentageToDP("25%"),
+            position: "relative"
           }}
         >
           <View
@@ -693,9 +696,11 @@ export default function HomeStoreList(props) {
                   selectedtLabelStyle={{
                     color: Colors.F0EEE9,
                   }}
+                  dropDownMaxHeight={RFValue(36)}
                   dropDownStyle={{
                     backgroundColor: "#FFFFFF",
                     color: "black",
+                    position: "absolute",
                     zIndex: 1000,
                   }}
                   onChangeItem={(item) => {
@@ -796,7 +801,7 @@ export default function HomeStoreList(props) {
               </View>
             </View>
           </ScrollView>
-        </SafeAreaView>
+        </ScrollView>
       </Modal>
       {showText == true ? (
         <View
@@ -880,6 +885,13 @@ export default function HomeStoreList(props) {
 }
 
 const styles = StyleSheet.create({
+  line: {
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#000",
+    width: widthPercentageToDP("94%"),
+    marginHorizontal: widthPercentageToDP("-4%"),
+  },
   picker: {
     marginLeft: widthPercentageToDP("1%"),
     width: widthPercentageToDP("18%"),
@@ -974,11 +986,9 @@ const styles = StyleSheet.create({
   },
   product_title: {
     //fontFamily: "sans-serif",
-    borderBottomColor: "black",
-    borderBottomWidth: 2,
     fontSize: RFValue(13),
     paddingBottom: 5,
-    marginBottom: 15,
+    marginBottom: 5,
   },
   product_description: {
     overflow: "hidden",

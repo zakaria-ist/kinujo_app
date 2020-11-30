@@ -1,5 +1,5 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from "@react-navigation/native";
 import LoginScreen from "../Screens/LoginScreen";
 import SearchProducts from "../Screens/SearchProducts";
 import RegistrationGeneral from "../Screens/RegistrationGeneral";
@@ -43,7 +43,9 @@ import AdvanceSetting from "../Screens/AdvanceSetting";
 import ProductInformationAdd from "../Screens/ProductInformationAddNew";
 import ChatList from "../Screens/ChatList";
 import ChatListForward from "../Screens/ChatListForward";
+import HomeByCategory from "../Screens/HomeByCategory";
 import Contact from "../Screens/Contact";
+import HomeShop from "../Screens/HomeShop";
 import AdressManagement from "../Screens/AdressManagement";
 import ContactSearch from "../Screens/ContactSearch";
 import GroupChatCreation from "../Screens/GroupChatCreation";
@@ -71,85 +73,136 @@ import SettingLogo from "../assets/icons/setting.svg";
 import StarLogo from "../assets/icons/star.svg";
 import MoneyLogo from "../assets/icons/money.svg";
 
-function BottomNavigationGeneral() {
-  const route = useRoute();
-  console.log(route.name)
-  return (
-    <Tab.Navigator
-      initialRouteName="HomeGeneral"
-      tabBarOptions={{
-        showLabel: false,
-        showIcon: true,
-        activeTintColor: "#e91e63",
-      }}
-    >
-      <Tab.Screen
-        name="HomeGeneral"
-        component={HomeGeneral}
-        options={{
-          tabBarLabel: "Home",
-          tabBarIcon: () => <HomeLogo width={25} height={25} />,
+function BottomNavigationGeneral(props) {
+  let isShow = false;
+  if (props && props.route && props.route.state) {
+    isShow =
+      props.route.state.routeNames[props.route.state.index] == "Chat" ||
+      props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
+  }
+  if (isShow) {
+    return (
+      <Tab.Navigator
+        initialRouteName="HomeGeneral"
+        tabBarOptions={{
+          showLabel: false,
+          showIcon: true,
+          activeTintColor: "#e91e63",
         }}
-      />
-      <Tab.Screen
-        name="ContactGeneral"
-        component={Contact}
-        options={{
-          tabBarLabel: "Contact",
-          tabBarIcon: () => <PersonLogo width={25} height={25} />,
+      >
+        <Tab.Screen
+          name="HomeGeneral"
+          component={HomeGeneral}
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: () => <HomeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="ContactGeneral"
+          component={Contact}
+          options={{
+            tabBarLabel: "Contact",
+            tabBarIcon: () => <PersonLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="Chat"
+          component={ChatList}
+          options={{
+            tabBarLabel: "Chat",
+            tabBarIcon: () => <ChatLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="FavoriteChat"
+          component={FavoriteChat}
+          options={{
+            tabBarLabel: "FavoriteChat",
+            tabBarIcon: () => <StarLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="QRCode"
+          component={QRCode}
+          options={{
+            tabBarLabel: "QRCode",
+            tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="SettingGeneral"
+          component={SettingGeneral}
+          options={{
+            tabBarLabel: "Setting",
+            tabBarIcon: () => <SettingLogo width={25} height={25} />,
+          }}
+        />
+      </Tab.Navigator>
+    );
+  } else {
+    return (
+      <Tab.Navigator
+        initialRouteName="HomeGeneral"
+        tabBarOptions={{
+          showLabel: false,
+          showIcon: true,
+          activeTintColor: "#e91e63",
         }}
-      />
-      <Tab.Screen
-        name="FavoriteChat"
-        component={FavoriteChat}
-        options={{
-          tabBarLabel: "FavoriteChat",
-          tabBarIcon: () => <StarLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="SalesManagementBottom"
-        component={SalesManagementBottom}
-        options={{
-          tabBarLabel: "SalesManagementBottom",
-          tabBarIcon: () => <MoneyLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="Chat"
-        component={ChatList}
-        options={{
-          tabBarLabel: "Chat",
-          tabBarIcon: () => <ChatLogo width={25} height={25} />,
-        }}
-      />
-
-      <Tab.Screen
-        name="QRCode"
-        component={QRCode}
-        options={{
-          tabBarLabel: "QRCode",
-          tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="SettingGeneral"
-        component={SettingGeneral}
-        options={{
-          tabBarLabel: "Setting",
-          tabBarIcon: () => <SettingLogo width={25} height={25} />,
-        }}
-      />
-    </Tab.Navigator>
-  );
+      >
+        <Tab.Screen
+          name="HomeGeneral"
+          component={HomeGeneral}
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: () => <HomeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="ContactGeneral"
+          component={Contact}
+          options={{
+            tabBarLabel: "Contact",
+            tabBarIcon: () => <PersonLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="Chat"
+          component={ChatList}
+          options={{
+            tabBarLabel: "Chat",
+            tabBarIcon: () => <ChatLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="QRCode"
+          component={QRCode}
+          options={{
+            tabBarLabel: "QRCode",
+            tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="SettingGeneral"
+          component={SettingGeneral}
+          options={{
+            tabBarLabel: "Setting",
+            tabBarIcon: () => <SettingLogo width={25} height={25} />,
+          }}
+        />
+      </Tab.Navigator>
+    );
+  }
 }
 
 function BottomNavigationStore(props) {
-  const route = useRoute();
-  const name = route.name
-  console.log(props)
-  const isShow = props.navigation.state == 2;
-  if(isShow){
+  let isShow = false;
+  if (props && props.route && props.route.state) {
+    isShow =
+      props.route.state.routeNames[props.route.state.index] == "Chat" ||
+      props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
+  }
+  if (isShow) {
     return (
       <Tab.Navigator
         initialRouteName="HomeStore"
@@ -210,63 +263,65 @@ function BottomNavigationStore(props) {
       </Tab.Navigator>
     );
   } else {
-    return (      <Tab.Navigator
-      initialRouteName="HomeStore"
-      tabBarOptions={{
-        showLabel: false,
-        showIcon: true,
-        activeTintColor: "#e91e63",
-      }}
-    >
-      <Tab.Screen
-        name="HomeStore"
-        component={HomeGeneral}
-        options={{
-          tabBarLabel: "Home",
-          tabBarIcon: () => <HomeLogo width={25} height={25} />,
+    return (
+      <Tab.Navigator
+        initialRouteName="HomeStore"
+        tabBarOptions={{
+          showLabel: false,
+          showIcon: true,
+          activeTintColor: "#e91e63",
         }}
-      />
-      <Tab.Screen
-        name="ContactStore"
-        component={Contact}
-        options={{
-          tabBarLabel: "Contact",
-          tabBarIcon: () => <PersonLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="Chat"
-        component={ChatList}
-        options={{
-          tabBarLabel: "Chat",
-          tabBarIcon: () => <ChatLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="FavoriteChat"
-        component={FavoriteChat}
-        options={{
-          tabBarLabel: "FavoriteChat",
-          tabBarIcon: () => <StarLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="QRCode"
-        component={QRCode}
-        options={{
-          tabBarLabel: "QRCode",
-          tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
-        }}
-      />
-      <Tab.Screen
-        name="SettingStore"
-        component={SettingStore}
-        options={{
-          tabBarLabel: "Setting",
-          tabBarIcon: () => <SettingLogo width={25} height={25} />,
-        }}
-      />
-    </Tab.Navigator>)
+      >
+        <Tab.Screen
+          name="HomeStore"
+          component={HomeGeneral}
+          options={{
+            tabBarLabel: "Home",
+            tabBarIcon: () => <HomeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="ContactStore"
+          component={Contact}
+          options={{
+            tabBarLabel: "Contact",
+            tabBarIcon: () => <PersonLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="Chat"
+          component={ChatList}
+          options={{
+            tabBarLabel: "Chat",
+            tabBarIcon: () => <ChatLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="SalesManagementBottom"
+          component={SalesManagementBottom}
+          options={{
+            tabBarLabel: "SalesManagementBottom",
+            tabBarIcon: () => <MoneyLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="QRCode"
+          component={QRCode}
+          options={{
+            tabBarLabel: "QRCode",
+            tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          name="SettingStore"
+          component={SettingStore}
+          options={{
+            tabBarLabel: "Setting",
+            tabBarIcon: () => <SettingLogo width={25} height={25} />,
+          }}
+        />
+      </Tab.Navigator>
+    );
   }
 }
 
@@ -284,6 +339,7 @@ export default function LoginStack() {
           component={RegistrationGeneral}
         />
         <Stack.Screen name="RegistrationStore" component={RegistrationStore} />
+        <Stack.Screen name="HomeShop" component={HomeShop} />
         <Stack.Screen name="SMSAuthentication" component={SMSAuthentication} />
         <Stack.Screen
           name="AccountExamination"
@@ -344,7 +400,10 @@ export default function LoginStack() {
         />
         <Stack.Screen name="StoreInformation" component={StoreInformation} />
         <Stack.Screen name="SalesManagement" component={SalesManagement} />
-        <Stack.Screen name="SalesManagementBottom" component={BottomNavigationStore} />
+        <Stack.Screen
+          name="SalesManagementBottom"
+          component={BottomNavigationStore}
+        />
         <Stack.Screen name="Cart" component={Cart} />
         <Stack.Screen name="Favorite" component={Favorite} />
         <Stack.Screen name="MemoEdit" component={MemoEdit} />
@@ -378,6 +437,7 @@ export default function LoginStack() {
         <Stack.Screen name="Payment" component={Payment} />
         <Stack.Screen name="FolderContactList" component={FolderContactList} />
         <Stack.Screen name="ChatContact" component={ChatContact} />
+        <Stack.Screen name="HomeByCategory" component={HomeByCategory} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

@@ -34,6 +34,9 @@ const ratioNext = win.width / 40 / 8;
 function processProductHtml(props, products, status) {
   let tmpProductHtml = [];
   let tmpProducts = products.filter((product) => {
+    if (product.is_hidden == 1) {
+      return false;
+    }
     if (status == "published" && product.is_draft == 0) {
       return true;
     }

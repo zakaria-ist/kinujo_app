@@ -72,17 +72,29 @@ async function getName(ownId, data) {
     return data.groupName;
   }
   if (data.users.length > 2) return data.groupName;
-
   let users = data.users.filter((user) => {
     return user != ownId;
   });
+  let snapShot = await db
+    .collection("users")
+    .doc(ownId)
+    .collection("customers")
+    .get();
+
+  tmpName = "";
+  snapShot.forEach((docRef) => {
+    if (docRef.data().displayName && docRef.id == users) {
+      tmpName = docRef.data().displayName;
+    }
+  });
+  if (tmpName) return tmpName;
   if (users.length > 0) {
     let user = users[0];
-    console.log({ user });
     user = await request.get("profiles/" + user);
     user = user.data;
     return user.real_name ? user.real_name : user.nickname;
   }
+
   return "";
 }
 
@@ -125,6 +137,8 @@ export default function ChatList(props) {
     urls = urls.filter((url) => {
       return url;
     });
+    // let tmpChatHtml = [];
+    // onChatHtmlChanged([]);
     ownUserID = urls[urls.length - 1];
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
@@ -547,14 +561,19 @@ export default function ChatList(props) {
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
-                    let tmpUsers = longPressObj.data.users.filter((user)=>{
+                    let tmpUsers = longPressObj.data.users.filter((user) => {
                       return user != ownUserID;
-                    })
-                    AsyncStorage.setItem('ids', JSON.stringify(tmpUsers)).then(()=>{
-                      AsyncStorage.setItem('tmpIds', JSON.stringify(tmpUsers)).then(()=>{
-                        props.navigation.navigate("GroupChatCreation")
-                      });
                     });
+                    AsyncStorage.setItem("ids", JSON.stringify(tmpUsers)).then(
+                      () => {
+                        AsyncStorage.setItem(
+                          "tmpIds",
+                          JSON.stringify(tmpUsers)
+                        ).then(() => {
+                          props.navigation.navigate("GroupChatCreation");
+                        });
+                      }
+                    );
                   }}
                 >
                   <Text style={styles.longPressText}>
@@ -565,14 +584,19 @@ export default function ChatList(props) {
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
-                    let tmpUsers = longPressObj.data.users.filter((user)=>{
+                    let tmpUsers = longPressObj.data.users.filter((user) => {
                       return user != ownUserID;
-                    })
-                    AsyncStorage.setItem('ids', JSON.stringify(tmpUsers)).then(()=>{
-                      AsyncStorage.setItem('tmpIds', JSON.stringify(tmpUsers)).then(()=>{
-                        props.navigation.navigate("CreateFolder")
-                      })
-                    })
+                    });
+                    AsyncStorage.setItem("ids", JSON.stringify(tmpUsers)).then(
+                      () => {
+                        AsyncStorage.setItem(
+                          "tmpIds",
+                          JSON.stringify(tmpUsers)
+                        ).then(() => {
+                          props.navigation.navigate("CreateFolder");
+                        });
+                      }
+                    );
                   }}
                 >
                   <Text style={styles.longPressText}>

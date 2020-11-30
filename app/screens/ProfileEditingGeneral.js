@@ -752,7 +752,7 @@ export default function ProfileEditingGeneral(props) {
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    height: heightPercentageToDP("5.2%"),
+    height: heightPercentageToDP("6%"),
     justifyContent: "flex-start",
     alignItems: "center",
     marginHorizontal: widthPercentageToDP("4%"),
@@ -795,7 +795,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   switch: {
-    backgroundColor: Colors.F0EEE9,
+    // backgroundColor: Colors.F0EEE9,
     color: Colors.F0EEE9,
     position: "absolute",
     right: 0,
@@ -811,10 +811,10 @@ const styles = StyleSheet.create({
   },
   textInputEdit: {
     borderRadius: 10,
-    fontSize: RFValue(8),
+    fontSize: RFValue(9),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("4%"),
+    height: heightPercentageToDP("5%"),
     width: widthPercentageToDP("40%"),
   },
 });

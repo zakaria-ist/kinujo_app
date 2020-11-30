@@ -56,19 +56,19 @@ let controller;
 export default function SettingStore(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
-  const [state, setState] = React.useState(false);
+  // const [state, setState] = React.useState(false);
   async function onValueChanged(language) {
     switch (language.value) {
       case "ja":
         await AsyncStorage.setItem("language", "ja");
         i18n.locale = "ja";
-        setState(!state);
+        // setState(!state);
         DevSettings.reload();
         break;
       case "en":
         AsyncStorage.setItem("language", "en");
         i18n.locale = "en";
-        setState(!state);
+        // setState(!state);
         DevSettings.reload();
         break;
     }
@@ -76,37 +76,43 @@ export default function SettingStore(props) {
   AsyncStorage.getItem("language").then((language) => {
     if (language) {
       defaultLanguage = language;
+    } else {
+      defaultLanguage = Localization.locale;
     }
   });
   React.useEffect(() => {
-    if (!user.url) {
-      AsyncStorage.getItem("user").then(function (url) {
-        request
-          .get(url)
-          .then(function (response) {
-            onUserChanged(response.data);
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-      });
-    }
+    // if (!user.url) {
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+          console.log("1");
+          console.log(user.nickname);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
+    // }
   }, [isFocused]);
+
   if (!isFocused) {
     controller.close();
   }
+
   return (
     <TouchableWithoutFeedback onPress={() => controller.close()}>
       <SafeAreaView style={{ flex: 1 }}>

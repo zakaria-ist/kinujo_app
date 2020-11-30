@@ -75,7 +75,7 @@ function findParams(data, param) {
 }
 
 async function buildLink(userId, is_store) {
-  const link = await dynamicLinks().buildShortLink(
+  const link = await dynamicLinks().buildLink(
     {
       link:
         "https://kinujo.page.link?userId=" + userId + "&is_store=" + is_store,
@@ -110,16 +110,17 @@ export default function QRCode(props) {
   const onSuccess = (e) => {
     const code = findParams(e.data, "kinujoId");
     if (code) {
-      firestore()
+      alert.warning(userId.toString())
+      db
         .collection("users")
-        .doc(userId)
+        .doc(userId.toString())
         .collection("friends")
         .where("id", "==", code)
         .get()
         .then((querySnapshot) => {
-          if (querySnapshot.size > 0) {
+          if (querySnapshot && querySnapshot.size > 0) {
           } else {
-            db.collection("users").doc(userId).collection("friends").add({
+            db.collection("users").doc(userId.toString()).collection("friends").add({
               type: "user",
               id: code,
             });
@@ -234,17 +235,17 @@ export default function QRCode(props) {
                         const { values } = response; // Array of detected QR code values. Empty if nothing found.
                         const code = findParams(values[0], "kinujoId");
                         if (code) {
-                          firestore()
+                          db
                             .collection("users")
-                            .doc(userId)
+                            .doc(userId.toString())
                             .collection("friends")
-                            .where("id", "==", code)
+                            .where("id", "==", code.toString())
                             .get()
                             .then((querySnapshot) => {
-                              if (querySnapshot && querySnapshot.data()) {
+                              if (querySnapshot && querySnapshot.size > 0) {
                               } else {
                                 db.collection("users")
-                                  .doc(userId)
+                                  .doc(userId.toString())
                                   .collection("friends")
                                   .add({
                                     type: "user",
@@ -252,7 +253,8 @@ export default function QRCode(props) {
                                   });
                               }
                               alert.warning(Translate.t("friendAdded"));
-                            });
+                            }).catch((error)=>{
+                            })
                         } else {
                           alert.warning(Translate.t("invalidQRcode"));
                         }
