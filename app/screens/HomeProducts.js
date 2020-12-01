@@ -50,11 +50,13 @@ export default function HomeProducts({
   category,
   shipping,
   addFavourite,
+  productAuthorityID,
 }) {
   const isFocused = useIsFocused();
   const [favourite, setFavourite] = React.useState(false);
   const [favoriteGet, onFavorite] = React.useState("");
   const [favoriteText, showFavoriteText] = React.useState(false);
+
   function checkFavourite(product) {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -74,14 +76,19 @@ export default function HomeProducts({
         });
     });
   }
-  // console.log(category);
+  // console.log(productAuthorityId);
   React.useEffect(() => {
     if (product_id) {
       checkFavourite(product_id);
     }
   }, [product_id, isFocused]);
   return (
-    <SafeAreaView style={{ marginBottom: heightPercentageToDP("5%") }}>
+    <SafeAreaView
+      style={{
+        marginBottom: heightPercentageToDP("5%"),
+        // marginHorizontal: heightPercentageToDP("1%"),
+      }}
+    >
       <TouchableWithoutFeedback onPress={onPress}>
         <View
           style={idx % 2 == 0 ? styles.products_left : styles.products_right}
@@ -116,6 +123,7 @@ export default function HomeProducts({
                       .doc(product_id.toString())
                       .set({
                         status: "added",
+                        type: productAuthorityID,
                       });
                     if (addFavourite) {
                       addFavourite("true");
@@ -170,14 +178,14 @@ export default function HomeProducts({
 const styles = StyleSheet.create({
   products_left: {
     paddingTop: 10,
-    marginRight: 3,
-    width: width / 2 - 18,
+    marginRight: RFValue(5),
+    width: width / 2 - RFValue(19),
     overflow: "hidden",
   },
   products_right: {
     paddingTop: 10,
-    marginLeft: 3,
-    width: width / 2 - 18,
+    marginLeft: RFValue(5),
+    width: width / 2 - RFValue(19),
     overflow: "hidden",
   },
   product_image: {

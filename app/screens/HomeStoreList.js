@@ -12,7 +12,7 @@ import {
   Animated,
   Modal,
 } from "react-native";
-import Share from 'react-native-share';
+import Share from "react-native-share";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { RadioButton } from "react-native-paper";
@@ -71,6 +71,7 @@ export default function HomeStoreList(props) {
   const [mShow, onMShow] = React.useState(true);
   const [popupHtml, onPopupHtmlChanged] = React.useState([]);
   const [cartCount, onCartCountChanged] = React.useState(0);
+  // const [userAuthorityId, setUserAuthorityId] = React.useState(0);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
   const XSOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
@@ -79,8 +80,8 @@ export default function HomeStoreList(props) {
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
 
-  async function share(productId){
-    let url = await AsyncStorage.getItem('user');
+  async function share(productId) {
+    let url = await AsyncStorage.getItem("user");
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
@@ -90,7 +91,10 @@ export default function HomeStoreList(props) {
     const link = await dynamicLinks().buildLink(
       {
         link:
-          "https://kinujo.page.link?userId=" + userId + "&is_store=0&product_id" + productId,
+          "https://kinujo.page.link?userId=" +
+          userId +
+          "&is_store=0&product_id" +
+          productId,
         // domainUriPrefix is created in your Firebase console
         domainUriPrefix: "https://kinujo.page.link",
         android: {
@@ -104,29 +108,34 @@ export default function HomeStoreList(props) {
       dynamicLinks.ShortLinkType.UNGUESSABLE
     );
     const shareOptions = {
-      title: '',
+      title: "",
       message: link + "&kinujoId=" + userId,
     };
     Share.open(shareOptions)
-    .then((res) => {
-    })
-    .catch((err) => {
-    });
+      .then((res) => {})
+      .catch((err) => {});
   }
 
-  function populatePopupList(props, tmpProduct, tmpJanCodes, selected, name = "") {
+  function populatePopupList(
+    props,
+    tmpProduct,
+    tmpJanCodes,
+    selected,
+    name = ""
+  ) {
     let tmpHtml = [];
     Object.keys(tmpJanCodes).map((key, index) => {
-      let tmpJanCode = tmpProduct.variety == 2 ? tmpJanCodes[key] : tmpJanCodes[key]['none'];
-      console.log(tmpJanCode)
-      if(!tmpJanCode.is_hidden){
+      let tmpJanCode =
+        tmpProduct.variety == 2 ? tmpJanCodes[key] : tmpJanCodes[key]["none"];
+      console.log(tmpJanCode);
+      if (!tmpJanCode.is_hidden) {
         tmpHtml.push(
           <View key={key} style={styles.variationTabs}>
             <RadioButton
               status={selected === tmpJanCode.id ? "checked" : "unchecked"}
               onPress={() => {
                 onSelectedJanCodeChanged(tmpJanCode.id);
-                if(tmpProduct.variety == 2){
+                if (tmpProduct.variety == 2) {
                   onSelectedNameChanged(name + " x " + key);
                 } else {
                   onSelectedNameChanged(key);
@@ -169,7 +178,13 @@ export default function HomeStoreList(props) {
               <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
             </View>
           </TouchableWithoutFeedback>
-          {populatePopupList(props, tmpProduct, tmpJanCodes[key], selected, key)}
+          {populatePopupList(
+            props,
+            tmpProduct,
+            tmpJanCodes[key],
+            selected,
+            key
+          )}
         </View>
       );
     });
@@ -219,7 +234,7 @@ export default function HomeStoreList(props) {
                   }
                 );
               });
-              janCodes = {}
+              janCodes = {};
               response.data.productVarieties.map((productVariety) => {
                 productVariety.productVarietySelections.map(
                   (productVarietySelection) => {
@@ -236,7 +251,7 @@ export default function HomeStoreList(props) {
                             stock: horizontal.stock,
                             url: horizontal.url,
                             id: horizontal.id,
-                            is_hidden: horizontal.is_hidden
+                            is_hidden: horizontal.is_hidden,
                           };
                         } else {
                           janCodes[hoName] = {};
@@ -244,7 +259,7 @@ export default function HomeStoreList(props) {
                             stock: horizontal.stock,
                             url: horizontal.url,
                             id: horizontal.id,
-                            is_hidden: horizontal.is_hidden
+                            is_hidden: horizontal.is_hidden,
                           };
                         }
                       }
@@ -261,7 +276,7 @@ export default function HomeStoreList(props) {
                           stock: vertical.stock,
                           url: vertical.url,
                           id: vertical.id,
-                          is_hidden: vertical.is_hidden
+                          is_hidden: vertical.is_hidden,
                         };
                       } else {
                         janCodes[hoName] = {};
@@ -269,7 +284,7 @@ export default function HomeStoreList(props) {
                           stock: vertical.stock,
                           url: vertical.url,
                           id: vertical.id,
-                          is_hidden: vertical.is_hidden
+                          is_hidden: vertical.is_hidden,
                         };
                       }
                     });
@@ -346,7 +361,8 @@ export default function HomeStoreList(props) {
             zIndex: 1,
             elevation: 1,
             position: "absolute",
-            right: widthPercentageToDP("13%"),
+            right:
+              userAuthorityID <= 3 ? RFValue(5) : widthPercentageToDP("13%"),
             borderStyle: "solid",
             paddingVertical: widthPercentageToDP("1%"),
             paddingHorizontal: widthPercentageToDP("7%"),
@@ -489,11 +505,11 @@ export default function HomeStoreList(props) {
                 />
               </TouchableWithoutFeedback>
 
-              <TouchableWithoutFeedback onPress={
-                ()=>{
-                  share(product.id)
-                }
-              }>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  share(product.id);
+                }}
+              >
                 <Image
                   style={{ width: RFValue(25), height: RFValue(25) }}
                   source={require("../assets/Images/share.png")}
@@ -562,7 +578,7 @@ export default function HomeStoreList(props) {
           <View
             style={{
               // backgroundColor: "orange",
-              marginBottom: heightPercentageToDP("8%"),
+              marginBottom: heightPercentageToDP("30%"),
               width: "100%",
               paddingTop: 20,
             }}
@@ -594,7 +610,7 @@ export default function HomeStoreList(props) {
             flexGrow: 1,
             marginHorizontal: widthPercentageToDP("10%"),
             marginVertical: heightPercentageToDP("25%"),
-            position: "relative"
+            position: "relative",
           }}
         >
           <View
@@ -759,7 +775,7 @@ export default function HomeStoreList(props) {
                               id: product.id,
                               quantity: tmpQuantity,
                               url: selectedJanCode,
-                              name: selectedName
+                              name: selectedName,
                             });
                         });
                       onShowText(true);

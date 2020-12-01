@@ -157,55 +157,69 @@ export default function Contact(props) {
     tmpName = "";
     snapShot.forEach((docRef) => {
       if (docRef.data().displayName && docRef.id == userID) {
-        console.log("#21" + docRef.data().displayName);
         tmpName = docRef.data().displayName;
       }
     });
     if (tmpName) return tmpName;
     else return realName;
   }
-  function processUserHtml(props, users) {
+
+  async function processUserHtml(props, users) {
     setFriendCount(users.length);
     let tmpUserHtml = [];
-    users.map((user) => {
-      getFriendName(
-        user.id,
-        user.real_name ? user.real_name : user.nickname
-      ).then((name) => {
-        tmpUserHtml.push(
-          <TouchableWithoutFeedback
-            onLongPress={() => {
-              onLongPressObjChanged({
-                type: "user",
-                data: user,
-              });
-              onShowChanged(true);
-            }}
-            key={user.id}
-            onPress={() => {
-              redirectToChat(
-                user.id,
-                user.real_name ? user.real_name : user.nickname
-              );
-            }}
-          >
-            <View style={styles.contactTabContainer}>
-              <Image
-                style={{
-                  width: win.width / 13,
-                  height: ratioProfile * 25,
-                }}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
-              <Text style={styles.tabLeftText}>
-                {/* {user.real_name ? user.real_name : user.nickname} */}
-                {name}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-        );
-      });
-    });
+    for(let i=0; i<users.length; i++){
+      let user = users[i]
+      name = await getFriendName(user.id, user.real_name ? user.real_name : user.nickname)
+      users[i].show_name = name;
+    }
+
+    users.sort((a, b)=>{
+      if(!a['pinned'] && b['pinned']){
+        return true;
+      }
+      if(a['pinned'] && !b['pinned']){
+        return false;
+      }
+      return a.show_name > b.show_name;
+    })
+
+    for(let i=0; i<users.length; i++){
+      let user = users[i]
+      tmpUserHtml.push(
+        <TouchableWithoutFeedback
+          onLongPress={() => {
+            console.log(user);
+            onLongPressObjChanged({
+              type: "user",
+              data: user,
+            });
+            onShowChanged(true);
+          }}
+          key={user.id}
+          onPress={() => {
+            redirectToChat(
+              user.id,
+              user.real_name ? user.real_name : user.nickname
+            );
+          }}
+        >
+          <View style={styles.contactTabContainer}>
+            <Image
+              style={{
+                width: win.width / 13,
+                height: ratioProfile * 25,
+              }}
+              source={require("../assets/Images/profileEditingIcon.png")}
+            />
+            <Text style={styles.tabLeftText}>
+              {/* {user.real_name ? user.real_name : user.nickname} */}
+              {user.show_name}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    }
+
     return tmpUserHtml;
   }
   function processGroupHtml(props, groups, userId) {
@@ -213,6 +227,16 @@ export default function Contact(props) {
     groups = groups.filter((group) => {
       return !group.data["delete_" + userId] && !group.data["hide_" + userId];
     });
+    groups = groups.sort((group1, group2) => {
+      if (!group1.data["pinned_" + userId] && group2.data["pinned_" + userId]) {
+        return 1;
+      }
+      if (group1.data["pinned_" + userId] && !group2.data["pinned_" + userId]) {
+        return -1;
+      }
+      return group1['name'] > group2['name']
+    });
+
     setGroupCount(groups.length);
     for (var i = 0; i < groups.length; i++) {
       let group = groups[i];
@@ -387,7 +411,10 @@ export default function Contact(props) {
           let items = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
-            if (item.type == "user") {
+            if (
+              (item.type == "user" && item.delete == null) ||
+              item.delete == false
+            ) {
               ids.push(item.id);
             }
           });
@@ -401,7 +428,9 @@ export default function Contact(props) {
               response = response.data;
               if (response.success) {
                 globalUsers = response.users;
-                onUserHtmlChanged(processUserHtml(props, response.users));
+                processUserHtml(props, response.users).then((html)=>{
+                  onUserHtmlChanged(html);
+                })
               } else {
                 if (
                   response.errors &&
@@ -502,21 +531,23 @@ export default function Contact(props) {
                   value={searchText}
                   onChangeText={(value) => {
                     onSearchTextChanged(value);
-                    onUserHtmlChanged(
-                      processUserHtml(
-                        props,
-                        globalUsers.filter((user) => {
-                          return (
-                            user.real_name
-                              .toLowerCase()
-                              .indexOf(value.toLowerCase()) >= 0 ||
-                            user.nickname
-                              .toLowerCase()
-                              .indexOf(value.toLowerCase()) >= 0
-                          );
-                        })
-                      )
-                    );
+                    processUserHtml(
+                      props,
+                      globalUsers.filter((user) => {
+                        return (
+                          user.real_name
+                            .toLowerCase()
+                            .indexOf(value.toLowerCase()) >= 0 ||
+                          user.nickname
+                            .toLowerCase()
+                            .indexOf(value.toLowerCase()) >= 0
+                        );
+                      })
+                    ).then((html)=>{
+                      onUserHtmlChanged(
+                        html
+                      );
+                    })
                     onGroupHtmlChanged(
                       processGroupHtml(
                         props,
@@ -874,10 +905,9 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "group") {
                       let update = {};
                       update["pinned_" + user.id] =
-                        longPressObj.data.data["pinned_" + user.id] == "" ||
-                        longPressObj.data.data["pinned_" + user.id]
-                          ? false
-                          : true;
+                        longPressObj.data.data["pinned_" + user.id] != false ||
+                        longPressObj.data.data["pinned_" + user.id] == true
+                          ? false : true
                       db.collection("chat")
                         .doc(longPressObj.data.id)
                         .set(update, {
@@ -1048,7 +1078,7 @@ export default function Contact(props) {
                       db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
+                        .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
                           if (querySnapshot.size > 0) {
@@ -1115,46 +1145,50 @@ export default function Contact(props) {
                     {Translate.t("remove")}
                   </Text>
                 </TouchableWithoutFeedback>
-                {longPressObj.type == 'user' ? (<TouchableWithoutFeedback
-                  onPressIn={() => onShowChanged(false)}
-                  onPress={() => {
-                    AsyncStorage.setItem(
-                      "ids",
-                      JSON.stringify([longPressObj.data.id.toString()])
-                    ).then(() => {
+                {longPressObj.type == "user" ? (
+                  <TouchableWithoutFeedback
+                    onPressIn={() => onShowChanged(false)}
+                    onPress={() => {
                       AsyncStorage.setItem(
-                        "tmpIds",
+                        "ids",
                         JSON.stringify([longPressObj.data.id.toString()])
                       ).then(() => {
-                        props.navigation.navigate("GroupChatCreation");
+                        AsyncStorage.setItem(
+                          "tmpIds",
+                          JSON.stringify([longPressObj.data.id.toString()])
+                        ).then(() => {
+                          props.navigation.navigate("GroupChatCreation");
+                        });
                       });
-                    });
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("groupChatCreate")}
-                  </Text>
-                </TouchableWithoutFeedback>) : (null)}
-                {longPressObj.type == 'user' ? (<TouchableWithoutFeedback
-                  onPressIn={() => onShowChanged(false)}
-                  onPress={() => {
-                    AsyncStorage.setItem(
-                      "ids",
-                      JSON.stringify([longPressObj.data.id.toString()])
-                    ).then(() => {
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("groupChatCreate")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                ) : null}
+                {longPressObj.type == "user" ? (
+                  <TouchableWithoutFeedback
+                    onPressIn={() => onShowChanged(false)}
+                    onPress={() => {
                       AsyncStorage.setItem(
-                        "tmpIds",
+                        "ids",
                         JSON.stringify([longPressObj.data.id.toString()])
                       ).then(() => {
-                        props.navigation.navigate("CreateFolder");
+                        AsyncStorage.setItem(
+                          "tmpIds",
+                          JSON.stringify([longPressObj.data.id.toString()])
+                        ).then(() => {
+                          props.navigation.navigate("CreateFolder");
+                        });
                       });
-                    });
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("createFolder")}
-                  </Text>
-                </TouchableWithoutFeedback>) : (null)}
+                    }}
+                  >
+                    <Text style={styles.longPressText}>
+                      {Translate.t("createFolder")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                ) : null}
               </View>
             </View>
           </View>

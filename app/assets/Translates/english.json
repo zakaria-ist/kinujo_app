@@ -266,11 +266,13 @@
   "waitUntilDelivery":"Please wait for a while until delivery.",
   "searchProduct":"Search Products",
   "itemAddedToCart":"Product Added!",
+  "addressName":"Address Name",
   "shopName":"Shop Name",
     "favorite":"Favorite",
     "addedToFavorite":"Added to favorite",
     "removeFavorite":"Removed from favorite",
     "payment":"Payment",
-    "person":"Person"
+    "person":"Person",
+    "wrongLoginDetails":"The information entered is incorrect"
 
 }

@@ -203,6 +203,7 @@ export default function SettingGeneral(props) {
               justifyContent: "flex-start",
               alignItems: "center",
               marginHorizontal: widthPercentageToDP("4%"),
+              marginTop: heightPercentageToDP("1%"),
             }}
           >
             <Image
@@ -224,7 +225,7 @@ export default function SettingGeneral(props) {
               ]}
               defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
               containerStyle={{
-                height: heightPercentageToDP("5%"),
+                height: heightPercentageToDP("6%"),
                 width: widthPercentageToDP("80%"),
                 marginLeft: widthPercentageToDP("4%"),
               }}
@@ -235,12 +236,13 @@ export default function SettingGeneral(props) {
                 justifyContent: "flex-start",
               }}
               labelStyle={{
-                fontSize: RFValue(12),
+                fontSize: RFValue(9),
                 color: Colors.D7CCA6,
               }}
               selectedtLabelStyle={{
                 color: Colors.D7CCA6,
               }}
+              arrowSize={RFValue(17)}
               dropDownStyle={{ backgroundColor: "#000000" }}
               onChangeItem={(item) => onValueChanged(item)}
             />
@@ -248,9 +250,9 @@ export default function SettingGeneral(props) {
           <TouchableWithoutFeedback
             onPress={() => {
               if (!controller.isOpen()) {
-                AsyncStorage.removeItem("user").then(() => {
-                  props.navigation.navigate("LoginScreen");
-                });
+                  AsyncStorage.removeItem("user").then(() => {
+                    props.navigation.navigate("LoginScreen");
+                  });
               }
             }}
           >

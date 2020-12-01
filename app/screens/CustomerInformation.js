@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -25,6 +25,10 @@ import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
+import QRCodeIcon from "react-native-qrcode-svg";
+import CloseBlackIcon from "../assets/icons/close_black.svg";
+import dynamicLinks from "@react-native-firebase/dynamic-links";
+import { useIsFocused } from "@react-navigation/native";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -35,20 +39,73 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioChatIcon = win.width / 12 / 21;
 const ratioQRIcon = win.width / 13 / 21;
+const ratioBackArrow = win.width / 18 / 20;
 const ratioNext = win.width / 38 / 8;
 const ratioProfileEditingIcon = win.width / 18 / 22;
 const ratioCameraIconInsideProfilePicture = win.width / 20 / 25;
 let chatPersonID;
 let ownUserID;
 let groupName;
+const { width } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
+async function buildLink(userId, is_store) {
+  const link = await dynamicLinks().buildLink(
+    {
+      link:
+        "https://kinujo.page.link?userId=" + userId + "&is_store=" + is_store,
+      // domainUriPrefix is created in your Firebase console
+      domainUriPrefix: "https://kinujo.page.link",
+      android: {
+        packageName: "com.example.kinujo",
+      },
+      ios: {
+        appStoreId: "123123123",
+        bundleId: "com.example.kinujo",
+      },
+    },
+    dynamicLinks.ShortLinkType.UNGUESSABLE
+  );
+  console.log(link + "&kinujoId=" + userId);
+  return link + "&kinujoId=" + userId;
+}
 export default function CustomerInformation(props) {
+  const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
+  const [inviteShow, setInviteShow] = useState(false);
   const [firebaseUser, onFirebaseUserChanged] = React.useState({});
   const [userId, onUserIdChanged] = React.useState("");
   const [customerId, onCustomerIdChanged] = React.useState("");
   const [memo, onMemoChanged] = React.useState("");
   const [modal, onModalChanged] = React.useState(false);
+  const [popupQR, setPopupQR] = useState(false);
+  const [storeLink, onStoreLinkChanged] = useState("");
   const [existsFlag, onExistsFlag] = React.useState(false);
+  const [store, onStoreChanged] = useState(0);
+  const [userLink, onUserLinkChanged] = useState("");
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+
+      buildLink(userId, "1").then(function (link) {
+        console.log(link);
+        onStoreLinkChanged(link);
+      });
+      buildLink(userId, "0").then(function (link) {
+        console.log(link);
+        onUserLinkChanged(link);
+      });
+      onUserIdChanged(userId);
+    });
+
+    return () => {};
+  }, []);
+  React.useEffect(() => {
+    setPopupQR(false);
+  }, [!isFocused]);
   chatPersonID = user.id;
   groupName = user.real_name;
   React.useEffect(() => {
@@ -193,7 +250,7 @@ export default function CustomerInformation(props) {
     ownUserID = urls[urls.length - 1];
   });
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
@@ -213,6 +270,67 @@ export default function CustomerInformation(props) {
           source={require("../assets/Images/profileEditingIcon.png")}
         ></ImageBackground>
       </View>
+      <View style={popupQR ? styles.popup_qr : styles.none}>
+        <View>
+          <View
+            style={{
+              flexDirection: "row",
+              position: "absolute",
+              left: 0,
+              alignItems: "center",
+              zIndex: 10,
+            }}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onStoreChanged(0);
+                setPopupQR(false);
+              }}
+            >
+              <CloseBlackIcon
+                style={{
+                  width: width / 18,
+                  height: 20 * ratioBackArrow,
+                  marginLeft: widthPercentageToDP("5%"),
+                }}
+              />
+            </TouchableWithoutFeedback>
+          </View>
+          <Text
+            style={{
+              justifyContent: "center",
+              alignSelf: "center",
+              color: "#000",
+              fontSize: RFValue(15),
+            }}
+          >
+            {inviteShow ? "App invitation QR code" : "My QR Code"}
+          </Text>
+          <View
+            style={{
+              marginTop: heightPercentageToDP(10),
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={[styles.qr_image]}>
+              <QRCodeIcon
+                size={widthPercentageToDP(60)}
+                value={
+                  store
+                    ? storeLink
+                      ? storeLink
+                      : "waiting"
+                    : userLink
+                    ? userLink
+                    : "waiting"
+                }
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+
       <View
         style={{
           marginTop: heightPercentageToDP("-7%"),
@@ -377,7 +495,7 @@ export default function CustomerInformation(props) {
               </Text>
             </View>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => addFriend()}>
+          <TouchableWithoutFeedback onPress={() => setPopupQR(true)}>
             <View style={{ alignItems: "center" }}>
               <Image
                 style={{
@@ -553,5 +671,36 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentageToDP("1%"),
     width: win.width / 20,
     height: 23 * ratioCameraIconInsideProfilePicture,
+  },
+  popup_qr: {
+    // position: "absolute",
+    backgroundColor: "#FFF",
+    paddingTop: 20,
+    color: "#000",
+    width: "90%",
+    height: height / 2 + heightPercentageToDP("5%"),
+    position: "absolute",
+    bottom: 0,
+    left: "5%",
+    right: "5%",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1,
+    // b`ackgroundColor: "orange",
+  },
+  qr_image: {
+    width: widthPercentageToDP(60),
+    height: height / 2,
+  },
+  none: {
+    display: "none",
   },
 });

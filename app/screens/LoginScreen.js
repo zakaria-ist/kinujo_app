@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
   Dimensions,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -73,15 +73,14 @@ async function init(props, foreground) {
       .get(url)
       .then(function (response) {
         if (response.data.is_seller) {
-                   
           props.navigation.reset({
             index: 0,
-            routes: [{name: 'HomeStore'}],
+            routes: [{ name: "HomeStore" }],
           });
         } else {
           props.navigation.reset({
             index: 0,
-            routes: [{name: 'HomeGeneral'}],
+            routes: [{ name: "HomeGeneral" }],
           });
         }
       })
@@ -132,153 +131,177 @@ export default function LoginScreen(props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-    <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
-      <ImageBackground
-        style={styles.backgroundImageContainer}
-        source={require("../assets/Images/LoginPageLogo.png")}
-      >
+      <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
+        <ImageBackground
+          style={styles.backgroundImageContainer}
+          source={require("../assets/Images/LoginPageLogo.png")}
+        >
+          <Image
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("6%"),
+            }}
+            source={require("../assets/Images/kinujo.png")}
+          />
+        </ImageBackground>
         <Image
           style={{
-            width: win.width / 1.6,
-            height: 44 * ratioKinujo,
             alignSelf: "center",
-            marginTop: heightPercentageToDP("6%"),
+            width: win.width / 23,
+            height: 52 * ratio,
+            marginTop: heightPercentageToDP("3%"),
           }}
-          source={require("../assets/Images/kinujo.png")}
+          source={require("../assets/Images/tripleDot.png")}
         />
-      </ImageBackground>
-      <Image
-        style={{
-          alignSelf: "center",
-          width: win.width / 23,
-          height: 52 * ratio,
-          marginTop: heightPercentageToDP("3%"),
-        }}
-        source={require("../assets/Images/tripleDot.png")}
-      />
 
-      <TextInput
-        onChangeText={(text) => onPhoneChanged(text)}
-        value={phone}
-        placeholder={Translate.t("phoneNumber")}
-        placeholderTextColor={Colors.D7CCA6}
-        style={styles.携帯電話番号}
-      ></TextInput>
-      <TextInput
-        placeholder={Translate.t("password")}
-        placeholderTextColor={Colors.D7CCA6}
-        secureTextEntry={true}
-        onChangeText={(text) => onPasswordChanged(text)}
-        value={password}
-        style={styles.パスワード}
-      ></TextInput>
-      <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-        <TouchableOpacity
-          onPress={() => {
-            if (phone && password) {
-              request
-                .post("user/login", {
-                  tel: phone,
-                  password: password,
-                })
-                .then(function (response) {
-                  onPasswordChanged("");
-                  onPhoneChanged("");
+        <TextInput
+          onChangeText={(text) => onPhoneChanged(text)}
+          value={phone}
+          placeholder={Translate.t("phoneNumber")}
+          placeholderTextColor={Colors.D7CCA6}
+          style={styles.携帯電話番号}
+        ></TextInput>
+        <TextInput
+          placeholder={Translate.t("password")}
+          placeholderTextColor={Colors.D7CCA6}
+          secureTextEntry={true}
+          onChangeText={(text) => onPasswordChanged(text)}
+          value={password}
+          style={styles.パスワード}
+        ></TextInput>
+        <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+          <TouchableOpacity
+            onPress={() => {
+              if (phone && password) {
+                request
+                  .post("user/login", {
+                    tel: phone,
+                    password: password,
+                  })
+                  .then(function (response) {
+                    onPasswordChanged("");
+                    onPhoneChanged("");
 
-                  response = response.data;
-                  if (response.success) {
-                    let user = response.data.user;
-                    if (user.payload) {
-                      user.payload = JSON.parse(user.payload);
-                    } else {
-                      user.payload = {};
-                    }
-                    AsyncStorage.setItem("user", user.url, function (response) {
-                      if (user.is_seller && !user.is_master && !user.payload.account_selected) {
-                        props.navigation.navigate("StoreAccountSelection", {
-                          authority: "store",
-                        });
-                      } else if (user.is_seller && !user.is_master && !user.payload.bank_skipped) {
-                        props.navigation.navigate(
-                          "BankAccountRegistrationOption",
-                          {
-                            authority: "store",
+                    response = response.data;
+                    if (response.success) {
+                      let user = response.data.user;
+                      if (user.payload) {
+                        user.payload = JSON.parse(user.payload);
+                      } else {
+                        user.payload = {};
+                      }
+                      if (user.is_hidden != 1) {
+                        AsyncStorage.setItem(
+                          "user",
+                          user.url,
+                          function (response) {
+                            if (
+                              user.is_seller &&
+                              !user.is_master &&
+                              !user.payload.account_selected
+                            ) {
+                              props.navigation.navigate(
+                                "StoreAccountSelection",
+                                {
+                                  authority: "store",
+                                }
+                              );
+                            } else if (
+                              user.is_seller &&
+                              !user.is_master &&
+                              !user.payload.bank_skipped
+                            ) {
+                              props.navigation.navigate(
+                                "BankAccountRegistrationOption",
+                                {
+                                  authority: "store",
+                                }
+                              );
+                            } else if (
+                              user.is_seller &&
+                              !user.is_master &&
+                              !user.is_approved
+                            ) {
+                              props.navigation.navigate("AccountExamination", {
+                                authority: "store",
+                              });
+                            } else if (
+                              user.is_seller &&
+                              !user.is_master &&
+                              !user.payload.register_completed
+                            ) {
+                              props.navigation.navigate("RegisterCompletion", {
+                                authority: "store",
+                              });
+                            } else if (!user.is_seller && !user.is_master) {
+                              props.navigation.reset({
+                                index: 0,
+                                routes: [{ name: "HomeGeneral" }],
+                              });
+                            } else if (user.is_seller) {
+                              props.navigation.reset({
+                                index: 0,
+                                routes: [{ name: "HomeStore" }],
+                              });
+                            }
                           }
                         );
-                      } else if (user.is_seller && !user.is_master && !user.is_approved) {
-                        props.navigation.navigate("AccountExamination", {
-                          authority: "store",
-                        });
-                      } else if (
-                        user.is_seller && !user.is_master &&
-                        !user.payload.register_completed
-                      ) {
-                        props.navigation.navigate("RegisterCompletion", {
-                          authority: "store",
-                        });
-                      } else if (!user.is_seller && !user.is_master) {
-                        props.navigation.reset({
-                          index: 0,
-                          routes: [{name: 'HomeGeneral'}],
-                        });
-                      } else if (user.is_seller ) {
-                        props.navigation.reset({
-                          index: 0,
-                          routes: [{name: 'HomeStore'}],
-                        });
                       }
-                    });
-                  }
-                })
-                .catch(function (error) {
-                  if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    Object.keys(error.response.data).length > 0
-                  ) {
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0]
-                    );
-                  }
-                });
-            } else {
-              alert.warning(Translate.t("fieldNotFilled"));
-            }
-          }}
-        >
-          <View style={styles.loginButton}>
-            <Text style={styles.loginButtonText}>{Translate.t("login")}</Text>
-          </View>
-        </TouchableOpacity>
-        <Text
-          onPress={() => props.navigation.navigate("PasswordReset")}
-          style={{
-            alignSelf: "center",
-            marginTop: heightPercentageToDP("3%"),
-            fontSize: RFValue(12),
-            borderBottomColor: Colors.black,
-            borderBottomWidth: 1,
-          }}
-        >
-          {Translate.t("forgetPasswordText")}
-        </Text>
-        <TouchableOpacity
-          onPress={() => {
-            // props.navigation.navigate("HomeGeneral");
-            props.navigation.navigate("TermsOfCondition");
-          }}
-        >
-          <View style={styles.registerButton}>
-            <Text style={styles.registerButtonText}>
-              {Translate.t("newRegistration")}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+                    } else {
+                      alert.warning(Translate.t("wrongLoginDetails"));
+                    }
+                  })
+                  .catch(function (error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0]
+                      );
+                    }
+                  });
+              } else {
+                alert.warning(Translate.t("fieldNotFilled"));
+              }
+            }}
+          >
+            <View style={styles.loginButton}>
+              <Text style={styles.loginButtonText}>{Translate.t("login")}</Text>
+            </View>
+          </TouchableOpacity>
+          <Text
+            onPress={() => props.navigation.navigate("PasswordReset")}
+            style={{
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("3%"),
+              fontSize: RFValue(12),
+              borderBottomColor: Colors.black,
+              borderBottomWidth: 1,
+            }}
+          >
+            {Translate.t("forgetPasswordText")}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              // props.navigation.navigate("HomeGeneral");
+              props.navigation.navigate("TermsOfCondition");
+            }}
+          >
+            <View style={styles.registerButton}>
+              <Text style={styles.registerButtonText}>
+                {Translate.t("newRegistration")}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

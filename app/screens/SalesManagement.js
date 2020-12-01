@@ -24,6 +24,7 @@ import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "react-native-datepicker";
+import MonthPicker from "react-native-month-year-picker";
 const format = new Format();
 var kanjidate = require("kanjidate");
 let commissionProducts;
@@ -134,7 +135,8 @@ export default function SalesManagement(props) {
   const [sales, onSalesChanged] = React.useState({});
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
-  const [date, onDateChange] = React.useState(year + "-" + month + "-" + day);
+  const [dateM, setDate] = useState(new Date());
+  const [date, onDateChange] = React.useState(year + "-" + month);
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
   );
@@ -252,13 +254,17 @@ export default function SalesManagement(props) {
 
   function onUpdate(date) {
     onDateChange(date);
+    console.log(date);
     request.get("commissionProducts/" + userID + "/").then(function (response) {
       onCommissionsChanged(response.data.commissionProducts);
       commissionProducts = response.data.commissionProducts;
       commissionProducts = commissionProducts.filter((commission) => {
         // console.log(commission.order_product.order.created.split("T")[0]);
+
         let productDate = commission.order_product.order.created.split("T")[0];
-        return productDate == date;
+        let year = productDate.split("-")[0];
+        let month = productDate.split("-")[1];
+        return year + "-" + month == date;
       });
       onComissionHtmlChanged(processCommissionHtml(commissionProducts, status));
       let total = 0;
@@ -274,7 +280,9 @@ export default function SalesManagement(props) {
       salesProducts = response.data.saleProducts;
       salesProducts = salesProducts.filter((sales) => {
         let productDate = sales.order.created.split("T")[0];
-        return productDate == date;
+        let year = productDate.split("-")[0];
+        let month = productDate.split("-")[1];
+        return year + "-" + month == date;
       });
       onSaleHtmlChanged(processSaleHtml(salesProducts, status));
       let total = 0;
@@ -307,27 +315,18 @@ export default function SalesManagement(props) {
           marginHorizontal: widthPercentageToDP("3%"),
         }}
       >
-        {/* <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: heightPercentageToDP("1.5%"),
-          }}
-        >
-          <Text>2020年0月</Text>
-          <Image
-            style={{
-              width: win.width / 26,
-              height: 8 * ratioDownForMore,
-            }}
-            source={require("../assets/Images/downForMoreIcon.png")}
-          />
-        </View> */}
         <View
           style={{
             marginTop: heightPercentageToDP("3%"),
           }}
         >
+          {/* <MonthPicker
+            // onChange={onValueChange}
+            value={dateM}
+            // minimumDate={new Date()}
+            // maximumDate={new Date(2025, 5)}
+            // locale="ko"
+          /> */}
           <DatePicker
             style={{
               width: widthPercentageToDP("50%"),
@@ -335,7 +334,7 @@ export default function SalesManagement(props) {
             }}
             date={date}
             mode="date"
-            format="YYYY-MM-DD"
+            format="YYYY-MM"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             customStyles={{

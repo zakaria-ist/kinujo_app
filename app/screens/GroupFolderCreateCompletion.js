@@ -51,57 +51,63 @@ export default function GroupFolderCreateCompletion(props) {
   function redirectToChat() {
     AsyncStorage.removeItem("ids");
     AsyncStorage.removeItem("tmpIds");
-    friendIds.push(ownUserID);
-    let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
-    let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
-    for (var i = 0; i < friendIds.length; i++) {
-      friendMessageUnseenField = "unseenMessageCount_" + friendIds[i];
-      friendTotalMessageReadField = "totalMessageRead_" + friendIds[i];
-    }
-    db.collection("chat")
-      .add({
-        [ownMessageUnseenField]: 0,
-        [ownTotalMessageReadField]: 0,
-        groupName: groupName,
-        users: friendIds,
-        totalMessage: 0,
-        type: type,
-      })
-      .then(function () {
-        db.collection("chat")
-          .get()
-          .then(function (querySnapshot) {
-            querySnapshot.forEach(function (doc) {
-              if (
-                doc.data().users.length === friendIds.length &&
-                doc
-                  .data()
-                  .users.every((value, index) => value === friendIds[index]) &&
-                doc.data().lastMessageTime == null &&
-                doc.data().message == null
-              ) {
-                documentID = doc.id;
-                for (var i = 0; i < friendIds.length; i++) {
-                  friendMessageUnseenField =
-                    "unseenMessageCount_" + String(friendIds[i]);
-                  friendTotalMessageReadField =
-                    "totalMessageRead_" + String(friendIds[i]);
-                  db.collection("chat")
-                    .doc(documentID)
-                    .update({
-                      [friendTotalMessageReadField]: 0,
-                      [friendMessageUnseenField]: 0,
-                    });
-                }
-              }
-            });
-            props.navigation.replace("ChatScreen", {
-              type: "group",
-              groupName: groupName,
-              groupID: documentID,
-            });
-          });
-      });
+    // AsyncStorage.removeItem("chatRoomID");
+    props.navigation.navigate("ChatScreen", {
+      groupID: groupDocumentID,
+      groupName: groupName,
+      groupType: "group",
+    });
+    // friendIds.push(ownUserID);
+    // let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
+    // let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
+    // for (var i = 0; i < friendIds.length; i++) {
+    //   friendMessageUnseenField = "unseenMessageCount_" + friendIds[i];
+    //   friendTotalMessageReadField = "totalMessageRead_" + friendIds[i];
+    // }
+
+    // .add({
+    //   [ownMessageUnseenField]: 0,
+    //   [ownTotalMessageReadField]: 0,
+    //   groupName: groupName,
+    //   users: friendIds,
+    //   totalMessage: 0,
+    //   type: type,
+    // })
+    // .then(function () {
+    //   db.collection("chat")
+    //     .get()
+    //     .then(function (querySnapshot) {
+    //       querySnapshot.forEach(function (doc) {
+    //         if (
+    //           doc.data().users.length === friendIds.length &&
+    //           doc
+    //             .data()
+    //             .users.every((value, index) => value === friendIds[index]) &&
+    //           doc.data().lastMessageTime == null &&
+    //           doc.data().message == null
+    //         ) {
+    //           documentID = doc.id;
+    //           for (var i = 0; i < friendIds.length; i++) {
+    //             friendMessageUnseenField =
+    //               "unseenMessageCount_" + String(friendIds[i]);
+    //             friendTotalMessageReadField =
+    //               "totalMessageRead_" + String(friendIds[i]);
+    //             db.collection("chat")
+    //               .doc(documentID)
+    //               .update({
+    //                 [friendTotalMessageReadField]: 0,
+    //                 [friendMessageUnseenField]: 0,
+    //               });
+    //           }
+    //         }
+    //       });
+    //       props.navigation.replace("ChatScreen", {
+    //         type: "group",
+    //         groupName: groupName,
+    //         groupID: documentID,
+    //       });
+    //     });
+    // });
   }
 
   function addMemberHandler() {
@@ -146,6 +152,7 @@ export default function GroupFolderCreateCompletion(props) {
         style={{
           marginHorizontal: widthPercentageToDP("3%"),
           borderWidth: 2,
+          marginTop: heightPercentageToDP("3%"),
           height: heightPercentageToDP("70%"),
           borderColor: Colors.D7CCA6,
           backgroundColor: Colors.F6F6F6,
@@ -156,8 +163,8 @@ export default function GroupFolderCreateCompletion(props) {
             style={{
               width: win.width / 20,
               height: 15 * ratioCancel,
-              marginLeft: widthPercentageToDP("3%"),
-              marginTop: heightPercentageToDP("1.5%"),
+              marginLeft: widthPercentageToDP("5%"),
+              marginTop: heightPercentageToDP("3%"),
             }}
             source={require("../assets/Images/blackCancelIcon.png")}
           />

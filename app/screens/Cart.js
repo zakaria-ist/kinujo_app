@@ -32,11 +32,13 @@ import RemoveLogo from "../assets/icons/removeIcon.svg";
 import UpArrowLogo from "../assets/icons/up_whiteArrow.svg";
 import CheckBox from "@react-native-community/checkbox";
 import Format from "../lib/format";
+import ArrowDownLogo from "../assets/icons/arrowDownWhite.svg";
 const format = new Format();
 const request = new Request();
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const ratioUpWhiteArrow = width / 24 / 15;
+const ratioDownWhiteArrow = width / 24 / 10;
 const ratioRemoveIcon = width / 19 / 16;
 let firebaseProducts = [];
 let djangoProducts = [];
@@ -88,31 +90,20 @@ export default function Cart(props) {
     // pAddresses.map((address) => {
     // console.log(pAddresses.name);
 
-    if(!pAddresses){
+    if (!pAddresses) {
       tmpAddresses.push(
         <View style={styles.deliveryTabContainer} key={pAddresses.id}>
           <View
             style={{
-              marginHorizontal: widthPercentageToDP("7%"),
-              alignItems: "center"
+              marginLeft: widthPercentageToDP("4%"),
+              alignItems: "center",
             }}
           >
             <Text style={{ fontSize: RFValue(12) }}>No Address</Text>
             <TouchableWithoutFeedback
               onPress={() => props.navigation.navigate("ShippingList")}
             >
-              <View
-                style={{
-                  fontSize: RFValue(11),
-                  color: "white",
-                  backgroundColor: Colors.deepGrey,
-                  paddingHorizontal: widthPercentageToDP("2%"),
-                  paddingVertical: heightPercentageToDP(".5%"),
-                  borderRadius: 5,
-                  marginTop: heightPercentageToDP("1%"),
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.buttonContainer}>
                 <Text style={{ fontSize: RFValue(11), color: "white" }}>
                   Add Address
                 </Text>
@@ -127,25 +118,14 @@ export default function Cart(props) {
           <View
             style={{
               position: "absolute",
-              marginLeft: widthPercentageToDP("7%"),
+              marginLeft: widthPercentageToDP("4%"),
             }}
           >
             <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
             <TouchableWithoutFeedback
               onPress={() => props.navigation.navigate("ShippingList")}
             >
-              <View
-                style={{
-                  fontSize: RFValue(11),
-                  color: "white",
-                  backgroundColor: Colors.deepGrey,
-                  paddingHorizontal: widthPercentageToDP("2%"),
-                  paddingVertical: heightPercentageToDP(".5%"),
-                  borderRadius: 5,
-                  marginTop: heightPercentageToDP("1%"),
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.buttonContainer}>
                 <Text style={{ fontSize: RFValue(11), color: "white" }}>
                   Change
                 </Text>
@@ -154,7 +134,7 @@ export default function Cart(props) {
           </View>
           <View
             style={{
-              marginRight: widthPercentageToDP("5%"),
+              // marginRight: widthPercentageToDP("4%"),
               position: "absolute",
               right: 0,
               justifyContent: "center",
@@ -171,16 +151,10 @@ export default function Cart(props) {
             </Text>
             <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
             <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text
-                style={{
-                  fontSize: RFValue(12),
-                  marginTop: heightPercentageToDP(".5%"),
-                }}
-              >
-                {pAddresses.prefecture.name}
-              </Text>
-            </View>
+
+            <Text style={styles.textInTabContainer}>
+              {pAddresses.prefecture.name}
+            </Text>
           </View>
         </View>
       );
@@ -197,7 +171,6 @@ export default function Cart(props) {
     });
     onUpdate(ids, firebaseProducts, is_store);
   }
-
   function processCartHtml(props, products, maps, is_store = false) {
     productLoaded = false;
     let tmpCartHtml = [];
@@ -214,14 +187,22 @@ export default function Cart(props) {
       let idx = i;
       isVis[idx] = false;
       // onShippingChanged(product.shipping_fee);
+      // if (cartItemShow == true) {
+      //   for (let j = 0; j < isVis.length; j++) {
+      //     if (idx !== j) {
+      //       isVis[j].close();
+      //     }
+      //   }
+      // }
       tmpCartHtml.push(
-        <TouchableWithoutFeedback onPress={() => this.controller.close()}>
+        // <TouchableWithoutFeedback onPress={() => controller.close()}>
+        <TouchableWithoutFeedback>
           <View
             key={i}
             style={{
               flexDirection: "row",
               backgroundColor: Colors.F0EEE9,
-              height: heightPercentageToDP("18%"),
+              height: heightPercentageToDP("20%"),
               marginTop: heightPercentageToDP("2%"),
               paddingHorizontal: widthPercentageToDP("4%"),
               paddingBottom: heightPercentageToDP("14%"),
@@ -244,83 +225,58 @@ export default function Cart(props) {
             </View>
             <View style={styles.tabRightContainer}>
               <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
-              <View
-                style={{
-                  position: "absolute",
-                  zIndex: 1000,
-                  top: heightPercentageToDP("4.5%"),
+              <DropDownPicker
+                controller={(instance) => {
+                  controller = instance;
                 }}
-              >
-                <DropDownPicker
-                  style={{
-                    borderWidth: 1,
-                    backgroundColor: "transparent",
-                    borderColor: "transparent",
-                    color: "black",
-                    borderRadius: 0,
-                    fontSize: RFValue(12),
-                    height: heightPercentageToDP("5.5%"),
-                    paddingLeft: widthPercentageToDP("2%"),
-                    marginVertical: heightPercentageToDP("1%"),
-                  }}
-                  items={cartItems}
-                  controller={instance => isVis[idx] = instance}
-                  defaultValue={quantity ? quantity + "" : ""}
-                  containerStyle={{
-                    paddingVertical: 0,
-                    width: widthPercentageToDP("20%"),
-                  }}
-                  labelStyle={{
-                    fontSize: RFValue(12),
-                    color: "gray",
-                  }}
-                  itemStyle={{
-                    justifyContent: "flex-start",
-                  }}
-                  selectedtLabelStyle={{
-                    color: Colors.F0EEE9,
-                  }}
-                  placeholder={Translate.t("unit")}
-                  dropDownStyle={{
-                    backgroundColor: "#FFFFFF",
-                    color: "black",
-                    zIndex: 1000,
-                  }}
-                  onOpen={() => {
-                    for(let j = 0 ; j < isVis.length ; j++) {
-                      if(idx !== j) {
-                        isVis[j].close();
-                      }
+                // zIndex={9999}
+                style={{
+                  borderWidth: 1,
+                  backgroundColor: "white",
+                  borderColor: "transparent",
+                  color: "black",
+                  fontSize: RFValue(12),
+                  paddingLeft: widthPercentageToDP("2%"),
+                }}
+                items={cartItems}
+                controller={(instance) => (isVis[idx] = instance)}
+                defaultValue={quantity ? quantity + "" : ""}
+                containerStyle={{
+                  height: RFValue(38),
+                  width: widthPercentageToDP("20%"),
+                }}
+                labelStyle={{
+                  fontSize: RFValue(10),
+                  color: "gray",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.F0EEE9,
+                }}
+                placeholder={Translate.t("unit")}
+                dropDownStyle={{
+                  width: widthPercentageToDP("20%"),
+                  backgroundColor: "white",
+                  color: "black",
+                  height: heightPercentageToDP("10.5%"),
+                  zIndex: realIndex,
+                }}
+                onOpen={() => {
+                  for (let j = 0; j < isVis.length; j++) {
+                    if (idx !== j) {
+                      isVis[j].close();
                     }
-                  }}
-                  onChangeItem={(ci) => {
-                    if (ci) {
-                      onValueChanged(item.id, ci.value, is_store);
-                    }
-                  }}
-            />
-              </View>
-              {/* <Picker
-                selectedValue={quantity}
-                style={styles.picker}
-                onValueChange={(itemValue, itemIndex) => {
-                  if (productLoaded) {
-                    onValueChanged(product.id, itemValue, is_store);
                   }
                 }}
-                mode="dropdown"
-              >
-                <Picker.Item key="1" label="1" value="1" />
-                <Picker.Item key="2" label="2" value="2" />
-                <Picker.Item key="3" label="3" value="3" />
-                <Picker.Item key="4" label="4" value="4" />
-                <Picker.Item key="5" label="5" value="5" />
-                <Picker.Item key="6" label="6" value="6" />
-                <Picker.Item key="7" label="7" value="7" />
-                <Picker.Item key="8" label="8" value="8" />
-                <Picker.Item key="9" label="9" value="9" />
-                <Picker.Item key="10" label="10" value="10" />
-              </Picker> */}
+                onChangeItem={(ci) => {
+                  if (ci) {
+                    onValueChanged(item.id, ci.value, is_store);
+                  }
+                }}
+              />
+
               <View
                 style={{
                   flexDirection: "row-reverse",
@@ -347,7 +303,9 @@ export default function Cart(props) {
                   }}
                 >
                   <View style={styles.buttonContainer}>
-                    <Text style={styles.buttonText}>{Translate.t("change")}</Text>
+                    <Text style={styles.buttonText}>
+                      {Translate.t("change")}
+                    </Text>
                   </View>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
@@ -426,7 +384,6 @@ export default function Cart(props) {
         }
       });
   }
-
   React.useEffect(() => {
     for (var i = 1; i < 100; i++) {
       cartItems.push({
@@ -467,33 +424,78 @@ export default function Cart(props) {
           request.get(address).then((response) => {
             onAddressHtmlChanged(getAddressHtml(response.data, ""));
           });
-          onSelectedChanged(address)
+          onSelectedChanged(address);
         } else {
-          request
-            .get("addressList/" + userId + "/")
-            .then((response) => {
-              if(response.data.addresses.length > 0){
-                onAddressHtmlChanged(getAddressHtml(response.data.addresses[0], ""));
-                onSelectedChanged(response.data.addresses[0].url)
-              } else {
-                onAddressHtmlChanged(getAddressHtml(null, ""));
-              }
-            })
-            .catch((error) => {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
-            });
+          // alert.warning
+          let tmpAddresses = [];
+          tmpAddresses.push(
+            <View style={styles.deliveryTabContainer}>
+              <View
+                style={{
+                  position: "absolute",
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
+                <TouchableWithoutFeedback
+                  onPress={() => props.navigation.navigate("ShippingList")}
+                >
+                  <View style={styles.buttonContainer}>
+                    <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                      Change
+                    </Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+              <View
+                style={{
+                  // marginRight: widthPercentageToDP("5%"),
+                  position: "absolute",
+                  right: 0,
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    // backgroundColor: "orange",
+                    width: widthPercentageToDP("45%"),
+                  }}
+                ></Text>
+                <Text style={styles.textInTabContainer}></Text>
+                <Text style={styles.textInTabContainer}></Text>
+                <Text style={styles.textInTabContainer}></Text>
+              </View>
+            </View>
+          );
+          onAddressHtmlChanged(tmpAddresses);
+          // request
+          //   .get("addressList/" + userId + "/")
+          //   .then((response) => {
+          //     if (response.data.addresses.length > 0) {
+          //       onAddressHtmlChanged(
+          //         getAddressHtml(response.data.addresses[0], "")
+          //       );
+          //       onSelectedChanged(response.data.addresses[0].url);
+          //     } else {
+          //       onAddressHtmlChanged(getAddressHtml(null, ""));
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     if (
+          //       error &&
+          //       error.response &&
+          //       error.response.data &&
+          //       Object.keys(error.response.data).length > 0
+          //     ) {
+          //       alert.warning(
+          //         error.response.data[Object.keys(error.response.data)[0]][0] +
+          //           "(" +
+          //           Object.keys(error.response.data)[0] +
+          //           ")"
+          //       );
+          //     }
+          //   });
         }
       });
 
@@ -590,7 +592,19 @@ export default function Cart(props) {
               >
                 KINUJO official shop
               </Text>
-              <UpArrowLogo width={18} height={18} style={styles.upWhiteArrow} />
+              {cartItemShow == true ? (
+                <UpArrowLogo
+                  width={18}
+                  height={18}
+                  style={styles.upWhiteArrow}
+                />
+              ) : (
+                <ArrowDownLogo
+                  width={18}
+                  height={18}
+                  style={styles.upWhiteArrow}
+                />
+              )}
             </View>
           </TouchableWithoutFeedback>
 
@@ -599,17 +613,12 @@ export default function Cart(props) {
               marginHorizontal: widthPercentageToDP("5%"),
             }}
           >
-            {/* <Animated.View
-            style={{
-              opacity: cartItemOpacity,
-              borderBottomWidth: 1,
-              paddingBottom: heightPercentageToDP("5%"),
-              borderColor: Colors.deepGrey,
-            }}
-          >
-          </Animated.View> */}
-            <View>
+            <Animated.View
+              style={cartItemShow == true ? styles.cartAnimation : styles.none}
+            >
               {cartHtml}
+            </Animated.View>
+            <View>
               <View
                 style={{
                   flexDirection: "row",
@@ -673,25 +682,85 @@ export default function Cart(props) {
             </View>
 
             <View style={styles.allTabsContainer}>
-              {/* {addressHtml} */}
-              <View
-                style={{
-                  backgroundColor: Colors.D7CCA6,
-                  justifyContent: "center",
-                  height: heightPercentageToDP("5%"),
-                }}
+              <TouchableWithoutFeedback
+                onPress={() => onPaymentMethodShow(!paymentMethodShow)}
               >
-                <Text
+                <View
                   style={{
-                    fontSize: RFValue(14),
-                    color: "white",
-                    marginLeft: widthPercentageToDP("3%"),
+                    backgroundColor: Colors.D7CCA6,
+                    justifyContent: "center",
+                    height: heightPercentageToDP("5%"),
                   }}
                 >
-                  Delivery address
-                </Text>
-              </View>
-              {addressHtml}
+                  <Text
+                    style={{
+                      fontSize: RFValue(14),
+                      color: "white",
+                      marginLeft: widthPercentageToDP("3%"),
+                    }}
+                  >
+                    Delivery address
+                  </Text>
+
+                  {/* <UpArrowLogo
+                    width={18}
+                    height={18}
+                    style={styles.upWhiteArrow}
+                  /> */}
+                </View>
+              </TouchableWithoutFeedback>
+              <Animated.View
+                style={paymentMethodShow == false ? styles.none : ""}
+              >
+                {addressHtml}
+                {/* //////Payment/////////////////////////////////////////////////////////// */}
+                {/* <View style={styles.deliveryTabContainer}>
+                  <View
+                    style={{
+                      position: "absolute",
+                      marginLeft: widthPercentageToDP("4%"),
+                    }}
+                  >
+                    <Text style={{ fontSize: RFValue(12) }}>
+                      Payment Method
+                    </Text>
+                    <TouchableWithoutFeedback
+                      onPress={() => props.navigation.navigate("ShippingList")}
+                    >
+                      <View style={styles.buttonContainer}>
+                        <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                          Change
+                        </Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  </View>
+                  <View
+                    style={{
+                      // marginRight: widthPercentageToDP("5%"),
+                      // backgroundColor: "orange",
+                      position: "absolute",
+                      right: 0,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: RFValue(12),
+                        width: widthPercentageToDP("45%"),
+                      }}
+                    >
+                      {"creditcard"}
+                    </Text>
+                    <Text style={styles.textInTabContainer}>{"AMEX"}</Text>
+                    <Text style={styles.textInTabContainer}>{"00/00"}</Text>
+
+                    <Text style={styles.textInTabContainer}>
+                      {"TanakaTaro"}
+                    </Text>
+                  </View>
+                </View> */}
+                {/* //////Payment/////////////////////////////////////////////////////////// */}
+              </Animated.View>
             </View>
             <TouchableWithoutFeedback
               onPress={() => {
@@ -804,18 +873,25 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP(".5%"),
   },
   tabRightContainer: {
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     position: "absolute",
     height: heightPercentageToDP("17%"),
-    flex: 1,
+    // flex: 1,
+    marginTop: heightPercentageToDP(".5%"),
+    height: heightPercentageToDP("18%"),
     right: 0,
     paddingRight: widthPercentageToDP("4%"),
     alignItems: "flex-end",
-    zIndex: 1000,
+    // zIndex: 1000,
   },
   upWhiteArrow: {
     width: win.width / 24,
     height: 10 * ratioUpWhiteArrow,
+    position: "absolute",
+    right: 0,
+    marginRight: widthPercentageToDP("4%"),
+  },
+  downWhiteArrow: {
     position: "absolute",
     right: 0,
     marginRight: widthPercentageToDP("4%"),
@@ -846,7 +922,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("4%"),
   },
   buttonContainer: {
-    alignSelf: "center",
+    alignSelf: "flex-start",
     fontSize: RFValue(11),
     color: "white",
     backgroundColor: Colors.deepGrey,
@@ -891,5 +967,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
     alignSelf: "center",
+  },
+  cartAnimation: {
+    borderBottomWidth: 1,
+    paddingBottom: heightPercentageToDP("5%"),
+    borderColor: Colors.deepGrey,
+  },
+  none: {
+    display: "none",
   },
 });

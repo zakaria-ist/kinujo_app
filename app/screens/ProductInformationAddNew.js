@@ -697,7 +697,14 @@ export default function ProductInformationAdd(props) {
                 <TextInput
                   style={styles.productPricingTextInput}
                   value={price}
-                  onChangeText={(value) => onPriceChanged(value)}
+                  onChangeText={(value) => {
+                    onPriceChanged(value)
+                    if(user.is_master){
+                      onStorePriceChanged((value * 0.7) + "")
+                    } else if(user.is_seller){
+                      onStorePriceChanged((value * 0.8) + "")
+                    }
+                  }}
                 ></TextInput>
                 <Text style={styles.productPricingText}>
                   {Translate.t("generalPrice")} :
@@ -707,6 +714,7 @@ export default function ProductInformationAdd(props) {
                 <TextInput
                   style={styles.productPricingTextInput}
                   value={storePrice}
+                  // editable={false}
                   onChangeText={(value) => onStorePriceChanged(value)}
                 ></TextInput>
                 <View style={{ alignItems: "flex-end" }}>
@@ -767,7 +775,7 @@ export default function ProductInformationAdd(props) {
                   alignItems: "center",
                 }}
               >
-              <TouchableWithoutFeedback style={
+              {productImages.length < 5 ? (<TouchableWithoutFeedback style={
                   {width: "100%",
                   height: heightPercentageToDP("30%"),
                   justifyContent: "center",
@@ -859,7 +867,7 @@ export default function ProductInformationAdd(props) {
                   >
                     {Translate.t("uploadAPhoto")}
                   </Text>
-              </TouchableWithoutFeedback>
+              </TouchableWithoutFeedback>) : (null)}
               </View>
             <Text style={styles.text}>{Translate.t("productDescription")}</Text>
             <TextInput

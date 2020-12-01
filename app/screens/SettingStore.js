@@ -336,10 +336,11 @@ export default function SettingStore(props) {
             <View
               style={{
                 flexDirection: "row",
-                height: heightPercentageToDP("7%"),
+                height: heightPercentageToDP("7.5%"),
                 justifyContent: "flex-start",
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
+                marginTop: heightPercentageToDP("1%"),
                 // borderBottomWidth: 1,
                 // borderBottomColor: Colors.F0EEE9,
               }}
@@ -365,7 +366,7 @@ export default function SettingStore(props) {
                 ]}
                 defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
                 containerStyle={{
-                  height: heightPercentageToDP("5%"),
+                  height: heightPercentageToDP("6%"),
                   width: widthPercentageToDP("80%"),
                   marginLeft: widthPercentageToDP("4%"),
                 }}
@@ -376,7 +377,7 @@ export default function SettingStore(props) {
                   justifyContent: "flex-start",
                 }}
                 labelStyle={{
-                  fontSize: RFValue(12),
+                  fontSize: RFValue(9),
                   color: Colors.D7CCA6,
                 }}
                 selectedtLabelStyle={{
@@ -386,6 +387,7 @@ export default function SettingStore(props) {
                   backgroundColor: "black",
                   color: "white",
                 }}
+                arrowSize={RFValue(17)}
                 onChangeItem={(item) => onValueChanged(item)}
               />
             </View>
@@ -397,9 +399,9 @@ export default function SettingStore(props) {
                 }}
                 onPress={() => {
                   if (!controller.isOpen()) {
-                    AsyncStorage.removeItem("user").then(() => {
-                      props.navigation.navigate("LoginScreen");
-                    });
+                      AsyncStorage.removeItem("user").then(() => {
+                        props.navigation.navigate("LoginScreen");
+                      });
                   }
                 }}
               >

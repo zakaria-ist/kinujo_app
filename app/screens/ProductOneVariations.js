@@ -63,7 +63,7 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
 
   function onUpdate() {
     let tmpItems = items.filter((item)=>{
-      return !item.choice || !item.janCode
+      return !item.choice
     })
 
     if(tmpItems.length == 0){
