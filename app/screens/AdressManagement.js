@@ -34,6 +34,7 @@ export default function AddressManagement(props) {
   const [prefectures, onPrefecturesChanged] = React.useState([]);
   const [prefectureLoaded, onPrefectureLoadedChanged] = React.useState(false);
   const [address, onAddressChanged] = React.useState({});
+  const [address2, onAddress2Changed] = React.useState("");
   const [name, onNameChanged] = React.useState("");
   const [zipcode, onZipcodeChanged] = React.useState("");
   const [prefecture, onPrefectureChanged] = React.useState("");
@@ -130,6 +131,13 @@ export default function AddressManagement(props) {
       <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
         <View style={styles.textInputContainer}>
           <TextInput
+            placeholder={Translate.t("addressName")}
+            placeholderTextColor={Colors.D7CCA6}
+            style={styles.textInput}
+            value={buildingName}
+            onChangeText={(text) => onBuildingNameChanged(text)}
+          ></TextInput>
+          <TextInput
             placeholder={Translate.t("name")}
             placeholderTextColor={Colors.D7CCA6}
             style={styles.textInput}
@@ -191,8 +199,8 @@ export default function AddressManagement(props) {
             placeholder={Translate.t("address2")}
             placeholderTextColor={Colors.D7CCA6}
             style={styles.textInput}
-            value={buildingName}
-            onChangeText={(text) => onBuildingNameChanged(text)}
+            value={address2}
+            onChangeText={(text) => onAddress2Changed(text)}
           ></TextInput>
           <TextInput
             placeholder={Translate.t("profileEditPhoneNumber")}
@@ -205,21 +213,23 @@ export default function AddressManagement(props) {
         <TouchableWithoutFeedback
           onPress={() => {
             if (props.route.params && props.route.params.url) {
+              data = {
+                address1: add,
+                address_name: buildingName,
+                name: name,
+                prefecture: prefecture,
+                tel: phoneNumber,
+                user: url,
+                zip1: zipcode,
+              }
+              if(address2) data['address2'] = address2;
               request
                 .patch(
                   props.route.params.url.replace(
                     "addresses",
                     "insertAddresses"
                   ),
-                  {
-                    address1: add,
-                    address2: add,
-                    address_name: buildingName,
-                    name: name,
-                    prefecture: prefecture,
-                    tel: phoneNumber,
-                    zip1: zipcode,
-                  }
+                  data
                 )
                 .then(function (response) {
                   props.navigation.pop();
@@ -243,17 +253,18 @@ export default function AddressManagement(props) {
                 });
             } else {
               AsyncStorage.getItem("user").then(function (url) {
+                data = {
+                  address1: add,
+                  address_name: buildingName,
+                  name: name,
+                  prefecture: prefecture,
+                  tel: phoneNumber,
+                  user: url,
+                  zip1: zipcode,
+                }
+                if(address2) data['address2'] = address2;
                 request
-                  .post("insertAddresses/", {
-                    address1: add,
-                    address2: add,
-                    address_name: buildingName,
-                    name: name,
-                    prefecture: prefecture,
-                    tel: phoneNumber,
-                    user: url,
-                    zip1: zipcode,
-                  })
+                  .post("insertAddresses/", data)
                   .then(function (response) {
                     AsyncStorage.setItem("defaultAddress", response.data.url);
                     // onNameChanged("");

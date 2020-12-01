@@ -618,7 +618,6 @@ async function load(){
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={Colors.D7CCA6}
                 onValueChange={(value) => {
-                  console.log(value);
                   onAddingFriendsByIDChanged(value);
                   request
                     .patch(user.url, {

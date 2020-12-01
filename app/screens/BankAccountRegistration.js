@@ -38,6 +38,8 @@ export default function BankAccountRegistration(props) {
   const [accountType, onAccountTypeChanged] = React.useState("");
   const [accountNumber, onAccountNumberChanged] = React.useState("");
   const [accountHolder, onAccountHolderChanged] = React.useState("");
+  const [bankCode, onBankCodeChanged] = React.useState("");
+  const [branchCode, onBranckCodeChanged] = React.useState("");
   const [loaded, onLoaded] = React.useState("");
   const [user, onUserChanged] = React.useState({});
   React.useEffect(() => {
@@ -128,16 +130,33 @@ export default function BankAccountRegistration(props) {
         />
         <View style={styles.textInputContainer}>
           <TextInput
+            placeholder={"Bank Code"}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onBankCodeChanged(text)}
+            value={bankCode}
+          ></TextInput>
+
+          <TextInput
             placeholder={Translate.t("financialInstitutionName")}
             placeholderTextColor={Colors.deepGrey}
+            editable={false}
             style={styles.textInput}
             onChangeText={(text) => onFinancialNameChanged(text)}
             value={financialName}
           ></TextInput>
           <TextInput
+            placeholder={"Branch Code"}
+            placeholderTextColor={Colors.deepGrey}
+            style={styles.textInput}
+            onChangeText={(text) => onBranckCodeChanged(text)}
+            value={branchCode}
+          ></TextInput>
+          <TextInput
             placeholder={Translate.t("branchName")}
             placeholderTextColor={Colors.deepGrey}
             style={styles.textInput}
+            editable={false}
             onChangeText={(text) => onBranchNameChanged(text)}
             value={branchName}
           ></TextInput>

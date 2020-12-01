@@ -219,7 +219,9 @@ export default function ContactShare(props) {
       />
       <CustomSecondaryHeader
         name={user.nickname}
-        accountType={(user.is_seller && user.is_master) ? Translate.t("storeAccount") : ""}
+        accountType={
+          user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
+        }
       />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
@@ -280,7 +282,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchContactInput: {
-    fontSize: RFValue(11),
+    fontSize: RFValue(9.5),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,
@@ -300,6 +302,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
   },
 });

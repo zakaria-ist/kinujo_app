@@ -51,6 +51,7 @@ export default function Home(props) {
   const [favoriteText, showFavoriteText] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
+  const [userAuthorityId, setUserAuthorityId] = React.useState(0);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
   const [showCategory, onCategoryShow] = React.useState(false);
   const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
@@ -73,16 +74,13 @@ export default function Home(props) {
         });
     }
   }
-  function featuredProductNavigation(url, seller, userShopName) {
-    console.log(user.is_seller);
+  function featuredProductNavigation(seller, userShopName) {
+    console.log(seller);
     if (seller) {
       props.navigation.navigate("HomeShop", {
         shopName: userShopName,
       });
     } else {
-      props.navigation.navigate("HomeStoreList", {
-        url: url,
-      });
     }
   }
   function processFeaturedProductHtml(featuredProducts) {
@@ -93,17 +91,15 @@ export default function Home(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+      // console.log(product.category);
       tmpFeaturedHtml.push(
         <HomeProducts
           key={product.id}
-          product_id={product.category}
+          product_id={product.id}
           onPress={() => {
-            console.log(product.user.shop_name);
-            featuredProductNavigation(
-              product.url,
-              user.is_seller,
-              product.user.shop_name
-            );
+            props.navigation.navigate("HomeStoreList", {
+              url: product.url,
+            });
           }}
           idx={idx++}
           image={
@@ -121,13 +117,14 @@ export default function Home(props) {
           }
           category={product.category.name}
           shipping={
-            product.shipping_fee
-              ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-              : Translate.t("freeShipping")
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
           }}
+          productAuthorityID={product.user.authority.id}
         />
       );
     });
@@ -167,13 +164,14 @@ export default function Home(props) {
           }
           category={product.category.name}
           shipping={
-            product.shipping_fee
-              ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-              : "Free Shipping"
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
           }}
+          productAuthorityID={product.user.authority.id}
         />
       );
     });
@@ -225,6 +223,7 @@ export default function Home(props) {
         .get(url)
         .then(function (response) {
           onUserChanged(response.data);
+          setUserAuthorityId(response.data.authority.id);
         })
         .catch(function (error) {
           if (
@@ -331,19 +330,30 @@ export default function Home(props) {
         }
       />
       <View style={styles.discription_header}>
-        <View>
-          {/* <Text style={styles.disc_title_text}>
-            {"Seller: KINUJO Offical Product"}
-          </Text> */}
-        </View>
-
-        <View style={{ position: "absolute", right: 0, paddingRight: 15 }}>
-          <Button
-            title={Translate.t("category")}
-            color="#E6DADE"
-            onPress={() => showCategoryAnimation()}
-          />
-        </View>
+        <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              marginRight: widthPercentageToDP("3%"),
+              // marginTop: heightPercentageToDP("3%"),
+              borderRadius: 5,
+              paddingVertical: heightPercentageToDP("1%"),
+              paddingHorizontal: heightPercentageToDP("1%"),
+              backgroundColor: Colors.E6DADE,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: RFValue(12),
+                color: "white",
+                textAlign: "center",
+              }}
+            >
+              {Translate.t("category")}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
       {favoriteText == "true" ? (
         <View
@@ -355,7 +365,8 @@ export default function Home(props) {
             zIndex: 1,
             elevation: 1,
             position: "absolute",
-            right: widthPercentageToDP("13%"),
+            right:
+              userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("13%"),
             borderStyle: "solid",
             paddingVertical: widthPercentageToDP("1%"),
             paddingHorizontal: widthPercentageToDP("7%"),
@@ -448,11 +459,17 @@ export default function Home(props) {
         )}
 
         {featuredHtml.length > 0 ? (
-          <View style={styles.section_header}>
-            <Text style={styles.section_header_text}>
-              {Translate.t("featuredProduct")}
-            </Text>
-          </View>
+          <TouchableWithoutFeedback
+            onPress={() =>
+              featuredProductNavigation(user.is_seller, user.shop_name)
+            }
+          >
+            <View style={styles.section_header}>
+              <Text style={styles.section_header_text}>
+                {Translate.t("featuredProduct")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         ) : (
           <View></View>
         )}
@@ -478,13 +495,16 @@ export default function Home(props) {
 
 const styles = StyleSheet.create({
   discription_header: {
-    minHeight: heightPercentageToDP("6%"),
+    minHeight: heightPercentageToDP("7%"),
+    // paddingBottom: heightPercentageToDP("15%"),
     width: "100%",
     flex: 1,
     flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
+    alignItems: "flex-end",
+    // flexWrap: "wrap",
     backgroundColor: "#FFF",
+    // backgroundColor: "orange",
+    // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
     paddingLeft: 15,
@@ -498,7 +518,7 @@ const styles = StyleSheet.create({
     // paddingBottom: heightPercentageToDP("15%"),
     height: heightPercentageToDP("82%"),
     padding: 15,
-    paddingTop: 0,
+    paddingTop: heightPercentageToDP("1%"),
     backgroundColor: "#FFF",
     overflow: "scroll",
     // backgroundColor: "orange",

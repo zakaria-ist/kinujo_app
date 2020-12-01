@@ -106,7 +106,7 @@ export default function Home(props) {
       tmpFeaturedHtml.push(
         <HomeProducts
           key={product.id}
-          product_id={product.category}
+          product_id={product.id}
           onPress={() => {
             props.navigation.navigate("HomeStoreList", {
               url: product.url,
@@ -128,13 +128,14 @@ export default function Home(props) {
           }
           category={product.category.name}
           shipping={
-            product.shipping_fee
-              ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-              : Translate.t("freeShipping")
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
           }}
+          productAuthorityID={product.user.authority.id}
         />
       );
     });
@@ -307,36 +308,66 @@ export default function Home(props) {
         <View>
           <Text style={styles.disc_title_text}>{"Seller:" + shopName}</Text>
         </View>
-
         <View
           style={{
             position: "absolute",
             right: 0,
-            paddingRight: 15,
+            justifyContent: "center",
+            paddingTop: heightPercentageToDP("3%"),
           }}
         >
-          <Button
-            title={Translate.t("category")}
-            color="#E6DADE"
-            backgroundColor="#000"
-            onPress={() => showCategoryAnimation()}
-          />
+          <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
+            <View
+              style={{
+                // position: "absolute",
+                right: 0,
+                marginRight: widthPercentageToDP("3%"),
+                // marginTop: heightPercentageToDP("3%"),
+                borderRadius: 5,
+                paddingVertical: heightPercentageToDP("1%"),
+                paddingHorizontal: heightPercentageToDP("1%"),
+                backgroundColor: Colors.E6DADE,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  color: "white",
+                  textAlign: "center",
+                }}
+              >
+                {Translate.t("category")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
+            <View
+              style={{
+                // position: "absolute",
+                right: 0,
+                marginRight: widthPercentageToDP("3%"),
+                // marginTop: heightPercentageToDP("3%"),
+                borderRadius: 5,
+                paddingVertical: heightPercentageToDP("1%"),
+                paddingHorizontal: heightPercentageToDP("1%"),
+                marginTop: heightPercentageToDP("2%"),
+                backgroundColor: Colors.E6DADE,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  color: "white",
+                  textAlign: "center",
+                }}
+              >
+                {Translate.t("sorting")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </View>
-      <View
-        style={{
-          position: "absolute",
-          right: 150,
-          paddingRight: 15,
-          marginTop: heightPercentageToDP("20%"),
-        }}
-      >
-        <Button
-          title={Translate.t("sorting")}
-          color="#E6DADE"
-          onPress={() => showSortingAnimation()}
-        />
-      </View>
+
       {favoriteText == "true" ? (
         <View
           style={{
@@ -514,13 +545,17 @@ export default function Home(props) {
 
 const styles = StyleSheet.create({
   discription_header: {
-    minHeight: heightPercentageToDP("6%"),
+    minHeight: heightPercentageToDP("15%"),
+    // paddingBottom: heightPercentageToDP("15%"),
     width: "100%",
     flex: 1,
     flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
+    alignItems: "flex-start",
+    paddingTop: heightPercentageToDP("3%"),
+    // flexWrap: "wrap",
     backgroundColor: "#FFF",
+    // backgroundColor: "orange",
+    // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
     paddingLeft: 15,
@@ -534,7 +569,7 @@ const styles = StyleSheet.create({
     // paddingBottom: heightPercentageToDP("15%"),
     height: heightPercentageToDP("82%"),
     padding: 15,
-    paddingTop: 0,
+    paddingTop: heightPercentageToDP("1%"),
     backgroundColor: "#FFF",
     overflow: "scroll",
     // backgroundColor: "orange",

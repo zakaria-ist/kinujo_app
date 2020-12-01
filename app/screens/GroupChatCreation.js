@@ -37,10 +37,13 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 let friendIds = [];
 let memberCount = 0;
+let friendMessageUnseenField;
+let friendTotalMessageReadField;
 let friendNames = [];
 let tmpUserHtml = [];
 let userId;
 let tmpGroupID;
+let chatRoomID;
 export default function GroupChatCreation(props) {
   const isFocused = useIsFocused();
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
@@ -56,6 +59,7 @@ export default function GroupChatCreation(props) {
       memberCount = 0;
     });
   }
+
   AsyncStorage.getItem("user").then((url) => {
     let urls = url.split("/");
     urls = urls.filter((url) => {
@@ -109,16 +113,49 @@ export default function GroupChatCreation(props) {
     if (groupName != "") {
       AsyncStorage.removeItem("tmpIds");
       if (friendIds) {
-        props.navigation.navigate("GroupFolderCreateCompletion", {
-          groupDocumentID: "",
-          type: "group",
+        db.collection("users").doc(String(userId)).collection("groups").add({
           groupName: groupName,
-          friendNames: friendNames,
-          friendIds: friendIds,
-          ownUserID: userId,
+          usersName: friendNames,
+          users: friendIds,
         });
+
+        friendIds.push(userId);
+        let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
+        let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
+        db.collection("chat")
+          .add({
+            [ownMessageUnseenField]: 0,
+            [ownTotalMessageReadField]: 0,
+            groupName: groupName,
+            users: friendIds,
+            totalMessage: 0,
+            type: "group",
+          })
+          .then(function (docRef) {
+            documentID = docRef.id;
+            for (var i = 0; i < friendIds.length; i++) {
+              friendMessageUnseenField =
+                "unseenMessageCount_" + String(friendIds[i]);
+              friendTotalMessageReadField =
+                "totalMessageRead_" + String(friendIds[i]);
+              db.collection("chat")
+                .doc(documentID)
+                .update({
+                  [friendTotalMessageReadField]: 0,
+                  [friendMessageUnseenField]: 0,
+                });
+            }
+            props.navigation.navigate("GroupFolderCreateCompletion", {
+              groupDocumentID: documentID,
+              type: "group",
+              groupName: groupName,
+              friendNames: friendNames,
+              friendIds: friendIds,
+              ownUserID: userId,
+            });
+          });
       }
-      // setGroupName("");
+      setGroupName("");
     } else {
       alert.warning("Please fill in the group name");
     }

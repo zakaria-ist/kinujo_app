@@ -96,6 +96,7 @@ export default function SMSAuthentication(props) {
         ></TextInput>
         <TouchableOpacity
           onPress={() => {
+            if(!code) return;
             if (!props.route.params.type) {
               confirm.confirm(code).then(() => {
                 auth()
@@ -181,7 +182,7 @@ export default function SMSAuthentication(props) {
             }
           }}
         >
-          <View style={styles.smsAuthenticateButton}>
+          <View style={code ? styles.smsAuthenticateButton : styles.smsDisabledAuthenticateButton}>
             <Text style={styles.smsAuthenticateButtonText}>
               {Translate.t("authenticate")}
             </Text>
@@ -225,7 +226,16 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginHorizontal: heightPercentageToDP("12%"),
     marginTop: widthPercentageToDP("23%"),
+    backgroundColor: Colors.deepGrey
+  },
+  smsDisabledAuthenticateButton: {
+    borderRadius: 5,
+    backgroundColor: "#f01d71",
+    paddingVertical: 8,
+    marginHorizontal: heightPercentageToDP("12%"),
+    marginTop: widthPercentageToDP("23%"),
     backgroundColor: Colors.deepGrey,
+    opacity: 0.7
   },
   smsCancelButton: {
     borderRadius: 5,

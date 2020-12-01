@@ -134,7 +134,7 @@ export default function SalesManagement(props) {
   const [sales, onSalesChanged] = React.useState({});
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
-  const [date, onDateChange] = React.useState(year + "-" + month + "-" + day);
+  const [date, onDateChange] = React.useState(year + "-" + month);
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
   );
@@ -335,7 +335,7 @@ export default function SalesManagement(props) {
             }}
             date={date}
             mode="date"
-            format="YYYY-MM-DD"
+            format="YYYY-MM"
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             customStyles={{

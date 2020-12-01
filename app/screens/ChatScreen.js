@@ -170,7 +170,7 @@ export default function ChatScreen(props) {
     setMessages(messages.slice(0, -2));
   };
   const [textInputHeight, setTextInputHeight] = React.useState(
-    heightPercentageToDP("7%")
+    heightPercentageToDP("8%")
   );
   function handleEmojiIconPressed() {
     onShowEmojiChanged(true);
@@ -751,7 +751,7 @@ export default function ChatScreen(props) {
         tmpChatHtml = [];
       }
     };
-  }, []);
+  }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
@@ -968,7 +968,7 @@ export default function ChatScreen(props) {
                     onChangeText={(value) => setMessages(value)}
                     placeholder="Type a message"
                     style={{
-                      fontSize: RFValue(11),
+                      fontSize: RFValue(9.5),
                       width: widthPercentageToDP("15%"),
                       flexGrow: 1,
                       color: "black",

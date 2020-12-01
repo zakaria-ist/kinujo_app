@@ -63,6 +63,7 @@
     "react-native-invertible-scroll-view": "^2.0.0",
     "react-native-loading-spinner-overlay": "^2.0.0",
     "react-native-localize": "^1.4.2",
+    "react-native-month-year-picker": "^1.6.1",
     "react-native-paper": "^4.2.0",
     "react-native-permissions": "^2.2.2",
     "react-native-qrcode-scanner": "^1.4.1",

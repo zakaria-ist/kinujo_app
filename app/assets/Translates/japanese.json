@@ -165,6 +165,7 @@
   "registeredbank/creditcard": "登録銀行",
   "nameOfSeller": "氏名",
   "birthday": "誕生日",
+  "addressName":"住所名",
   "gender": "性別",
   "groupChatCreate": "グルチャ作成",
   "createFolder": "フォルダ作成",
@@ -267,6 +268,7 @@
   "addedToFavorite":"お気に入りに追加しました",
   "removeFavorite":"お気に入りから削除しました",
   "payment":"お支払い",
-  "person":"人"
+  "person":"人",
+  "wrongLoginDetails":"入力された情報が正しくありません"
   
 }

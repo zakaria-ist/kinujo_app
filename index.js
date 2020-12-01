@@ -7,6 +7,7 @@ firebase.firestore().clearPersistence();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 // firebase.getInstance().setPersistenceEnabled(false);
 messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   console.log("Message handled in the background!", remoteMessage);

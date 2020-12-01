@@ -95,11 +95,11 @@ export default function HomeByCategory(props) {
               : format.separator(product.price)) + " 円"
           }
           category={product.category.name}
-          // shipping={
-          //   product.shipping_fee != ""
-          //     ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-          //     : Translate.t("freeShipping")
-          // }
+          shipping={
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+          }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
           }}
@@ -143,9 +143,9 @@ export default function HomeByCategory(props) {
           }
           category={product.category.name}
           shipping={
-            product.shipping_fee
-              ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-              : "Free Shipping"
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -343,13 +343,30 @@ export default function HomeByCategory(props) {
             {Translate.t("category") + ":" + categoryName}
           </Text>
         </View>
-        <View style={{ position: "absolute", right: 0, paddingRight: 15 }}>
-          <Button
-            title={Translate.t("sorting")}
-            color="#E6DADE"
-            onPress={() => showCategoryAnimation()}
-          />
-        </View>
+        <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              marginRight: widthPercentageToDP("3%"),
+              // marginTop: heightPercentageToDP("3%"),
+              borderRadius: 5,
+              paddingVertical: heightPercentageToDP("1%"),
+              paddingHorizontal: heightPercentageToDP("1%"),
+              backgroundColor: Colors.E6DADE,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: RFValue(12),
+                color: "white",
+                textAlign: "center",
+              }}
+            >
+              {Translate.t("sorting")}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
       {favoriteText == "true" ? (
         <View
@@ -504,16 +521,18 @@ export default function HomeByCategory(props) {
 
 const styles = StyleSheet.create({
   discription_header: {
-    minHeight: heightPercentageToDP("6%"),
+    minHeight: heightPercentageToDP("9%"),
+    // paddingBottom: heightPercentageToDP("15%"),
     width: "100%",
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     // flexWrap: "wrap",
     backgroundColor: "#FFF",
+    // backgroundColor: "orange",
+    // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
-    alignSelf: "center",
     paddingLeft: 15,
     fontSize: RFValue(14),
   },
@@ -525,7 +544,7 @@ const styles = StyleSheet.create({
     // paddingBottom: heightPercentageToDP("15%"),
     height: heightPercentageToDP("82%"),
     padding: 15,
-    paddingTop: 0,
+    paddingTop: heightPercentageToDP("1%"),
     backgroundColor: "#FFF",
     overflow: "scroll",
     // backgroundColor: "orange",
