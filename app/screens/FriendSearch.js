@@ -48,6 +48,12 @@ export default function FriendSearch(props) {
     ownUserID = urls[urls.length - 1];
   });
   function sendMessageHandler(friendID, friendName) {
+    
+    db.collection("users").doc(ownUserID).collection("friends").add({
+      type: "user",
+      id: friendID,
+    });
+
     let groupID;
     let groupName;
     chatRef

@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   TextInput,
+  Modal,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -42,7 +43,7 @@ export default function AdvanceSetting(props) {
   const [editDisplayName, onEditDisplayNameChanged] = React.useState(false);
   const [displayName, onDisplayNameChanged] = React.useState("");
   const [firstLoaded, onFirstLoadedChanged] = React.useState(false);
-
+  const [showDeletePopUp, onShowDeletePopUp] = React.useState(false);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
@@ -96,7 +97,7 @@ export default function AdvanceSetting(props) {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         text="详细设定"
         onBack={() => {
@@ -223,17 +224,18 @@ export default function AdvanceSetting(props) {
       </View>
       <TouchableWithoutFeedback
         onPress={() => {
-          db.collection("users")
-            .doc(userId)
-            .collection("customers")
-            .doc(customerId)
-            .delete();
-          request
-            .post("removeReferral/", {
-              userId: customerId,
-              parentId: userId,
-            })
-            .then(function (response) {});
+          onShowDeletePopUp(true);
+          // db.collection("users")
+          //   .doc(userId)
+          //   .collection("customers")
+          //   .doc(customerId)
+          //   .delete();
+          // request
+          //   .post("removeReferral/", {
+          //     userId: customerId,
+          //     parentId: userId,
+          //   })
+          //   .then(function (response) {});
         }}
       >
         <View
@@ -250,6 +252,89 @@ export default function AdvanceSetting(props) {
           <Text style={{ fontSize: RFValue(14), color: "white" }}>Delete</Text>
         </View>
       </TouchableWithoutFeedback>
+      {showDeletePopUp == true ? (
+        <View
+          style={{
+            position: "absolute",
+            alignSelf: "center",
+            justifyContent: "center",
+            backgroundColor: "white",
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1,
+            flex: 1,
+            marginHorizontal: widthPercentageToDP("15%"),
+            marginVertical: heightPercentageToDP("37%"),
+            borderWidth: 1,
+            borderColor: Colors.D7CCA6,
+          }}
+        >
+          <View>
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: RFValue(12),
+                marginLeft: widthPercentageToDP("1%"),
+                // marginTop: heightPercentageToDP("3%"),
+              }}
+            >
+              Warning: {Translate.t("cannotUndone")}
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                marginTop: heightPercentageToDP("6%"),
+              }}
+            >
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  db.collection("users")
+                    .doc(userId)
+                    .collection("customers")
+                    .doc(customerId)
+                    .delete();
+                  request
+                    .post("removeReferral/", {
+                      userId: customerId,
+                      parentId: userId,
+                    })
+                    .then(function (response) {});
+                }}
+              >
+                <View
+                  style={{
+                    borderRadius: 5,
+                    paddingVertical: heightPercentageToDP("1%"),
+                    paddingHorizontal: widthPercentageToDP("8%"),
+                    backgroundColor: Colors.D7CCA6,
+                  }}
+                >
+                  <Text>Yes</Text>
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={() => onShowDeletePopUp(false)}
+              >
+                <View
+                  style={{
+                    borderRadius: 5,
+                    paddingVertical: heightPercentageToDP("1%"),
+                    paddingHorizontal: widthPercentageToDP("8%"),
+                    backgroundColor: Colors.D7CCA6,
+                  }}
+                >
+                  <Text>No</Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View></View>
+      )}
     </SafeAreaView>
   );
 }

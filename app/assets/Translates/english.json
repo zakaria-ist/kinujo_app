@@ -37,7 +37,7 @@
   "passwordReset": "Password Reset",
   "phoneNumberForPasswordReset": "Please enter the registered mobile phone number.",
   "sendVerificatioCode": "Send Verification Code",
-  "resendVerificationCodeText": "00s until resendable",
+  "resendVerificationCodeText": "until resendable",
   "clickHereIfNoReceiveVerificationCode": "Click here if you do not receive the verification code",
   "newPasswordSetting": "Please enter the verification code.",
   "newPassword": "New Password",
@@ -273,6 +273,7 @@
     "removeFavorite":"Removed from favorite",
     "payment":"Payment",
     "person":"Person",
-    "wrongLoginDetails":"The information entered is incorrect"
+    "wrongLoginDetails":"The information entered is incorrect",
+    "cannotUndone":"Do you want to remove this customer?This can't be undone."
 
 }

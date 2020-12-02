@@ -127,10 +127,9 @@ export default function ChatScreen(props) {
   const insets = useSafeAreaInsets();
   async function getName(ownId, data) {
     if (data.type && data.type == "group") {
-      return data.groupName;
+      // return data.groupName;
     }
-    if (data.users.length > 2) return data.groupName;
-
+    // if (data.users.length > 2) return data.groupName;
     let users = data.users.filter((user) => {
       return user != ownId;
     });
@@ -142,20 +141,20 @@ export default function ChatScreen(props) {
 
     tmpName = "";
     snapShot.forEach((docRef) => {
-      if (docRef.data().displayName && docRef.id == users) {
+      if (docRef.data().displayName && docRef.id == ownId) {
         tmpName = docRef.data().displayName;
       }
     });
-    if (tmpName) return tmpName;
+    // if (tmpName) return tmpName;
     if (users.length > 0) {
       let user = users[0];
-      console.log({ user });
       user = await request.get("profiles/" + user);
       user = user.data;
-      return user.real_name ? user.real_name : user.nickname;
+      return user.nickname;
     }
     return "";
   }
+
   const onClick = (emoji) => {
     {
       {
@@ -694,7 +693,12 @@ export default function ChatScreen(props) {
     }
   }
 
+
   React.useEffect(() => {
+    if(props.route.params.groupName){
+      onNameChanged(props.route.params.groupName)
+    }
+    
     chatsRef
       .doc(groupID)
       .get()

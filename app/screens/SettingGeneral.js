@@ -24,14 +24,16 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-import { firebaseConfig } from "../../firebaseConfig.js";
-import firebase from "firebase/app";
 import auth from "@react-native-firebase/auth";
 import * as Localization from "expo-localization";
 import i18n from "i18n-js";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+const db = firebase.firestore();
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -95,7 +97,7 @@ export default function SettingGeneral(props) {
     }
   }, [isFocused]);
   if (!isFocused) {
-    controller.close();
+    // controller.close();
   }
   return (
     <TouchableWithoutFeedback onPress={() => controller.close()}>
@@ -250,9 +252,14 @@ export default function SettingGeneral(props) {
           <TouchableWithoutFeedback
             onPress={() => {
               if (!controller.isOpen()) {
-                  AsyncStorage.removeItem("user").then(() => {
-                    props.navigation.navigate("LoginScreen");
-                  });
+                AsyncStorage.removeItem("user").then(() => {
+                  props.navigation.navigate("LoginScreen");
+                  db.collection("users")
+                    .doc(String(user.id))
+                    .collection("token")
+                    .doc(String(user.id))
+                    .delete();
+                });
               }
             }}
           >

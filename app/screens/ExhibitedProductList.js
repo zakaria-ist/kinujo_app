@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+import { useIsFocused } from "@react-navigation/native";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -125,63 +126,63 @@ export default function ExhibitedProductList(props) {
   const [productHtml, onProductHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
   const insets = useSafeAreaInsets();
+  const isFocused = useIsFocused();
 
-  AsyncStorage.getItem("user").then(function (url) {
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-      return url;
-    });
-    let userId = urls[urls.length - 1];
-    if (!user.url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
+
+  React.useEffect(()=>{
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+        request
+          .get("sellerProducts/" + userId + "/")
+          .then(function (response) {
+            onProductsChanged(response.data.products);
+            onProductHtmlChanged(
+              processProductHtml(props, response.data.products, status)
             );
-          }
-        });
-    }
-    if (!loaded) {
-      request
-        .get("sellerProducts/" + userId + "/")
-        .then(function (response) {
-          onProductsChanged(response.data.products);
-          onProductHtmlChanged(
-            processProductHtml(props, response.data.products, status)
-          );
-          onLoaded(true);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-          onLoaded(true);
-        });
-    }
-  });
+            onLoaded(true);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+            onLoaded(true);
+          });
+      });
+  }, [isFocused])
   return (
     <SafeAreaView>
       <CustomHeader

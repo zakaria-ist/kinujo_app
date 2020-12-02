@@ -23,6 +23,7 @@ import {
 } from "react-native-responsive-screen";
 var uuid = require("react-native-uuid");
 import Translate from "../assets/Translates/Translate";
+import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -40,6 +41,21 @@ const ratioNext = win.width / 38 / 8;
 const ratioEditIcon = win.width / 24 / 17;
 const ratioCancelIcon = win.width / 20 / 15;
 
+function promptUpdate(props, user, field, value) {
+  AsyncStorage.setItem(
+    "update-data",
+    JSON.stringify({
+      type: field,
+      value: value,
+    })
+  ).then(() => {
+    props.navigation.navigate("SMSAuthentication", {
+      username: field == "tel" ? value : user.tel,
+      type: field,
+    });
+  });
+}
+
 export default function ProfileEditingGeneral(props) {
   const [password, onPasswordChanged] = React.useState("********");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
@@ -56,34 +72,51 @@ export default function ProfileEditingGeneral(props) {
     onAllowAddingFriendsByPhoneNumber,
   ] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
+  const isFocused = useIsFocused();
 
-  function loadUser() {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          onPhoneNumberChanged(response.data.tel);
-          onEmailChanged(response.data.email);
-          onAddingFriendsByIDChanged(response.data.allowed_by_id);
-          onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
-          setWord(response.data.word);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(error);
-          }
-        });
-    });
+  async function loadUser() {
+    let url = await AsyncStorage.getItem("user")
+    let response = await request.get(url);
+    onUserChanged(response.data);
+    if (updateData && updateData["type"] == "email" && verified == "1") {
+      onEmailChanged(updateData["value"]);
+      request.post("user/change-email", {
+        tel: response.data.tel,
+        email: updateData["value"],
+      });
+      await AsyncStorage.removeItem("update-data");
+      await AsyncStorage.removeItem("verified");
+    } else {
+      onEmailChanged(response.data.email);
+    }
+    if (updateData && updateData["type"] == "tel" && verified == "1") {
+      onPhoneNumberChanged(updateData["value"]);
+      request.post("user/change-phone", {
+        tel: response.data.tel,
+        phone: updateData["value"],
+      });
+      await AsyncStorage.removeItem("update-data");
+      await AsyncStorage.removeItem("verified");
+    } else {
+      onPhoneNumberChanged(response.data.tel);
+    }
+    if (updateData && updateData["type"] == "password" && verified == "1") {
+      request.post("password/reset", {
+        tel: response.data.tel,
+        password: updateData["value"],
+        confirm_password: updateData["value"],
+      });
+      await AsyncStorage.removeItem("update-data");
+      await AsyncStorage.removeItem("verified");
+    }
+
+    onAddingFriendsByIDChanged(response.data.allowed_by_id);
+    onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
+    setWord(response.data.word);
   }
-  if (!user.url) {
+  React.useEffect(()=>{
     loadUser();
-  }
+  }, [isFocused])
 
   function updateUser(user, field, value) {
     if (!value) return;
@@ -483,7 +516,7 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => {
                       onEditPhoneNumberChanged(false);
-                      updateUser(user, "tel", phoneNumber);
+                      promptUpdate(props, user, "tel", phoneNumber);
                     }}
                   />
                   <TextInput
@@ -540,7 +573,7 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => {
                       onEditEmailChanged(false);
-                      updateUser(user, "email", email);
+                      promptUpdate(props, user, "email", email);
                     }}
                   />
                   <TextInput
@@ -597,8 +630,9 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => {
                       onEditPasswordChanged(false);
-                      updateUser(user, "password", password);
-                      onPasswordChanged("********");
+                      let tmpPassword = password;
+                      // onPasswordChanged("********")
+                      promptUpdate(props, user, "password", tmpPassword);
                     }}
                   />
                   <TextInput
@@ -676,7 +710,7 @@ export default function ProfileEditingGeneral(props) {
             </Text>
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : "black"}
+              thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : "grey"}
               style={styles.switch}
               onValueChange={(value) => {
                 onAddingFriendsByIDChanged(value);
@@ -811,7 +845,7 @@ const styles = StyleSheet.create({
   },
   textInputEdit: {
     borderRadius: 10,
-    fontSize: RFValue(9),
+    fontSize: RFValue(10),
     borderWidth: 1,
     borderColor: "black",
     height: heightPercentageToDP("5%"),
