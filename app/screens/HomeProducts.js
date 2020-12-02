@@ -87,6 +87,7 @@ export default function HomeProducts({
       style={{
         marginBottom: heightPercentageToDP("5%"),
         // marginHorizontal: heightPercentageToDP("1%"),
+        // backgroundColor: "orange",
       }}
     >
       <TouchableWithoutFeedback onPress={onPress}>
@@ -177,16 +178,18 @@ export default function HomeProducts({
 
 const styles = StyleSheet.create({
   products_left: {
+    // alignItems: "center",
     paddingTop: 10,
-    marginRight: RFValue(5),
+    marginRight: RFValue(4),
     width: width / 2 - RFValue(19),
-    overflow: "hidden",
+    // overflow: "hidden",
   },
   products_right: {
+    // alignItems: "center",
     paddingTop: 10,
-    marginLeft: RFValue(5),
+    marginLeft: RFValue(4),
     width: width / 2 - RFValue(19),
-    overflow: "hidden",
+    // overflow: "hidden",
   },
   product_image: {
     width: width / 2 - 18,

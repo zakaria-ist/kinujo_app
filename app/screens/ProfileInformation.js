@@ -717,6 +717,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignSelf: "center",
   },
+
   dropDown: {
     flexDirection: "row-reverse",
     alignItems: "center",

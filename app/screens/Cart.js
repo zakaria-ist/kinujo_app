@@ -261,7 +261,7 @@ export default function Cart(props) {
                   backgroundColor: "white",
                   color: "black",
                   height: heightPercentageToDP("10.5%"),
-                  zIndex: realIndex,
+                  zIndex: realIndex
                 }}
                 onOpen={() => {
                   for (let j = 0; j < isVis.length; j++) {
@@ -421,81 +421,81 @@ export default function Cart(props) {
         });
       AsyncStorage.getItem("defaultAddress").then((address) => {
         if (address != null) {
+          console.log(address)
           request.get(address).then((response) => {
             onAddressHtmlChanged(getAddressHtml(response.data, ""));
+            onSelectedChanged(response.data.id);
           });
-          onSelectedChanged(address);
         } else {
           // alert.warning
-          let tmpAddresses = [];
-          tmpAddresses.push(
-            <View style={styles.deliveryTabContainer}>
-              <View
-                style={{
-                  position: "absolute",
-                  marginLeft: widthPercentageToDP("4%"),
-                }}
-              >
-                <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
-                <TouchableWithoutFeedback
-                  onPress={() => props.navigation.navigate("ShippingList")}
-                >
-                  <View style={styles.buttonContainer}>
-                    <Text style={{ fontSize: RFValue(11), color: "white" }}>
-                      Change
-                    </Text>
+          request
+            .get("addressList/" + userId + "/")
+            .then((response) => {
+              if (response.data.addresses.length > 0) {
+                onAddressHtmlChanged(
+                  getAddressHtml(response.data.addresses[0], "")
+                );
+                onSelectedChanged(response.data.addresses[0].id);
+              } else {
+                let tmpAddresses = [];
+                tmpAddresses.push(
+                  <View style={styles.deliveryTabContainer}>
+                    <View
+                      style={{
+                        position: "absolute",
+                        marginLeft: widthPercentageToDP("4%"),
+                      }}
+                    >
+                      <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
+                      <TouchableWithoutFeedback
+                        onPress={() => props.navigation.navigate("ShippingList")}
+                      >
+                        <View style={styles.buttonContainer}>
+                          <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                            Change
+                          </Text>
+                        </View>
+                      </TouchableWithoutFeedback>
+                    </View>
+                    <View
+                      style={{
+                        // marginRight: widthPercentageToDP("5%"),
+                        position: "absolute",
+                        right: 0,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: RFValue(12),
+                          // backgroundColor: "orange",
+                          width: widthPercentageToDP("45%"),
+                        }}
+                      ></Text>
+                      <Text style={styles.textInTabContainer}></Text>
+                      <Text style={styles.textInTabContainer}></Text>
+                      <Text style={styles.textInTabContainer}></Text>
+                    </View>
                   </View>
-                </TouchableWithoutFeedback>
-              </View>
-              <View
-                style={{
-                  // marginRight: widthPercentageToDP("5%"),
-                  position: "absolute",
-                  right: 0,
-                  justifyContent: "center",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: RFValue(12),
-                    // backgroundColor: "orange",
-                    width: widthPercentageToDP("45%"),
-                  }}
-                ></Text>
-                <Text style={styles.textInTabContainer}></Text>
-                <Text style={styles.textInTabContainer}></Text>
-                <Text style={styles.textInTabContainer}></Text>
-              </View>
-            </View>
-          );
-          onAddressHtmlChanged(tmpAddresses);
-          // request
-          //   .get("addressList/" + userId + "/")
-          //   .then((response) => {
-          //     if (response.data.addresses.length > 0) {
-          //       onAddressHtmlChanged(
-          //         getAddressHtml(response.data.addresses[0], "")
-          //       );
-          //       onSelectedChanged(response.data.addresses[0].url);
-          //     } else {
-          //       onAddressHtmlChanged(getAddressHtml(null, ""));
-          //     }
-          //   })
-          //   .catch((error) => {
-          //     if (
-          //       error &&
-          //       error.response &&
-          //       error.response.data &&
-          //       Object.keys(error.response.data).length > 0
-          //     ) {
-          //       alert.warning(
-          //         error.response.data[Object.keys(error.response.data)[0]][0] +
-          //           "(" +
-          //           Object.keys(error.response.data)[0] +
-          //           ")"
-          //       );
-          //     }
-          //   });
+                );
+                onAddressHtmlChanged(tmpAddresses);
+              }
+            })
+            .catch((error) => {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
         }
       });
 

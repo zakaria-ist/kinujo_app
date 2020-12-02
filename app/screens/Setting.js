@@ -54,16 +54,19 @@ function updateUser(user, field, value) {
     });
 }
 
-function promptUpdate(props, user, field, value){
-  AsyncStorage.setItem("update-data", JSON.stringify({
-    "type" : field,
-    "value" : value
-  })).then(()=>{
-    props.navigation.navigate("SMSAuthentication", {
-      "username" : field == 'tel' ? value : user.tel,
-      "type" : field
+function promptUpdate(props, user, field, value) {
+  AsyncStorage.setItem(
+    "update-data",
+    JSON.stringify({
+      type: field,
+      value: value,
     })
-  })
+  ).then(() => {
+    props.navigation.navigate("SMSAuthentication", {
+      username: field == "tel" ? value : user.tel,
+      type: field,
+    });
+  });
 }
 
 export default function Setting(props) {
@@ -97,66 +100,55 @@ export default function Setting(props) {
   const [user, onUserChanged] = React.useState({});
   const isFocused = useIsFocused();
 
+  async function load() {
+    let url = await AsyncStorage.getItem("user");
+    let updateData = await AsyncStorage.getItem("update-data");
+    let verified = await AsyncStorage.getItem("verified");
+    updateData = JSON.parse(updateData);
+    let response = await request.get(url);
+    onUserChanged(response.data);
+    if (updateData && updateData["type"] == "email" && verified == "1") {
+      onEmailChanged(updateData["value"]);
+      request.post("user/change-email", {
+        tel: response.data.tel,
+        email: updateData["value"],
+      });
+      await AsyncStorage.removeItem("update-data");
+      await AsyncStorage.removeItem("verified");
+    } else {
+      onEmailChanged(response.data.email);
+    }
+    if (updateData && updateData["type"] == "tel" && verified == "1") {
+      onPhoneNumberChanged(updateData["value"]);
+      request.post("user/change-phone", {
+        tel: response.data.tel,
+        phone: updateData["value"],
+      });
+      await AsyncStorage.removeItem("update-data");
+      await AsyncStorage.removeItem("verified");
+    } else {
+      onPhoneNumberChanged(response.data.tel);
+    }
+    if (updateData && updateData["type"] == "password" && verified == "1") {
+      request.post("password/reset", {
+        tel: response.data.tel,
+        password: updateData["value"],
+        confirm_password: updateData["value"],
+      });
+      await AsyncStorage.removeItem("update-data");
+      await AsyncStorage.removeItem("verified");
+    }
+    onAddingFriendsByIDChanged(response.data.allowed_by_id);
+    onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
+    onMessagedReceivedMobileChanged(response.data.message_notification_phone);
+    onMessagedReceivedEmailChanged(response.data.message_notification_mail);
+    onOtherNofiticationEmailChanged(response.data.other_notification_mail);
+    onOtherNofiticationMobileChanged(response.data.other_notification_phone);
+  }
 
-async function load(){
-  let url = await AsyncStorage.getItem("user");
-  let updateData = await AsyncStorage.getItem("update-data");
-  let verified = await AsyncStorage.getItem("verified");
-  updateData = JSON.parse(updateData)
-  let response = await request.get(url)
-  onUserChanged(response.data);
-  if(updateData && updateData['type'] == 'email' && verified == "1"){
-    onEmailChanged(updateData['value']);
-    request.post('user/change-email', {
-      'tel' : response.data.tel,
-      'email' : updateData['value']
-    })
-    await AsyncStorage.removeItem("update-data")
-    await AsyncStorage.removeItem("verified")
-  } else {
-    onEmailChanged(response.data.email);
-  }
-  if(updateData && updateData['type'] == 'tel' && verified == "1"){
-    onPhoneNumberChanged(updateData['value']);
-    request.post('user/change-phone', {
-      'tel' : response.data.tel,
-      'phone' : updateData['value']
-    })
-    await AsyncStorage.removeItem("update-data")
-    await AsyncStorage.removeItem("verified")
-  } else {
-    onPhoneNumberChanged(response.data.tel);
-  }
-  if(updateData && updateData['type'] == 'password' && verified == "1"){
-    request.post('password/reset', {
-      'tel' : response.data.tel,
-      'password' : updateData['value'],
-      'confirm_password' : updateData['value']
-    })
-    await AsyncStorage.removeItem("update-data")
-    await AsyncStorage.removeItem("verified")
-  } else {
-    onPhoneNumberChanged(response.data.tel);
-  }
-  onAddingFriendsByIDChanged(response.data.allowed_by_id);
-  onAllowAddingFriendsByPhoneNumber(response.data.allowed_by_tel);
-  onMessagedReceivedMobileChanged(
-    response.data.message_notification_phone
-  );
-  onMessagedReceivedEmailChanged(
-    response.data.message_notification_mail
-  );
-  onOtherNofiticationEmailChanged(
-    response.data.other_notification_mail
-  );
-  onOtherNofiticationMobileChanged(
-    response.data.other_notification_phone
-  );
-}
-
-  React.useEffect(()=>{
+  React.useEffect(() => {
     load();
-  }, [isFocused])
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -209,7 +201,7 @@ async function load(){
                     onEditPasswordChanged(false);
                     let tmpPassword = password;
                     // onPasswordChanged("********")
-                    promptUpdate(props, user, "password", tmpPassword)
+                    promptUpdate(props, user, "password", tmpPassword);
                   }}
                 />
                 <TextInput
@@ -272,7 +264,7 @@ async function load(){
                   reverseColor="black"
                   onPress={() => {
                     onEditPhoneNumberChanged(false);
-                    promptUpdate(props, user, "tel", phoneNumber)
+                    promptUpdate(props, user, "tel", phoneNumber);
                   }}
                 />
                 <TextInput
@@ -331,7 +323,7 @@ async function load(){
                   reverseColor="black"
                   onPress={() => {
                     onEditEmailAddressChanged(false);
-                    promptUpdate(props, user, "email", email)
+                    promptUpdate(props, user, "email", email);
                   }}
                 />
                 <TextInput
@@ -719,7 +711,7 @@ async function load(){
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    height: heightPercentageToDP("5.2%"),
+    height: heightPercentageToDP("6%"),
     justifyContent: "flex-start",
     alignItems: "center",
     marginHorizontal: widthPercentageToDP("4%"),
@@ -751,11 +743,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 0,
   },
+
   textInputEdit: {
-    fontSize: RFValue(8),
+    borderRadius: 10,
+    fontSize: RFValue(10),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("4%"),
+    height: heightPercentageToDP("5%"),
     width: widthPercentageToDP("40%"),
   },
 });

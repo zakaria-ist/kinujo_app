@@ -111,7 +111,7 @@ export default function ShippingList(props) {
   const [loaded, onLoaded] = React.useState(false);
   function setDefaultAddress(url) {
     AsyncStorage.setItem("defaultAddress", url).then(function () {
-      props.navigation.navigate("Cart");
+      props.navigation.pop();
     });
   }
   function load() {

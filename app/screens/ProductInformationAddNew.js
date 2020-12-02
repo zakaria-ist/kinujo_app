@@ -25,7 +25,12 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import ProductNoneVariations from "./ProductNoneVariations";
 import ProductOneVariations from "./ProductOneVariations";
 import ProductTwoVariations from "./ProductTwoVariations";
-import { ScrollView, TextInput, TouchableWithoutFeedback } from "react-native-gesture-handler";
+import {
+  ScrollView,
+  TextInput,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
+import DatePicker from "react-native-datepicker";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -76,8 +81,8 @@ export default function ProductInformationAdd(props) {
   const [spinner, onSpinnerChanged] = React.useState(false);
   const [product, onProductChanged] = React.useState(false);
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
-  
-  function getId(url){
+
+  function getId(url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
       return url;
@@ -87,70 +92,90 @@ export default function ProductInformationAdd(props) {
   }
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
-        request
-          .get(url)
-          .then(function (response) {
-            onUserChanged(response.data);
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-      });
-      if(props.route.params.url){
-        request.get(props.route.params.url).then((response)=>{
-          let tmpProduct = response.data;
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
+    if (props.route.params.url) {
+      request.get(props.route.params.url).then((response) => {
+        let tmpProduct = response.data;
 
-          request.get('product_categories/').then((response) => {
+        request
+          .get("product_categories/")
+          .then((response) => {
             let categories = response.data.map((category) => {
               return {
-                "label" : category.name,
-                "value" : category.url
-              }
-            })
-            onProductCategoriesChanged(categories)
-            onProductCategoryChanged(tmpProduct.category.url)
-          }).catch((error)=>{
-            console.log(error)
+                label: category.name,
+                value: category.url,
+              };
+            });
+            onProductCategoriesChanged(categories);
+            onProductCategoryChanged(tmpProduct.category.url);
           })
+          .catch((error) => {
+            console.log(error);
+          });
 
-          onProductChanged(response.data)
-          onProductNameChanged(response.data.name)
-          onBrandNameChanged(response.data.brand_name)
-          onPrChanged(response.data.pr)
-          onProductIdChanged(response.data.url_str)
-          onPublishDateChanged(response.data.opened_date)
-          onPublishStateChanged(response.data.is_opened ? "published" : "unpublished")
-          onProductVariationChanged(response.data.variety == 0 ? "none" : (response.data.variety == 1 ? "one" : "two"))
-          onProductStatusChanged(response.data.is_used == 0 ? "new" : "secondHand")
-          onTargetUserChanged(response.data.target == 0 ? "allUser" : (response.data.target == 1 ?  "generalUser" : "storeUser"))
-          onPriceChanged(response.data.price.toString())
-          onStorePriceChanged(response.data.store_price)
-          onShippingChanged(response.data.shipping_fee + "")
-          onProductDescriptionChanged(response.data.description)
-          let oldImages = response.data.productImages.map((image) => {
-            let tmpImage = image.image;
-            tmpImage['is_old'] = true;
-            return tmpImage;
-          })
-          onProductImagesChanged(oldImages)
-          onProductPageDisplayMethodChanged("slidingType")
-          let tmpImages = response.data.productImages;
-          let html = []
-          tmpImages.map((image) => {
-            image = image.image;
-            html.push(<View
+        onProductChanged(response.data);
+        onProductNameChanged(response.data.name);
+        onBrandNameChanged(response.data.brand_name);
+        onPrChanged(response.data.pr);
+        onProductIdChanged(response.data.url_str);
+        onPublishDateChanged(response.data.opened_date);
+        onPublishStateChanged(
+          response.data.is_opened ? "published" : "unpublished"
+        );
+        onProductVariationChanged(
+          response.data.variety == 0
+            ? "none"
+            : response.data.variety == 1
+            ? "one"
+            : "two"
+        );
+        onProductStatusChanged(
+          response.data.is_used == 0 ? "new" : "secondHand"
+        );
+        onTargetUserChanged(
+          response.data.target == 0
+            ? "allUser"
+            : response.data.target == 1
+            ? "generalUser"
+            : "storeUser"
+        );
+        onPriceChanged(response.data.price.toString());
+        onStorePriceChanged(response.data.store_price);
+        onShippingChanged(response.data.shipping_fee + "");
+        onProductDescriptionChanged(response.data.description);
+        let oldImages = response.data.productImages.map((image) => {
+          let tmpImage = image.image;
+          tmpImage["is_old"] = true;
+          return tmpImage;
+        });
+        onProductImagesChanged(oldImages);
+        onProductPageDisplayMethodChanged("slidingType");
+        let tmpImages = response.data.productImages;
+        let html = [];
+        tmpImages.map((image) => {
+          image = image.image;
+          html.push(
+            <View
               key={image.id}
               style={{
                 marginTop: heightPercentageToDP("1%"),
@@ -173,152 +198,175 @@ export default function ProductInformationAdd(props) {
                 }}
                 source={{ uri: image.image }}
               />
-            </View>)
-          })
-          onProductImageHtmlChanged(html);
+            </View>
+          );
+        });
+        onProductImageHtmlChanged(html);
 
-          if(response.data.variety == 0){
-            let productVariety = response.data.productVarieties[0]
-            let productVarietySelection = productVariety.productVarietySelections[0]
-            let horizontal = productVarietySelection.jancode_horizontal[0]
-            onNoneVariationItemsChanged({
-              id: horizontal.id,
-              janCode: horizontal.jan_code,
-              stock: horizontal.stock
+        if (response.data.variety == 0) {
+          let productVariety = response.data.productVarieties[0];
+          let productVarietySelection =
+            productVariety.productVarietySelections[0];
+          let horizontal = productVarietySelection.jancode_horizontal[0];
+          onNoneVariationItemsChanged({
+            id: horizontal.id,
+            janCode: horizontal.jan_code,
+            stock: horizontal.stock,
+          });
+        }
+        if (response.data.variety == 1) {
+          let tmpItems = {};
+          let productVariety = response.data.productVarieties[0];
+          tmpItems["name"] = productVariety["name"];
+          tmpItems["id"] = productVariety["id"];
+          tmpItems["items"] = [];
+          for (
+            var i = 0;
+            i < productVariety.productVarietySelections.length;
+            i++
+          ) {
+            let productVarietySelection =
+              productVariety.productVarietySelections[i];
+            let vertical = productVarietySelection.jancode_horizontal[0];
+            tmpItems["items"].push({
+              id: vertical.id,
+              index: i,
+              choice: productVarietySelection.selection,
+              stock: vertical.stock + "",
+              janCode: vertical.jan_code,
+              hidden: vertical.is_hidden ? true : false,
             });
-          }  
-          if(response.data.variety == 1){
-            let tmpItems = {}
-            let productVariety = response.data.productVarieties[0]
-            tmpItems['name'] = productVariety['name']
-            tmpItems['id'] = productVariety['id']
-            tmpItems['items'] = []
-            for(var i=0; i<productVariety.productVarietySelections.length; i++){
-              let productVarietySelection = productVariety.productVarietySelections[i]
-              let vertical = productVarietySelection.jancode_horizontal[0]
-              tmpItems['items'].push({
-                id: vertical.id,
-                index: i,
-                choice: productVarietySelection.selection,
-                stock: vertical.stock + "",
-                janCode: vertical.jan_code,
-                hidden: vertical.is_hidden ? true : false
-              })
-            }
-            onOneVariationItemsChanged(tmpItems);
-          }  
-          if(response.data.variety == 2){
-            let firstProductVariety = response.data.productVarieties[0]
-            let secondProductVariety = response.data.productVarieties[1]
+          }
+          onOneVariationItemsChanged(tmpItems);
+        }
+        if (response.data.variety == 2) {
+          let firstProductVariety = response.data.productVarieties[0];
+          let secondProductVariety = response.data.productVarieties[1];
 
-            let tmpItems = {
-              "items" : [
-                {
-                  id: firstProductVariety['id'],
-                  index: 0,
-                  horizontalItem: firstProductVariety['name'],
-                  choices: [
-                  ],
-                },
-                {
-                  id: secondProductVariety['id'],
-                  index: 1,
-                  horizontalItem: secondProductVariety['name'],
-                  choices: [
-                  ],
-                },
-              ],
-              "mappingValue" : {}
-            }
+          let tmpItems = {
+            items: [
+              {
+                id: firstProductVariety["id"],
+                index: 0,
+                horizontalItem: firstProductVariety["name"],
+                choices: [],
+              },
+              {
+                id: secondProductVariety["id"],
+                index: 1,
+                horizontalItem: secondProductVariety["name"],
+                choices: [],
+              },
+            ],
+            mappingValue: {},
+          };
 
-            rawMapping = {}
+          rawMapping = {};
 
-            firstProductVariety.productVarietySelections.map((productVarietySelection) => {
-              rawMapping[productVarietySelection.id] = productVarietySelection.selection;
-              tmpItems['items'][0]['choices'].push({
-                choiceIndex: tmpItems['items'][0]['choices'].length,
+          firstProductVariety.productVarietySelections.map(
+            (productVarietySelection) => {
+              rawMapping[productVarietySelection.id] =
+                productVarietySelection.selection;
+              tmpItems["items"][0]["choices"].push({
+                choiceIndex: tmpItems["items"][0]["choices"].length,
                 choiceItem: productVarietySelection.selection,
-                id: productVarietySelection.id
-              })
-            })
-            secondProductVariety.productVarietySelections.map((productVarietySelection) => {
-              rawMapping[productVarietySelection.id] = productVarietySelection.selection;
-              tmpItems['items'][1]['choices'].push({
-                choiceIndex: tmpItems['items'][1]['choices'].length,
+                id: productVarietySelection.id,
+              });
+            }
+          );
+          secondProductVariety.productVarietySelections.map(
+            (productVarietySelection) => {
+              rawMapping[productVarietySelection.id] =
+                productVarietySelection.selection;
+              tmpItems["items"][1]["choices"].push({
+                choiceIndex: tmpItems["items"][1]["choices"].length,
                 choiceItem: productVarietySelection.selection,
-                id: productVarietySelection.id
-              })
-            })
+                id: productVarietySelection.id,
+              });
+            }
+          );
 
-            firstProductVariety.productVarietySelections.map((productVarietySelection) => {
+          firstProductVariety.productVarietySelections.map(
+            (productVarietySelection) => {
               productVarietySelection.jancode_horizontal.map((horizontal) => {
-                if(horizontal.horizontal && horizontal.vertical){
-                  let horizontalId = getId(horizontal.horizontal)
-                  let verticalId = getId(horizontal.vertical)
-                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
-                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                if (horizontal.horizontal && horizontal.vertical) {
+                  let horizontalId = getId(horizontal.horizontal);
+                  let verticalId = getId(horizontal.vertical);
+                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
                   }
-                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                  tmpItems["mappingValue"][rawMapping[horizontalId]][
+                    rawMapping[verticalId]
+                  ] = {
                     id: horizontal.id,
                     stock: horizontal.stock + "",
                     janCode: horizontal.jan_code,
-                    delete: horizontal.is_hidden ? true: false
-                  }
+                    delete: horizontal.is_hidden ? true : false,
+                  };
                 }
-              })
+              });
               productVarietySelection.jancode_vertical.map((vertical) => {
-                if(vertical.horizontal && vertical.vertical){
-                  let horizontalId = getId(vertical.horizontal)
-                  let verticalId = getId(vertical.vertical)
-                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
-                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                if (vertical.horizontal && vertical.vertical) {
+                  let horizontalId = getId(vertical.horizontal);
+                  let verticalId = getId(vertical.vertical);
+                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
                   }
-                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                  tmpItems["mappingValue"][rawMapping[horizontalId]][
+                    rawMapping[verticalId]
+                  ] = {
                     id: vertical.id,
                     stock: vertical.stock + "",
                     janCode: vertical.jan_code,
-                    delete: vertical.is_hidden ? true: false
-                  }
+                    delete: vertical.is_hidden ? true : false,
+                  };
                 }
-              })
-            })
-            secondProductVariety.productVarietySelections.map((productVarietySelection) => {
+              });
+            }
+          );
+          secondProductVariety.productVarietySelections.map(
+            (productVarietySelection) => {
               productVarietySelection.jancode_horizontal.map((horizontal) => {
-                if(horizontal.horizontal && horizontal.vertical){
-                  let horizontalId = getId(horizontal.horizontal)
-                  let verticalId = getId(horizontal.vertical)
-                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
-                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                if (horizontal.horizontal && horizontal.vertical) {
+                  let horizontalId = getId(horizontal.horizontal);
+                  let verticalId = getId(horizontal.vertical);
+                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
                   }
-                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                  tmpItems["mappingValue"][rawMapping[horizontalId]][
+                    rawMapping[verticalId]
+                  ] = {
                     id: horizontal.id,
                     stock: horizontal.stock + "",
                     janCode: horizontal.jan_code,
-                    delete: horizontal.is_hidden ? true: false
-                  }
+                    delete: horizontal.is_hidden ? true : false,
+                  };
                 }
-              })
+              });
               productVarietySelection.jancode_vertical.map((vertical) => {
-                if(vertical.horizontal && vertical.vertical){
-                  let horizontalId = getId(vertical.horizontal)
-                  let verticalId = getId(vertical.vertical)
-                  if(!tmpItems['mappingValue'][rawMapping[horizontalId]]){
-                    tmpItems['mappingValue'][rawMapping[horizontalId]] = {}
+                if (vertical.horizontal && vertical.vertical) {
+                  let horizontalId = getId(vertical.horizontal);
+                  let verticalId = getId(vertical.vertical);
+                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
                   }
-                  tmpItems['mappingValue'][rawMapping[horizontalId]][rawMapping[verticalId]] = {
+                  tmpItems["mappingValue"][rawMapping[horizontalId]][
+                    rawMapping[verticalId]
+                  ] = {
                     id: vertical.id,
                     stock: vertical.stock + "",
                     janCode: vertical.jan_code,
-                    delete: vertical.is_hidden ? true: false
-                  }
+                    delete: vertical.is_hidden ? true : false,
+                  };
                 }
-              })
-            })
-            onTwoVariationItemsChanged(tmpItems);
-          }  
-        })
-      }
-    }, [])
+              });
+            }
+          );
+          onTwoVariationItemsChanged(tmpItems);
+        }
+      });
+    }
+  }, []);
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
     if (variant == "none") {
@@ -327,142 +375,138 @@ export default function ProductInformationAdd(props) {
     }
   }
 
-  function createProduct(draft){
+  function createProduct(draft) {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
-      onSpinnerChanged(true)
-      request.post("createProduct/" + userId + "/", {
-        productName: productName,
-        brandName: brandName,
-        pr: pr,
-        productId: productId,
-        productCategory: productCategory,
-        productVariation: productVariation,
-        oneVariationItems: oneVariationItems,
-        twoVariationItems: twoVariationItems,
-        noneVariationItems: noneVariationItems,
-        productStock: productStock,
-        publishState: publishState,
-        publishDate: publishDate,
-        price: price,
-        storePrice: storePrice,
-        shipping: shipping,
-        productPageDisplayMethod: productPageDisplayMethod,
-        productImages: productImages,
-        productDescription: productDescription,
-        targetUser: targetUser,
-        productStatus: productStatus,
-        draft: draft
-      }).then((response) => {
-        onSpinnerChanged(false);
-        response = response.data;
-        if(response.success){
-          props.navigation.pop();
-        } else {
+      onSpinnerChanged(true);
+      request
+        .post("createProduct/" + userId + "/", {
+          productName: productName,
+          brandName: brandName,
+          pr: pr,
+          productId: productId,
+          productCategory: productCategory,
+          productVariation: productVariation,
+          oneVariationItems: oneVariationItems,
+          twoVariationItems: twoVariationItems,
+          noneVariationItems: noneVariationItems,
+          productStock: productStock,
+          publishState: publishState,
+          publishDate: publishDate,
+          price: price,
+          storePrice: storePrice,
+          shipping: shipping,
+          productPageDisplayMethod: productPageDisplayMethod,
+          productImages: productImages,
+          productDescription: productDescription,
+          targetUser: targetUser,
+          productStatus: productStatus,
+          draft: draft,
+        })
+        .then((response) => {
+          onSpinnerChanged(false);
+          response = response.data;
+          if (response.success) {
+            props.navigation.pop();
+          } else {
+            if (response.errors && Object.keys(response.errors).length > 0) {
+              alert.warning(
+                response.errors[Object.keys(response.errors)[0]][0] +
+                  "(" +
+                  Object.keys(response.errors)[0] +
+                  ")"
+              );
+            } else if (response.error) {
+              alert.warning(response.error);
+            }
+          }
+        })
+        .catch((error) => {
+          onSpinnerChanged(false);
           if (
-            response.errors &&
-            Object.keys(response.errors).length > 0
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
           ) {
             alert.warning(
-              response.errors[Object.keys(response.errors)[0]][0] +
-                "(" +
-                Object.keys(response.errors)[0] +
-                ")"
+              error.response.data[Object.keys(error.response.data)[0]][0]
             );
-          } else if (response.error) {
-            alert.warning(response.error);
           }
-        }
-      }).catch((error) => {
-        onSpinnerChanged(false);
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[
-              Object.keys(error.response.data)[0]
-            ][0]
-          );
-        }
-      })
+        });
     });
   }
 
-  function saveProduct(draft){
+  function saveProduct(draft) {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
-      onSpinnerChanged(true)
-      console.log(twoVariationItems)
-      request.post("editProduct/" + userId + "/", {
-        id:  product.id,
-        productName: productName,
-        brandName: brandName,
-        pr: pr,
-        productId: productId,
-        productCategory: productCategory,
-        productVariation: productVariation,
-        oneVariationItems: oneVariationItems,
-        twoVariationItems: twoVariationItems,
-        noneVariationItems: noneVariationItems,
-        productStock: productStock,
-        publishState: publishState,
-        publishDate: publishDate,
-        price: price,
-        storePrice: storePrice,
-        shipping: shipping,
-        productPageDisplayMethod: productPageDisplayMethod,
-        productImages: productImages,
-        productDescription: productDescription,
-        targetUser: targetUser,
-        productStatus: productStatus,
-        draft: draft
-      }).then((response) => {
-        onSpinnerChanged(false);
-        response = response.data;
-        console.log(response)
-        if(response.success){
-          // props.navigation.pop();
-        } else {
+      onSpinnerChanged(true);
+      console.log(twoVariationItems);
+      request
+        .post("editProduct/" + userId + "/", {
+          id: product.id,
+          productName: productName,
+          brandName: brandName,
+          pr: pr,
+          productId: productId,
+          productCategory: productCategory,
+          productVariation: productVariation,
+          oneVariationItems: oneVariationItems,
+          twoVariationItems: twoVariationItems,
+          noneVariationItems: noneVariationItems,
+          productStock: productStock,
+          publishState: publishState,
+          publishDate: publishDate,
+          price: price,
+          storePrice: storePrice,
+          shipping: shipping,
+          productPageDisplayMethod: productPageDisplayMethod,
+          productImages: productImages,
+          productDescription: productDescription,
+          targetUser: targetUser,
+          productStatus: productStatus,
+          draft: draft,
+        })
+        .then((response) => {
+          onSpinnerChanged(false);
+          response = response.data;
+          console.log(response);
+          if (response.success) {
+            // props.navigation.pop();
+          } else {
+            if (response.errors && Object.keys(response.errors).length > 0) {
+              alert.warning(
+                response.errors[Object.keys(response.errors)[0]][0] +
+                  "(" +
+                  Object.keys(response.errors)[0] +
+                  ")"
+              );
+            } else if (response.error) {
+              alert.warning(response.error);
+            }
+          }
+        })
+        .catch((error) => {
+          onSpinnerChanged(false);
           if (
-            response.errors &&
-            Object.keys(response.errors).length > 0
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
           ) {
             alert.warning(
-              response.errors[Object.keys(response.errors)[0]][0] +
-                "(" +
-                Object.keys(response.errors)[0] +
-                ")"
+              error.response.data[Object.keys(error.response.data)[0]][0]
             );
-          } else if (response.error) {
-            alert.warning(response.error);
           }
-        }
-      }).catch((error) => {
-        onSpinnerChanged(false);
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[
-              Object.keys(error.response.data)[0]
-            ][0]
-          );
-        }
-      })
+        });
     });
   }
   return (
@@ -489,7 +533,7 @@ export default function ProductInformationAdd(props) {
               style={styles.textInput}
               value={productName}
               onChangeText={(value) => {
-                onProductNameChanged(value)
+                onProductNameChanged(value);
               }}
             ></TextInput>
 
@@ -518,41 +562,41 @@ export default function ProductInformationAdd(props) {
 
             <Text style={styles.text}>{Translate.t("productCategory")}</Text>
             <DropDownPicker
-                style={styles.text}
-                items={productCategories}
-                defaultValue={productCategory ? productCategory : null}
-                containerStyle={{
-                  paddingVertical: 0,
-                  width: widthPercentageToDP("86%")
-                }}
-                labelStyle={{
-                  fontSize: RFValue(12),
-                  color: "gray",
-                }}
-                itemStyle={{
-                  justifyContent: "flex-start",
-                }}
-                selectedtLabelStyle={{
-                  color: Colors.F0EEE9,
-                }}
-                placeholder={Translate.t("unit")}
-                dropDownStyle={{
-                  backgroundColor: "#FFFFFF",
-                  color: "black",
-                  zIndex: 1000,
-                }}
-                onChangeItem={(ci) => {
-                  onProductCategoryChanged(ci.value)
-                }}
-              />
+              style={styles.text}
+              items={productCategories}
+              defaultValue={productCategory ? productCategory : null}
+              containerStyle={{
+                paddingVertical: 0,
+                width: widthPercentageToDP("86%"),
+              }}
+              labelStyle={{
+                fontSize: RFValue(12),
+                color: "gray",
+              }}
+              itemStyle={{
+                justifyContent: "flex-start",
+              }}
+              selectedtLabelStyle={{
+                color: Colors.F0EEE9,
+              }}
+              placeholder={Translate.t("unit")}
+              dropDownStyle={{
+                backgroundColor: "#FFFFFF",
+                color: "black",
+                zIndex: 1000,
+              }}
+              onChangeItem={(ci) => {
+                onProductCategoryChanged(ci.value);
+              }}
+            />
 
             <Text style={styles.text}>{Translate.t("variation")}</Text>
             <View style={styles.radioGroupContainer}>
               <RadioButton.Group
                 style={{ alignItems: "flex-start" }}
                 onValueChange={(variant) => {
-                  if(!props.route.params.url){
-                    onValueChanged(variant)
+                  if (!props.route.params.url) {
+                    onValueChanged(variant);
                   }
                 }}
                 value={productVariation}
@@ -596,26 +640,29 @@ export default function ProductInformationAdd(props) {
 
             {/*1 項目*/}
             <View style={productVariation !== "one" ? styles.none : null}>
-              <ProductOneVariations pItems={oneVariationItems} onItemsChanged={
-                (items) => {
+              <ProductOneVariations
+                pItems={oneVariationItems}
+                onItemsChanged={(items) => {
                   onOneVariationItemsChanged(items);
-                }
-              }/>
+                }}
+              />
             </View>
             <View style={productVariation !== "two" ? styles.none : null}>
-              <ProductTwoVariations pItems={twoVariationItems} onItemsChanged={
-                (items) => {
+              <ProductTwoVariations
+                pItems={twoVariationItems}
+                onItemsChanged={(items) => {
                   onTwoVariationItemsChanged(items);
-                }
-              }/>
+                }}
+              />
             </View>
             <View style={productVariation !== "none" ? styles.none : null}>
               {
-                <ProductNoneVariations pItems={noneVariationItems} onItemsChanged={
-                  (items) => {
+                <ProductNoneVariations
+                  pItems={noneVariationItems}
+                  onItemsChanged={(items) => {
                     onNoneVariationItemsChanged(items);
-                  }
-                }/>
+                  }}
+                />
               }
             </View>
 
@@ -639,11 +686,21 @@ export default function ProductInformationAdd(props) {
               <Text style={styles.radioButtonText}>
                 {Translate.t("publishedDate")} :
               </Text>
-              <TextInput
+              <DatePicker
+                style={{
+                  marginLeft: widthPercentageToDP("1%"),
+                  width: widthPercentageToDP("40%"),
+                }}
+                // value={publishDate}
+                onDateChange={(date) => {
+                  onPublishDateChanged(date);
+                }}
+              />
+              {/* <TextInput
                 style={styles.releaseDateTextInput}
                 value={publishDate}
                 onChangeText={(value) => onPublishDateChanged(value)}
-              ></TextInput>
+              ></TextInput> */}
             </View>
             <Text style={styles.releaseDateWarningText}>
               {Translate.t("publishWarning")}
@@ -698,11 +755,11 @@ export default function ProductInformationAdd(props) {
                   style={styles.productPricingTextInput}
                   value={price}
                   onChangeText={(value) => {
-                    onPriceChanged(value)
-                    if(user.is_master){
-                      onStorePriceChanged((value * 0.7) + "")
-                    } else if(user.is_seller){
-                      onStorePriceChanged((value * 0.8) + "")
+                    onPriceChanged(value);
+                    if (user.is_master) {
+                      onStorePriceChanged(value * 0.7 + "");
+                    } else if (user.is_seller) {
+                      onStorePriceChanged(value * 0.8 + "");
                     }
                   }}
                 ></TextInput>
@@ -760,97 +817,103 @@ export default function ProductInformationAdd(props) {
             </View>
             <Text style={styles.text}>{Translate.t("productImage")}</Text>
             {productImageHtml}
-              <View
-                style={{
-                  marginTop: heightPercentageToDP("1%"),
-                  marginBottom: heightPercentageToDP("1%"),
-                  height: 1,
-                  width: "100%",
-                  height: heightPercentageToDP("30%"),
-                  borderRadius: 1,
-                  borderWidth: 1,
-                  borderColor: Colors.deepGrey,
-                  borderStyle: "dashed",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-              {productImages.length < 5 ? (<TouchableWithoutFeedback style={
-                  {width: "100%",
-                  height: heightPercentageToDP("30%"),
-                  justifyContent: "center",
-                  alignItems: "center"}
-              } onPress={
-                ()=>{
-                  const options = {
-                    noData: true,
-                  };
-                  ImagePicker.launchImageLibrary(options, (response) => {
-                    if (response.uri) {
-                      const formData = new FormData();
-                      formData.append("image", {
-                        ...response,
-                        uri:
-                          Platform.OS === "android"
-                            ? response.uri
-                            : response.uri.replace("file://", ""),
-                        name: "mobile-" + uuid.v4() + ".jpg",
-                        type: "image/jpeg", // it may be necessary in Android.
-                      });
-                      request
-                        .post("images/", formData, {
-                          "Content-Type": "multipart/form-data",
-                        })
-                        .then((response) => {
-                          let tmpImages = productImages;
-                          tmpImages.push(response.data);
-                          onProductImagesChanged(tmpImages);
-                          let html = []
-                          tmpImages.map((image) => {
-                            html.push(<View
-                              key={image.id}
-                              style={{
-                                marginTop: heightPercentageToDP("1%"),
-                                height: 1,
-                                width: "100%",
-                                height: heightPercentageToDP("30%"),
-                                borderRadius: 1,
-                                borderWidth: 1,
-                                borderColor: Colors.deepGrey,
-                                borderStyle: "dashed",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Image
-                                style={{
-                                  width: "100%",
-                                  height: heightPercentageToDP("30%"),
-                                  position: "absolute",
-                                }}
-                                source={{ uri: image.image }}
-                              />
-                            </View>)
-                          })
-                          onProductImageHtmlChanged(html);
-                        })
-                        .catch((error) => {
-                          alert.warning(JSON.stringify(error));
-                          if (
-                            error &&
-                            error.response &&
-                            error.response.data &&
-                            Object.keys(error.response.data).length > 0
-                          ) {
-                            alert.warning(
-                              error.response.data[Object.keys(error.response.data)[0]][0]
-                            );
-                          }
+            <View
+              style={{
+                marginTop: heightPercentageToDP("1%"),
+                marginBottom: heightPercentageToDP("1%"),
+                height: 1,
+                width: "100%",
+                height: heightPercentageToDP("30%"),
+                borderRadius: 1,
+                borderWidth: 1,
+                borderColor: Colors.deepGrey,
+                borderStyle: "dashed",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {productImages.length < 5 ? (
+                <TouchableWithoutFeedback
+                  style={{
+                    width: "100%",
+                    height: heightPercentageToDP("30%"),
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  onPress={() => {
+                    const options = {
+                      noData: true,
+                    };
+                    ImagePicker.launchImageLibrary(options, (response) => {
+                      if (response.uri) {
+                        const formData = new FormData();
+                        formData.append("image", {
+                          ...response,
+                          uri:
+                            Platform.OS === "android"
+                              ? response.uri
+                              : response.uri.replace("file://", ""),
+                          name: "mobile-" + uuid.v4() + ".jpg",
+                          type: "image/jpeg", // it may be necessary in Android.
                         });
-                    }
-                  });
-                }
-              }>
+                        request
+                          .post("images/", formData, {
+                            "Content-Type": "multipart/form-data",
+                          })
+                          .then((response) => {
+                            let tmpImages = productImages;
+                            tmpImages.push(response.data);
+                            onProductImagesChanged(tmpImages);
+                            let html = [];
+                            tmpImages.map((image) => {
+                              html.push(
+                                <View
+                                  key={image.id}
+                                  style={{
+                                    marginTop: heightPercentageToDP("1%"),
+                                    height: 1,
+                                    width: "100%",
+                                    height: heightPercentageToDP("30%"),
+                                    borderRadius: 1,
+                                    borderWidth: 1,
+                                    borderColor: Colors.deepGrey,
+                                    borderStyle: "dashed",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <Image
+                                    style={{
+                                      width: "100%",
+                                      height: heightPercentageToDP("30%"),
+                                      position: "absolute",
+                                    }}
+                                    source={{ uri: image.image }}
+                                  />
+                                </View>
+                              );
+                            });
+                            onProductImageHtmlChanged(html);
+                          })
+                          .catch((error) => {
+                            alert.warning(JSON.stringify(error));
+                            if (
+                              error &&
+                              error.response &&
+                              error.response.data &&
+                              Object.keys(error.response.data).length > 0
+                            ) {
+                              alert.warning(
+                                error.response.data[
+                                  Object.keys(error.response.data)[0]
+                                ][0]
+                              );
+                            }
+                          });
+                      }
+                    });
+                  }}
+                >
                   <Image
                     style={{
                       width: win.width / 10,
@@ -867,8 +930,9 @@ export default function ProductInformationAdd(props) {
                   >
                     {Translate.t("uploadAPhoto")}
                   </Text>
-              </TouchableWithoutFeedback>) : (null)}
-              </View>
+                </TouchableWithoutFeedback>
+              ) : null}
+            </View>
             <Text style={styles.text}>{Translate.t("productDescription")}</Text>
             <TextInput
               style={styles.productDescriptionInput}
@@ -878,35 +942,62 @@ export default function ProductInformationAdd(props) {
             ></TextInput>
           </View>
           <View style={styles.allButtonContainer}>
-            <TouchableOpacity onPress={
-              ()=>{
-                if(props.route.params.url){
+            <TouchableOpacity
+              onPress={() => {
+                if (props.route.params.url) {
                   saveProduct(1);
                 } else {
                   createProduct(1);
                 }
-              }
-            }>
+              }}
+            >
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>
                   {Translate.t("saveDraft")}
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={
-              ()=>{
-                if(props.route.params.url){
+            <TouchableOpacity
+              onPress={() => {
+                if (props.route.params.url) {
                   saveProduct(0);
                 } else {
                   createProduct(0);
                 }
-              }
-            }>
+              }}
+            >
               <View style={styles.buttonContainer}>
                 <Text style={styles.buttonText}>{Translate.t("listing")}</Text>
               </View>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity onPress={
+            ()=>{
+              request.patch(props.route.params.url, {
+                "is_hidden" : 1
+              }).then((response)=>{
+                props.navigation.pop()
+              }).catch((error)=>{
+                console.log(error)
+              })
+            }
+          }>
+            <View
+              style={{
+                backgroundColor: Colors.E6DADE,
+                width: widthPercentageToDP("35%"),
+                borderRadius: 5,
+                alignSelf: "center",
+                alignItems: "center",
+                justifyContent: "center",
+                height: heightPercentageToDP("6%"),
+                padding: widthPercentageToDP("1.4%"),
+                marginBottom: heightPercentageToDP("3%"),
+              }}
+            >
+              <Text style={styles.buttonText}>{Translate.t("delete")}</Text>
+            </View>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -935,7 +1026,7 @@ const styles = StyleSheet.create({
   textInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     width: "100%",
     marginTop: heightPercentageToDP("1%"),
     marginBottom: heightPercentageToDP("2%"),
@@ -943,9 +1034,9 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentageToDP("2%"),
   },
   text: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     marginBottom: heightPercentageToDP("2%"),
-    width: "100%"
+    width: "100%",
   },
   radioButtonText: {
     fontSize: RFValue(10),
@@ -965,8 +1056,8 @@ const styles = StyleSheet.create({
   releaseDateTextInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(14),
-    height: heightPercentageToDP("6%"),
+    fontSize: RFValue(11),
+    height: heightPercentageToDP("5%"),
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),
     flex: 1,
@@ -978,7 +1069,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   releaseDateWarningText: {
-    fontSize: RFValue(10),
+    fontSize: RFValue(11),
     marginTop: heightPercentageToDP("1%"),
     color: "red",
   },
@@ -988,11 +1079,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
-    height: heightPercentageToDP("8%"),
+    height: heightPercentageToDP("6%"),
     padding: widthPercentageToDP("1.4%"),
   },
   buttonText: {
-    fontSize: RFValue(18),
+    fontSize: RFValue(14),
     color: "white",
   },
   allButtonContainer: {
@@ -1004,15 +1095,15 @@ const styles = StyleSheet.create({
     marginBottom: heightPercentageToDP("5%"),
   },
   addProductButtonText: {
-    fontSize: RFValue("14"),
+    fontSize: RFValue(11),
     color: "white",
   },
   productPricingTextInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
     width: widthPercentageToDP("60%"),
-    height: heightPercentageToDP("6%"),
+    height: heightPercentageToDP("5.2%"),
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),
@@ -1035,7 +1126,7 @@ const styles = StyleSheet.create({
   prStatementInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     width: "100%",
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),
@@ -1043,7 +1134,7 @@ const styles = StyleSheet.create({
   productDescriptionInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     height: heightPercentageToDP("15%"),
     width: "100%",
     marginTop: heightPercentageToDP("1%"),

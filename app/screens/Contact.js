@@ -51,8 +51,8 @@ function getID(url) {
   urls = urls.filter((url) => {
     return url;
   });
-  userId = urls[urls.length - 1];
-  return userId;
+  tmpUserId = urls[urls.length - 1];
+  return tmpUserId;
 }
 function addFriend(firstUserId, secondUserId) {
   firestore()
@@ -77,16 +77,17 @@ export default function Contact(props) {
     onShowChanged(false);
   }, [isFocused]);
   function redirectToChat(friendID, friendName) {
-    let groupID;
+    let groupID = null;
     let groupName;
     let deleted = "delete_" + userId;
     db.collection("chat")
-      .where("users", "array-contains", userId)
+      .where("users", "array-contains", userId.toString())
       .get()
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
           for (var i = 0; i < users.length; i++) {
+            console.log(users[i] + " = " + friendID)
             if (users[i] == friendID) {
               groupID = snapShot.doc.id;
             }
@@ -141,7 +142,7 @@ export default function Contact(props) {
   function getName(obj) {
     if (obj.data) {
       if (obj.type == "user") {
-        return obj.data.real_name ? obj.data.real_name : obj.data.nickname;
+        return obj.data.nickname;
       }
       return obj.data.name;
     }
@@ -169,7 +170,7 @@ export default function Contact(props) {
     let tmpUserHtml = [];
     for(let i=0; i<users.length; i++){
       let user = users[i]
-      name = await getFriendName(user.id, user.real_name ? user.real_name : user.nickname)
+      name = await getFriendName(user.id, user.nickname)
       users[i].show_name = name;
     }
 
@@ -188,7 +189,6 @@ export default function Contact(props) {
       tmpUserHtml.push(
         <TouchableWithoutFeedback
           onLongPress={() => {
-            console.log(user);
             onLongPressObjChanged({
               type: "user",
               data: user,
@@ -199,18 +199,25 @@ export default function Contact(props) {
           onPress={() => {
             redirectToChat(
               user.id,
-              user.real_name ? user.real_name : user.nickname
+              user.show_name
             );
           }}
         >
           <View style={styles.contactTabContainer}>
-            <Image
+            {user && user.image && user.image.image ? (<Image
+              style={{
+                width: win.width / 13,
+                height: ratioProfile * 25,
+              }}
+              source={{ uri: user.image.image }}
+            />) : (<Image
               style={{
                 width: win.width / 13,
                 height: ratioProfile * 25,
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
-            />
+            />)}
+            
             <Text style={styles.tabLeftText}>
               {/* {user.real_name ? user.real_name : user.nickname} */}
               {user.show_name}
@@ -344,7 +351,7 @@ export default function Contact(props) {
 
   function populateGroup() {
     AsyncStorage.getItem("user").then(function (url) {
-      let userId = getID(url);
+      userId = getID(url);
       db.collection("chat")
         .where("users", "array-contains", String(userId))
         .get()
@@ -376,7 +383,7 @@ export default function Contact(props) {
 
   function populateUser() {
     AsyncStorage.getItem("user").then(function (url) {
-      let userId = getID(url);
+      userId = getID(url);
       request
         .get(url)
         .then(function (response) {
@@ -469,7 +476,7 @@ export default function Contact(props) {
 
   function populateFolder() {
     AsyncStorage.getItem("user").then(function (url) {
-      let userId = getID(url);
+      userId = getID(url);
       db.collection("users")
         .doc(String(userId))
         .collection("folders")
@@ -501,6 +508,7 @@ export default function Contact(props) {
     populateGroup();
   }, [isFocused]);
   React.useEffect(() => {
+    onShowFriendsChanged(true);
     populateUser();
   }, [isFocused]);
 
@@ -975,14 +983,12 @@ export default function Contact(props) {
                           populateFolder();
                         });
                     } else if (longPressObj.type == "group") {
-                      // console.log(longPressObj)
                       let update = {};
                       update["notify_" + user.id] =
                         longPressObj.data.data["notify_" + user.id] == "" ||
                         longPressObj.data.data["notify_" + user.id]
                           ? false
                           : true;
-                      // console.log(update)
                       db.collection("chat")
                         .doc(longPressObj.data.id)
                         .set(update, {

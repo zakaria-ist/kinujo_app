@@ -67,11 +67,20 @@ function getDate(string) {
   );
 }
 
-async function getName(ownId, data) {
+async function getDetail(ownId, data) {
   if (data.type && data.type == "group") {
-    return data.groupName;
+    return {
+      "name" : data.groupName,
+      "image" : ""
+    };
   }
-  if (data.users.length > 2) return data.groupName;
+  if (data.users.length > 2) {
+    return {
+      "name" : data.groupName,
+      "image" : ""
+    };
+  }
+  
   let users = data.users.filter((user) => {
     return user != ownId;
   });
@@ -81,26 +90,33 @@ async function getName(ownId, data) {
     .collection("customers")
     .get();
 
-  tmpName = "";
+  firebaseName = "";
   snapShot.forEach((docRef) => {
     if (docRef.data().displayName && docRef.id == users) {
-      tmpName = docRef.data().displayName;
+      firebaseName = docRef.data().displayName;
     }
   });
-  if (tmpName) return tmpName;
+
   if (users.length > 0) {
     let user = users[0];
     user = await request.get("profiles/" + user);
     user = user.data;
-    return user.real_name ? user.real_name : user.nickname;
+    djangoName = user.nickname;
+    return {
+      "name" : firebaseName ? firebaseName : djangoName,
+      "image" : user.image ? user.image.image : ""
+    };
   }
-
-  return "";
+  return {
+    "name" : "",
+    "image" : ""
+  };
 }
 
 export default function ChatList(props) {
   const isFocused = useIsFocused();
   const [show, onShowChanged] = React.useState(false);
+  const [totalUnread, setTotalUnread] = React.useState(false);
   const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
   const [longPressObj, onLongPressObjChanged] = React.useState({});
@@ -135,7 +151,13 @@ export default function ChatList(props) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
+    let unreadMessage = 0;
+
     tmpChats.map((chat) => {
+      if(chat.data['totalMessageRead_' + ownUserID] < chat.data['totalMessage']){
+        unreadMessage++
+      }
+
       totalUnseenMessage = 0;
       totalUnseenMessage =
         chat.data[unseenMessageCountField] + totalUnseenMessage;
@@ -162,6 +184,8 @@ export default function ChatList(props) {
         lastReadDate = chat.data[lastReadDateField];
 
         name = chat.name;
+        image = chat.image;
+
         if (tmpDay == today) {
           tmpChatHtml.unshift(
             <TouchableWithoutFeedback
@@ -195,7 +219,9 @@ export default function ChatList(props) {
               }}
             >
               <View style={styles.tabContainer}>
-                <Image style={styles.tabImage} />
+                {image ? (<Image 
+                source={{ uri: image }}
+                style={styles.tabImage} />) : (<Image style={styles.tabImage} />)}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.tabText}>{name}</Text>
                   <Text style={styles.tabText}>
@@ -259,7 +285,9 @@ export default function ChatList(props) {
               }}
             >
               <View style={styles.tabContainer}>
-                <Image style={styles.tabImage} />
+                {image ? (<Image 
+                source={{ uri: image }}
+                style={styles.tabImage} />) : (<Image style={styles.tabImage} />)}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.tabText}>{name}</Text>
                   <Text style={styles.tabText}>
@@ -391,6 +419,7 @@ export default function ChatList(props) {
         });
         onChatHtmlChanged(resultChatHtml);
     })
+    setTotalUnread(unreadMessage)
   }
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
@@ -409,11 +438,12 @@ export default function ChatList(props) {
               return chat.id == snapShot.id
             })
             if(tmpChats.length == 0){
-              getName(ownUserID, snapShot.data()).then(function (name) {
+              getDetail(ownUserID, snapShot.data()).then(function (detail) {
                 chats.push({
                   id : snapShot.id,
                   data: snapShot.data(),
-                  name: name
+                  name: detail.name,
+                  image: detail.image
                 })
                 processChat(chats, ownUserID);
               })
@@ -478,10 +508,10 @@ export default function ChatList(props) {
               >
                 {Translate.t("chat")}
               </Text>
-              {totalUnseenMessage ? (
+              {totalUnread ? (
                 <View style={styles.notificationNumberContainer}>
                   <Text style={styles.notificationNumberText}>
-                    {totalUnseenMessage}
+                    {totalUnread}
                   </Text>
                 </View>
               ) : (

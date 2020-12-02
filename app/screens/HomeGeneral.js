@@ -68,7 +68,7 @@ export default function Home(props) {
       db.collection("users")
         .doc(String(user.id))
         .collection("token")
-        .doc(deviceToken)
+        .doc(String(user.id))
         .set({
           tokenID: deviceToken,
         });

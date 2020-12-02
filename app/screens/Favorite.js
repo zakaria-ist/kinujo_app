@@ -321,20 +321,30 @@ export default function Favorite(props) {
         onBack={() => props.navigation.pop()}
       />
       <View style={styles.discription_header}>
-        <View
-          style={{
-            position: "absolute",
-            right: 0,
-            paddingRight: 15,
-          }}
-        >
-          <Button
-            title={Translate.t("sorting")}
-            color="#E6DADE"
-            backgroundColor="#000"
-            onPress={() => showSortingAnimation()}
-          />
-        </View>
+        <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              marginRight: widthPercentageToDP("3%"),
+              // marginTop: heightPercentageToDP("3%"),
+              borderRadius: 5,
+              paddingVertical: heightPercentageToDP("1%"),
+              paddingHorizontal: heightPercentageToDP("1%"),
+              backgroundColor: Colors.E6DADE,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: RFValue(12),
+                color: "white",
+                textAlign: "center",
+              }}
+            >
+              {Translate.t("sorting")}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
       </View>
       <Animated.View
         style={{

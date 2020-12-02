@@ -18,7 +18,8 @@ import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
-import CountryCodePicker from "react-native-country-code-picker";
+import CountryPicker from "react-native-country-picker-modal";
+
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -114,7 +115,8 @@ async function init(props, foreground) {
 export default function LoginScreen(props) {
   const [password, onPasswordChanged] = React.useState("");
   const [phone, onPhoneChanged] = React.useState("");
-
+  const [callingCode, onCallingCodeChanged] = React.useState("");
+  const [flag, onFlagChanged] = React.useState("");
   React.useEffect(() => {
     let unsubscribe;
     init(props, () => {
@@ -128,7 +130,10 @@ export default function LoginScreen(props) {
       }
     };
   }, []);
-
+  function processCountryCode(val) {
+    onCallingCodeChanged(val.callingCode);
+    onFlagChanged(val.flag);
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
@@ -155,29 +160,53 @@ export default function LoginScreen(props) {
           }}
           source={require("../assets/Images/tripleDot.png")}
         />
-
-        <TextInput
-          onChangeText={(text) => onPhoneChanged(text)}
-          value={phone}
-          placeholder={Translate.t("phoneNumber")}
-          placeholderTextColor={Colors.D7CCA6}
-          style={styles.携帯電話番号}
-        ></TextInput>
-        <TextInput
-          placeholder={Translate.t("password")}
-          placeholderTextColor={Colors.D7CCA6}
-          secureTextEntry={true}
-          onChangeText={(text) => onPasswordChanged(text)}
-          value={password}
-          style={styles.パスワード}
-        ></TextInput>
+        <View style={{ marginHorizontal: widthPercentageToDP("10%") }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-end",
+            }}
+          >
+            <CountryPicker
+              withCallingCode
+              withFilter
+              withFlag
+              placeholder={callingCode ? " + " + callingCode : "+"}
+              onSelect={(val) => processCountryCode(val)}
+              containerButtonStyle={{
+                borderRadius: 5,
+                borderWidth: 1,
+                // paddingBottom: RFValue(15),
+                borderColor: "black",
+                paddingLeft: widthPercentageToDP("1%"),
+                paddingVertical: heightPercentageToDP(".6%"),
+                width: widthPercentageToDP("20%"),
+              }}
+            />
+            <TextInput
+              onChangeText={(text) => onPhoneChanged(text)}
+              value={phone}
+              placeholder={Translate.t("phoneNumber")}
+              placeholderTextColor={Colors.D7CCA6}
+              style={styles.携帯電話番号}
+            ></TextInput>
+          </View>
+          <TextInput
+            placeholder={Translate.t("password")}
+            placeholderTextColor={Colors.D7CCA6}
+            secureTextEntry={true}
+            onChangeText={(text) => onPasswordChanged(text)}
+            value={password}
+            style={styles.パスワード}
+          ></TextInput>
+        </View>
         <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
           <TouchableOpacity
             onPress={() => {
               if (phone && password) {
                 request
                   .post("user/login", {
-                    tel: phone,
+                    tel: callingCode + phone,
                     password: password,
                   })
                   .then(function (response) {
@@ -312,11 +341,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   携帯電話番号: {
+    flex: 1,
     fontSize: RFValue(14),
-    paddingBottom: RFValue(15),
+    // paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
     borderBottomWidth: 1,
-    marginHorizontal: widthPercentageToDP("10%"),
+    marginLeft: widthPercentageToDP("2%"),
+    // marginHorizontal: widthPercentageToDP("10%"),
     marginTop: heightPercentageToDP("3%"),
     borderBottomColor: Colors.D7CCA6,
   },
@@ -324,7 +355,7 @@ const styles = StyleSheet.create({
     fontSize: RFValue(14),
     paddingBottom: RFValue(15),
     paddingTop: RFValue(15),
-    marginHorizontal: widthPercentageToDP("10%"),
+    // marginHorizontal: widthPercentageToDP("10%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.D7CCA6,
   },

@@ -160,6 +160,7 @@ export default function AddressManagement(props) {
                   if (tmpPrefectures.length > 0) {
                     onPrefectureChanged(tmpPrefectures[0].value);
                   }
+                  onAddChanged(address.city)
                 }
               });
             }}
@@ -266,7 +267,6 @@ export default function AddressManagement(props) {
                 request
                   .post("insertAddresses/", data)
                   .then(function (response) {
-                    AsyncStorage.setItem("defaultAddress", response.data.url);
                     // onNameChanged("");
                     // onZipcodeChanged("");
                     // onPrefectureChanged(null);
