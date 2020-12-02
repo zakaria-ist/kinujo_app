@@ -206,14 +206,14 @@ export default function ChatList(props) {
                 props.navigation.navigate("ChatScreen", {
                   type: chat.data.type,
                   groupID: chat.id,
-                  groupName: name,
+                  groupName: chat.name,
                 })
               }
               onLongPress={() => {
                 onLongPressObjChanged({
                   id: chat.id,
                   data: chat.data,
-                  name: name,
+                  name: chat.name,
                 });
                 onShowChanged(true);
               }}
@@ -272,14 +272,14 @@ export default function ChatList(props) {
                 props.navigation.navigate("ChatScreen", {
                   type: chat.data.type,
                   groupID: chat.id,
-                  groupName: name,
+                  groupName: chat.name,
                 })
               }
               onLongPress={() => {
                 onLongPressObjChanged({
                   id: chat.id,
                   data: chat.data,
-                  name: name,
+                  name: chat.name,
                 });
                 onShowChanged(true);
               }}
@@ -336,14 +336,14 @@ export default function ChatList(props) {
                 props.navigation.navigate("ChatScreen", {
                   type: chat.data.type,
                   groupID: chat.id,
-                  groupName: name,
+                  groupName: chat.name,
                 })
               }
               onLongPress={() => {
                 onLongPressObjChanged({
                   id: chat.id,
                   data: chat.data,
-                  name: name,
+                  name: chat.name,
                 });
                 onShowChanged(true);
               }}
@@ -463,6 +463,14 @@ export default function ChatList(props) {
   }
 
   React.useEffect(() => {
+    AsyncStorage.getItem("chat").then((item) => {
+      if(item){
+        AsyncStorage.removeItem("chat");
+        item = JSON.parse(item);
+        props.navigation.push("ChatScreen", item);
+      }
+    })
+
     let unsubscribe;
     chats = []
     firstLoad().then((unsub)=>{

@@ -35,8 +35,8 @@ const win = Dimensions.get("window");
 import Format from "../lib/format";
 const format = new Format();
 let users;
-let featuredProducts;
-let kinujoProducts;
+let featuredProducts = {};
+let kinujoProducts = {};
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -74,9 +74,9 @@ function processFavouriteHtml(props, user, products) {
         }
         category={product.category.name}
         shipping={
-          product.shipping_fee
-            ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-            : "Free Shipping"
+          product.shipping_fee == 0
+            ? Translate.t("freeShipping")
+            : "Shipping: " + format.separator(product.shipping_fee) + "円"
         }
       />
     );
@@ -115,9 +115,9 @@ function processFeatured(props, user, products) {
         }
         category={product.category.name}
         shipping={
-          product.shipping_fee
-            ? "Shipping: " + format.separator(product.shipping_fee) + "円"
-            : "Free Shipping"
+          product.shipping_fee == 0
+            ? Translate.t("freeShipping")
+            : "Shipping: " + format.separator(product.shipping_fee) + "円"
         }
       />
     );
@@ -135,6 +135,9 @@ export default function Favorite(props) {
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
   const isFocused = useIsFocused();
+  React.useEffect(() => {
+    hideSortingAnimation();
+  }, [!isFocused]);
   function showSortingAnimation() {
     onCategoryShow(true);
     Animated.timing(rightSorting, {
@@ -152,55 +155,73 @@ export default function Favorite(props) {
       }).start();
   }
   function filterProductsBySorting(type) {
-    let tmpFeaturedProducts = featuredProducts;
-    let tmpKinujoProducts = kinujoProducts;
+    let tmpFeaturedProducts;
+    let tmpKinujoProducts;
+    if (featuredProducts && kinujoProducts) {
+      tmpFeaturedProducts = featuredProducts;
+      tmpKinujoProducts = kinujoProducts;
+    }
     if (type == "latestFirst") {
-      tmpFeaturedProducts = featuredProducts.sort((a, b) => {
-        let date1 = new Date(a.created);
-        let date2 = new Date(b.created);
-        if (date1 < date2) {
-          return -1;
-        }
-        if (date1 > date2) {
-          return 1;
-        }
-        return 0;
-      });
-      tmpKinujoProducts = kinujoProducts.sort((a, b) => {
-        let date1 = new Date(a.created);
-        let date2 = new Date(b.created);
-        if (date1 < date2) {
-          return -1;
-        }
-        if (date1 > date2) {
-          return 1;
-        }
-        return 0;
-      });
+      if (tmpFeaturedProducts) {
+        tmpFeaturedProducts = featuredProducts.sort((a, b) => {
+          let date1 = new Date(a.created);
+          let date2 = new Date(b.created);
+          if (date1 < date2) {
+            return -1;
+          }
+          if (date1 > date2) {
+            return 1;
+          }
+          return 0;
+        });
+      }
+      if (tmpKinujoProducts) {
+        tmpKinujoProducts = kinujoProducts.sort((a, b) => {
+          let date1 = new Date(a.created);
+          let date2 = new Date(b.created);
+          if (date1 < date2) {
+            return -1;
+          }
+          if (date1 > date2) {
+            return 1;
+          }
+          return 0;
+        });
+      }
     }
     onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
     onFavouriteHtmlChanged(
       processFavouriteHtml(props, users, tmpKinujoProducts)
     );
-    if (type == "HighToLow") {
-      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
-        return a.store_price - b.store_price;
-      });
-      tmpKinujoProducts = tmpKinujoProducts.sort((a, b) => {
-        return a.store_price - b.store_price;
-      });
+    if (type == "LowToHigh") {
+      if (tmpFeaturedProducts) {
+        tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+          return a.store_price - b.store_price;
+        });
+      }
+      if (tmpKinujoProducts) {
+        tmpKinujoProducts = tmpKinujoProducts.sort((a, b) => {
+          return a.store_price - b.store_price;
+        });
+      }
+
       onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
       onFavouriteHtmlChanged(
         processFavouriteHtml(props, users, tmpKinujoProducts)
       );
     }
-    if (type == "LowToHigh") {
-      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
-        return b.store_price - a.store_price;
-      });
-      tmpKinujoProducts = tmpKinujoProducts.sort((a, b) => {
-        return b.store_price - a.store_price;
-      });
+    if (type == "HighToLow") {
+      if (tmpFeaturedProducts) {
+        tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+          return b.store_price - a.store_price;
+        });
+      }
+      if (tmpKinujoProducts) {
+        tmpKinujoProducts = tmpKinujoProducts.sort((a, b) => {
+          return b.store_price - a.store_price;
+        });
+      }
+
       onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
       onFavouriteHtmlChanged(
         processFavouriteHtml(props, users, tmpKinujoProducts)
@@ -311,27 +332,60 @@ export default function Favorite(props) {
           }
         });
     });
-  }, [isFocused]);
+  }, []);
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <CustomHeader
-        text={Translate.t("favorite")}
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.pop()}
-      />
-      <View style={styles.discription_header}>
-        <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
+    <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <CustomHeader
+          text={Translate.t("favorite")}
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onPress={() => props.navigation.navigate("Cart")}
+          onBack={() => props.navigation.pop()}
+        />
+        <View style={styles.discription_header}>
+          <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                marginRight: widthPercentageToDP("3%"),
+                borderRadius: 5,
+                paddingVertical: heightPercentageToDP(".8%"),
+                paddingHorizontal: heightPercentageToDP("1%"),
+                backgroundColor: Colors.E6DADE,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  color: "white",
+                  textAlign: "center",
+                }}
+              >
+                {Translate.t("sorting")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+
+        <Animated.View
+          style={{
+            zIndex: 1,
+            height: heightPercentageToDP("100%"),
+            alignSelf: "center",
+            width: widthPercentageToDP("80%"),
+
+            position: "absolute",
+            right: rightSorting,
+            backgroundColor: "white",
+          }}
+        >
           <View
             style={{
-              position: "absolute",
-              right: 0,
-              marginRight: widthPercentageToDP("3%"),
-              // marginTop: heightPercentageToDP("3%"),
-              borderRadius: 5,
-              paddingVertical: heightPercentageToDP("1%"),
-              paddingHorizontal: heightPercentageToDP("1%"),
-              backgroundColor: Colors.E6DADE,
+              backgroundColor: "white",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              marginTop: heightPercentageToDP("3%"),
             }}
           >
             <Text
@@ -344,101 +398,80 @@ export default function Favorite(props) {
               {Translate.t("sorting")}
             </Text>
           </View>
-        </TouchableWithoutFeedback>
-      </View>
-      <Animated.View
-        style={{
-          zIndex: 1,
-          height: heightPercentageToDP("100%"),
-          alignSelf: "center",
-          width: widthPercentageToDP("80%"),
-          position: "absolute",
-          right: rightSorting,
-          backgroundColor: "white",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "white",
-            borderBottomWidth: 1,
-            borderBottomColor: Colors.D7CCA6,
-          }}
-        >
-          <Text style={styles.categoryTitle}>{Translate.t("sorting")}</Text>
-        </View>
-        <TouchableWithoutFeedback
-          onPress={() => filterProductsBySorting("latestFirst")}
-        >
-          <View style={styles.categoryContainer}>
-            <Text>Latest First</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => filterProductsBySorting("LowToHigh")}
-        >
-          <View style={styles.categoryContainer}>
-            <Text>Price Low to High</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => filterProductsBySorting("HighToLow")}
-        >
-          <View style={styles.categoryContainer}>
-            <Text>Price High to Low</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
-          <View
-            style={{
-              position: "absolute",
-              bottom: heightPercentageToDP("8%"),
-              right: widthPercentageToDP("3%"),
-              borderWidth: 1,
-              borderRadius: 5,
-              backgroundColor: "white",
-              alignItems: "center",
-              paddingVertical: heightPercentageToDP(".7%"),
-              paddingHorizontal: widthPercentageToDP("2%"),
-            }}
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("latestFirst")}
           >
-            <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </Animated.View>
-      <ScrollView style={styles.home_product_view}>
-        {favouriteHtml.length > 0 ? (
-          <View style={styles.section_header}>
-            <Text style={styles.section_header_text}>
-              {"KINUJO official product"}
-            </Text>
-          </View>
-        ) : (
-          <View></View>
-        )}
-        {favouriteHtml.length > 0 ? (
-          <View style={styles.section_product}>{favouriteHtml}</View>
-        ) : (
-          <View></View>
-        )}
-
-        {featuredHtml.length > 0 ? (
-          <TouchableWithoutFeedback>
-            <View style={styles.section_header}>
-              <Text style={styles.section_header_text}>
-                {Translate.t("featuredProduct")}
-              </Text>
+            <View style={styles.categoryContainer}>
+              <Text>Latest First</Text>
             </View>
           </TouchableWithoutFeedback>
-        ) : (
-          <View></View>
-        )}
-        {featuredHtml.length > 0 ? (
-          <View style={styles.section_product}>{featuredHtml}</View>
-        ) : (
-          <View></View>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("LowToHigh")}
+          >
+            <View style={styles.categoryContainer}>
+              <Text>Price Low to High</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("HighToLow")}
+          >
+            <View style={styles.categoryContainer}>
+              <Text>Price High to Low</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
+            <View
+              style={{
+                position: "absolute",
+                bottom: heightPercentageToDP("8%"),
+                right: widthPercentageToDP("3%"),
+                borderWidth: 1,
+                borderRadius: 5,
+                backgroundColor: "white",
+                alignItems: "center",
+                paddingVertical: heightPercentageToDP(".7%"),
+                paddingHorizontal: widthPercentageToDP("2%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </Animated.View>
+        <ScrollView style={styles.home_product_view}>
+          {favouriteHtml.length > 0 ? (
+            <View style={styles.section_header}>
+              <Text style={styles.section_header_text}>
+                {"KINUJO official product"}
+              </Text>
+            </View>
+          ) : (
+            <View></View>
+          )}
+          {favouriteHtml.length > 0 ? (
+            <View style={styles.section_product}>{favouriteHtml}</View>
+          ) : (
+            <View></View>
+          )}
+
+          {featuredHtml.length > 0 ? (
+            <TouchableWithoutFeedback>
+              <View style={styles.section_header}>
+                <Text style={styles.section_header_text}>
+                  {Translate.t("featuredProduct")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          ) : (
+            <View></View>
+          )}
+          {featuredHtml.length > 0 ? (
+            <View style={styles.section_product}>{featuredHtml}</View>
+          ) : (
+            <View></View>
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -473,7 +506,7 @@ const styles = StyleSheet.create({
     height: height - 48 - heightPercentageToDP("17%"),
     padding: 15,
     paddingTop: 0,
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     overflow: "scroll",
   },
   section_product: {
@@ -487,9 +520,9 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     flexWrap: "wrap",
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
   },
   disc_title_text: {
     paddingLeft: 15,
@@ -504,7 +537,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("82%"),
     padding: 15,
     paddingTop: 0,
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     overflow: "scroll",
     // backgroundColor: "orange",
   },
@@ -519,7 +552,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: 10,
+    marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

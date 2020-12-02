@@ -44,69 +44,88 @@ export default function ChatContact({
   date,
   props,
   showCheckBox,
+  image
 }) {
-  AsyncStorage.getItem("user").then((url) => {
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-      return url;
-    });
-    userId = urls[urls.length - 1];
-  });
+  const [contactImage, setContactImage] = React.useState("");
   function redirectToChat(contactID, contactName) {
-    let groupID;
-    let groupName;
-    let deleted = "delete_" + userId;
-    db.collection("chat")
-      .where("users", "array-contains", userId)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == contactID) {
-              groupID = snapShot.doc.id;
+    AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+
+      let groupID;
+      let groupName;
+      let deleted = "delete_" + userId;
+      db.collection("chat")
+        .where("users", "array-contains", userId)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docChanges().forEach((snapShot) => {
+            if(snapShot.doc.data().type != 'groups' && snapShot.doc.data().users.length == 2){
+              let users = snapShot.doc.data().users;
+              for (var i = 0; i < users.length; i++) {
+                if (users[i] == contactID) {
+                  groupID = snapShot.doc.id;
+                }
+              }
             }
+          });
+          if (groupID != null) {
+            db.collection("chat")
+              .doc(groupID)
+              .set(
+                {
+                  [deleted]: false,
+                },
+                {
+                  merge: true,
+                }
+              );
+            AsyncStorage.setItem("chat", JSON.stringify({
+              groupID: groupID,
+              groupName: contactName,
+            })).then(()=>{
+              props.navigation.pop();
+            })
+          } else {
+            let ownMessageUnseenField = "unseenMessageCount_" + userId;
+            let friendMessageUnseenField = "unseenMessageCount_" + contactID;
+            let ownTotalMessageReadField = "totalMessageRead_" + userId;
+            let friendTotalMessageReadField = "totalMessageRead_" + contactID;
+            db.collection("chat")
+              .add({
+                groupName: contactName,
+                users: [userId, contactID],
+                totalMessage: 0,
+                [ownMessageUnseenField]: 0,
+                [friendMessageUnseenField]: 0,
+                [ownTotalMessageReadField]: 0,
+                [friendTotalMessageReadField]: 0,
+              })
+              .then(function (docRef) {
+                AsyncStorage.setItem("chat", JSON.stringify({
+                  groupID: docRef.id,
+                  groupName: contactName,
+                })).then(()=>{
+                  props.navigation.pop();
+                })
+              });
           }
         });
-        if (groupID != null) {
-          db.collection("chat")
-            .doc(groupID)
-            .set(
-              {
-                [deleted]: false,
-              },
-              {
-                merge: true,
-              }
-            );
-          props.navigation.push("ChatScreen", {
-            groupID: groupID,
-            groupName: contactName,
-          });
-        } else {
-          let ownMessageUnseenField = "unseenMessageCount_" + userId;
-          let friendMessageUnseenField = "unseenMessageCount_" + contactID;
-          let ownTotalMessageReadField = "totalMessageRead_" + userId;
-          let friendTotalMessageReadField = "totalMessageRead_" + contactID;
-          db.collection("chat")
-            .add({
-              groupName: contactName,
-              users: [userId, contactID],
-              totalMessage: 0,
-              [ownMessageUnseenField]: 0,
-              [friendMessageUnseenField]: 0,
-              [ownTotalMessageReadField]: 0,
-              [friendTotalMessageReadField]: 0,
-            })
-            .then(function (docRef) {
-              props.navigation.push("ChatScreen", {
-                groupID: docRef.id,
-                groupName: contactName,
-              });
-            });
-        }
-      });
+    });
   }
+
+  React.useEffect(()=>{
+    if(contactID){
+      request.get('profiles/' + contactID).then((response)=>{
+        if(response.data.image){
+          setContactImage(response.data.image.image);
+        }
+      })
+    }
+  }, [contactID])
   return (
     <TouchableWithoutFeedback
       onPress={() => redirectToChat(contactID, contactName)}
@@ -115,10 +134,13 @@ export default function ChatContact({
         {/*Left Side*/}
         <View style={isSelf ? styles.right : styles.left} collapsable={false}>
           <View>
-            <Image
+            {image && !isSelf ? (<Image
+              style={[isSelf ? styles.none : styles.avatar]}
+              source={{ uri: image }}
+            />) : (<Image
               style={[isSelf ? styles.none : styles.avatar]}
               source={require("../assets/Images/profileEditingIcon.png")}
-            />
+            />)}
           </View>
           <View
             style={[
@@ -142,10 +164,13 @@ export default function ChatContact({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              <Image
+              {contactImage ? (<Image
+                style={styles.contact_avatar}
+                source={{ uri: contactImage }}
+              />) : (<Image
                 style={styles.contact_avatar}
                 source={require("../assets/Images/profileEditingIcon.png")}
-              />
+              />)}
               <Text style={styles.contact_name}>{contactName}</Text>
             </View>
           </TouchableHighlight>

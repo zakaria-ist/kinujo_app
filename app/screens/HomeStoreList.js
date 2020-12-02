@@ -37,6 +37,7 @@ import "firebase/firestore";
 import Format from "../lib/format";
 import Translate from "../assets/Translates/Translate";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
+import { method } from "lodash";
 const format = new Format();
 
 if (!firebase.apps.length) {
@@ -55,6 +56,7 @@ let janCodes = {};
 let janCodeNames = {};
 
 export default function HomeStoreList(props) {
+  const [name, setName] = React.useState(false);
   const [favourite, setFavourite] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
@@ -127,7 +129,6 @@ export default function HomeStoreList(props) {
     Object.keys(tmpJanCodes).map((key, index) => {
       let tmpJanCode =
         tmpProduct.variety == 2 ? tmpJanCodes[key] : tmpJanCodes[key]["none"];
-      console.log(tmpJanCode);
       if (!tmpJanCode.is_hidden) {
         tmpHtml.push(
           <View key={key} style={styles.variationTabs}>
@@ -155,6 +156,7 @@ export default function HomeStoreList(props) {
 
   function populatePopupHtml(props, tmpProduct, tmpJanCodes, selected) {
     if (tmpProduct.variety == 1) {
+      console.log(tmpJanCodes);
       return populatePopupList(props, tmpProduct, tmpJanCodes, selected);
     } else if (tmpProduct.variety == 0) {
       onSelectedJanCodeChanged(
@@ -226,70 +228,98 @@ export default function HomeStoreList(props) {
                   }
                 });
 
+              let tmpVarieties = [];
               response.data.productVarieties.map((productVariety) => {
-                productVariety.productVarietySelections.map(
-                  (productVarietySelection) => {
-                    janCodeNames[productVarietySelection.url] =
-                      productVarietySelection.selection;
-                  }
-                );
+                if (!tmpVarieties.includes(productVariety.name)) {
+                  tmpVarieties.push(productVariety.name);
+                }
+                if (!productVariety.is_hidden) {
+                  productVariety.productVarietySelections.map(
+                    (productVarietySelection) => {
+                      if (!productVarietySelection.is_hidden) {
+                        janCodeNames[productVarietySelection.url] =
+                          productVarietySelection.selection;
+                      }
+                    }
+                  );
+                }
               });
+              setName(tmpVarieties.join(" and "));
               janCodes = {};
               response.data.productVarieties.map((productVariety) => {
-                productVariety.productVarietySelections.map(
-                  (productVarietySelection) => {
-                    productVarietySelection.jancode_horizontal.map(
-                      (horizontal) => {
-                        let hoName = horizontal.horizontal
-                          ? janCodeNames[horizontal.horizontal]
-                          : "none";
-                        let veName = horizontal.vertical
-                          ? janCodeNames[horizontal.vertical]
-                          : "none";
-                        if (janCodes[hoName]) {
-                          janCodes[hoName][veName] = {
-                            stock: horizontal.stock,
-                            url: horizontal.url,
-                            id: horizontal.id,
-                            is_hidden: horizontal.is_hidden,
-                          };
-                        } else {
-                          janCodes[hoName] = {};
-                          janCodes[hoName][veName] = {
-                            stock: horizontal.stock,
-                            url: horizontal.url,
-                            id: horizontal.id,
-                            is_hidden: horizontal.is_hidden,
-                          };
+                if (!productVariety.is_hidden) {
+                  productVariety.productVarietySelections.map(
+                    (productVarietySelection) => {
+                      if (!productVarietySelection.is_hidden) {
+                        if (
+                          !productVarietySelection.jancode_horizontal.is_hidden
+                        ) {
+                          productVarietySelection.jancode_horizontal.map(
+                            (horizontal) => {
+                              if (!horizontal.is_hidden) {
+                                let hoName = horizontal.horizontal
+                                  ? janCodeNames[horizontal.horizontal]
+                                  : "none";
+                                let veName = horizontal.vertical
+                                  ? janCodeNames[horizontal.vertical]
+                                  : "none";
+                                if (janCodes[hoName]) {
+                                  janCodes[hoName][veName] = {
+                                    stock: horizontal.stock,
+                                    url: horizontal.url,
+                                    id: horizontal.id,
+                                    is_hidden: horizontal.is_hidden,
+                                  };
+                                } else {
+                                  janCodes[hoName] = {};
+                                  janCodes[hoName][veName] = {
+                                    stock: horizontal.stock,
+                                    url: horizontal.url,
+                                    id: horizontal.id,
+                                    is_hidden: horizontal.is_hidden,
+                                  };
+                                }
+                              }
+                            }
+                          );
+                        }
+
+                        if (
+                          !productVarietySelection.jancode_vertical.is_hidden
+                        ) {
+                          productVarietySelection.jancode_vertical.map(
+                            (vertical) => {
+                              if (!vertical.is_hidden) {
+                                let hoName = vertical.horizontal
+                                  ? janCodeNames[vertical.horizontal]
+                                  : "none";
+                                let veName = vertical.vertical
+                                  ? janCodeNames[vertical.vertical]
+                                  : "none";
+                                if (janCodes[hoName]) {
+                                  janCodes[hoName][veName] = {
+                                    stock: vertical.stock,
+                                    url: vertical.url,
+                                    id: vertical.id,
+                                    is_hidden: vertical.is_hidden,
+                                  };
+                                } else {
+                                  janCodes[hoName] = {};
+                                  janCodes[hoName][veName] = {
+                                    stock: vertical.stock,
+                                    url: vertical.url,
+                                    id: vertical.id,
+                                    is_hidden: vertical.is_hidden,
+                                  };
+                                }
+                              }
+                            }
+                          );
                         }
                       }
-                    );
-                    productVarietySelection.jancode_vertical.map((vertical) => {
-                      let hoName = vertical.horizontal
-                        ? janCodeNames[vertical.horizontal]
-                        : "none";
-                      let veName = vertical.vertical
-                        ? janCodeNames[vertical.vertical]
-                        : "none";
-                      if (janCodes[hoName]) {
-                        janCodes[hoName][veName] = {
-                          stock: vertical.stock,
-                          url: vertical.url,
-                          id: vertical.id,
-                          is_hidden: vertical.is_hidden,
-                        };
-                      } else {
-                        janCodes[hoName] = {};
-                        janCodes[hoName][veName] = {
-                          stock: vertical.stock,
-                          url: vertical.url,
-                          id: vertical.id,
-                          is_hidden: vertical.is_hidden,
-                        };
-                      }
-                    });
-                  }
-                );
+                    }
+                  );
+                }
               });
               onPopupHtmlChanged(
                 populatePopupHtml(props, response.data, janCodes, "")
@@ -449,9 +479,9 @@ export default function HomeStoreList(props) {
                 alignItems: "center",
                 position: "absolute",
                 right: RFValue(5),
-                marginBottom: width / 5.5 + 20,
+                marginBottom: width / RFValue(5) + RFValue(24),
                 bottom: 0,
-                marginRight: widthPercentageToDP("2%"),
+                marginRight: widthPercentageToDP("2.5%"),
               }}
             >
               <TouchableWithoutFeedback
@@ -605,12 +635,11 @@ export default function HomeStoreList(props) {
             bottom: 0,
             left: 0,
             right: 0,
-            zIndex: 1,
+            // zIndex: 1,
             flex: 1,
-            flexGrow: 1,
             marginHorizontal: widthPercentageToDP("10%"),
             marginVertical: heightPercentageToDP("25%"),
-            position: "relative",
+            position: "absolute",
           }}
         >
           <View
@@ -654,171 +683,160 @@ export default function HomeStoreList(props) {
                 padding: widthPercentageToDP("5%"),
               }}
             >
-              {Translate.t("sizeAndColor")}
+              {name}
             </Text>
           </View>
-          <ScrollView>
-            {popupHtml}
-            <View
-              style={{
-                flexDirection: "row",
-                marginTop: heightPercentageToDP("5%"),
-                paddingBottom: heightPercentageToDP("5%"),
-                alignItems: "flex-start",
-              }}
-            >
+
+          <View>
+            <View>
+              {popupHtml}
               <View
                 style={{
-                  justifyContent: "center",
+                  flex: 1,
+                  // backgroundColor: "orange",
                   flexDirection: "row",
-                  alignItems: "center",
-                  flex: 1,
+                  marginTop: heightPercentageToDP("3%"),
+                  paddingBottom: heightPercentageToDP("35%"),
+                  alignItems: "flex-start",
                 }}
               >
-                <Text
+                <View
                   style={{
-                    fontSize: RFValue(10),
-                    marginLeft: widthPercentageToDP("1.3%"),
+                    flex: 1,
+                    justifyContent: "center",
+                    flexDirection: "row",
+                    alignItems: "center",
                   }}
                 >
-                  Quantity
-                </Text>
-                <DropDownPicker
-                  style={{
-                    borderWidth: 1,
-                    backgroundColor: "transparent",
-                    borderColor: "transparent",
-                    color: "black",
-                    borderRadius: 0,
-                    fontSize: RFValue(12),
-                    height: heightPercentageToDP("5.5%"),
-                    paddingLeft: widthPercentageToDP("2%"),
-                    marginVertical: heightPercentageToDP("1%"),
-                  }}
-                  items={cartItems}
-                  placeholder={Translate.t("unit")}
-                  defaultValue={quantity ? quantity + "" : ""}
-                  containerStyle={{
-                    paddingVertical: 0,
-                    width: widthPercentageToDP("25%"),
-                  }}
-                  labelStyle={{
-                    fontSize: RFValue(12),
-                    color: "gray",
-                  }}
-                  itemStyle={{
-                    justifyContent: "flex-start",
-                  }}
-                  selectedtLabelStyle={{
-                    color: Colors.F0EEE9,
-                  }}
-                  dropDownMaxHeight={RFValue(36)}
-                  dropDownStyle={{
-                    backgroundColor: "#FFFFFF",
-                    color: "black",
-                    position: "absolute",
-                    zIndex: 1000,
-                  }}
-                  onChangeItem={(item) => {
-                    if (item) {
-                      onQuantityChanged(item.value);
-                    }
-                  }}
-                />
-                {/* <Picker
-                  selectedValue={quantity}
-                  style={styles.picker}
-                  onValueChange={(itemValue, itemIndex) => {
-                    onQuantityChanged(itemValue);
-                  }}
-                  style={styles.picker}
-                  mode="dropdown"
-                >
-                  <Picker.Item label="1" value="1" />
-                  <Picker.Item label="2" value="2" />
-                  <Picker.Item label="3" value="3" />
-                  <Picker.Item label="4" value="4" />
-                  <Picker.Item label="5" value="5" />
-                  <Picker.Item label="6" value="6" />
-                  <Picker.Item label="7" value="7" />
-                  <Picker.Item label="8" value="8" />
-                  <Picker.Item label="9" value="9" />
-                  <Picker.Item label="10" value="10" />
-                </Picker> */}
-              </View>
-              <View
-                style={{
-                  alignSelf: "center",
-                  flex: 1,
-                }}
-              >
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    if (selectedJanCode && quantity) {
-                      onShowChanged(false);
-
-                      db.collection("users")
-                        .doc(user.id.toString())
-                        .collection("carts")
-                        .doc(selectedJanCode.toString())
-                        .get()
-                        .then((snapshot) => {
-                          let tmpQuantity = parseInt(quantity);
-                          if (snapshot.data()) {
-                            tmpQuantity += parseInt(snapshot.data().quantity);
-                          }
-                          db.collection("users")
-                            .doc(user.id.toString())
-                            .collection("carts")
-                            .doc(selectedJanCode.toString())
-                            .set({
-                              id: product.id,
-                              quantity: tmpQuantity,
-                              url: selectedJanCode,
-                              name: selectedName,
-                            });
-                        });
-                      onShowText(true);
-                      setTimeout(
-                        function () {
-                          onShowText(false);
-                        }.bind(this),
-                        2000
-                      );
-
-                      const subscriber = db
-                        .collection("users")
-                        .doc(user.id.toString())
-                        .collection("carts")
-                        .get()
-                        .then((querySnapShot) => {
-                          onCartCountChanged(querySnapShot.docs.length);
-                        });
-                    } else {
-                      alert.warning("Please select an item and set a quantity");
-                    }
-                  }}
-                >
-                  <View
+                  <Text
                     style={{
-                      backgroundColor: Colors.deepGrey,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 5,
-                      paddingVertical: 5,
-                      marginHorizontal: widthPercentageToDP("5%"),
+                      fontSize: RFValue(10),
+                      marginLeft: widthPercentageToDP("1.3%"),
                     }}
                   >
-                    <Text style={{ fontSize: RFValue(11), color: "white" }}>
-                      {Translate.t("addToCartBtn")}
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
+                    Quantity
+                  </Text>
+                  <DropDownPicker
+                    zIndex={999}
+                    style={{
+                      borderWidth: 1,
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                      color: "black",
+                      borderRadius: 0,
+                      fontSize: RFValue(12),
+                      height: heightPercentageToDP("5.5%"),
+                      paddingLeft: widthPercentageToDP("2%"),
+                      marginVertical: heightPercentageToDP("1%"),
+                    }}
+                    items={cartItems}
+                    placeholder={Translate.t("unit")}
+                    defaultValue={quantity ? quantity + "" : ""}
+                    containerStyle={{
+                      paddingVertical: 0,
+                      width: widthPercentageToDP("25%"),
+                    }}
+                    labelStyle={{
+                      fontSize: RFValue(12),
+                      color: "gray",
+                    }}
+                    itemStyle={{
+                      justifyContent: "flex-start",
+                    }}
+                    selectedtLabelStyle={{
+                      color: Colors.F0EEE9,
+                    }}
+                    // dropDownMaxHeight={RFValue(36)}
+                    dropDownStyle={{
+                      height: heightPercentageToDP("30%"),
+                      backgroundColor: "#FFFFFF",
+                      color: "black",
+                      position: "absolute",
+                    }}
+                    onChangeItem={(item) => {
+                      if (item) {
+                        onQuantityChanged(item.value);
+                      }
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    alignSelf: "center",
+                    flex: 1,
+                  }}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      if (selectedJanCode && quantity) {
+                        onShowChanged(false);
+
+                        db.collection("users")
+                          .doc(user.id.toString())
+                          .collection("carts")
+                          .doc(selectedJanCode.toString())
+                          .get()
+                          .then((snapshot) => {
+                            let tmpQuantity = parseInt(quantity);
+                            if (snapshot.data()) {
+                              tmpQuantity += parseInt(snapshot.data().quantity);
+                            }
+                            db.collection("users")
+                              .doc(user.id.toString())
+                              .collection("carts")
+                              .doc(selectedJanCode.toString())
+                              .set({
+                                id: product.id,
+                                quantity: tmpQuantity,
+                                url: selectedJanCode,
+                                name: selectedName,
+                              });
+                          });
+                        onShowText(true);
+                        setTimeout(
+                          function () {
+                            onShowText(false);
+                          }.bind(this),
+                          2000
+                        );
+
+                        const subscriber = db
+                          .collection("users")
+                          .doc(user.id.toString())
+                          .collection("carts")
+                          .get()
+                          .then((querySnapShot) => {
+                            onCartCountChanged(querySnapShot.docs.length);
+                          });
+                      } else {
+                        alert.warning(
+                          "Please select an item and set a quantity"
+                        );
+                      }
+                    }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor: Colors.deepGrey,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 5,
+                        paddingVertical: 5,
+                        marginHorizontal: widthPercentageToDP("5%"),
+                      }}
+                    >
+                      <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                        {Translate.t("addToCartBtn")}
+                      </Text>
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
             </View>
-          </ScrollView>
+          </View>
         </ScrollView>
       </Modal>
+
       {showText == true ? (
         <View
           style={{
@@ -981,7 +999,7 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 5,
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     flexWrap: "wrap",
   },
   font_small: {

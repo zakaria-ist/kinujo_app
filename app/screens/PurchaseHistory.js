@@ -101,9 +101,9 @@ export default function PurchaseHistory(props) {
               <TouchableWithoutFeedback
                 onPress={() => {
                   lastId = 0;
-                  lastOrderReceipt = {}
+                  lastOrderReceipt = {};
                   props.navigation.navigate("PurchaseHistoryDetails", {
-                    url: order.url
+                    url: order.url,
                   });
                 }}
               >
@@ -539,8 +539,15 @@ export default function PurchaseHistory(props) {
             </TouchableOpacity> */}
             </View>
           </Animated.View>
-          <ScrollView style={{ flexGrow: 1 }}>
-            <View style={{ marginHorizontal: widthPercentageToDP("5%") }}>
+          <ScrollView
+          // style={{ flexGrow: 1, marginBottom: heightPercentageToDP("25%") }}
+          >
+            <View
+              style={{
+                marginHorizontal: widthPercentageToDP("5%"),
+                marginBottom: heightPercentageToDP("25%"),
+              }}
+            >
               <TouchableWithoutFeedback
                 onPress={() =>
                   Animated.timing(right, {

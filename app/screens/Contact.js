@@ -39,6 +39,7 @@ const ratioUpIcon = win.width / 14 / 19;
 let globalFolders = [];
 let globalUsers = [];
 let globalGroups = [];
+let contactPinned = {};
 
 let userId;
 if (!firebase.apps.length) {
@@ -87,7 +88,7 @@ export default function Contact(props) {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
           for (var i = 0; i < users.length; i++) {
-            console.log(users[i] + " = " + friendID)
+            console.log(users[i] + " = " + friendID);
             if (users[i] == friendID) {
               groupID = snapShot.doc.id;
             }
@@ -168,24 +169,24 @@ export default function Contact(props) {
   async function processUserHtml(props, users) {
     setFriendCount(users.length);
     let tmpUserHtml = [];
-    for(let i=0; i<users.length; i++){
-      let user = users[i]
-      name = await getFriendName(user.id, user.nickname)
+    for (let i = 0; i < users.length; i++) {
+      let user = users[i];
+      name = await getFriendName(user.id, user.nickname);
       users[i].show_name = name;
     }
 
-    users.sort((a, b)=>{
-      if(!a['pinned'] && b['pinned']){
+    users.sort((a, b) => {
+      if (!contactPinned[a.id] && contactPinned[b.id]) {
         return true;
       }
-      if(a['pinned'] && !b['pinned']){
+      if (contactPinned[a.id] && !contactPinned[b.id]) {
         return false;
       }
       return a.show_name > b.show_name;
-    })
+    });
 
-    for(let i=0; i<users.length; i++){
-      let user = users[i]
+    for (let i = 0; i < users.length; i++) {
+      let user = users[i];
       tmpUserHtml.push(
         <TouchableWithoutFeedback
           onLongPress={() => {
@@ -197,27 +198,29 @@ export default function Contact(props) {
           }}
           key={user.id}
           onPress={() => {
-            redirectToChat(
-              user.id,
-              user.show_name
-            );
+            redirectToChat(user.id, user.show_name);
           }}
         >
           <View style={styles.contactTabContainer}>
-            {user && user.image && user.image.image ? (<Image
-              style={{
-                width: win.width / 13,
-                height: ratioProfile * 25,
-              }}
-              source={{ uri: user.image.image }}
-            />) : (<Image
-              style={{
-                width: win.width / 13,
-                height: ratioProfile * 25,
-              }}
-              source={require("../assets/Images/profileEditingIcon.png")}
-            />)}
-            
+            {user && user.image && user.image.image ? (
+              <Image
+                style={{
+                  borderRadius: win.width / 2,
+                  width: win.width / 13,
+                  height: ratioProfile * 25,
+                }}
+                source={{ uri: user.image.image }}
+              />
+            ) : (
+              <Image
+                style={{
+                  width: win.width / 13,
+                  height: ratioProfile * 25,
+                }}
+                source={require("../assets/Images/profileEditingIcon.png")}
+              />
+            )}
+
             <Text style={styles.tabLeftText}>
               {/* {user.real_name ? user.real_name : user.nickname} */}
               {user.show_name}
@@ -241,7 +244,7 @@ export default function Contact(props) {
       if (group1.data["pinned_" + userId] && !group2.data["pinned_" + userId]) {
         return -1;
       }
-      return group1['name'] > group2['name']
+      return group1["name"] > group2["name"];
     });
 
     setGroupCount(groups.length);
@@ -423,6 +426,7 @@ export default function Contact(props) {
               item.delete == false
             ) {
               ids.push(item.id);
+              contactPinned[item.id] = item["pinned"];
             }
           });
           request
@@ -435,9 +439,12 @@ export default function Contact(props) {
               response = response.data;
               if (response.success) {
                 globalUsers = response.users;
-                processUserHtml(props, response.users).then((html)=>{
+                globalUsers = globalUsers.filter((user) => {
+                  return user.id != userId;
+                });
+                processUserHtml(props, globalUsers).then((html) => {
                   onUserHtmlChanged(html);
-                })
+                });
               } else {
                 if (
                   response.errors &&
@@ -551,11 +558,9 @@ export default function Contact(props) {
                             .indexOf(value.toLowerCase()) >= 0
                         );
                       })
-                    ).then((html)=>{
-                      onUserHtmlChanged(
-                        html
-                      );
-                    })
+                    ).then((html) => {
+                      onUserHtmlChanged(html);
+                    });
                     onGroupHtmlChanged(
                       processGroupHtml(
                         props,
@@ -878,8 +883,9 @@ export default function Contact(props) {
                                 .set(
                                   {
                                     pinned:
-                                      longPressObj["pinned"] == "" ||
-                                      longPressObj["pinned"]
+                                      contactPinned[longPressObj.data.id] ==
+                                        "" ||
+                                      contactPinned[longPressObj.data.id]
                                         ? false
                                         : true,
                                   },
@@ -913,9 +919,9 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "group") {
                       let update = {};
                       update["pinned_" + user.id] =
-                        longPressObj.data.data["pinned_" + user.id] != false ||
-                        longPressObj.data.data["pinned_" + user.id] == true
-                          ? false : true
+                        longPressObj.data.data["pinned_" + user.id]
+                          ? false
+                          : true;
                       db.collection("chat")
                         .doc(longPressObj.data.id)
                         .set(update, {
@@ -1238,6 +1244,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchContactInput: {
+    height: heightPercentageToDP("6%"),
     fontSize: RFValue(11),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),

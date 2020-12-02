@@ -163,6 +163,7 @@ export default function QRCode(props) {
           onRead={onSuccess}
           showMarker={true}
           reactivate={true}
+          reactivateTimeout={1500}
           customMarker={
             <View style={{ width: "100%", height: "100%" }}>
               <View style={styles.header}>

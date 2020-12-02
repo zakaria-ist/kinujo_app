@@ -141,7 +141,8 @@ export default function FriendSearch(props) {
             placeholderTextColor={Colors.grey}
             onChangeText={(text) => {
               onSearchTextChanged(text);
-              request
+
+              if(text){request
                 .get("profiles/", {
                   search: text,
                 })
@@ -165,6 +166,9 @@ export default function FriendSearch(props) {
                     );
                   }
                 });
+              } else {
+                onFriendHtmlChanged([]);
+              }
             }}
             value={searchText}
             style={styles.searchFriendTextInput}

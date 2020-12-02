@@ -89,14 +89,27 @@ export default function GroupChatCreation(props) {
                 tmpUserHtml.push(
                   <TouchableWithoutFeedback key={user.id}>
                     <View style={styles.memberTabsContainer}>
-                      <Image
-                        style={{
-                          width: RFValue(38),
-                          height: RFValue(38),
-                          borderRadius: win.width / 2,
-                          backgroundColor: Colors.DCDCDC,
-                        }}
-                      />
+                      {user && user.image && user.image.image ? (
+                        <Image
+                          style={{
+                            width: RFValue(38),
+                            height: RFValue(38),
+                            borderRadius: win.width / 2,
+                            backgroundColor: Colors.DCDCDC,
+                          }}
+                          source={{ uri: user.image.image }}
+                        />
+                      ) : (
+                        <Image
+                          style={{
+                            width: RFValue(38),
+                            height: RFValue(38),
+                            borderRadius: win.width / 2,
+                            backgroundColor: Colors.DCDCDC,
+                          }}
+                        />
+                      )}
+
                       <Text style={styles.folderText}>{user.nickname}</Text>
                     </View>
                   </TouchableWithoutFeedback>
@@ -108,7 +121,7 @@ export default function GroupChatCreation(props) {
         onLoaded(!loaded);
       });
   }, [isFocused]);
-
+  // console.log(friendIds);
   function groupCreate() {
     if (groupName != "") {
       AsyncStorage.removeItem("tmpIds");
@@ -116,10 +129,9 @@ export default function GroupChatCreation(props) {
         db.collection("users").doc(String(userId)).collection("groups").add({
           groupName: groupName,
           usersName: friendNames,
-          users: friendIds,
         });
 
-        friendIds.push(userId);
+        friendIds.push(String(userId));
         let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
         let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
         db.collection("chat")
@@ -127,11 +139,12 @@ export default function GroupChatCreation(props) {
             [ownMessageUnseenField]: 0,
             [ownTotalMessageReadField]: 0,
             groupName: groupName,
-            users: friendIds,
+
             totalMessage: 0,
             type: "group",
           })
           .then(function (docRef) {
+            console.log(friendIds);
             documentID = docRef.id;
             for (var i = 0; i < friendIds.length; i++) {
               friendMessageUnseenField =
@@ -141,6 +154,7 @@ export default function GroupChatCreation(props) {
               db.collection("chat")
                 .doc(documentID)
                 .update({
+                  users: friendIds,
                   [friendTotalMessageReadField]: 0,
                   [friendMessageUnseenField]: 0,
                 });
@@ -176,10 +190,11 @@ export default function GroupChatCreation(props) {
         <Text
           style={{
             fontSize: RFValue(14),
-            right: 0,
+            right: widthPercentageToDP("4%"),
+            alignSelf: "flex-end",
             // position: "absolute",
             marginTop: heightPercentageToDP("3%"),
-            marginLeft: widthPercentageToDP("75%"),
+
             // marginRight: widthPercentageToDP("8%"),
           }}
         >

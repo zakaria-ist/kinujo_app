@@ -29,6 +29,7 @@ const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
 const ratioSeenTick = width / 35 / 13;
+const ratioImage = width / 250 / 3;
 export default function ChatText({
   isSelf,
   text,
@@ -36,16 +37,20 @@ export default function ChatText({
   seen,
   imageURL,
   showCheckBox,
+  image
 }) {
   return (
     <SafeAreaView>
       {/*Right Side*/}
       <View style={isSelf ? styles.right : styles.left} collapsable={false}>
-        <View>
-          <Image
+        <View style={isSelf ? styles.selfPadding : styles.notSelfPadding}>
+          {image && !isSelf ? (<Image
+            style={[isSelf ? styles.none : styles.avatar]}
+            source={{ uri: image }}
+          />) : (<Image
             style={[isSelf ? styles.none : styles.avatar]}
             source={require("../assets/Images/profileEditingIcon.png")}
-          />
+          />)}
         </View>
         <View
           style={[
@@ -112,7 +117,7 @@ export default function ChatText({
                   }}
                 />
               ) : (
-                ''
+                ""
               )}
             </Text>
           ) : (
@@ -131,7 +136,7 @@ export default function ChatText({
                   }}
                 />
               ) : (
-                ''
+                ""
               )}
             </Text>
           )}
@@ -140,8 +145,8 @@ export default function ChatText({
             <Image
               source={{ uri: imageURL }}
               style={{
-                width: widthPercentageToDP("30%"),
-                height: heightPercentageToDP("15%"),
+                width: width / 3,
+                height: 250 * ratioImage,
                 resizeMode: "stretch",
               }}
             />
@@ -372,5 +377,11 @@ const styles = StyleSheet.create({
   },
   left: {
     flexDirection: "row",
+  },
+  selfPadding: {
+    paddingRight: widthPercentageToDP("3%"),
+  },
+  notSelfPadding: {
+    paddingLeft: widthPercentageToDP("3%"),
   },
 });

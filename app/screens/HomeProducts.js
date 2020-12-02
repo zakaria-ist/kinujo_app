@@ -31,7 +31,7 @@ const win = Dimensions.get("window");
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const ratioFavorite = width / 29 / 14;
-
+const ratioFavorited = width / 24 / 15;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -85,6 +85,8 @@ export default function HomeProducts({
   return (
     <SafeAreaView
       style={{
+        alignItems: "center",
+        justifyContent: "center",
         marginBottom: heightPercentageToDP("5%"),
         // marginHorizontal: heightPercentageToDP("1%"),
         // backgroundColor: "orange",
@@ -147,13 +149,11 @@ export default function HomeProducts({
                     ? require("../assets/Images/favoriteLove.png")
                     : require("../assets/Images/productFavorite.png")
                 }
-                style={{
-                  width: width / 14,
-                  height: 26 * ratioFavorite,
-                  position: "absolute",
-                  right: 7,
-                  bottom: 7,
-                }}
+                style={
+                  favourite
+                    ? styles.favoriteLoveIcon
+                    : styles.productFavoriteIcon
+                }
               />
             </TouchableWithoutFeedback>
           </ImageBackground>
@@ -177,18 +177,32 @@ export default function HomeProducts({
 }
 
 const styles = StyleSheet.create({
+  favoriteLoveIcon: {
+    width: width / 14,
+    height: 21 * ratioFavorited,
+    position: "absolute",
+    right: 10,
+    bottom: 10,
+  },
+  productFavoriteIcon: {
+    width: width / 14,
+    height: 26 * ratioFavorite,
+    position: "absolute",
+    right: 10,
+    bottom: 10,
+  },
   products_left: {
     // alignItems: "center",
     paddingTop: 10,
     marginRight: RFValue(4),
-    width: width / 2 - RFValue(19),
+    width: width / 2 - RFValue(24),
     // overflow: "hidden",
   },
   products_right: {
     // alignItems: "center",
     paddingTop: 10,
     marginLeft: RFValue(4),
-    width: width / 2 - RFValue(19),
+    width: width / 2 - RFValue(24),
     // overflow: "hidden",
   },
   product_image: {

@@ -41,17 +41,13 @@ export default function SMSAuthentication(props) {
   async function signInWithPhoneNumber(phoneNumber) {
     // console.log(phoneNumber);
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-    console.log(confirmation);
     setConfirm(confirmation);
   }
 
   function signInWithPhoneNumber2(phoneNumber){
-    console.log(phoneNumber)
     signInWithPhoneNumber(phoneNumber).then(()=>{
-
     }).catch((error)=>{
-      console.log(error)
-      signInWithPhoneNumber2(phoneNumber)
+      alert.warning(error.code)
     })
   }
   const phone = props.route.params.username;
@@ -97,6 +93,7 @@ export default function SMSAuthentication(props) {
         <TouchableOpacity
           onPress={() => {
             if(!code) return;
+            if(!confirm) return;
             if (!props.route.params.type) {
               confirm.confirm(code).then(() => {
                 auth()
@@ -167,7 +164,7 @@ export default function SMSAuthentication(props) {
                     console.log(error)
                   });
               }).catch((error)=>{
-                console.log(error)
+                alert.warning("Invalid code");
               })
             } else {
               confirm.confirm(code).then(() => {

@@ -10,6 +10,11 @@ import {
   ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+import { useIsFocused } from "@react-navigation/native";
+import * as Localization from "expo-localization";
+import BackdropProvider from "@mgcrea/react-native-backdrop-provider";
+import { BackdropContext } from "@mgcrea/react-native-backdrop-provider";
+import { MonthPicker } from "react-native-propel-kit";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -26,12 +31,11 @@ import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "react-native-datepicker";
 const format = new Format();
 var kanjidate = require("kanjidate");
-let commissionProducts;
-let salesProducts;
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
+
 function processSaleHtml(sales) {
   let tmpSaleHtml = [];
   for (var i = 0; i < sales.length; i++) {
@@ -125,16 +129,21 @@ function processCommissionHtml(commissions) {
   }
   return tmpCommissionHtml;
 }
+
 let userID;
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
+let commissionProducts = [];
+let salesProducts = [];
+
 export default function SalesManagement(props) {
+  const isFocused = useIsFocused();
   const [status, onStatusChanged] = React.useState("commission");
   const [sales, onSalesChanged] = React.useState({});
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
-  const [date, onDateChange] = React.useState(year + "-" + month);
+  const [date, onDateChange] = React.useState(new Date());
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
   );
@@ -145,14 +154,14 @@ export default function SalesManagement(props) {
   const [totalSale, onTotalSaleChanged] = React.useState(0);
   const [total, onTotalChanged] = React.useState(0);
 
-  AsyncStorage.getItem("user").then(function (url) {
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-      return url;
-    });
-    let userId = urls[urls.length - 1];
-    userID = userId;
-    if (!user.url) {
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let userId = urls[urls.length - 1];
+      userID = userId;
       request
         .get(url)
         .then(function (response) {
@@ -173,24 +182,16 @@ export default function SalesManagement(props) {
             );
           }
         });
-    }
 
-    if (!commissionLoaded) {
       request
         .get("commissionProducts/" + userId + "/")
         .then(function (response) {
-          onCommissionsChanged(response.data.commissionProducts);
-          commissionProducts = response.data.commissionProducts;
-          onComissionHtmlChanged(
-            processCommissionHtml(response.data.commissionProducts, status)
-          );
-          let total = 0;
-          response.data.commissionProducts.map((commission) => {
-            total += commission.amount;
-          });
-          onTotalCommissionChanged(total);
-          onTotalChanged(totalCommission + totalSale);
-          onCommissionLoaded(true);
+          if (response.data.commissionProducts) {
+            commissionProducts = response.data.commissionProducts;
+          } else {
+            commissionProducts = [];
+          }
+          onUpdate();
         })
         .catch(function (error) {
           if (
@@ -208,28 +209,15 @@ export default function SalesManagement(props) {
           }
           onCommissionLoaded(true);
         });
-    }
 
-    if (!saleLoaded) {
       request
         .get("saleProducts/" + userId + "/")
         .then(function (response) {
-          onSalesChanged(response.data.saleProducts);
-          salesProducts = response.data.saleProducts;
-          onSaleHtmlChanged(
-            processSaleHtml(response.data.saleProducts, status)
-          );
-          let total = 0;
-          response.data.saleProducts.map((sale) => {
-            total += sale.unit_price;
-          });
-          onTotalSaleChanged(total);
-          onTotalChanged(
-            format.separator(
-              parseFloat(totalCommission) + parseFloat(totalSale)
-            )
-          );
-          onSaleLoaded(true);
+          salesProducts = [];
+          if (response.data.salesProducts) {
+            salesProducts = response.data.salesProducts;
+          }
+          onUpdate();
         })
         .catch(function (error) {
           if (
@@ -247,46 +235,54 @@ export default function SalesManagement(props) {
           }
           onSaleLoaded(true);
         });
-    }
-  });
+    });
+  }, [isFocused]);
 
   function onUpdate(date) {
-    onDateChange(date);
-    request.get("commissionProducts/" + userID + "/").then(function (response) {
-      onCommissionsChanged(response.data.commissionProducts);
-      commissionProducts = response.data.commissionProducts;
-      commissionProducts = commissionProducts.filter((commission) => {
-        // console.log(commission.order_product.order.created.split("T")[0]);
-        let productDate = commission.order_product.order.created.split("T")[0];
-        return productDate == date;
-      });
-      onComissionHtmlChanged(processCommissionHtml(commissionProducts, status));
-      let total = 0;
-      response.data.commissionProducts.map((commission) => {
-        total += commission.amount;
-      });
-      onTotalCommissionChanged(total);
-      onTotalChanged(totalCommission + totalSale);
-      onCommissionLoaded(true);
+    let tmpDate = new Date();
+    if (date) {
+      onDateChange(date);
+      tmpDate = date;
+    }
+    let tmpCommissionProducts = commissionProducts.filter(
+      (commissionProduct) => {
+        let periods = commissionProduct["order_product"]["order"][
+          "created"
+        ].split("-");
+        let year = periods[0];
+        let month = periods[1];
+        return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+      }
+    );
+    let tmpSaleProducts = salesProducts.filter((saleProduct) => {
+      let periods = saleProduct["order_product"]["order"]["created"].split("-");
+      let year = periods[0];
+      let month = periods[1];
+      return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
     });
-    request.get("saleProducts/" + userID + "/").then(function (response) {
-      onSalesChanged(response.data.saleProducts);
-      salesProducts = response.data.saleProducts;
-      salesProducts = salesProducts.filter((sales) => {
-        let productDate = sales.order.created.split("T")[0];
-        return productDate == date;
-      });
-      onSaleHtmlChanged(processSaleHtml(salesProducts, status));
-      let total = 0;
-      response.data.saleProducts.map((sale) => {
-        total += sale.unit_price;
-      });
-      onTotalSaleChanged(total);
-      onTotalChanged(
-        format.separator(parseFloat(totalCommission) + parseFloat(totalSale))
-      );
-      onSaleLoaded(true);
+    onCommissionsChanged(tmpCommissionProducts);
+    onComissionHtmlChanged(
+      processCommissionHtml(tmpCommissionProducts, status)
+    );
+    let commissionTotal = 0;
+    tmpCommissionProducts.map((commission) => {
+      commissionTotal += commission.amount;
     });
+    onTotalCommissionChanged(commissionTotal);
+
+    onSalesChanged(tmpSaleProducts);
+    onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
+    let saleTotal = 0;
+    tmpSaleProducts.map((sale) => {
+      saleTotal += sale.unit_price;
+    });
+    onTotalSaleChanged(saleTotal);
+
+    // onTotalChanged(
+    //   format.separator(
+    //     parseFloat(commissionTotal) + parseFloat(saleTotal)
+    //   )
+    // );
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -328,24 +324,20 @@ export default function SalesManagement(props) {
             marginTop: heightPercentageToDP("3%"),
           }}
         >
-          <DatePicker
+          <MonthPicker
+            title="Pick a month"
+            value={date}
+            onChange={onUpdate}
             style={{
-              width: widthPercentageToDP("50%"),
-              borderColor: "red",
-            }}
-            date={date}
-            mode="date"
-            format="YYYY-MM"
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            customStyles={{
-              dateInput: {
-                marginRight: widthPercentageToDP("3%"),
-                borderWidth: 0,
-              },
-            }}
-            onDateChange={(date) => {
-              onUpdate(date);
+              borderWidth: 1,
+              alignItems: "center",
+              width: widthPercentageToDP("28%"),
+              height: heightPercentageToDP("5%"),
+              paddingVertical: widthPercentageToDP("2%"),
+              paddingHorizontal: widthPercentageToDP("3%"),
+              borderRadius: 5,
+              backgroundColor: Colors.D7CCA6,
+              borderColor: Colors.CECECE,
             }}
           />
           <View

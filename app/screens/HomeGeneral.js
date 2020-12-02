@@ -32,6 +32,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
 import Format from "../lib/format";
 import firebase from "firebase/app";
+
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
 import { hide } from "expo-splash-screen";
@@ -58,6 +59,15 @@ export default function Home(props) {
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
+
+  const notificationOpen = messaging().getInitialNotification();
+  if (notificationOpen) {
+    // props.navigation.navigate("SalesManagement");
+    console.log("1");
+  }
+  React.useEffect(() => {
+    hideCategoryAnimation();
+  }, [!isFocused]);
   async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
     const enabled =
@@ -314,182 +324,184 @@ export default function Home(props) {
     });
   }
   return (
-    <SafeAreaView>
-      <CustomHeader
-        text="Home"
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-      />
+    <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
+      <SafeAreaView>
+        <CustomHeader
+          text="Home"
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+        />
 
-      <CustomSecondaryHeader
-        name={user.nickname}
-        accountType={
-          user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
-        }
-      />
-      <View style={styles.discription_header}>
-        <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
-          <View
-            style={{
-              position: "absolute",
-              right: 0,
-              marginRight: widthPercentageToDP("3%"),
-              // marginTop: heightPercentageToDP("3%"),
-              borderRadius: 5,
-              paddingVertical: heightPercentageToDP("1%"),
-              paddingHorizontal: heightPercentageToDP("1%"),
-              backgroundColor: Colors.E6DADE,
-            }}
-          >
-            <Text
+        <CustomSecondaryHeader
+          name={user.nickname}
+          accountType={
+            user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
+          }
+        />
+        <View style={styles.discription_header}>
+          <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
+            <View
               style={{
-                fontSize: RFValue(12),
-                color: "white",
-                textAlign: "center",
+                position: "absolute",
+                right: 0,
+                marginRight: widthPercentageToDP("3%"),
+                // marginTop: heightPercentageToDP("3%"),
+                borderRadius: 5,
+                paddingVertical: heightPercentageToDP(".8%"),
+                paddingHorizontal: heightPercentageToDP("1%"),
+                backgroundColor: Colors.E6DADE,
               }}
             >
-              {Translate.t("category")}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
-      {favoriteText == "true" ? (
-        <View
-          style={{
-            borderRadius: win.width / 2,
-            borderWidth: 1,
-            backgroundColor: Colors.E6DADE,
-            borderColor: "transparent",
-            zIndex: 1,
-            elevation: 1,
-            position: "absolute",
-            right:
-              userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("13%"),
-            borderStyle: "solid",
-            paddingVertical: widthPercentageToDP("1%"),
-            paddingHorizontal: widthPercentageToDP("7%"),
-            marginTop: heightPercentageToDP("6.2%"),
-          }}
-        >
-          <View
-            style={{
-              width: 0,
-              height: 0,
-              borderBottomWidth: RFValue(20),
-              borderRightWidth: RFValue(12),
-              borderLeftWidth: RFValue(12),
-              borderLeftColor: "transparent",
-              borderRightColor: "transparent",
-              borderBottomColor: Colors.E6DADE,
-              top: RFValue(-15),
-              position: "absolute",
-              right: RFValue(9),
-            }}
-          ></View>
-          <Text
-            style={{
-              fontSize: RFValue(10),
-              color: "black",
-              alignSelf: "flex-start",
-            }}
-          >
-            {Translate.t("addedToFavorite")}
-          </Text>
-        </View>
-      ) : (
-        <View></View>
-      )}
-      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <Animated.View
-        style={{
-          zIndex: 1,
-          height: heightPercentageToDP("100%"),
-          alignSelf: "center",
-          width: widthPercentageToDP("80%"),
-          position: "absolute",
-          right: right,
-          backgroundColor: "white",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "white",
-            borderBottomWidth: 1,
-            borderBottomColor: Colors.D7CCA6,
-          }}
-        >
-          <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
-        </View>
-        {categoryHtml}
-        <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
-          <View
-            style={{
-              position: "absolute",
-              bottom: heightPercentageToDP("8%"),
-              right: widthPercentageToDP("3%"),
-              borderWidth: 1,
-              borderRadius: 5,
-              backgroundColor: "white",
-              alignItems: "center",
-              paddingVertical: heightPercentageToDP(".7%"),
-              paddingHorizontal: widthPercentageToDP("2%"),
-            }}
-          >
-            <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </Animated.View>
-      {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <ScrollView style={styles.home_product_view}>
-        {kinujoHtml.length > 0 ? (
-          <View style={styles.section_header}>
-            <Text style={styles.section_header_text}>
-              {"KINUJO official product"}
-            </Text>
-          </View>
-        ) : (
-          <View></View>
-        )}
-        {kinujoHtml.length > 0 ? (
-          <View style={styles.section_product}>{kinujoHtml}</View>
-        ) : (
-          <View></View>
-        )}
-
-        {featuredHtml.length > 0 ? (
-          <TouchableWithoutFeedback
-            onPress={() =>
-              featuredProductNavigation(user.is_seller, user.shop_name)
-            }
-          >
-            <View style={styles.section_header}>
-              <Text style={styles.section_header_text}>
-                {Translate.t("featuredProduct")}
+              <Text
+                style={{
+                  fontSize: RFValue(12),
+                  color: "white",
+                  textAlign: "center",
+                }}
+              >
+                {Translate.t("category")}
               </Text>
             </View>
           </TouchableWithoutFeedback>
+        </View>
+        {favoriteText == "true" ? (
+          <View
+            style={{
+              borderRadius: win.width / 2,
+              borderWidth: 1,
+              backgroundColor: Colors.E6DADE,
+              borderColor: "transparent",
+              zIndex: 1,
+              elevation: 1,
+              position: "absolute",
+              right:
+                userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("13%"),
+              borderStyle: "solid",
+              paddingVertical: widthPercentageToDP("1%"),
+              paddingHorizontal: widthPercentageToDP("7%"),
+              marginTop: heightPercentageToDP("6.2%"),
+            }}
+          >
+            <View
+              style={{
+                width: 0,
+                height: 0,
+                borderBottomWidth: RFValue(20),
+                borderRightWidth: RFValue(12),
+                borderLeftWidth: RFValue(12),
+                borderLeftColor: "transparent",
+                borderRightColor: "transparent",
+                borderBottomColor: Colors.E6DADE,
+                top: RFValue(-15),
+                position: "absolute",
+                right: RFValue(9),
+              }}
+            ></View>
+            <Text
+              style={{
+                fontSize: RFValue(10),
+                color: "black",
+                alignSelf: "flex-start",
+              }}
+            >
+              {Translate.t("addedToFavorite")}
+            </Text>
+          </View>
         ) : (
           <View></View>
         )}
-        {featuredHtml.length > 0 ? (
-          <View style={styles.section_product}>{featuredHtml}</View>
-        ) : (
-          <View></View>
-        )}
-      </ScrollView>
-      {/* {console.log(showCategory)} */}
-      {showCategory == true ? (
-        <View></View>
-      ) : (
-        <CustomFloatingButton
-          onPress={() => {
-            props.navigation.navigate("SearchProducts");
+        {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+        <Animated.View
+          style={{
+            zIndex: 1,
+            height: heightPercentageToDP("100%"),
+            alignSelf: "center",
+            width: widthPercentageToDP("80%"),
+            position: "absolute",
+            right: right,
+            backgroundColor: "white",
           }}
-        />
-      )}
-    </SafeAreaView>
+        >
+          <View
+            style={{
+              backgroundColor: "white",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+            }}
+          >
+            <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
+          </View>
+          {categoryHtml}
+          <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
+            <View
+              style={{
+                position: "absolute",
+                bottom: win.height / 6,
+                right: widthPercentageToDP("4%"),
+                borderWidth: 1,
+                borderRadius: 5,
+                backgroundColor: "white",
+                alignItems: "center",
+                paddingVertical: heightPercentageToDP(".7%"),
+                paddingHorizontal: widthPercentageToDP("2%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </Animated.View>
+        {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
+        <ScrollView style={styles.home_product_view}>
+          {kinujoHtml.length > 0 ? (
+            <View style={styles.section_header}>
+              <Text style={styles.section_header_text}>
+                {"KINUJO official product"}
+              </Text>
+            </View>
+          ) : (
+            <View></View>
+          )}
+          {kinujoHtml.length > 0 ? (
+            <View style={styles.section_product}>{kinujoHtml}</View>
+          ) : (
+            <View></View>
+          )}
+
+          {featuredHtml.length > 0 ? (
+            <TouchableWithoutFeedback
+              onPress={() =>
+                featuredProductNavigation(user.is_seller, user.shop_name)
+              }
+            >
+              <View style={styles.section_header}>
+                <Text style={styles.section_header_text}>
+                  {Translate.t("featuredProduct")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          ) : (
+            <View></View>
+          )}
+          {featuredHtml.length > 0 ? (
+            <View style={styles.section_product}>{featuredHtml}</View>
+          ) : (
+            <View></View>
+          )}
+        </ScrollView>
+        {/* {console.log(showCategory)} */}
+        {showCategory == true ? (
+          <View></View>
+        ) : (
+          <CustomFloatingButton
+            onPress={() => {
+              props.navigation.navigate("SearchProducts");
+            }}
+          />
+        )}
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -500,9 +512,9 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     // flexWrap: "wrap",
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     // backgroundColor: "orange",
     // marginTop: heightPercentageToDP("1%"),
   },
@@ -519,7 +531,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("82%"),
     padding: 15,
     paddingTop: heightPercentageToDP("1%"),
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     overflow: "scroll",
     // backgroundColor: "orange",
   },
@@ -534,7 +546,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: 10,
+    marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

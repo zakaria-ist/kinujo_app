@@ -23,6 +23,8 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
+import Person from "../assets/icons/personPink.svg";
+import Chat from "../assets/icons/chat.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -122,7 +124,7 @@ export default function GroupFolderCreateCompletion(props) {
   }
   if (!loaded) {
     let tmpUserListHtml = [];
-    for (var i = 0; i < friendIds.length; i++) {
+    for (var i = 0; i < 2; i++) {
       tmpUserListHtml.push(
         <View
           key={friendIds[i]}
@@ -130,13 +132,12 @@ export default function GroupFolderCreateCompletion(props) {
             alignItems: "center",
           }}
         >
-          <Image
+          <Person
             style={{
               width: RFValue(50),
               height: RFValue(50),
               borderRadius: win.width / 2,
             }}
-            source={require("../assets/Images/profileEditingIcon.png")}
           />
           <Text style={styles.textForIcon}>{friendNames[i]}</Text>
         </View>
@@ -170,7 +171,15 @@ export default function GroupFolderCreateCompletion(props) {
           />
         </TouchableWithoutFeedback>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Image
+          <Person
+            style={{
+              width: RFValue(80),
+              height: RFValue(80),
+              borderRadius: win.width / 2,
+              marginTop: heightPercentageToDP("8%"),
+            }}
+          />
+          {/* <Image
             style={{
               width: RFValue(80),
               height: RFValue(80),
@@ -178,7 +187,7 @@ export default function GroupFolderCreateCompletion(props) {
               marginTop: heightPercentageToDP("8%"),
             }}
             source={require("../assets/Images/profileEditingIcon.png")}
-          />
+          /> */}
           <View
             style={{
               marginTop: heightPercentageToDP("1.5%"),
@@ -238,7 +247,15 @@ export default function GroupFolderCreateCompletion(props) {
           {props.route.params.type != "folder" ? (
             <TouchableWithoutFeedback onPress={() => redirectToChat()}>
               <View>
-                <Image
+                <Chat
+                  style={{
+                    width: win.width / 7,
+                    height: 18 * ratioChat,
+                    alignSelf: "center",
+                    marginTop: heightPercentageToDP("5%"),
+                  }}
+                />
+                {/* <Image
                   style={{
                     width: win.width / 7,
                     height: 18 * ratioChat,
@@ -246,7 +263,7 @@ export default function GroupFolderCreateCompletion(props) {
                     marginTop: heightPercentageToDP("5%"),
                   }}
                   source={require("../assets/Images/chatIcon.png")}
-                />
+                /> */}
                 <Text style={styles.textForIcon}>{Translate.t("talk")}</Text>
               </View>
             </TouchableWithoutFeedback>

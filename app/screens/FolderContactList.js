@@ -132,13 +132,26 @@ export default function FolderContactList(props) {
           }}
         >
           <View style={styles.contactTabContainer}>
-            <Image
-              style={{
-                width: win.width / 13,
-                height: ratioProfile * 25,
-              }}
-              source={require("../assets/Images/profileEditingIcon.png")}
-            />
+            {user && user.image && user.image.image ? (
+              <Image
+                style={{
+                  width: RFValue(40),
+                  height: RFValue(40),
+                  borderRadius: win.width / 2,
+                  backgroundColor: Colors.DCDCDC,
+                }}
+                source={{ uri: user.image.image }}
+              />
+            ) : (
+              <Image
+                style={{
+                  width: win.width / 13,
+                  height: ratioProfile * 25,
+                }}
+                source={require("../assets/Images/profileEditingIcon.png")}
+              />
+            )}
+
             <Text style={styles.tabLeftText}>{user.nickname}</Text>
           </View>
         </TouchableWithoutFeedback>

@@ -79,11 +79,11 @@ export default function ProfileEditingGeneral(props) {
 
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
-    let response = await request
+    let response = await request.get(url);
     onShopNameChanged(response.data.shop_name);
     onNickNameChanged(response.data.nickname);
     onUserChanged(response.data);
-    
+
     if (updateData && updateData["type"] == "email" && verified == "1") {
       onEmailChanged(updateData["value"]);
       request.post("user/change-email", {
@@ -121,9 +121,9 @@ export default function ProfileEditingGeneral(props) {
     setWord(response.data.word);
   }
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     loadUser();
-  }, [isFocused])
+  }, [isFocused]);
 
   function updateUser(user, field, value) {
     if (!value) return;
@@ -939,7 +939,7 @@ export default function ProfileEditingGeneral(props) {
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    height: heightPercentageToDP("6%"),
+    height: heightPercentageToDP("8%"),
     justifyContent: "flex-start",
     alignItems: "center",
     marginHorizontal: widthPercentageToDP("4%"),
@@ -989,10 +989,10 @@ const styles = StyleSheet.create({
   },
   textInputEdit: {
     borderRadius: 10,
-    fontSize: RFValue(10),
+    fontSize: RFValue(11),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("40%"),
   },
 });
