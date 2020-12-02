@@ -26,6 +26,7 @@ import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import CheckBox from "@react-native-community/checkbox";
+import { search } from "react-native-country-picker-modal/lib/CountryService";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -38,6 +39,7 @@ const db = firebase.firestore();
 let ids = [];
 let tmpFriend = [];
 let tmpFriendIds = [];
+let users = []
 export default function FolderMemberSelection(props) {
   const [searchText, onSearchTextChanged] = React.useState("");
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
@@ -92,6 +94,7 @@ export default function FolderMemberSelection(props) {
               ids: ids,
             })
             .then(function (response) {
+              users = response.data.users;
               onUserHtmlChanged(
                 processUserHtml(props, response.data.users, tmpFriend)
               );
@@ -169,7 +172,14 @@ export default function FolderMemberSelection(props) {
           }}
         >
           <View style={styles.tabContainer}>
-            <Image style={styles.memberImage} />
+            {user && user.image && user.image.image ? (
+              <Image
+                style={styles.memberImage}
+                source={{ uri: user.image.image }}
+              />
+            ) : (
+              <Image style={styles.memberImage} />
+            )}
             <Text style={styles.tabContainerText}>{user.nickname}</Text>
             <View style={styles.checkBoxContainer}>
               <CheckBox
@@ -190,7 +200,9 @@ export default function FolderMemberSelection(props) {
     let selectedId = [];
     tmpFriend.map((friend) => {
       if (friend.checkStatus == true) {
-        selectedId.push(friend.id);
+        if (!selectedId.includes(String(friend.id))) {
+          selectedId.push(String(friend.id));
+        }
       }
     });
     AsyncStorage.setItem("ids", JSON.stringify(selectedId));
@@ -229,6 +241,17 @@ export default function FolderMemberSelection(props) {
               onPress={() => props.navigation.navigate("ContactSearch")}
             >
               <TextInput
+                value={searchText}
+                onChangeText={(value) => {
+                  onSearchTextChanged(value)
+
+                  let tmpUsers = users.filter((user) => {
+                    return JSON.stringify(user).toLowerCase().indexOf(value.toLowerCase()) >= 0;
+                  })
+                  onUserHtmlChanged(
+                    processUserHtml(props, tmpUsers, tmpFriend)
+                  );  
+                }}
                 placeholder={Translate.t("search")}
                 placeholderTextColor={Colors.grey}
                 style={styles.searchInput}
@@ -266,7 +289,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
   },
   searchInput: {
     paddingLeft: widthPercentageToDP("5%"),
@@ -281,6 +304,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   tabContainer: {
+    marginHorizontal: widthPercentageToDP("2%"),
     flexDirection: "row",
     marginTop: heightPercentageToDP("2%"),
     alignItems: "center",

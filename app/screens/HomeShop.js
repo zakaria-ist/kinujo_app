@@ -175,6 +175,10 @@ export default function Home(props) {
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
+    hideCategoryAnimation();
+    hideSortingAnimation();
+  }, [!isFocused]);
+  React.useEffect(() => {
     onFeaturedHtmlChanged([]);
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -286,260 +290,264 @@ export default function Home(props) {
   //     });
   //   }
   return (
-    <SafeAreaView>
-      <CustomHeader
-        text="Product List"
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        onBack={() => {
-          props.navigation.pop();
-        }}
-      />
-
-      <CustomSecondaryHeader
-        name={user.nickname}
-        accountType={
-          user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
-        }
-      />
-      <View style={styles.discription_header}>
-        <View>
-          <Text style={styles.disc_title_text}>{"Seller:" + shopName}</Text>
-        </View>
-        <View
-          style={{
-            position: "absolute",
-            right: 0,
-            justifyContent: "center",
-            paddingTop: heightPercentageToDP("3%"),
+    <TouchableWithoutFeedback
+      onPress={(() => hideCategoryAnimation(), hideSortingAnimation())}
+    >
+      <SafeAreaView>
+        <CustomHeader
+          text="Product List"
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onPress={() => {
+            props.navigation.navigate("Cart");
           }}
-        >
-          <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
-            <View
-              style={{
-                // position: "absolute",
-                right: 0,
-                marginRight: widthPercentageToDP("3%"),
-                // marginTop: heightPercentageToDP("3%"),
-                borderRadius: 5,
-                paddingVertical: heightPercentageToDP("1%"),
-                paddingHorizontal: heightPercentageToDP("1%"),
-                backgroundColor: Colors.E6DADE,
-              }}
-            >
-              <Text
+          onBack={() => {
+            props.navigation.pop();
+          }}
+        />
+
+        <CustomSecondaryHeader
+          name={user.nickname}
+          accountType={
+            user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
+          }
+        />
+        <View style={styles.discription_header}>
+          <View>
+            <Text style={styles.disc_title_text}>{"Seller:" + shopName}</Text>
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              justifyContent: "center",
+              paddingTop: heightPercentageToDP("3%"),
+            }}
+          >
+            <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
+              <View
                 style={{
-                  fontSize: RFValue(12),
-                  color: "white",
-                  textAlign: "center",
+                  // position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("3%"),
+                  // marginTop: heightPercentageToDP("3%"),
+                  borderRadius: 5,
+                  paddingVertical: heightPercentageToDP("1%"),
+                  paddingHorizontal: heightPercentageToDP("1%"),
+                  backgroundColor: Colors.E6DADE,
                 }}
               >
-                {Translate.t("category")}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
-            <View
-              style={{
-                // position: "absolute",
-                right: 0,
-                marginRight: widthPercentageToDP("3%"),
-                // marginTop: heightPercentageToDP("3%"),
-                borderRadius: 5,
-                paddingVertical: heightPercentageToDP("1%"),
-                paddingHorizontal: heightPercentageToDP("1%"),
-                marginTop: heightPercentageToDP("2%"),
-                backgroundColor: Colors.E6DADE,
-              }}
-            >
-              <Text
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    color: "white",
+                    textAlign: "center",
+                  }}
+                >
+                  {Translate.t("category")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
+              <View
                 style={{
-                  fontSize: RFValue(12),
-                  color: "white",
-                  textAlign: "center",
+                  // position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("3%"),
+                  // marginTop: heightPercentageToDP("3%"),
+                  borderRadius: 5,
+                  paddingVertical: heightPercentageToDP("1%"),
+                  paddingHorizontal: heightPercentageToDP("1%"),
+                  marginTop: heightPercentageToDP("2%"),
+                  backgroundColor: Colors.E6DADE,
                 }}
               >
-                {Translate.t("sorting")}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    color: "white",
+                    textAlign: "center",
+                  }}
+                >
+                  {Translate.t("sorting")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </View>
-      </View>
 
-      {favoriteText == "true" ? (
-        <View
-          style={{
-            borderRadius: win.width / 2,
-            borderWidth: 1,
-            backgroundColor: Colors.E6DADE,
-            borderColor: "transparent",
-            zIndex: 1,
-            elevation: 1,
-            position: "absolute",
-            right: widthPercentageToDP("13%"),
-            borderStyle: "solid",
-            paddingVertical: widthPercentageToDP("1%"),
-            paddingHorizontal: widthPercentageToDP("7%"),
-            marginTop: heightPercentageToDP("6.2%"),
-          }}
-        >
+        {favoriteText == "true" ? (
           <View
             style={{
-              width: 0,
-              height: 0,
-              borderBottomWidth: RFValue(20),
-              borderRightWidth: RFValue(12),
-              borderLeftWidth: RFValue(12),
-              borderLeftColor: "transparent",
-              borderRightColor: "transparent",
-              borderBottomColor: Colors.E6DADE,
-              top: RFValue(-15),
-              position: "absolute",
-              right: RFValue(9),
-            }}
-          ></View>
-          <Text
-            style={{
-              fontSize: RFValue(10),
-              color: "black",
-              alignSelf: "flex-start",
-            }}
-          >
-            {Translate.t("addedToFavorite")}
-          </Text>
-        </View>
-      ) : (
-        <View></View>
-      )}
-      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <Animated.View
-        style={{
-          zIndex: 1,
-          height: heightPercentageToDP("100%"),
-          alignSelf: "center",
-          width: widthPercentageToDP("80%"),
-          position: "absolute",
-          right: rightCategory,
-          backgroundColor: "white",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "white",
-            borderBottomWidth: 1,
-            borderBottomColor: Colors.D7CCA6,
-          }}
-        >
-          <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
-        </View>
-        {categoryHtml}
-        <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
-          <View
-            style={{
-              position: "absolute",
-              bottom: heightPercentageToDP("8%"),
-              right: widthPercentageToDP("3%"),
+              borderRadius: win.width / 2,
               borderWidth: 1,
-              borderRadius: 5,
-              backgroundColor: "white",
-              alignItems: "center",
-              paddingVertical: heightPercentageToDP(".7%"),
-              paddingHorizontal: widthPercentageToDP("2%"),
-            }}
-          >
-            <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </Animated.View>
-      {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
-      <Animated.View
-        style={{
-          zIndex: 1,
-          height: heightPercentageToDP("100%"),
-          alignSelf: "center",
-          width: widthPercentageToDP("80%"),
-          position: "absolute",
-          right: rightSorting,
-          backgroundColor: "white",
-        }}
-      >
-        <View
-          style={{
-            backgroundColor: "white",
-            borderBottomWidth: 1,
-            borderBottomColor: Colors.D7CCA6,
-          }}
-        >
-          <Text style={styles.categoryTitle}>{Translate.t("sorting")}</Text>
-        </View>
-        <TouchableWithoutFeedback
-          onPress={() => filterProductsBySorting("latestFirst")}
-        >
-          <View style={styles.categoryContainer}>
-            <Text>Latest First</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => filterProductsBySorting("LowToHigh")}
-        >
-          <View style={styles.categoryContainer}>
-            <Text>Price Low to High</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => filterProductsBySorting("HighToLow")}
-        >
-          <View style={styles.categoryContainer}>
-            <Text>Price High to Low</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
-          <View
-            style={{
+              backgroundColor: Colors.E6DADE,
+              borderColor: "transparent",
+              zIndex: 1,
+              elevation: 1,
               position: "absolute",
-              bottom: heightPercentageToDP("8%"),
-              right: widthPercentageToDP("3%"),
-              borderWidth: 1,
-              borderRadius: 5,
-              backgroundColor: "white",
-              alignItems: "center",
-              paddingVertical: heightPercentageToDP(".7%"),
-              paddingHorizontal: widthPercentageToDP("2%"),
+              right: widthPercentageToDP("13%"),
+              borderStyle: "solid",
+              paddingVertical: widthPercentageToDP("1%"),
+              paddingHorizontal: widthPercentageToDP("7%"),
+              marginTop: heightPercentageToDP("6.2%"),
             }}
           >
-            <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </Animated.View>
-      <ScrollView style={styles.home_product_view}>
-        {featuredHtml.length > 0 ? (
-          <View style={styles.section_header}>
-            <Text style={styles.section_header_text}>
-              {Translate.t("featuredProduct")}
+            <View
+              style={{
+                width: 0,
+                height: 0,
+                borderBottomWidth: RFValue(20),
+                borderRightWidth: RFValue(12),
+                borderLeftWidth: RFValue(12),
+                borderLeftColor: "transparent",
+                borderRightColor: "transparent",
+                borderBottomColor: Colors.E6DADE,
+                top: RFValue(-15),
+                position: "absolute",
+                right: RFValue(9),
+              }}
+            ></View>
+            <Text
+              style={{
+                fontSize: RFValue(10),
+                color: "black",
+                alignSelf: "flex-start",
+              }}
+            >
+              {Translate.t("addedToFavorite")}
             </Text>
           </View>
         ) : (
           <View></View>
         )}
-        {featuredHtml.length > 0 ? (
-          <View style={styles.section_product}>{featuredHtml}</View>
-        ) : (
-          <View></View>
-        )}
-      </ScrollView>
-      {/* {console.log(showCategory)} */}
-      {showCategory == true ? (
-        <View></View>
-      ) : (
-        <CustomFloatingButton
-          onPress={() => {
-            props.navigation.navigate("SearchProducts");
+        {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+        <Animated.View
+          style={{
+            zIndex: 1,
+            height: heightPercentageToDP("100%"),
+            alignSelf: "center",
+            width: widthPercentageToDP("80%"),
+            position: "absolute",
+            right: rightCategory,
+            backgroundColor: "white",
           }}
-        />
-      )}
-    </SafeAreaView>
+        >
+          <View
+            style={{
+              backgroundColor: "white",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+            }}
+          >
+            <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
+          </View>
+          {categoryHtml}
+          <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
+            <View
+              style={{
+                position: "absolute",
+                bottom: heightPercentageToDP("8%"),
+                right: widthPercentageToDP("3%"),
+                borderWidth: 1,
+                borderRadius: 5,
+                backgroundColor: "white",
+                alignItems: "center",
+                paddingVertical: heightPercentageToDP(".7%"),
+                paddingHorizontal: widthPercentageToDP("2%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </Animated.View>
+        {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
+        <Animated.View
+          style={{
+            zIndex: 1,
+            height: heightPercentageToDP("100%"),
+            alignSelf: "center",
+            width: widthPercentageToDP("80%"),
+            position: "absolute",
+            right: rightSorting,
+            backgroundColor: "white",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "white",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+            }}
+          >
+            <Text style={styles.categoryTitle}>{Translate.t("sorting")}</Text>
+          </View>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("latestFirst")}
+          >
+            <View style={styles.categoryContainer}>
+              <Text>Latest First</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("LowToHigh")}
+          >
+            <View style={styles.categoryContainer}>
+              <Text>Price Low to High</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("HighToLow")}
+          >
+            <View style={styles.categoryContainer}>
+              <Text>Price High to Low</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
+            <View
+              style={{
+                position: "absolute",
+                bottom: heightPercentageToDP("8%"),
+                right: widthPercentageToDP("3%"),
+                borderWidth: 1,
+                borderRadius: 5,
+                backgroundColor: "white",
+                alignItems: "center",
+                paddingVertical: heightPercentageToDP(".7%"),
+                paddingHorizontal: widthPercentageToDP("2%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </Animated.View>
+        <ScrollView style={styles.home_product_view}>
+          {featuredHtml.length > 0 ? (
+            <View style={styles.section_header}>
+              <Text style={styles.section_header_text}>
+                {Translate.t("featuredProduct")}
+              </Text>
+            </View>
+          ) : (
+            <View></View>
+          )}
+          {featuredHtml.length > 0 ? (
+            <View style={styles.section_product}>{featuredHtml}</View>
+          ) : (
+            <View></View>
+          )}
+        </ScrollView>
+        {/* {console.log(showCategory)} */}
+        {showCategory == true ? (
+          <View></View>
+        ) : (
+          <CustomFloatingButton
+            onPress={() => {
+              props.navigation.navigate("SearchProducts");
+            }}
+          />
+        )}
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -550,10 +558,10 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     paddingTop: heightPercentageToDP("3%"),
     // flexWrap: "wrap",
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     // backgroundColor: "orange",
     // marginTop: heightPercentageToDP("1%"),
   },
@@ -570,7 +578,7 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("82%"),
     padding: 15,
     paddingTop: heightPercentageToDP("1%"),
-    backgroundColor: "#FFF",
+    backgroundColor: "transparent",
     overflow: "scroll",
     // backgroundColor: "orange",
   },
@@ -585,7 +593,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: 10,
+    marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

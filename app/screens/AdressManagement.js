@@ -160,7 +160,7 @@ export default function AddressManagement(props) {
                   if (tmpPrefectures.length > 0) {
                     onPrefectureChanged(tmpPrefectures[0].value);
                   }
-                  onAddChanged(address.city)
+                  onAddChanged(address.city + " " + address.area)
                 }
               });
             }}

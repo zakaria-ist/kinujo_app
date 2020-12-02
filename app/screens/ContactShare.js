@@ -10,6 +10,7 @@ import {
   Dimensions,
   Animated,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
@@ -223,7 +224,7 @@ export default function ContactShare(props) {
           user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
         }
       />
-      <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+      <ScrollView style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TouchableWithoutFeedback
             onPress={() => props.navigation.navigate("ContactSearch")}
@@ -251,7 +252,7 @@ export default function ContactShare(props) {
             {userHtml}
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -282,7 +283,8 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchContactInput: {
-    fontSize: RFValue(9.5),
+    height: heightPercentageToDP("6%"),
+    fontSize: RFValue(11),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,

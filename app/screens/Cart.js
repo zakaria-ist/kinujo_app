@@ -14,7 +14,7 @@ import {
 import { useIsFocused } from "@react-navigation/native";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { Colors } from "../assets/Colors.js";
-import { Picker } from "@react-native-picker/picker";
+import { Picker } from "react-native-propel-kit";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -235,14 +235,14 @@ export default function Cart(props) {
                   backgroundColor: "white",
                   borderColor: "transparent",
                   color: "black",
-                  fontSize: RFValue(12),
+                  fontSize: RFValue(11),
                   paddingLeft: widthPercentageToDP("2%"),
                 }}
                 items={cartItems}
                 controller={(instance) => (isVis[idx] = instance)}
                 defaultValue={quantity ? quantity + "" : ""}
                 containerStyle={{
-                  height: RFValue(38),
+                  height: RFValue(40),
                   width: widthPercentageToDP("20%"),
                 }}
                 labelStyle={{
@@ -261,7 +261,7 @@ export default function Cart(props) {
                   backgroundColor: "white",
                   color: "black",
                   height: heightPercentageToDP("10.5%"),
-                  zIndex: realIndex
+                  zIndex: realIndex,
                 }}
                 onOpen={() => {
                   for (let j = 0; j < isVis.length; j++) {
@@ -286,19 +286,26 @@ export default function Cart(props) {
               >
                 <TouchableWithoutFeedback
                   onPress={() => {
+                    console.log(product.id);
+                    console.log(firebaseProducts);
                     let tmpFirebaseProducts = firebaseProducts.filter(
                       (tmpProduct) => {
-                        return product.product_id == tmpProduct.product_id;
+                        return item.id == tmpProduct.id;
                       }
                     );
                     let firebaseProduct = tmpFirebaseProducts[0];
                     db.collection("users")
-                      .doc(userId)
+                      .doc(userId.toString())
                       .collection("carts")
-                      .doc(product.product_id)
-                      .set({
-                        quantity: firebaseProduct.quantity,
-                      });
+                      .doc(product.id.toString())
+                      .set(
+                        {
+                          quantity: firebaseProduct.quantity,
+                        },
+                        {
+                          merge: true,
+                        }
+                      );
                     alert.warning("Cart Updated.");
                   }}
                 >
@@ -421,7 +428,7 @@ export default function Cart(props) {
         });
       AsyncStorage.getItem("defaultAddress").then((address) => {
         if (address != null) {
-          console.log(address)
+          console.log(address);
           request.get(address).then((response) => {
             onAddressHtmlChanged(getAddressHtml(response.data, ""));
             onSelectedChanged(response.data.id);
@@ -448,10 +455,14 @@ export default function Cart(props) {
                     >
                       <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
                       <TouchableWithoutFeedback
-                        onPress={() => props.navigation.navigate("ShippingList")}
+                        onPress={() =>
+                          props.navigation.navigate("ShippingList")
+                        }
                       >
                         <View style={styles.buttonContainer}>
-                          <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                          <Text
+                            style={{ fontSize: RFValue(11), color: "white" }}
+                          >
                             Change
                           </Text>
                         </View>

@@ -39,6 +39,7 @@ import SalesManagementBottom from "../Screens/SalesManagementBottom";
 import Cart from "../Screens/Cart";
 import Favorite from "../Screens/Favorite";
 import MemoEdit from "../Screens/MemoEdit";
+import App from "../../App";
 import AdvanceSetting from "../Screens/AdvanceSetting";
 import ProductInformationAdd from "../Screens/ProductInformationAddNew";
 import ChatList from "../Screens/ChatList";
@@ -380,6 +381,7 @@ export default function LoginStack() {
           name="ExhibitedProductList"
           component={ExhibitedProductList}
         />
+        <Stack.Screen name="App" component={App} />
         <Stack.Screen name="PurchaseHistory" component={PurchaseHistory} />
         <Stack.Screen name="Setting" component={Setting} />
         <Stack.Screen

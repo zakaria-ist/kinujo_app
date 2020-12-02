@@ -43,13 +43,13 @@ export default function ReceiptView(props) {
         onOrderChanged(response.data);
 
         lastId = 0;
-        lastOrderReceipt = {}
+        lastOrderReceipt = {};
         response.data.order.orderReceipts.map((tmpOrderReceipt) => {
-          if(tmpOrderReceipt.id > lastId){
-            lastOrderReceipt= tmpOrderReceipt;
+          if (tmpOrderReceipt.id > lastId) {
+            lastOrderReceipt = tmpOrderReceipt;
             lastId = tmpOrderReceipt.id;
           }
-        })
+        });
         onOrderReceiptChanged(lastOrderReceipt);
 
         onLoaded(true);
@@ -97,145 +97,151 @@ export default function ReceiptView(props) {
     });
   }
   return (
-    <SafeAreaView style={{flex:1}}>
-    <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
-      <CustomHeader
-        onFavoriteChanged="noFavorite"
-        text={Translate.t("invoiceIssue")}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        onBack={() => props.navigation.pop()}
-      />
-      <CustomSecondaryHeader
-        name={user.nickname}
-        accountType={Translate.t("storeAccount")}
-      />
-      <View style={styles.receiptEditingContainer}>
-      <Text style={{ fontSize: RFValue(16) }}>{Translate.t("invoice")}{lastOrderReceipt.is_copy ? Translate.t("reissue") : ""}</Text>
-        <View style={styles.invoiceInputContainer}>
-          <Text style={{ fontSize: RFValue(24) }}>{issueName}</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
+        <CustomHeader
+          onFavoriteChanged="noFavorite"
+          text={Translate.t("invoiceIssue")}
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          onBack={() => props.navigation.pop()}
+        />
+        <CustomSecondaryHeader
+          name={user.nickname}
+          accountType={Translate.t("storeAccount")}
+        />
+        <View style={styles.receiptEditingContainer}>
+          <Text style={{ fontSize: RFValue(16) }}>
+            {Translate.t("invoice")}
+            {lastOrderReceipt.is_copy ? Translate.t("reissue") : ""}
+          </Text>
+          <View style={styles.invoiceInputContainer}>
+            <Text style={{ fontSize: RFValue(24) }}>{issueName}</Text>
+            <Text
+              style={{
+                fontSize: RFValue(14),
+                marginLeft: widthPercentageToDP("3%"),
+              }}
+            >
+              {Translate.t("nameTitle")}
+            </Text>
+          </View>
+          <Text style={styles.receivedMoneyText}>
+            {format.separator(order.total_price)} 円
+          </Text>
           <Text
             style={{
-              fontSize: RFValue(14),
-              marginLeft: widthPercentageToDP("3%"),
+              fontSize: RFValue(12),
+              paddingVertical: heightPercentageToDP("1%"),
             }}
           >
-            {Translate.t("nameTitle")}
+            {Translate.t("justReceivedAbove")}
           </Text>
+          <View
+            style={{ width: "100%", marginTop: heightPercentageToDP("5%") }}
+          >
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("issueDate")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {kanjidate.format(
+                  "{Y:4}年{M:2}月{D:2}日",
+                  new Date(order.created)
+                )}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("orderDate")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {kanjidate.format(
+                  "{Y:4}年{M:2}月{D:2}日",
+                  new Date(order.created)
+                )}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("orderNumber")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {order ? order.id : ""}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("productName")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {order && order.product_jan_code
+                  ? order.product_jan_code.horizontal
+                    ? order.product_jan_code.horizontal.product_variety.product
+                        .name
+                    : order.product_jan_code.vertical.product_variety.product
+                        .name
+                  : ""}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("seller")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {order && order.order ? order.order.seller.nickname : ""}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("deliveryAddress")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {order && order.order ? order.order.name : ""}
+              </Text>
+            </View>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order && order.order ? order.order.tel : ""}
+            </Text>
+            <Text style={styles.receiptEditingDetailsText}>
+              {order && order.order ? order.order.address1 : ""}
+            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("paymentMethod")} :{" "}
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>
+                {order && order.order ? order.order.payment : ""}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.receiptEditingDetailsText}>
+                {Translate.t("partOfTheCardNumber")} :
+              </Text>
+              <Text style={styles.receiptEditingDetailsText}>****</Text>
+            </View>
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              right: 0,
+              bottom: 0,
+              marginRight: widthPercentageToDP("5%"),
+              marginTop: heightPercentageToDP("19%"),
+            }}
+          >
+            <Image
+              style={{ width: win.width / 4, height: 44 * ratioKinujo }}
+              source={require("../assets/Images/kinujo.png")}
+            />
+            <Text style={styles.receiptEditingDetailsText}>
+              東京都〇〇区△△0-0-0
+            </Text>
+            <Text style={styles.receiptEditingDetailsText}>03-0000-0000</Text>
+          </View>
         </View>
-        <Text style={styles.receivedMoneyText}>
-          {format.separator(order.total_price)} 円
-        </Text>
-        <Text
-          style={{
-            fontSize: RFValue(12),
-            paddingVertical: heightPercentageToDP("1%"),
-          }}
-        >
-          {Translate.t("justReceivedAbove")}
-        </Text>
-        <View style={{ width: "100%", marginTop: heightPercentageToDP("5%") }}>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("issueDate")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {kanjidate.format(
-                "{Y:4}年{M:2}月{D:2}日",
-                new Date(order.created)
-              )}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("orderDate")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {kanjidate.format(
-                "{Y:4}年{M:2}月{D:2}日",
-                new Date(order.created)
-              )}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("orderNumber")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {order ? order.id : ""}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("productName")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {order && order.product_jan_code
-                ? order.product_jan_code.horizontal
-                  ? order.product_jan_code.horizontal.product_variety.product
-                      .name
-                  : order.product_jan_code.vertical.product_variety.product.name
-                : ""}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("seller")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {order && order.order ? order.order.seller.nickname : ""}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("deliveryAddress")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {order && order.order ? order.order.name : ""}
-            </Text>
-          </View>
-          <Text style={styles.receiptEditingDetailsText}>
-            {order && order.order ? order.order.tel : ""}
-          </Text>
-          <Text style={styles.receiptEditingDetailsText}>
-            {order && order.order ? order.order.address1 : ""}
-          </Text>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("paymentMethod")} :{" "}
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>
-              {order && order.order ? order.order.payment : ""}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.receiptEditingDetailsText}>
-              {Translate.t("partOfTheCardNumber")} :
-            </Text>
-            <Text style={styles.receiptEditingDetailsText}>****</Text>
-          </View>
-        </View>
-        <View
-          style={{
-            position: "absolute",
-            right: 0,
-            bottom: 0,
-            marginRight: widthPercentageToDP("5%"),
-            marginTop: heightPercentageToDP("19%"),
-          }}
-        >
-          <Image
-            style={{ width: win.width / 4, height: 44 * ratioKinujo }}
-            source={require("../assets/Images/kinujo.png")}
-          />
-          <Text style={styles.receiptEditingDetailsText}>
-            東京都〇〇区△△0-0-0
-          </Text>
-          <Text style={styles.receiptEditingDetailsText}>03-0000-0000</Text>
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -248,11 +254,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   invoiceTextInput: {
+    fontSize: RFValue(11),
     borderWidth: 2,
     borderColor: "#dddddd",
     backgroundColor: "white",
     paddingHorizontal: widthPercentageToDP("10%"),
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
   },
   receivedMoneyText: {
     fontSize: RFValue(16),

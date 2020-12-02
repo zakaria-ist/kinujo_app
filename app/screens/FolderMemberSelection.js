@@ -30,7 +30,7 @@ import CheckBox from "@react-native-community/checkbox";
 import ArrowDownLogo from "../assets/icons/arrow_down.svg";
 let userId;
 if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig, 'kinujo');
+  firebase.initializeApp(firebaseConfig, "kinujo");
 }
 let ids = [];
 let tmpFriend = [];
@@ -64,7 +64,7 @@ export default function FolderMemberSelection(props) {
   ).current;
   React.useEffect(() => {
     AsyncStorage.getItem("tmpIds").then((friendIds) => {
-      if(friendIds){
+      if (friendIds) {
         tmpFriendIds = JSON.parse(friendIds);
       }
       AsyncStorage.getItem("user").then(function (url) {
@@ -112,7 +112,7 @@ export default function FolderMemberSelection(props) {
               .get("user/byIds/", {
                 ids: ids,
                 userId: userId,
-                "type" : "contact"
+                type: "contact",
               })
               .then(function (response) {
                 //response = get use details from url
@@ -128,7 +128,9 @@ export default function FolderMemberSelection(props) {
                   Object.keys(error.response.data).length > 0
                 ) {
                   alert.warning(
-                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                    error.response.data[
+                      Object.keys(error.response.data)[0]
+                    ][0] +
                       "(" +
                       Object.keys(error.response.data)[0] +
                       ")"
@@ -158,7 +160,7 @@ export default function FolderMemberSelection(props) {
       .get("user/byIds/", {
         ids: ids,
         userId: userId,
-        "type" : "contact"
+        type: "contact",
       })
       .then(function (response) {
         onUserHtmlChanged(
@@ -203,14 +205,27 @@ export default function FolderMemberSelection(props) {
             }}
           >
             <View style={styles.tabContainer}>
-              <Image
-                style={{
-                  width: RFValue(40),
-                  height: RFValue(40),
-                  borderRadius: win.width / 2,
-                  backgroundColor: Colors.DCDCDC,
-                }}
-              />
+              {user && user.image && user.image.image ? (
+                <Image
+                  style={{
+                    width: RFValue(40),
+                    height: RFValue(40),
+                    borderRadius: win.width / 2,
+                    backgroundColor: Colors.DCDCDC,
+                  }}
+                  source={{ uri: user.image.image }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    width: RFValue(40),
+                    height: RFValue(40),
+                    borderRadius: win.width / 2,
+                    backgroundColor: Colors.DCDCDC,
+                  }}
+                />
+              )}
+
               <Text style={styles.tabText}>{user.nickname}</Text>
               <View style={styles.checkBoxContainer}>
                 <CheckBox
@@ -531,7 +546,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
   },
   searchInput: {
     fontSize: RFValue(11),
@@ -551,6 +566,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentageToDP("5%"),
   },
   tabContainer: {
+    marginHorizontal: widthPercentageToDP("3%"),
     flexDirection: "row",
     alignItems: "center",
     marginTop: heightPercentageToDP("1.5%"),

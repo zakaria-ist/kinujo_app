@@ -26,6 +26,7 @@ import "firebase/firestore";
 import Request from "../../lib/request";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useIsFocused } from "@react-navigation/native";
+import KinujoWord from "../icons/kinujo.svg";
 import { firebaseConfig } from "../../../firebaseConfig.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -100,13 +101,20 @@ export default function CustomKinujoWord({
             height={20 * ratioBackArrow}
           />
         </TouchableWithoutFeedback>
-        <Image
+        {/* <Image
           style={{
             width: win.width / 5,
             height: 22 * ratioKinujo,
             marginLeft: widthPercentageToDP("3%"),
           }}
           source={require("../Images/headerKinujo.png")}
+        /> */}
+        <KinujoWord
+          style={{
+            width: win.width / 4,
+            height: 22 * ratioKinujo,
+            marginLeft: widthPercentageToDP("2%"),
+          }}
         />
       </View>
 

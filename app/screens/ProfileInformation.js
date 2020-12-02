@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
+import Moment from "moment";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -23,7 +24,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
-import DatePicker from "react-native-datepicker";
+// import DatePicker from "react-native-datepicker";
+import { DatePicker } from "react-native-propel-kit";
 import { Picker } from "@react-native-picker/picker";
 import { fallbacks } from "i18n-js";
 const request = new Request();
@@ -32,28 +34,10 @@ const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 9;
 const ratioNext = win.width / 38 / 8;
 let controller;
-function updateUser(user, field, value) {
-  if (!value) return;
-  let obj = {};
-  obj[field] = value;
-  request
-    .patch(user.url, obj)
-    .then(function (response) {})
-    .catch(function (error) {
-      if (
-        error &&
-        error.response &&
-        error.response.data &&
-        Object.keys(error.response.data).length > 0
-      ) {
-        alert.warning(
-          error.response.data[Object.keys(error.response.data)[0]][0] +
-            "(" +
-            Object.keys(error.response.data)[0] +
-            ")"
-        );
-      }
-    });
+{
+  /* Moment.locale("en");
+  var dt = "2016-05-02T00:00:00";
+  console.log(Moment(dt).format("d MMM")); */
 }
 
 export default function ProfileInformation(props) {
@@ -75,7 +59,35 @@ export default function ProfileInformation(props) {
   const [address1, onAddress1Changed] = React.useState("");
   const [address2, onAddress2Changed] = React.useState("");
   const [pickerShow, onPickerShow] = React.useState(false);
-
+  function updateUser(user, field, value) {
+    if (!value) return;
+    if (field == "birthday") {
+      Moment.locale("en");
+      value = Moment(value).format("YYYY-MM-DD");
+      onBirthdayChanged(value);
+      onEditBirthdayChanged(false);
+    }
+    let obj = {};
+    obj[field] = value;
+    request
+      .patch(user.url, obj)
+      .then(function (response) {})
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
+  }
   if (!user.url) {
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -344,10 +356,26 @@ export default function ProfileInformation(props) {
                 }}
               >
                 <DatePicker
+                  title="Select Your Birthday"
+                  style={{
+                    borderWidth: 1,
+                    width: widthPercentageToDP("30%"),
+                    height: heightPercentageToDP("5%"),
+                    borderRadius: 5,
+
+                    borderColor: Colors.CECECE,
+                    marginRight: widthPercentageToDP("3%"),
+                  }}
+                  onChange={(date) => {
+                    updateUser(user, "birthday", date);
+                  }}
+                />
+                {/* <DatePicker
                   style={{
                     width: widthPercentageToDP("50%"),
                     borderColor: "red",
                   }}
+                  display="inline"
                   date={birthday}
                   mode="date"
                   format="YYYY-MM-DD"
@@ -363,7 +391,7 @@ export default function ProfileInformation(props) {
                     onBirthdayChanged(date);
                     updateUser(user, "birthday", date);
                   }}
-                />
+                /> */}
               </View>
             ) : (
               <View
@@ -376,24 +404,6 @@ export default function ProfileInformation(props) {
                   justifyContent: "flex-start",
                 }}
               >
-                <DatePicker
-                  disabled={true}
-                  style={{
-                    width: widthPercentageToDP("6%"),
-                  }}
-                  customStyles={{
-                    dateIcon: {
-                      width: RFValue(30),
-                      height: RFValue(30),
-                    },
-                    dateInput: {
-                      display: "none",
-                    },
-                  }}
-                  onDateChange={(date) => {
-                    this.setState({ dateFrom: date });
-                  }}
-                />
                 <Text
                   style={{
                     fontSize: RFValue(12),

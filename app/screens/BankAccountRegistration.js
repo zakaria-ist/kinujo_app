@@ -19,12 +19,14 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+import DropDownPicker from "react-native-dropdown-picker";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { ScrollView } from "react-native-gesture-handler";
+var zenginCode = require('zengin-code');
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -133,7 +135,12 @@ export default function BankAccountRegistration(props) {
             placeholder={"Bank Code"}
             placeholderTextColor={Colors.deepGrey}
             style={styles.textInput}
-            onChangeText={(text) => onBankCodeChanged(text)}
+            onChangeText={(text) => {
+              onBankCodeChanged(text)
+              if(zenginCode[text]){
+                onFinancialNameChanged(zenginCode[text]['name'])
+              }
+            }}
             value={bankCode}
           ></TextInput>
 
@@ -149,7 +156,14 @@ export default function BankAccountRegistration(props) {
             placeholder={"Branch Code"}
             placeholderTextColor={Colors.deepGrey}
             style={styles.textInput}
-            onChangeText={(text) => onBranckCodeChanged(text)}
+            onChangeText={(text) => {
+              onBranckCodeChanged(text)
+              if(zenginCode[bankCode]){
+                if(zenginCode[bankCode]['branches'][text]){
+                  onBranchNameChanged(zenginCode[bankCode]['branches'][text]['name'])
+                }
+              }
+            }}
             value={branchCode}
           ></TextInput>
           <TextInput
@@ -160,13 +174,43 @@ export default function BankAccountRegistration(props) {
             onChangeText={(text) => onBranchNameChanged(text)}
             value={branchName}
           ></TextInput>
-          <TextInput
-            placeholder={Translate.t("accountType")}
-            placeholderTextColor={Colors.deepGrey}
+          <DropDownPicker
+            // controller={(instance) => (controller = instance)}
             style={styles.textInput}
-            onChangeText={(text) => onAccountTypeChanged(text)}
-            value={accountType}
-          ></TextInput>
+            items={[
+              {
+                label: "Normal",
+                value: "1",
+              },
+              {
+                label: "Current",
+                value: "2",
+              },
+              {
+                label: "Savings",
+                value: "3",
+              },
+            ]}
+            defaultValue={"1"}
+            containerStyle={{ height: heightPercentageToDP("8%") }}
+            labelStyle={{
+              fontSize: RFValue(11),
+              color: "black",
+            }}
+            itemStyle={{
+              justifyContent: "flex-start",
+            }}
+            selectedtLabelStyle={{
+              color: "black",
+            }}
+            placeholder={Translate.t("prefecture")}
+            dropDownStyle={{ backgroundColor: "white" }}
+            // onChangeItem={(item) => {
+            //   if (item) {
+            //     onPrefectureChanged(item.value);
+            //   }
+            // }}
+          />
           <TextInput
             placeholder={Translate.t("accountNumber")}
             placeholderTextColor={Colors.deepGrey}
@@ -251,7 +295,7 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: "white",
     alignItems: "center",
-    fontSize: RFValue(9),
+    fontSize: RFValue(11),
     height: heightPercentageToDP("5.8%"),
     paddingLeft: widthPercentageToDP("2%"),
     marginVertical: heightPercentageToDP("1%"),

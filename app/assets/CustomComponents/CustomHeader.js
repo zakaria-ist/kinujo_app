@@ -24,6 +24,7 @@ import Request from "../../lib/request";
 import AsyncStorage from "@react-native-community/async-storage";
 import { firebaseConfig } from "../../../firebaseConfig.js";
 import { Colors } from "../Colors";
+import KinujoWord from "../icons/kinujo.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -70,8 +71,16 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
       <StatusBar
         style={{ height: Platform.OS === "ios" ? 20 : StatusBar.currentHeight }}
       />
-
-      <Image
+      <KinujoWord
+        style={{
+          width: win.width / 4,
+          height: 22 * ratioKinujo,
+          position: "absolute",
+          left: 0,
+          marginLeft: widthPercentageToDP("5%"),
+        }}
+      />
+      {/* <Image
         style={{
           width: win.width / 4,
           height: 22 * ratioKinujo,
@@ -80,7 +89,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
           marginLeft: widthPercentageToDP("5%"),
         }}
         source={require("../Images/headerKinujo.png")}
-      />
+      /> */}
 
       <Text
         style={{

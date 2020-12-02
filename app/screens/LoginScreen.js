@@ -168,6 +168,8 @@ export default function LoginScreen(props) {
             }}
           >
             <CountryPicker
+              style={{ fontSize: 1 }}
+              fontSize={1}
               withCallingCode
               withFilter
               withFlag
@@ -176,6 +178,8 @@ export default function LoginScreen(props) {
               containerButtonStyle={{
                 borderRadius: 5,
                 borderWidth: 1,
+                fontSize: 1,
+
                 // paddingBottom: RFValue(15),
                 borderColor: "black",
                 paddingLeft: widthPercentageToDP("1%"),
