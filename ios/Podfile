@@ -7,7 +7,7 @@ platform :ios, '11.0'
 target 'kinujo' do
   use_unimodules!
   config = use_native_modules!
-  permissions_path = '../node_modules/react-native-permissions/ios'
+
   use_react_native!(:path => config["reactNativePath"])
 
   # Enables Flipper.
