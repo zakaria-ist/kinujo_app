@@ -30,7 +30,8 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
-import DatePicker from "react-native-datepicker";
+// import DatePicker from "react-native-datepicker";
+import { DatePicker } from "react-native-propel-kit";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -113,259 +114,271 @@ export default function ProductInformationAdd(props) {
           }
         });
     });
-    if (props.route.params.url) {
-      request.get(props.route.params.url).then((response) => {
-        let tmpProduct = response.data;
-
-        request
-          .get("product_categories/")
-          .then((response) => {
-            let categories = response.data.map((category) => {
-              return {
-                label: category.name,
-                value: category.url,
-              };
-            });
-            onProductCategoriesChanged(categories);
-            onProductCategoryChanged(tmpProduct.category.url);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-
-        onProductChanged(response.data);
-        onProductNameChanged(response.data.name);
-        onBrandNameChanged(response.data.brand_name);
-        onPrChanged(response.data.pr);
-        onProductIdChanged(response.data.url_str);
-        onPublishDateChanged(response.data.opened_date);
-        onPublishStateChanged(
-          response.data.is_opened ? "published" : "unpublished"
-        );
-        onProductVariationChanged(
-          response.data.variety == 0
-            ? "none"
-            : response.data.variety == 1
-            ? "one"
-            : "two"
-        );
-        onProductStatusChanged(
-          response.data.is_used == 0 ? "new" : "secondHand"
-        );
-        onTargetUserChanged(
-          response.data.target == 0
-            ? "allUser"
-            : response.data.target == 1
-            ? "generalUser"
-            : "storeUser"
-        );
-        onPriceChanged(response.data.price.toString());
-        onStorePriceChanged(response.data.store_price);
-        onShippingChanged(response.data.shipping_fee + "");
-        onProductDescriptionChanged(response.data.description);
-        let oldImages = response.data.productImages.map((image) => {
-          let tmpImage = image.image;
-          tmpImage["is_old"] = true;
-          return tmpImage;
-        });
-        onProductImagesChanged(oldImages);
-        onProductPageDisplayMethodChanged("slidingType");
-        let tmpImages = response.data.productImages;
-        let html = [];
-        tmpImages.map((image) => {
-          image = image.image;
-          html.push(
-            <View
-              key={image.id}
-              style={{
-                marginTop: heightPercentageToDP("1%"),
-                height: 1,
-                width: "100%",
-                height: heightPercentageToDP("30%"),
-                borderRadius: 1,
-                borderWidth: 1,
-                borderColor: Colors.deepGrey,
-                borderStyle: "dashed",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                style={{
-                  width: "100%",
-                  height: heightPercentageToDP("30%"),
-                  position: "absolute",
-                }}
-                source={{ uri: image.image }}
-              />
-            </View>
-          );
-        });
-        onProductImageHtmlChanged(html);
-
-        if (response.data.variety == 0) {
-          let productVariety = response.data.productVarieties[0];
-          let productVarietySelection =
-            productVariety.productVarietySelections[0];
-          let horizontal = productVarietySelection.jancode_horizontal[0];
-          onNoneVariationItemsChanged({
-            id: horizontal.id,
-            janCode: horizontal.jan_code,
-            stock: horizontal.stock,
-          });
-        }
-        if (response.data.variety == 1) {
-          let tmpItems = {};
-          let productVariety = response.data.productVarieties[0];
-          tmpItems["name"] = productVariety["name"];
-          tmpItems["id"] = productVariety["id"];
-          tmpItems["items"] = [];
-          for (
-            var i = 0;
-            i < productVariety.productVarietySelections.length;
-            i++
-          ) {
-            let productVarietySelection =
-              productVariety.productVarietySelections[i];
-            let vertical = productVarietySelection.jancode_horizontal[0];
-            tmpItems["items"].push({
-              id: vertical.id,
-              index: i,
-              choice: productVarietySelection.selection,
-              stock: vertical.stock + "",
-              janCode: vertical.jan_code,
-              hidden: vertical.is_hidden ? true : false,
-            });
-          }
-          onOneVariationItemsChanged(tmpItems);
-        }
-        if (response.data.variety == 2) {
-          let firstProductVariety = response.data.productVarieties[0];
-          let secondProductVariety = response.data.productVarieties[1];
-
-          let tmpItems = {
-            items: [
-              {
-                id: firstProductVariety["id"],
-                index: 0,
-                horizontalItem: firstProductVariety["name"],
-                choices: [],
-              },
-              {
-                id: secondProductVariety["id"],
-                index: 1,
-                horizontalItem: secondProductVariety["name"],
-                choices: [],
-              },
-            ],
-            mappingValue: {},
+    request
+      .get("product_categories/")
+      .then((response) => {
+        let categories = response.data.map((category) => {
+          return {
+            label: category.name,
+            value: category.url,
           };
+        });
+        onProductCategoriesChanged(categories);
 
-          rawMapping = {};
+        if (props.route.params.url) {
+          request.get(props.route.params.url).then((response) => {
+            let tmpProduct = response.data;
 
-          firstProductVariety.productVarietySelections.map(
-            (productVarietySelection) => {
-              rawMapping[productVarietySelection.id] =
-                productVarietySelection.selection;
-              tmpItems["items"][0]["choices"].push({
-                choiceIndex: tmpItems["items"][0]["choices"].length,
-                choiceItem: productVarietySelection.selection,
-                id: productVarietySelection.id,
-              });
-            }
-          );
-          secondProductVariety.productVarietySelections.map(
-            (productVarietySelection) => {
-              rawMapping[productVarietySelection.id] =
-                productVarietySelection.selection;
-              tmpItems["items"][1]["choices"].push({
-                choiceIndex: tmpItems["items"][1]["choices"].length,
-                choiceItem: productVarietySelection.selection,
-                id: productVarietySelection.id,
-              });
-            }
-          );
+            onProductCategoryChanged(tmpProduct.category.url);
+            onProductChanged(response.data);
+            onProductNameChanged(response.data.name);
+            onBrandNameChanged(response.data.brand_name);
+            onPrChanged(response.data.pr);
+            onProductIdChanged(response.data.url_str);
+            onPublishDateChanged(response.data.opened_date);
+            onPublishStateChanged(
+              response.data.is_opened ? "published" : "unpublished"
+            );
+            onProductVariationChanged(
+              response.data.variety == 0
+                ? "none"
+                : response.data.variety == 1
+                ? "one"
+                : "two"
+            );
+            onProductStatusChanged(
+              response.data.is_used == 0 ? "new" : "secondHand"
+            );
+            onTargetUserChanged(
+              response.data.target == 0
+                ? "allUser"
+                : response.data.target == 1
+                ? "generalUser"
+                : "storeUser"
+            );
+            onPriceChanged(response.data.price.toString());
+            onStorePriceChanged(response.data.store_price);
+            onShippingChanged(response.data.shipping_fee + "");
+            onProductDescriptionChanged(response.data.description);
+            let oldImages = response.data.productImages.map((image) => {
+              let tmpImage = image.image;
+              tmpImage["is_old"] = true;
+              return tmpImage;
+            });
+            onProductImagesChanged(oldImages);
+            onProductPageDisplayMethodChanged("slidingType");
+            let tmpImages = response.data.productImages;
+            let html = [];
+            tmpImages.map((image) => {
+              image = image.image;
+              html.push(
+                <View
+                  key={image.id}
+                  style={{
+                    marginTop: heightPercentageToDP("1%"),
+                    height: 1,
+                    width: "100%",
+                    height: heightPercentageToDP("30%"),
+                    borderRadius: 1,
+                    borderWidth: 1,
+                    borderColor: Colors.deepGrey,
+                    borderStyle: "dashed",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: "100%",
+                      height: heightPercentageToDP("30%"),
+                      position: "absolute",
+                    }}
+                    source={{ uri: image.image }}
+                  />
+                </View>
+              );
+            });
+            onProductImageHtmlChanged(html);
 
-          firstProductVariety.productVarietySelections.map(
-            (productVarietySelection) => {
-              productVarietySelection.jancode_horizontal.map((horizontal) => {
-                if (horizontal.horizontal && horizontal.vertical) {
-                  let horizontalId = getId(horizontal.horizontal);
-                  let verticalId = getId(horizontal.vertical);
-                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
-                  }
-                  tmpItems["mappingValue"][rawMapping[horizontalId]][
-                    rawMapping[verticalId]
-                  ] = {
-                    id: horizontal.id,
-                    stock: horizontal.stock + "",
-                    janCode: horizontal.jan_code,
-                    delete: horizontal.is_hidden ? true : false,
-                  };
-                }
-              });
-              productVarietySelection.jancode_vertical.map((vertical) => {
-                if (vertical.horizontal && vertical.vertical) {
-                  let horizontalId = getId(vertical.horizontal);
-                  let verticalId = getId(vertical.vertical);
-                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
-                  }
-                  tmpItems["mappingValue"][rawMapping[horizontalId]][
-                    rawMapping[verticalId]
-                  ] = {
-                    id: vertical.id,
-                    stock: vertical.stock + "",
-                    janCode: vertical.jan_code,
-                    delete: vertical.is_hidden ? true : false,
-                  };
-                }
+            if (response.data.variety == 0) {
+              let productVariety = response.data.productVarieties[0];
+              let productVarietySelection =
+                productVariety.productVarietySelections[0];
+              let horizontal = productVarietySelection.jancode_horizontal[0];
+              onNoneVariationItemsChanged({
+                id: horizontal.id,
+                janCode: horizontal.jan_code,
+                stock: horizontal.stock,
               });
             }
-          );
-          secondProductVariety.productVarietySelections.map(
-            (productVarietySelection) => {
-              productVarietySelection.jancode_horizontal.map((horizontal) => {
-                if (horizontal.horizontal && horizontal.vertical) {
-                  let horizontalId = getId(horizontal.horizontal);
-                  let verticalId = getId(horizontal.vertical);
-                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
-                  }
-                  tmpItems["mappingValue"][rawMapping[horizontalId]][
-                    rawMapping[verticalId]
-                  ] = {
-                    id: horizontal.id,
-                    stock: horizontal.stock + "",
-                    janCode: horizontal.jan_code,
-                    delete: horizontal.is_hidden ? true : false,
-                  };
-                }
-              });
-              productVarietySelection.jancode_vertical.map((vertical) => {
-                if (vertical.horizontal && vertical.vertical) {
-                  let horizontalId = getId(vertical.horizontal);
-                  let verticalId = getId(vertical.vertical);
-                  if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                    tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
-                  }
-                  tmpItems["mappingValue"][rawMapping[horizontalId]][
-                    rawMapping[verticalId]
-                  ] = {
-                    id: vertical.id,
-                    stock: vertical.stock + "",
-                    janCode: vertical.jan_code,
-                    delete: vertical.is_hidden ? true : false,
-                  };
-                }
-              });
+            if (response.data.variety == 1) {
+              let tmpItems = {};
+              let productVariety = response.data.productVarieties[0];
+              tmpItems["name"] = productVariety["name"];
+              tmpItems["id"] = productVariety["id"];
+              tmpItems["items"] = [];
+              for (
+                var i = 0;
+                i < productVariety.productVarietySelections.length;
+                i++
+              ) {
+                let productVarietySelection =
+                  productVariety.productVarietySelections[i];
+                let vertical = productVarietySelection.jancode_horizontal[0];
+                tmpItems["items"].push({
+                  id: vertical.id,
+                  index: i,
+                  choice: productVarietySelection.selection,
+                  stock: vertical.stock + "",
+                  janCode: vertical.jan_code,
+                  hidden: vertical.is_hidden ? true : false,
+                });
+              }
+              onOneVariationItemsChanged(tmpItems);
             }
-          );
-          onTwoVariationItemsChanged(tmpItems);
+            if (response.data.variety == 2) {
+              let firstProductVariety = response.data.productVarieties[0];
+              let secondProductVariety = response.data.productVarieties[1];
+
+              let tmpItems = {
+                items: [
+                  {
+                    id: firstProductVariety["id"],
+                    index: 0,
+                    horizontalItem: firstProductVariety["name"],
+                    choices: [],
+                  },
+                  {
+                    id: secondProductVariety["id"],
+                    index: 1,
+                    horizontalItem: secondProductVariety["name"],
+                    choices: [],
+                  },
+                ],
+                mappingValue: {},
+              };
+
+              rawMapping = {};
+
+              firstProductVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  rawMapping[productVarietySelection.id] =
+                    productVarietySelection.selection;
+                  tmpItems["items"][0]["choices"].push({
+                    choiceIndex: tmpItems["items"][0]["choices"].length,
+                    choiceItem: productVarietySelection.selection,
+                    id: productVarietySelection.id,
+                  });
+                }
+              );
+              secondProductVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  rawMapping[productVarietySelection.id] =
+                    productVarietySelection.selection;
+                  tmpItems["items"][1]["choices"].push({
+                    choiceIndex: tmpItems["items"][1]["choices"].length,
+                    choiceItem: productVarietySelection.selection,
+                    id: productVarietySelection.id,
+                  });
+                }
+              );
+
+              firstProductVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map(
+                    (horizontal) => {
+                      if (horizontal.horizontal && horizontal.vertical) {
+                        let horizontalId = getId(horizontal.horizontal);
+                        let verticalId = getId(horizontal.vertical);
+                        if (
+                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                        ) {
+                          tmpItems["mappingValue"][
+                            rawMapping[horizontalId]
+                          ] = {};
+                        }
+                        tmpItems["mappingValue"][rawMapping[horizontalId]][
+                          rawMapping[verticalId]
+                        ] = {
+                          id: horizontal.id,
+                          stock: horizontal.stock + "",
+                          janCode: horizontal.jan_code,
+                          delete: horizontal.is_hidden ? true : false,
+                        };
+                      }
+                    }
+                  );
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    if (vertical.horizontal && vertical.vertical) {
+                      let horizontalId = getId(vertical.horizontal);
+                      let verticalId = getId(vertical.vertical);
+                      if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                        tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
+                      }
+                      tmpItems["mappingValue"][rawMapping[horizontalId]][
+                        rawMapping[verticalId]
+                      ] = {
+                        id: vertical.id,
+                        stock: vertical.stock + "",
+                        janCode: vertical.jan_code,
+                        delete: vertical.is_hidden ? true : false,
+                      };
+                    }
+                  });
+                }
+              );
+              secondProductVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map(
+                    (horizontal) => {
+                      if (horizontal.horizontal && horizontal.vertical) {
+                        let horizontalId = getId(horizontal.horizontal);
+                        let verticalId = getId(horizontal.vertical);
+                        if (
+                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                        ) {
+                          tmpItems["mappingValue"][
+                            rawMapping[horizontalId]
+                          ] = {};
+                        }
+                        tmpItems["mappingValue"][rawMapping[horizontalId]][
+                          rawMapping[verticalId]
+                        ] = {
+                          id: horizontal.id,
+                          stock: horizontal.stock + "",
+                          janCode: horizontal.jan_code,
+                          delete: horizontal.is_hidden ? true : false,
+                        };
+                      }
+                    }
+                  );
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    if (vertical.horizontal && vertical.vertical) {
+                      let horizontalId = getId(vertical.horizontal);
+                      let verticalId = getId(vertical.vertical);
+                      if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                        tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
+                      }
+                      tmpItems["mappingValue"][rawMapping[horizontalId]][
+                        rawMapping[verticalId]
+                      ] = {
+                        id: vertical.id,
+                        stock: vertical.stock + "",
+                        janCode: vertical.jan_code,
+                        delete: vertical.is_hidden ? true : false,
+                      };
+                    }
+                  });
+                }
+              );
+              onTwoVariationItemsChanged(tmpItems);
+            }
+          });
         }
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    }
   }, []);
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
@@ -602,10 +615,10 @@ export default function ProductInformationAdd(props) {
                 value={productVariation}
               >
                 <View style={styles.radionButtonLabel}>
-                  <RadioButton
+                  <RadioButton.Android
                     value="one"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
+                    uncheckedColor="#BD9848"
+                    // color="#BD9848"
                   />
                   <Text style={styles.radioButtonText}>
                     {"1 "}
@@ -613,7 +626,7 @@ export default function ProductInformationAdd(props) {
                   </Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
-                  <RadioButton
+                  <RadioButton.Android
                     value="two"
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -624,7 +637,7 @@ export default function ProductInformationAdd(props) {
                   </Text>
                 </View>
                 <View style={styles.radionButtonLabel}>
-                  <RadioButton
+                  <RadioButton.Android
                     value="none"
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -675,18 +688,44 @@ export default function ProductInformationAdd(props) {
                 <Text style={styles.radioButtonText}>
                   {Translate.t("published")}
                 </Text>
-                <RadioButton value="published" />
+                <RadioButton.Android value="published" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("nonPublished")}
                 </Text>
-                <RadioButton value="unpublished" />
+                <RadioButton.Android value="unpublished" />
               </RadioButton.Group>
             </View>
             <View style={styles.releaseDateContainer}>
               <Text style={styles.radioButtonText}>
                 {Translate.t("publishedDate")} :
               </Text>
+              {/* {publishDate ? (
+                <Text style={fontSize}>{publishDate}</Text>
+              ) : ( */}
               <DatePicker
+                title="Select Published Date"
+                placeholder="Select Published Date"
+                textStyle={((alignSelf = "center"), (color = "blue"))}
+                style={{
+                  color: "white",
+                  fontSize: RFValue(12),
+                  borderWidth: 1,
+                  width: widthPercentageToDP("50%"),
+                  height: heightPercentageToDP("5%"),
+                  alignItems: "center",
+                  color: "black",
+                  borderRadius: 5,
+                  marginLeft: widthPercentageToDP("3%"),
+                  paddingLeft: widthPercentageToDP("1%"),
+                  paddingVertical: heightPercentageToDP(".8%"),
+                  // borderColor: Colors.CECECE,
+                }}
+                onDateChange={(date) => {
+                  onPublishDateChanged(date);
+                }}
+              />
+              {/* )} */}
+              {/* <DatePicker
                 style={{
                   marginLeft: widthPercentageToDP("1%"),
                   width: widthPercentageToDP("40%"),
@@ -695,7 +734,7 @@ export default function ProductInformationAdd(props) {
                 onDateChange={(date) => {
                   onPublishDateChanged(date);
                 }}
-              />
+              /> */}
               {/* <TextInput
                 style={styles.releaseDateTextInput}
                 value={publishDate}
@@ -712,11 +751,11 @@ export default function ProductInformationAdd(props) {
                 value={productStatus}
               >
                 <Text style={styles.radioButtonText}>{Translate.t("new")}</Text>
-                <RadioButton value="new" />
+                <RadioButton.Android value="new" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("secondHand")}
                 </Text>
-                <RadioButton value="secondHand" />
+                <RadioButton.Android value="secondHand" />
               </RadioButton.Group>
             </View>
             <Text style={styles.text}>{Translate.t("targetUser")}</Text>
@@ -728,15 +767,15 @@ export default function ProductInformationAdd(props) {
                 <Text style={styles.radioButtonText}>
                   {Translate.t("allUser")}
                 </Text>
-                <RadioButton value="allUser" />
+                <RadioButton.Android value="allUser" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("generalUser")}
                 </Text>
-                <RadioButton value="generalUser" />
+                <RadioButton.Android value="generalUser" />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("storeUser")}
                 </Text>
-                <RadioButton value="storeUser" />
+                <RadioButton.Android value="storeUser" />
               </RadioButton.Group>
             </View>
             <Text style={styles.releaseDateWarningText}>
@@ -807,12 +846,12 @@ export default function ProductInformationAdd(props) {
                 <Text style={styles.radioButtonText}>
                   {Translate.t("slidingType")}
                 </Text>
-                <RadioButton value="slidingType" />
+                <RadioButton.Android value="slidingType" />
 
                 <Text style={styles.radioButtonText}>
                   {Translate.t("lrType")}
                 </Text>
-                <RadioButton value="lrType" />
+                <RadioButton.Android value="lrType" />
               </RadioButton.Group>
             </View>
             <Text style={styles.text}>{Translate.t("productImage")}</Text>
@@ -971,17 +1010,20 @@ export default function ProductInformationAdd(props) {
               </View>
             </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={
-            ()=>{
-              request.patch(props.route.params.url, {
-                "is_hidden" : 1
-              }).then((response)=>{
-                props.navigation.pop()
-              }).catch((error)=>{
-                console.log(error)
-              })
-            }
-          }>
+          <TouchableOpacity
+            onPress={() => {
+              request
+                .patch(props.route.params.url, {
+                  is_hidden: 1,
+                })
+                .then((response) => {
+                  props.navigation.pop();
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }}
+          >
             <View
               style={{
                 backgroundColor: Colors.E6DADE,

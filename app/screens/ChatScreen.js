@@ -86,10 +86,10 @@ let unsubscribe;
 let unsubscribe1;
 let finalGroupName;
 let chatPersonID;
-let chats = []
-let totalMessageRead = 0
+let chats = [];
+let totalMessageRead = 0;
 let totalMessage = 0;
-let allUsers = []
+let allUsers = [];
 let imageMap = {};
 
 function checkUpdateFriend(user1, user2) {
@@ -132,6 +132,7 @@ export default function ChatScreen(props) {
   const [longPressObj, onLongPressObjChanged] = React.useState({});
   const [name, onNameChanged] = React.useState("");
   const insets = useSafeAreaInsets();
+
   async function getName(ownId, data) {
     if (data.type && data.type == "group") {
       return data.groupName;
@@ -189,8 +190,8 @@ export default function ChatScreen(props) {
     setInputBarPosition(-2);
   }
 
-  function processChat(tmpChats){
-    let tmpChatHtml = []
+  function processChat(tmpChats) {
+    let tmpChatHtml = [];
     index = 1;
     tmpChats.map((chat) => {
       let date = chat.data.createdAt.split(":");
@@ -205,9 +206,7 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={
-              chat.data["delete_" + userId] ? true : false
-            }
+            delete={chat.data["delete_" + userId] ? true : false}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -219,14 +218,12 @@ export default function ChatScreen(props) {
           >
             <View key={chat.id}>
               {previousMessageDateToday == null ? (
-                <Text style={[styles.chat_date]}>
-                  {Translate.t("today")}
-                </Text>
+                <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
               ) : (
                 <Text style={[styles.chat_date]}>{""}</Text>
               )}
               {/*///////////////////////////////////////*/}
-              {(totalMessage - index >= totalMessage - totalMessageRead) ? (
+              {totalMessage - index >= totalMessage - totalMessageRead ? (
                 //seen area
                 chat.data.userID == userId ? (
                   chat.data.image == null ? (
@@ -358,9 +355,7 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={
-              chat.data["delete_" + userId] ? true : false
-            }
+            delete={chat.data["delete_" + userId] ? true : false}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -379,7 +374,7 @@ export default function ChatScreen(props) {
                 <Text style={[styles.chat_date]}>{""}</Text>
               )}
               {/*///////////////////////////////////////*/}
-              {(totalMessage - index >= totalMessage - totalMessageRead)  ? (
+              {totalMessage - index >= totalMessage - totalMessageRead ? (
                 //seen area
                 chat.data.userID == userId ? (
                   chat.data.image == null ? (
@@ -505,9 +500,7 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={
-              chat.data["delete_" + userId] ? true : false
-            }
+            delete={chat.data["delete_" + userId] ? true : false}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -527,7 +520,7 @@ export default function ChatScreen(props) {
                 </Text>
               )}
               {/*///////////////////////////////////////*/}
-              {(totalMessage - index >= totalMessage - totalMessageRead)  ? (
+              {totalMessage - index >= totalMessage - totalMessageRead ? (
                 //seen area
                 chat.data.userID == userId ? (
                   chat.data.image == null ? (
@@ -642,21 +635,19 @@ export default function ChatScreen(props) {
             </View>
           </TouchableWithoutFeedback>
         );
-  
-        previousMessageDateElse = chat.data
-          .timeStamp.toDate()
-          .toDateString();
+
+        previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
       }
       const resultChatHtml = tmpChatHtml.filter((html) => {
         return !html.props["delete"];
       });
       onChatHtmlChanged(resultChatHtml);
       index++;
-    })
+    });
   }
 
   async function firstLoad(data) {
-    chats = []
+    chats = [];
     const updateHtml = [];
     onChatHtmlChanged(updateHtml);
     let url = await AsyncStorage.getItem("user");
@@ -696,28 +687,32 @@ export default function ChatScreen(props) {
       tmpMessageCount = 0;
 
       unsubscribe1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
-        totalMessage = snapshot.data()['totalMessageRead']
-        totalMessageRead = snapshot.data()['totalMessage']
+        totalMessage = snapshot.data()["totalMessageRead"];
+        totalMessageRead = snapshot.data()["totalMessage"];
         processChat(chats);
-        if(snapshot.data()['totalMessageRead_' + userId] != snapshot.data()['totalMessage']){
-          chatsRef.doc(groupID).collection('read').add({
-            "user_id" : userId
-          })
+        if (
+          snapshot.data()["totalMessageRead_" + userId] !=
+          snapshot.data()["totalMessage"]
+        ) {
+          chatsRef.doc(groupID).collection("read").add({
+            user_id: userId,
+          });
         }
 
-        if(allUsers.length == 0){
+        if (allUsers.length == 0) {
           request
-              .get("user/byIds/", {
-                ids: snapshot.data()['users']
-              }).then((response) => {
-                allUsers = response.data.users
-                allUsers.map((user) => {
-                  imageMap[user.id] = user.image ? user.image.image : "";
-                })
-                processChat(chats)
-              })
+            .get("user/byIds/", {
+              ids: snapshot.data()["users"],
+            })
+            .then((response) => {
+              allUsers = response.data.users;
+              allUsers.map((user) => {
+                imageMap[user.id] = user.image ? user.image.image : "";
+              });
+              processChat(chats);
+            });
         }
-      })
+      });
 
       unsubscribe = chatsRef
         .doc(groupID)
@@ -727,37 +722,36 @@ export default function ChatScreen(props) {
           querySnapShot.forEach((snapShot) => {
             if (snapShot && snapShot.exists) {
               let tmpChats = chats.filter((chat) => {
-                return chat.id == snapShot.id
-              })
-              if(tmpChats.length == 0){
+                return chat.id == snapShot.id;
+              });
+              if (tmpChats.length == 0) {
                 chats.push({
-                  id : snapShot.id,
-                  data: snapShot.data()
-                })
+                  id: snapShot.id,
+                  data: snapShot.data(),
+                });
               } else {
                 chats = chats.map((chat) => {
-                  if(chat.id == snapShot.id){
-                    chat.data = snapShot.data()
+                  if (chat.id == snapShot.id) {
+                    chat.data = snapShot.data();
                   }
                   return chat;
-                })
+                });
               }
             }
           });
-          processChat(chats)
+          processChat(chats);
         });
     }
   }
 
-
   React.useEffect(() => {
-    if(!isFocused){
-      onNameChanged("")
+    if (!isFocused) {
+      onNameChanged("");
     }
-    if(props.route.params.groupName){
-      onNameChanged(props.route.params.groupName)
+    if (props.route.params.groupName) {
+      onNameChanged(props.route.params.groupName);
     }
-    
+
     chatsRef
       .doc(groupID)
       .get()
@@ -768,8 +762,7 @@ export default function ChatScreen(props) {
           }
         }
       })
-      .then(function () {
-      });
+      .then(function () {});
 
     return function () {
       if (unsubscribe) {
@@ -987,13 +980,12 @@ export default function ChatScreen(props) {
               <View style={styles.input_bar_text}>
                 <View style={styles.input_bar_text_border}>
                   <TextInput
-                    // onContentSizeChange={(e) =>
-                    //   setTextInputHeight(
-                    //     textInputHeight + heightPercentageToDP("0.5%")
-                    //   )
-                    // }
+                    onContentSizeChange={() =>
+                      scrollViewReference.current.scrollToEnd({
+                        animated: true,
+                      })
+                    }
                     onFocus={() => hideEmoji()}
-                    // onBlur={() => hideEmoji()}
                     multiline={true}
                     value={messages}
                     onChangeText={(value) => setMessages(value)}
@@ -1039,20 +1031,21 @@ export default function ChatScreen(props) {
                     minute +
                     ":" +
                     seconds;
-                   if(tmpMessage){
+                  if (tmpMessage) {
                     let doc = db
-                    .collection("chat")
-                    .doc(groupID).collection("messages").doc();
-                        doc
-                        .set({
-                          userID: userId,
-                          createdAt: createdAt,
-                          timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                          message: tmpMessage,
-                        })
-                        .then(() => {
-                        })
-                   }
+                      .collection("chat")
+                      .doc(groupID)
+                      .collection("messages")
+                      .doc();
+                    doc
+                      .set({
+                        userID: userId,
+                        createdAt: createdAt,
+                        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        message: tmpMessage,
+                      })
+                      .then(() => {});
+                  }
                 }}
               >
                 <View style={styles.input_bar_send}>
@@ -1105,8 +1098,7 @@ export default function ChatScreen(props) {
                                     timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                     image: url,
                                   })
-                                  .then(function () {
-                                  });
+                                  .then(function () {});
                               });
                             })
                             .catch((error) => {});
@@ -1139,8 +1131,7 @@ export default function ChatScreen(props) {
                                   timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                   image: url,
                                 })
-                                .then(function () {
-                                });
+                                .then(function () {});
                             });
                           })
                           .catch((error) => {});
@@ -1193,8 +1184,7 @@ export default function ChatScreen(props) {
                                     timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                     image: url,
                                   })
-                                  .then(function () {
-                                  });
+                                  .then(function () {});
                               });
                             })
                             .catch((error) => {});
@@ -1227,8 +1217,7 @@ export default function ChatScreen(props) {
                                   timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                   image: url,
                                 })
-                                .then(function () {
-                                });
+                                .then(function () {});
                             });
                           })
                           .catch((error) => {});

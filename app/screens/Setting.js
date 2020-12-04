@@ -711,7 +711,7 @@ export default function Setting(props) {
 const styles = StyleSheet.create({
   tabContainer: {
     flexDirection: "row",
-    height: heightPercentageToDP("6%"),
+    height: heightPercentageToDP("8%"),
     justifyContent: "flex-start",
     alignItems: "center",
     marginHorizontal: widthPercentageToDP("4%"),
@@ -746,10 +746,10 @@ const styles = StyleSheet.create({
 
   textInputEdit: {
     borderRadius: 10,
-    fontSize: RFValue(10),
+    fontSize: RFValue(11),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("40%"),
   },
 });

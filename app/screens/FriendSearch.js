@@ -48,7 +48,6 @@ export default function FriendSearch(props) {
     ownUserID = urls[urls.length - 1];
   });
   function sendMessageHandler(friendID, friendName) {
-    
     db.collection("users").doc(ownUserID).collection("friends").add({
       type: "user",
       id: friendID,
@@ -142,30 +141,33 @@ export default function FriendSearch(props) {
             onChangeText={(text) => {
               onSearchTextChanged(text);
 
-              if(text){request
-                .get("profiles/", {
-                  search: text,
-                })
-                .then(function (response) {
-                  onFriendHtmlChanged(processFriendHtml(props, response.data));
-                })
-                .catch(function (error) {
-                  if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    Object.keys(error.response.data).length > 0
-                  ) {
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0] +
-                        "(" +
-                        Object.keys(error.response.data)[0] +
-                        ")"
+              if (text) {
+                request
+                  .get("profiles/", {
+                    search: text,
+                  })
+                  .then(function (response) {
+                    onFriendHtmlChanged(
+                      processFriendHtml(props, response.data)
                     );
-                  }
-                });
+                  })
+                  .catch(function (error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0] +
+                          "(" +
+                          Object.keys(error.response.data)[0] +
+                          ")"
+                      );
+                    }
+                  });
               } else {
                 onFriendHtmlChanged([]);
               }
@@ -192,6 +194,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   searchFriendTextInput: {
+    height: heightPercentageToDP("6%"),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     fontSize: RFValue(11),

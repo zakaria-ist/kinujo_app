@@ -1,5 +1,5 @@
 import React from "react";
-import { AppRegistry, AppConfig, StatusBar} from "react-native";
+import { AppRegistry, AppConfig, StatusBar } from "react-native";
 // import AccountExamination from "./app/Screens/RegistrationStore";
 // import SMS from "./app/Screens/SMSAuthentication";
 // import CR from "./app/Screens/SearchProducts";
@@ -10,10 +10,21 @@ import "firebase/firestore";
 import messaging from "@react-native-firebase/messaging";
 import { firebaseConfig } from "./firebaseConfig";
 import { useNavigation } from "react-navigation-hooks";
+import {
+  notifications,
+  NotificationMessage,
+  Android,
+} from "react-native-firebase-push-notifications";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-const THEME_COLOR = '#285E29';
+const channel = new Android.Channel(
+  "chat",
+  "Chat Channel",
+  Android.Importance.Max
+).setDescription("Chat Message Channel");
+notifications.android().createChannel(channel);
+const THEME_COLOR = "#285E29";
 export default function App() {
   return (
     <BackdropProvider>
