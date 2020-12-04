@@ -883,8 +883,6 @@ export default function Contact(props) {
                                 .set(
                                   {
                                     pinned:
-                                      contactPinned[longPressObj.data.id] ==
-                                        "" ||
                                       contactPinned[longPressObj.data.id]
                                         ? false
                                         : true,

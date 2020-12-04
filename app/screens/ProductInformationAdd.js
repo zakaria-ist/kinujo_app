@@ -45,20 +45,33 @@ export default function ProductInformationAdd(props) {
   const [price, onPriceChanged] = React.useState("");
   const [storePrice, onStorePriceChanged] = React.useState("");
   const [shipping, onShippingChanged] = React.useState("");
-  const [productPageDisplayMethod, onProductPageDisplayMethodChanged] = React.useState("");
+  const [
+    productPageDisplayMethod,
+    onProductPageDisplayMethodChanged,
+  ] = React.useState("");
   const [productImages, onProductImagesChanged] = React.useState("");
   const [productDescription, onProductDescriptionChanged] = React.useState("");
 
   if (!user.url) {
-    AsyncStorage.getItem("user").then(function(url) {
+    AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
-        .then(function(response) {
+        .then(function (response) {
           onUserChanged(response.data);
         })
-        .catch(function(error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });

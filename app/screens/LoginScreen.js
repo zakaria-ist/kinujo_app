@@ -168,6 +168,12 @@ export default function LoginScreen(props) {
             }}
           >
             <CountryPicker
+              theme={
+                {
+                  fontSize: RFValue(10),
+                  itemHeight:heightPercentageToDP("5%")
+                }
+              }
               style={{ fontSize: 1 }}
               fontSize={1}
               withCallingCode
@@ -179,8 +185,6 @@ export default function LoginScreen(props) {
                 borderRadius: 5,
                 borderWidth: 1,
                 fontSize: 1,
-
-                // paddingBottom: RFValue(15),
                 borderColor: "black",
                 paddingLeft: widthPercentageToDP("1%"),
                 paddingVertical: heightPercentageToDP(".6%"),

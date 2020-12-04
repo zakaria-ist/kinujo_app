@@ -60,11 +60,21 @@ export default function Home(props) {
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
 
-  const notificationOpen = messaging().getInitialNotification();
-  if (notificationOpen) {
-    // props.navigation.navigate("SalesManagement");
-    console.log("1");
-  }
+  messaging()
+    .getInitialNotification()
+    .then((remoteMessage) => {
+      if (remoteMessage) {
+        let groupID = remoteMessage.data.groupID;
+        let groupName = remoteMessage.data.groupName;
+        let groupType = remoteMessage.data.groupType;
+        props.navigation.navigate("ChatScreen", {
+          type: String(groupType),
+          groupID: String(groupID),
+          groupName: String(groupName),
+        });
+      }
+    });
+
   React.useEffect(() => {
     hideCategoryAnimation();
   }, [!isFocused]);

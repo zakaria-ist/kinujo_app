@@ -129,6 +129,10 @@ export default function RegistrationStore(props) {
               }}
             >
               <CountryPicker
+                theme={{
+                  fontSize: RFValue(10),
+                  itemHeight: heightPercentageToDP("5%"),
+                }}
                 withCallingCode
                 withFilter
                 withFlag
