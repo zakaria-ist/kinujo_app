@@ -4,7 +4,7 @@ import {
   SafeAreaView,
   Text,
   TextInput,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
   Dimensions,
   Image,
@@ -44,15 +44,16 @@ export default function SMSAuthentication(props) {
     setConfirm(confirmation);
   }
 
-  function signInWithPhoneNumber2(phoneNumber){
-    signInWithPhoneNumber(phoneNumber).then(()=>{
-    }).catch((error)=>{
-      alert.warning(error.code)
-    })
+  function signInWithPhoneNumber2(phoneNumber) {
+    signInWithPhoneNumber(phoneNumber)
+      .then(() => {})
+      .catch((error) => {
+        alert.warning(error.code);
+      });
   }
   const phone = props.route.params.username;
   React.useEffect(() => {
-    signInWithPhoneNumber2("+" + props.route.params.username)
+    signInWithPhoneNumber2("+" + props.route.params.username);
   }, []);
   return (
     <LinearGradient
@@ -90,106 +91,121 @@ export default function SMSAuthentication(props) {
           onChangeText={(text) => onCodeChanged(text)}
           value={code}
         ></TextInput>
-        <TouchableOpacity
+        <TouchableWithoutFeedback
           onPress={() => {
-            if(!code) return;
-            if(!confirm) return;
+            if (!code) return;
+            if (!confirm) return;
             if (!props.route.params.type) {
-              confirm.confirm(code).then(() => {
-                auth()
-                  .signOut()
-                  .then(() => {
-                    request
-                    .post("user/register", props.route.params)
-                    .then(function (response) {
-                      console.log(response)
-                      response = response.data;
-                      if (response.success) {
-                        AsyncStorage.setItem(
-                          "user",
-                          response.data.user.url
-                        ).then(function (response) {
-                          if (props.route.params.authority == "general") {
-                            props.navigation.navigate("RegisterCompletion", {
-                              authority: props.route.params.authority,
-                            });
-                          } else if (
-                            props.route.params.authority == "store"
-                          ) {
-                            props.navigation.navigate(
-                              "StoreAccountSelection",
-                              {
-                                authority: props.route.params.authority,
+              confirm
+                .confirm(code)
+                .then(() => {
+                  auth()
+                    .signOut()
+                    .then(() => {
+                      request
+                        .post("user/register", props.route.params)
+                        .then(function (response) {
+                          console.log(response);
+                          response = response.data;
+                          if (response.success) {
+                            AsyncStorage.setItem(
+                              "user",
+                              response.data.user.url
+                            ).then(function (response) {
+                              if (props.route.params.authority == "general") {
+                                props.navigation.navigate(
+                                  "RegisterCompletion",
+                                  {
+                                    authority: props.route.params.authority,
+                                  }
+                                );
+                              } else if (
+                                props.route.params.authority == "store"
+                              ) {
+                                props.navigation.navigate(
+                                  "StoreAccountSelection",
+                                  {
+                                    authority: props.route.params.authority,
+                                  }
+                                );
                               }
+                            });
+                          } else {
+                            if (
+                              response.errors &&
+                              Object.keys(response.errors).length > 0
+                            ) {
+                              alert.warning(
+                                response.errors[
+                                  Object.keys(response.errors)[0]
+                                ][0] +
+                                  "(" +
+                                  Object.keys(response.errors)[0] +
+                                  ")"
+                              );
+                            }
+                          }
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                          if (
+                            error &&
+                            error.response &&
+                            error.response.data &&
+                            Object.keys(error.response.data).length > 0
+                          ) {
+                            alert.warning(
+                              error.response.data[
+                                Object.keys(error.response.data)[0]
+                              ][0] +
+                                "(" +
+                                Object.keys(error.response.data)[0] +
+                                ")"
                             );
                           }
                         });
-                      } else {
-                        if (
-                          response.errors &&
-                          Object.keys(response.errors).length > 0
-                        ) {
-                          alert.warning(
-                            response.errors[
-                              Object.keys(response.errors)[0]
-                            ][0] +
-                              "(" +
-                              Object.keys(response.errors)[0] +
-                              ")"
-                          );
-                        }
-                      }
                     })
-                    .catch((error) => {
-                      console.log(error)
-                      if (
-                        error &&
-                        error.response &&
-                        error.response.data &&
-                        Object.keys(error.response.data).length > 0
-                      ) {
-                        alert.warning(
-                          error.response.data[
-                            Object.keys(error.response.data)[0]
-                          ][0] +
-                            "(" +
-                            Object.keys(error.response.data)[0] +
-                            ")"
-                        );
-                      }
+                    .catch(function (error) {
+                      // An error happened.
+                      console.log(error);
                     });
-                  })
-                  .catch(function (error) {
-                    // An error happened.
-                    console.log(error)
-                  });
-              }).catch((error)=>{
-                alert.warning("Invalid code");
-              })
+                })
+                .catch((error) => {
+                  alert.warning("Invalid code");
+                });
             } else {
-              confirm.confirm(code).then(() => {
-                AsyncStorage.setItem('verified', "1").then(()=>{
-                  props.navigation.pop();
+              confirm
+                .confirm(code)
+                .then(() => {
+                  AsyncStorage.setItem("verified", "1").then(() => {
+                    props.navigation.pop();
+                  });
                 })
-              }).catch((error)=>{
-                AsyncStorage.setItem('verified', "0").then(()=>{
-                  props.navigation.pop();
-                })
-              })
+                .catch((error) => {
+                  AsyncStorage.setItem("verified", "0").then(() => {
+                    props.navigation.pop();
+                  });
+                });
             }
           }}
         >
-          <View style={code ? styles.smsAuthenticateButton : styles.smsDisabledAuthenticateButton}>
+          <View
+            style={
+              code
+                ? styles.smsAuthenticateButton
+                : styles.smsDisabledAuthenticateButton
+            }
+          >
             <Text style={styles.smsAuthenticateButtonText}>
               {Translate.t("authenticate")}
             </Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
           onPress={() => {
-            AsyncStorage.setItem('verified', "1").then(()=>{
+            AsyncStorage.setItem("verified", "1").then(() => {
               props.navigation.pop();
-            })
+            });
           }}
         >
           <View style={styles.smsCancelButton}>
@@ -197,7 +213,7 @@ export default function SMSAuthentication(props) {
               {Translate.t("cancel")}
             </Text>
           </View>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -223,7 +239,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginHorizontal: heightPercentageToDP("12%"),
     marginTop: widthPercentageToDP("23%"),
-    backgroundColor: Colors.deepGrey
+    backgroundColor: Colors.deepGrey,
   },
   smsDisabledAuthenticateButton: {
     borderRadius: 5,
@@ -232,7 +248,7 @@ const styles = StyleSheet.create({
     marginHorizontal: heightPercentageToDP("12%"),
     marginTop: widthPercentageToDP("23%"),
     backgroundColor: Colors.deepGrey,
-    opacity: 0.7
+    opacity: 0.7,
   },
   smsCancelButton: {
     borderRadius: 5,

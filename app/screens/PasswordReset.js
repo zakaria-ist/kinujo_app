@@ -84,10 +84,14 @@ export default function PasswordReset(props) {
             <View
               style={{
                 flexDirection: "row",
-                alignItems: "flex-end",
+                alignItems: "center",
+                marginTop: heightPercentageToDP("2%"),
               }}
             >
               <CountryPicker
+                theme={{
+                  fontSize: RFValue(12),
+                }}
                 withCallingCode
                 withFilter
                 withFlag
@@ -96,11 +100,11 @@ export default function PasswordReset(props) {
                 containerButtonStyle={{
                   borderRadius: 5,
                   borderWidth: 1,
-                  // fontSize: RFValue(100),
-                  // paddingBottom: RFValue(15),
                   borderColor: "black",
-                  paddingLeft: widthPercentageToDP("1%"),
-                  paddingVertical: heightPercentageToDP(".6%"),
+                  paddingVertical: heightPercentageToDP("1%"),
+                  alignItems: "flex-start",
+                  paddingLeft: widthPercentageToDP("3%"),
+                  alignSelf: "center",
                   width: widthPercentageToDP("20%"),
                 }}
               />
@@ -304,10 +308,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: heightPercentageToDP("1%"),
     // marginHorizontal: widthPercentageToDP("10%"),
-    marginTop: heightPercentageToDP("3%"),
+    // marginTop: heightPercentageToDP("3%"),
     // marginHorizontal: widthPercentageToDP("10%"),
     marginLeft: widthPercentageToDP("2%"),
-    fontSize: RFValue(9),
+    fontSize: RFValue(12),
   },
   verficationCodeInput: {
     borderBottomWidth: 1,

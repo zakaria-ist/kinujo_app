@@ -37,20 +37,24 @@ export default function ChatText({
   seen,
   imageURL,
   showCheckBox,
-  image
+  image,
 }) {
   return (
     <SafeAreaView>
       {/*Right Side*/}
       <View style={isSelf ? styles.right : styles.left} collapsable={false}>
         <View style={isSelf ? styles.selfPadding : styles.notSelfPadding}>
-          {image && !isSelf ? (<Image
-            style={[isSelf ? styles.none : styles.avatar]}
-            source={{ uri: image }}
-          />) : (<Image
-            style={[isSelf ? styles.none : styles.avatar]}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />)}
+          {image && !isSelf ? (
+            <Image
+              style={[isSelf ? styles.none : styles.avatar]}
+              source={{ uri: image }}
+            />
+          ) : (
+            <Image
+              style={[isSelf ? styles.none : styles.avatar]}
+              source={require("../assets/Images/profileEditingIcon.png")}
+            />
+          )}
         </View>
         <View
           style={[
@@ -99,7 +103,7 @@ export default function ChatText({
           ) : (
             <View></View>
           )}
-          {imageURL ? (
+          {/* {imageURL ? (
             <Text
               style={[
                 isSelf
@@ -120,38 +124,61 @@ export default function ChatText({
                 ""
               )}
             </Text>
-          ) : (
-            <Text
-              style={[
-                isSelf ? styles.right_status_text : styles.left_status_text,
-              ]}
-            >
-              {seen ? (
+          ) : ( */}
+          <Text
+            style={[
+              isSelf ? styles.right_status_text : styles.left_status_text,
+            ]}
+          >
+            {seen ? (
+              <Image
+                source={require("../assets/Images/seenTick.png")}
+                style={{
+                  width: width / 35,
+                  height: ratioSeenTick * 10,
+                  resizeMode: "stretch",
+                }}
+              />
+            ) : (
+              ""
+            )}
+          </Text>
+          {/* )} */}
+          {/* /////if Image exists////////////////////////////////////// */}
+          {imageURL ? (
+            <View style={{ flexDirection: "row" }}>
+              <View>
+                <Text
+                  style={[
+                    isSelf
+                      ? styles.right_status_time_image
+                      : styles.left_status_time_image,
+                  ]}
+                >
+                  {date}
+                </Text>
                 <Image
                   source={require("../assets/Images/seenTick.png")}
-                  style={{
-                    width: width / 35,
-                    height: ratioSeenTick * 10,
-                    resizeMode: "stretch",
-                  }}
+                  style={
+                    isSelf
+                      ? styles.seenTickImageRight
+                      : styles.seenTickImageLeft
+                  }
                 />
-              ) : (
-                ""
-              )}
-            </Text>
+              </View>
+              <Image
+                source={{ uri: imageURL }}
+                style={{
+                  width: width / 3,
+                  height: 250 * ratioImage,
+                  resizeMode: "stretch",
+                }}
+              />
+            </View>
+          ) : (
+            <View></View>
           )}
-
-          {imageURL ? (
-            <Image
-              source={{ uri: imageURL }}
-              style={{
-                width: width / 3,
-                height: 250 * ratioImage,
-                resizeMode: "stretch",
-              }}
-            />
-          ) : null}
-
+          {/* ////////////////////////////////////////////////////////////// */}
           {imageURL ? (
             <View>
               {showCheckBox ? (
@@ -168,15 +195,6 @@ export default function ChatText({
               ) : (
                 <View></View>
               )}
-              <Text
-                style={[
-                  isSelf
-                    ? styles.right_status_time_image
-                    : styles.left_status_time_image,
-                ]}
-              >
-                {date}
-              </Text>
             </View>
           ) : (
             <Text
@@ -205,6 +223,26 @@ const styles = StyleSheet.create({
   //   marginBottom: heightPercentageToDP("2%"),
   //   marginRight: widthPercentageToDP("30%"),
   // },
+  seenTickImageRight: {
+    position: "absolute",
+    bottom: 25,
+    right: 0,
+    width: 60,
+    marginRight: widthPercentageToDP("1%"),
+    width: width / 35,
+    height: ratioSeenTick * 10,
+    resizeMode: "stretch",
+  },
+  seenTickImageLeft: {
+    position: "absolute",
+    bottom: 25,
+    left: 0,
+    width: 60,
+    marginLeft: widthPercentageToDP("1%"),
+    width: width / 35,
+    height: ratioSeenTick * 10,
+    resizeMode: "stretch",
+  },
   checkBoxRight: {
     position: "absolute",
     right: 0,
@@ -356,21 +394,21 @@ const styles = StyleSheet.create({
     position: "absolute",
     textAlign: "left",
     width: 60,
-    paddingLeft: 10,
+    marginLeft: widthPercentageToDP("1%"),
     fontSize: RFValue(8),
-    bottom: 12,
+    bottom: 5,
     left: 0,
-    marginLeft: widthPercentageToDP("30%"),
+    // marginLeft: widthPercentageToDP("30%"),
   },
   right_status_time_image: {
     position: "absolute",
     textAlign: "right",
     width: 60,
-    paddingRight: 10,
+    marginRight: widthPercentageToDP("1%"),
     fontSize: RFValue(8),
-    bottom: 12,
+    bottom: 5,
     right: 0,
-    marginRight: widthPercentageToDP("30%"),
+    // marginRight: widthPercentageToDP("30%"),
   },
   right: {
     flexDirection: "row-reverse",

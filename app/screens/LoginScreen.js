@@ -9,6 +9,8 @@ import {
   View,
   Dimensions,
   SafeAreaView,
+  ScrollView,
+  TouchableWithoutFeedback,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -30,7 +32,6 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
-import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -160,22 +161,22 @@ export default function LoginScreen(props) {
           }}
           source={require("../assets/Images/tripleDot.png")}
         />
-        <View style={{ marginHorizontal: widthPercentageToDP("10%") }}>
+        <View
+          style={{
+            marginHorizontal: widthPercentageToDP("10%"),
+          }}
+        >
           <View
             style={{
               flexDirection: "row",
-              alignItems: "flex-end",
+              // backgroundColor: "orange",
+              alignItems: "center",
             }}
           >
             <CountryPicker
-              theme={
-                {
-                  fontSize: RFValue(10),
-                  itemHeight:heightPercentageToDP("5%")
-                }
-              }
-              style={{ fontSize: 1 }}
-              fontSize={1}
+              theme={{
+                fontSize: RFValue(12),
+              }}
               withCallingCode
               withFilter
               withFlag
@@ -184,10 +185,11 @@ export default function LoginScreen(props) {
               containerButtonStyle={{
                 borderRadius: 5,
                 borderWidth: 1,
-                fontSize: 1,
                 borderColor: "black",
-                paddingLeft: widthPercentageToDP("1%"),
-                paddingVertical: heightPercentageToDP(".6%"),
+                paddingVertical: heightPercentageToDP("1%"),
+                alignItems: "flex-start",
+                paddingLeft: widthPercentageToDP("3%"),
+                alignSelf: "center",
                 width: widthPercentageToDP("20%"),
               }}
             />
@@ -209,7 +211,7 @@ export default function LoginScreen(props) {
           ></TextInput>
         </View>
         <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-          <TouchableOpacity
+          <TouchableWithoutFeedback
             onPress={() => {
               if (phone && password) {
                 request
@@ -285,6 +287,9 @@ export default function LoginScreen(props) {
                             }
                           }
                         );
+                      } else {
+                        alert.warning(Translate.t("invalidUser"));
+                        onCallingCodeChanged("");
                       }
                     } else {
                       alert.warning(Translate.t("wrongLoginDetails"));
@@ -312,7 +317,7 @@ export default function LoginScreen(props) {
             <View style={styles.loginButton}>
               <Text style={styles.loginButtonText}>{Translate.t("login")}</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback>
           <Text
             onPress={() => props.navigation.navigate("PasswordReset")}
             style={{
@@ -325,9 +330,9 @@ export default function LoginScreen(props) {
           >
             {Translate.t("forgetPasswordText")}
           </Text>
-          <TouchableOpacity
+          <TouchableWithoutFeedback
             onPress={() => {
-              // props.navigation.navigate("HomeGeneral");
+              // props.navigation.navigate("AdvanceSetting");
               props.navigation.navigate("TermsOfCondition");
             }}
           >
@@ -336,7 +341,7 @@ export default function LoginScreen(props) {
                 {Translate.t("newRegistration")}
               </Text>
             </View>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -350,13 +355,13 @@ const styles = StyleSheet.create({
   },
   携帯電話番号: {
     flex: 1,
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
     // paddingBottom: RFValue(15),
-    paddingTop: RFValue(15),
+    // paddingTop: RFValue(15),
     borderBottomWidth: 1,
     marginLeft: widthPercentageToDP("2%"),
     // marginHorizontal: widthPercentageToDP("10%"),
-    marginTop: heightPercentageToDP("3%"),
+    // marginTop: heightPercentageToDP("3%"),
     borderBottomColor: Colors.D7CCA6,
   },
   パスワード: {

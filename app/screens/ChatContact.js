@@ -35,6 +35,7 @@ const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
 const ratioSeenTick = width / 35 / 13;
+const request = new Request();
 let userId;
 export default function ChatContact({
   isSelf,
@@ -44,7 +45,7 @@ export default function ChatContact({
   date,
   props,
   showCheckBox,
-  image
+  image,
 }) {
   const [contactImage, setContactImage] = React.useState("");
   function redirectToChat(contactID, contactName) {
@@ -63,7 +64,10 @@ export default function ChatContact({
         .get()
         .then((querySnapshot) => {
           querySnapshot.docChanges().forEach((snapShot) => {
-            if(snapShot.doc.data().type != 'groups' && snapShot.doc.data().users.length == 2){
+            if (
+              snapShot.doc.data().type != "groups" &&
+              snapShot.doc.data().users.length == 2
+            ) {
               let users = snapShot.doc.data().users;
               for (var i = 0; i < users.length; i++) {
                 if (users[i] == contactID) {
@@ -83,12 +87,15 @@ export default function ChatContact({
                   merge: true,
                 }
               );
-            AsyncStorage.setItem("chat", JSON.stringify({
-              groupID: groupID,
-              groupName: contactName,
-            })).then(()=>{
+            AsyncStorage.setItem(
+              "chat",
+              JSON.stringify({
+                groupID: groupID,
+                groupName: contactName,
+              })
+            ).then(() => {
               props.navigation.pop();
-            })
+            });
           } else {
             let ownMessageUnseenField = "unseenMessageCount_" + userId;
             let friendMessageUnseenField = "unseenMessageCount_" + contactID;
@@ -105,27 +112,30 @@ export default function ChatContact({
                 [friendTotalMessageReadField]: 0,
               })
               .then(function (docRef) {
-                AsyncStorage.setItem("chat", JSON.stringify({
-                  groupID: docRef.id,
-                  groupName: contactName,
-                })).then(()=>{
+                AsyncStorage.setItem(
+                  "chat",
+                  JSON.stringify({
+                    groupID: docRef.id,
+                    groupName: contactName,
+                  })
+                ).then(() => {
                   props.navigation.pop();
-                })
+                });
               });
           }
         });
     });
   }
 
-  React.useEffect(()=>{
-    if(contactID){
-      request.get('profiles/' + contactID).then((response)=>{
-        if(response.data.image){
+  React.useEffect(() => {
+    if (contactID) {
+      request.get("profiles/" + contactID).then((response) => {
+        if (response.data.image) {
           setContactImage(response.data.image.image);
         }
-      })
+      });
     }
-  }, [contactID])
+  }, [contactID]);
   return (
     <TouchableWithoutFeedback
       onPress={() => redirectToChat(contactID, contactName)}
@@ -134,13 +144,17 @@ export default function ChatContact({
         {/*Left Side*/}
         <View style={isSelf ? styles.right : styles.left} collapsable={false}>
           <View>
-            {image && !isSelf ? (<Image
-              style={[isSelf ? styles.none : styles.avatar]}
-              source={{ uri: image }}
-            />) : (<Image
-              style={[isSelf ? styles.none : styles.avatar]}
-              source={require("../assets/Images/profileEditingIcon.png")}
-            />)}
+            {image && !isSelf ? (
+              <Image
+                style={[isSelf ? styles.none : styles.avatar]}
+                source={{ uri: image }}
+              />
+            ) : (
+              <Image
+                style={[isSelf ? styles.none : styles.avatar]}
+                source={require("../assets/Images/profileEditingIcon.png")}
+              />
+            )}
           </View>
           <View
             style={[
@@ -164,13 +178,17 @@ export default function ChatContact({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              {contactImage ? (<Image
-                style={styles.contact_avatar}
-                source={{ uri: contactImage }}
-              />) : (<Image
-                style={styles.contact_avatar}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />)}
+              {contactImage ? (
+                <Image
+                  style={styles.contact_avatar}
+                  source={{ uri: contactImage }}
+                />
+              ) : (
+                <Image
+                  style={styles.contact_avatar}
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
+              )}
               <Text style={styles.contact_name}>{contactName}</Text>
             </View>
           </TouchableHighlight>

@@ -25,7 +25,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { block } from "react-native-reanimated";
-
+import { Alert } from "react-native";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -224,7 +224,33 @@ export default function AdvanceSetting(props) {
       </View>
       <TouchableWithoutFeedback
         onPress={() => {
-          onShowDeletePopUp(true);
+          Alert.alert(
+            Translate.t("warning"),
+            Translate.t("cannotUndone"),
+            [
+              {
+                text: "YES",
+                onPress: () => {
+                  db.collection("users")
+                    .doc(userId)
+                    .collection("customers")
+                    .doc(customerId)
+                    .delete();
+                  request
+                    .post("removeReferral/", {
+                      userId: customerId,
+                      parentId: userId,
+                    })
+                    .then(function (response) {});
+                },
+              },
+              {
+                text: "NO",
+                onPress: () => {},
+              },
+            ],
+            { cancelable: false }
+          );
           // db.collection("users")
           //   .doc(userId)
           //   .collection("customers")
@@ -348,6 +374,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderColor: Colors.E6DADE,
+    height: heightPercentageToDP("8%"),
     marginHorizontal: widthPercentageToDP("5%"),
     paddingTop: heightPercentageToDP("3%"),
     paddingBottom: heightPercentageToDP("3%"),
@@ -364,10 +391,10 @@ const styles = StyleSheet.create({
   },
   textInputEdit: {
     borderRadius: 10,
-    fontSize: RFValue(8),
+    fontSize: RFValue(12),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("4%"),
+    height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("30%"),
   },
 });

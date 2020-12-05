@@ -617,8 +617,8 @@ export default function ProductInformationAdd(props) {
                 <View style={styles.radionButtonLabel}>
                   <RadioButton.Android
                     value="one"
-                    uncheckedColor="#BD9848"
-                    // color="#BD9848"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
                   />
                   <Text style={styles.radioButtonText}>
                     {"1 "}

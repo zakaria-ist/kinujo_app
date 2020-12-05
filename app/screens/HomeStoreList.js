@@ -195,10 +195,14 @@ export default function HomeStoreList(props) {
 
   React.useEffect(() => {
     for (var i = 1; i < 10; i++) {
-      cartItems.push({
-        value: i + "",
-        label: i + "",
-      });
+      if(cartItems.filter((item) => {
+        return item.value == i;
+      }).length == 0){
+        cartItems.push({
+          value: i + "",
+          label: i + "",
+        });
+      }
     }
 
     AsyncStorage.getItem("user").then(function (url) {
@@ -244,7 +248,12 @@ export default function HomeStoreList(props) {
                   );
                 }
               });
-              setName(tmpVarieties.join(" and "));
+
+              if (tmpVarieties.length > 1) {
+                setName(tmpVarieties.join("x"));
+              } else {
+                setName(tmpVarieties);
+              }
               janCodes = {};
               response.data.productVarieties.map((productVariety) => {
                 if (!productVariety.is_hidden) {
@@ -710,11 +719,11 @@ export default function HomeStoreList(props) {
                 >
                   <Text
                     style={{
-                      fontSize: RFValue(10),
+                      fontSize: RFValue(12),
                       marginLeft: widthPercentageToDP("1.3%"),
                     }}
                   >
-                    Quantity
+                    {Translate.t("productQuantity")}
                   </Text>
                   <DropDownPicker
                     zIndex={999}
@@ -851,7 +860,7 @@ export default function HomeStoreList(props) {
             borderStyle: "solid",
             paddingVertical: widthPercentageToDP("1%"),
             paddingHorizontal: widthPercentageToDP("7%"),
-            marginTop: heightPercentageToDP("6.2%"),
+            marginTop: heightPercentageToDP("6.7%"),
           }}
         >
           <View

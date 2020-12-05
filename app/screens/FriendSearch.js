@@ -147,9 +147,10 @@ export default function FriendSearch(props) {
                     search: text,
                   })
                   .then(function (response) {
-                    onFriendHtmlChanged(
-                      processFriendHtml(props, response.data)
-                    );
+                    tmpFriend = response.data.filter((item) => {
+                      return item.allowed_by_id == true;
+                    });
+                    onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
                   })
                   .catch(function (error) {
                     if (

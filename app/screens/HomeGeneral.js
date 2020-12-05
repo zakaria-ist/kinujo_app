@@ -12,8 +12,11 @@ import {
   BackHandler,
   Animated,
   TouchableWithoutFeedback,
+  StatusBar,
   TextInput,
+  Platform,
 } from "react-native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import CustomFloatingButton from "../assets/CustomComponents/CustomFloatingButton";
@@ -376,6 +379,7 @@ export default function Home(props) {
             </View>
           </TouchableWithoutFeedback>
         </View>
+
         {favoriteText == "true" ? (
           <View
             style={{
@@ -386,12 +390,13 @@ export default function Home(props) {
               zIndex: 1,
               elevation: 1,
               position: "absolute",
-              right:
-                userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("13%"),
+              right: 0,
+              marginRight:
+                userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("15%"),
               borderStyle: "solid",
               paddingVertical: widthPercentageToDP("1%"),
               paddingHorizontal: widthPercentageToDP("7%"),
-              marginTop: heightPercentageToDP("6.2%"),
+              marginTop: heightPercentageToDP("6.7%"),
             }}
           >
             <View
@@ -423,8 +428,10 @@ export default function Home(props) {
           <View></View>
         )}
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+        
         <Animated.View
           style={{
+            paddingTop: Platform.OS == "ios" ? getStatusBarHeight() : 0,
             zIndex: 1,
             height: heightPercentageToDP("100%"),
             alignSelf: "center",
@@ -434,6 +441,7 @@ export default function Home(props) {
             backgroundColor: "white",
           }}
         >
+          <StatusBar/>
           <View
             style={{
               backgroundColor: "white",

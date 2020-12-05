@@ -7,7 +7,6 @@ import {
   Image,
   View,
   TouchableWithoutFeedback,
-  TouchableOpacity,
   Dimensions,
 } from "react-native";
 import Request from "../lib/request";
@@ -52,9 +51,7 @@ export default function RegistrationStore(props) {
         style={{ flex: 1 }}
       >
         <ScrollView style={{ flex: 1 }}>
-          <WhiteBackArrow
-            onPress={() => props.navigation.navigate("TermsOfCondition")}
-          />
+          <WhiteBackArrow onPress={() => props.navigation.pop()} />
           <View
             style={{
               justifyContent: "center",
@@ -125,13 +122,13 @@ export default function RegistrationStore(props) {
             <View
               style={{
                 flexDirection: "row",
-                alignItems: "flex-end",
+                // backgroundColor: "orange",
+                alignItems: "center",
               }}
             >
               <CountryPicker
                 theme={{
-                  fontSize: RFValue(10),
-                  itemHeight: heightPercentageToDP("5%"),
+                  fontSize: RFValue(14),
                 }}
                 withCallingCode
                 withFilter
@@ -141,10 +138,12 @@ export default function RegistrationStore(props) {
                 containerButtonStyle={{
                   borderRadius: 5,
                   borderWidth: 1,
-                  borderColor: "white",
-                  paddingLeft: widthPercentageToDP("1%"),
-                  paddingVertical: heightPercentageToDP(".6%"),
-                  width: widthPercentageToDP("15%"),
+                  borderColor: "black",
+                  paddingVertical: heightPercentageToDP("1%"),
+                  alignItems: "flex-start",
+                  paddingLeft: widthPercentageToDP("3%"),
+                  alignSelf: "center",
+                  width: widthPercentageToDP("20%"),
                 }}
               />
               <TextInput
@@ -157,7 +156,7 @@ export default function RegistrationStore(props) {
             </View>
           </View>
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPress={() => {
                 if (nickname && phone && password && confirm_password) {
                   if (password == confirm_password) {
@@ -234,7 +233,7 @@ export default function RegistrationStore(props) {
                   {Translate.t("proceedToSMSAuthentication")}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
             <View
               onPress={() => props.navigation.pop()}
               style={{
