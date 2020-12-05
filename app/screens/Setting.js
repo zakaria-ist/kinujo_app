@@ -446,44 +446,16 @@ export default function Setting(props) {
             >
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={messagedReceivedMobile ? Colors.D7CCA6 : "grey"}
+                thumbColor={
+                  messagedReceivedEmail == 1 ? Colors.D7CCA6 : Colors.grey
+                }
                 style={{ position: "absolute", right: 0 }}
                 onValueChange={(value) => {
-                  onMessagedReceivedMobileChanged(value);
-                  request
-                    .patch(user.url, {
-                      message_notification_phone: value ? 1 : 0,
-                    })
-                    .then(function (response) {})
-                    .catch(function (error) {
-                      if (
-                        error &&
-                        error.response &&
-                        error.response.data &&
-                        Object.keys(error.response.data).length > 0
-                      ) {
-                        alert.warning(
-                          error.response.data[
-                            Object.keys(error.response.data)[0]
-                          ][0] +
-                            "(" +
-                            Object.keys(error.response.data)[0] +
-                            ")"
-                        );
-                      }
-                    });
-                }}
-                value={messagedReceivedMobile}
-              />
-              <Switch
-                trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={messagedReceivedEmail ? Colors.D7CCA6 : "grey"}
-                style={{ marginRight: widthPercentageToDP("17%") }}
-                onValueChange={(value) => {
                   onMessagedReceivedEmailChanged(value);
+
                   request
                     .patch(user.url, {
-                      message_notification_mail: value ? 1 : 0,
+                      message_notification_mail: value ? 0 : 1,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -506,6 +478,39 @@ export default function Setting(props) {
                 }}
                 value={messagedReceivedEmail}
               />
+              <Switch
+                trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
+                thumbColor={
+                  messagedReceivedMobile == 0 ? Colors.D7CCA6 : "grey"
+                }
+                style={{ marginRight: widthPercentageToDP("17%") }}
+                onValueChange={(value) => {
+                  onMessagedReceivedMobileChanged(!value);
+                  request
+                    .patch(user.url, {
+                      message_notification_phone: value == true ? 0 : 1,
+                    })
+                    .then(function (response) {})
+                    .catch(function (error) {
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0] +
+                            "(" +
+                            Object.keys(error.response.data)[0] +
+                            ")"
+                        );
+                      }
+                    });
+                }}
+                value={!messagedReceivedMobile}
+              />
             </View>
           </View>
           <View style={styles.tabContainer}>
@@ -527,13 +532,15 @@ export default function Setting(props) {
             >
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={Colors.D7CCA6}
+                thumbColor={
+                  otherNofiticationMobile == 0 ? Colors.D7CCA6 : Colors.grey
+                }
                 style={{ position: "absolute", right: 0 }}
                 onValueChange={(value) => {
-                  onOtherNofiticationMobileChanged(value);
+                  onOtherNofiticationMobileChanged(!value);
                   request
                     .patch(user.url, {
-                      other_notification_phone: value ? 1 : 0,
+                      other_notification_phone: value == true ? 0 : 1,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -554,17 +561,19 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={otherNofiticationMobile}
+                value={!otherNofiticationMobile}
               />
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={Colors.D7CCA6}
+                thumbColor={
+                  otherNofiticationEmail == 0 ? Colors.D7CCA6 : Colors.grey
+                }
                 style={{ marginRight: widthPercentageToDP("17%") }}
                 onValueChange={(value) => {
-                  onOtherNofiticationEmailChanged(value);
+                  onOtherNofiticationEmailChanged(!value);
                   request
                     .patch(user.url, {
-                      other_notification_mail: value ? 1 : 0,
+                      other_notification_mail: value == true ? 0 : 1,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -585,7 +594,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={otherNofiticationEmail}
+                value={!otherNofiticationEmail}
               />
             </View>
           </View>
@@ -608,12 +617,14 @@ export default function Setting(props) {
             >
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={Colors.D7CCA6}
+                thumbColor={
+                  addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey
+                }
                 onValueChange={(value) => {
-                  onAddingFriendsByIDChanged(value);
+                  onAddingFriendsByIDChanged(!value);
                   request
                     .patch(user.url, {
-                      allowed_by_id: value ? 1 : 0,
+                      allowed_by_id: value == true ? 0 : 1,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -634,7 +645,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={addingFriendsByID}
+                value={!addingFriendsByID}
               />
             </View>
           </View>
@@ -657,12 +668,16 @@ export default function Setting(props) {
             >
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-                thumbColor={Colors.D7CCA6}
+                thumbColor={
+                  allowAddingFriendsByPhoneNumber == 0
+                    ? Colors.D7CCA6
+                    : Colors.grey
+                }
                 onValueChange={(value) => {
-                  onAllowAddingFriendsByPhoneNumber(value);
+                  onAllowAddingFriendsByPhoneNumber(!value);
                   request
                     .patch(user.url, {
-                      allowed_by_tel: value ? 1 : 0,
+                      allowed_by_tel: value == true ? 0 : 1,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -683,7 +698,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={allowAddingFriendsByPhoneNumber}
+                value={!allowAddingFriendsByPhoneNumber}
               />
             </View>
           </View>

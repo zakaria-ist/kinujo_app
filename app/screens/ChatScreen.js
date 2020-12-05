@@ -62,12 +62,6 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 const chatsRef = db.collection("chat");
 const request = new Request();
-let year = new Date().getFullYear();
-let month = new Date().getMonth() + 1;
-let day = new Date().getDate();
-let hour = String(new Date().getHours()).padStart(2, "0");
-let minute = String(new Date().getMinutes()).padStart(2, "0");
-let seconds = new Date().getSeconds();
 let userId;
 let groupID;
 let groupName;
@@ -91,7 +85,7 @@ let totalMessageRead = 0;
 let totalMessage = 0;
 let allUsers = [];
 let imageMap = {};
-
+let day = new Date().getDate();
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
     db.collection("users")
@@ -111,6 +105,17 @@ function checkUpdateFriend(user1, user2) {
     updateFriend = true;
   }
 }
+function getTime() {
+  let year = new Date().getFullYear();
+  let month = new Date().getMonth() + 1;
+  let day = new Date().getDate();
+  let hour = String(new Date().getHours()).padStart(2, "0");
+  let minute = ("0" + new Date().getMinutes()).slice(-2);
+  let seconds = new Date().getSeconds();
+  return (
+    year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds
+  );
+}
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = React.useState(false);
   const [showPopUp, onShowPopUpChanged] = React.useState(false);
@@ -121,6 +126,7 @@ export default function ChatScreen(props) {
   const [prevEmoji, setPrevEmoji] = useState("");
   const [showCheckBox, onShowCheckBoxChanged] = useState(false);
   const [users, onUserChanged] = React.useState("");
+  const [friendImage, onFriendImageChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
   // const [user, processUser] = useState("");
   const [inputBarPosition, setInputBarPosition] = useState(-2);
@@ -158,6 +164,7 @@ export default function ChatScreen(props) {
       let user = users[0];
       user = await request.get("profiles/" + user);
       user = user.data;
+
       return user.nickname;
     }
     return "";
@@ -180,9 +187,14 @@ export default function ChatScreen(props) {
     heightPercentageToDP("8%")
   );
   function handleEmojiIconPressed() {
-    onShowEmojiChanged(true);
+    if (showEmoji == false) {
+      onShowEmojiChanged(true);
+      setInputBarPosition(heightPercentageToDP("30%"));
+    } else {
+      hideEmoji();
+    }
     setShouldShow(false);
-    setInputBarPosition(heightPercentageToDP("30%"));
+
     Keyboard.dismiss();
   }
   function hideEmoji() {
@@ -223,126 +235,47 @@ export default function ChatScreen(props) {
                 <Text style={[styles.chat_date]}>{""}</Text>
               )}
               {/*///////////////////////////////////////*/}
-              {totalMessage - index >= totalMessage - totalMessageRead ? (
-                //seen area
-                chat.data.userID == userId ? (
-                  chat.data.image == null ? (
-                    chat.data.contactID == null ? (
-                      <ChatText
-                        showCheckBox={showCheckBox}
-                        date={tmpHours + ":" + tmpMinutes}
-                        isSelf="true"
-                        seen="true"
-                        text={chat.data.message}
-                        image={imageMap[chat.data.userID]}
-                      />
-                    ) : (
-                      <ChatContact
-                        showCheckBox={showCheckBox}
-                        props={props}
-                        date={tmpHours + ":" + tmpMinutes}
-                        seen="true"
-                        isSelf="true"
-                        contactID={chat.data.contactID}
-                        contactName={chat.data.contactName}
-                        image={imageMap[chat.data.userID]}
-                      />
-                    )
-                  ) : (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      seen="true"
-                      imageURL={chat.data.image}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  )
-                ) : chat.data.image == null ? (
-                  chat.data.contactID == null ? (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      seen="true"
-                      text={chat.data.message}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  ) : (
-                    <ChatContact
-                      showCheckBox={showCheckBox}
-                      props={props}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      seen="true"
-                      contactID={chat.data.contactID}
-                      contactName={chat.data.contactName}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  )
-                ) : (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    seen="true"
-                    imageURL={chat.data.image}
-                    image={imageMap[chat.data.userID]}
-                  />
-                )
-              ) : //unseen area
-              chat.data.userID == userId ? (
-                chat.data.image == null ? (
-                  chat.data.contactID == null ? (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      text={chat.data.message}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  ) : (
-                    <ChatContact
-                      showCheckBox={showCheckBox}
-                      props={props}
-                      contactID={chat.data.contactID}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      contactName={chat.data.contactName}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  )
-                ) : (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    isSelf="true"
-                    imageURL={chat.data.image}
-                    image={imageMap[chat.data.userID]}
-                  />
-                )
-              ) : chat.data.image == null ? (
-                chat.data.contactID == null ? (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    text={chat.data.message}
-                    image={imageMap[chat.data.userID]}
-                  />
-                ) : (
-                  <ChatContact
-                    showCheckBox={showCheckBox}
-                    props={props}
-                    contactID={chat.data.contactID}
-                    date={tmpHours + ":" + tmpMinutes}
-                    isSelf="true"
-                    contactName={chat.data.contactName}
-                    image={imageMap[chat.data.userID]}
-                  />
-                )
+              {chat.data.contactID ? (
+                <ChatContact
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  seen={
+                    totalMessage - index >= totalMessage - totalMessageRead &&
+                    chat.data.userID == userId
+                      ? (seen = "true")
+                      : (seen = "")
+                  }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
               ) : (
                 <ChatText
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
-                  imageURL={chat.data.image}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  seen={
+                    totalMessage - index >= totalMessage - totalMessageRead &&
+                    chat.data.userID == userId
+                      ? (seen = "true")
+                      : (seen = "")
+                  }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
                   image={imageMap[chat.data.userID]}
                 />
               )}
@@ -374,121 +307,48 @@ export default function ChatScreen(props) {
                 <Text style={[styles.chat_date]}>{""}</Text>
               )}
               {/*///////////////////////////////////////*/}
-              {totalMessage - index >= totalMessage - totalMessageRead ? (
-                //seen area
-                chat.data.userID == userId ? (
-                  chat.data.image == null ? (
-                    chat.data.contactID == null ? (
-                      <ChatText
-                        showCheckBox={showCheckBox}
-                        date={tmpHours + ":" + tmpMinutes}
-                        isSelf="true"
-                        seen="true"
-                        text={chat.data.message}
-                        image={imageMap[chat.data.userID]}
-                      />
-                    ) : (
-                      <ChatContact
-                        showCheckBox={showCheckBox}
-                        props={props}
-                        contactID={chat.data.contactID}
-                        date={tmpHours + ":" + tmpMinutes}
-                        seen="true"
-                        isSelf="true"
-                        contactName={chat.data.contactName}
-                        image={imageMap[chat.data.userID]}
-                      />
-                    )
-                  ) : (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      seen="true"
-                      imageURL={chat.data.image}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  )
-                ) : chat.data.image == null ? (
-                  chat.data.contactID == null ? (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      seen="true"
-                      text={chat.data.message}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  ) : (
-                    <ChatContact
-                      showCheckBox={showCheckBox}
-                      props={props}
-                      contactID={chat.data.contactID}
-                      date={tmpHours + ":" + tmpMinutes}
-                      seen="true"
-                      isSelf="true"
-                      contactName={chat.data.contactName}
-                      image={imageMap[chat.data.userID]}
-                    />
-                  )
-                ) : (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    seen="true"
-                    imageURL={chat.data.image}
-                    image={imageMap[chat.data.userID]}
-                  />
-                )
-              ) : //unseen area
-              chat.data.userID == userId ? (
-                chat.data.image == null ? (
-                  chat.data.contactID == null ? (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      text={chat.data.message}
-                    />
-                  ) : (
-                    <ChatContact
-                      showCheckBox={showCheckBox}
-                      props={props}
-                      contactID={chat.data.contactID}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      contactName={chat.data.contactName}
-                    />
-                  )
-                ) : (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    isSelf="true"
-                    imageURL={chat.data.image}
-                  />
-                )
-              ) : chat.data.image == null ? (
-                chat.data.contactID == null ? (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    text={chat.data.message}
-                  />
-                ) : (
-                  <ChatContact
-                    showCheckBox={showCheckBox}
-                    props={props}
-                    contactID={chat.data.contactID}
-                    date={tmpHours + ":" + tmpMinutes}
-                    isSelf="true"
-                    contactName={chat.data.contactName}
-                  />
-                )
+              {chat.data.contactID ? (
+                <ChatContact
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  seen={
+                    totalMessage - index >= totalMessage - totalMessageRead &&
+                    chat.data.userID == userId
+                      ? (seen = "true")
+                      : (seen = "")
+                  }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
               ) : (
                 <ChatText
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
-                  imageURL={chat.data.image}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  seen={
+                    totalMessage - index >= totalMessage - totalMessageRead &&
+                    chat.data.userID == userId
+                      ? (seen = "true")
+                      : (seen = "")
+                  }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
                 />
               )}
               {/*///////////////////////////////////////*/}
@@ -520,115 +380,48 @@ export default function ChatScreen(props) {
                 </Text>
               )}
               {/*///////////////////////////////////////*/}
-              {totalMessage - index >= totalMessage - totalMessageRead ? (
-                //seen area
-                chat.data.userID == userId ? (
-                  chat.data.image == null ? (
-                    chat.data.contactID == null ? (
-                      <ChatText
-                        showCheckBox={showCheckBox}
-                        date={tmpHours + ":" + tmpMinutes}
-                        isSelf="true"
-                        seen="true"
-                        text={chat.data.message}
-                      />
-                    ) : (
-                      <ChatContact
-                        showCheckBox={showCheckBox}
-                        props={props}
-                        contactID={chat.data.contactID}
-                        date={tmpHours + ":" + tmpMinutes}
-                        seen="true"
-                        isSelf="true"
-                        contactName={chat.data.contactName}
-                      />
-                    )
-                  ) : (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      seen="true"
-                      imageURL={chat.data.image}
-                    />
-                  )
-                ) : chat.data.image == null ? (
-                  chat.data.contactID == null ? (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      seen="true"
-                      text={chat.data.message}
-                    />
-                  ) : (
-                    <ChatContact
-                      showCheckBox={showCheckBox}
-                      props={props}
-                      contactID={chat.data.contactID}
-                      date={tmpHours + ":" + tmpMinutes}
-                      seen="true"
-                      isSelf="true"
-                      contactName={chat.data.contactName}
-                    />
-                  )
-                ) : (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    seen="true"
-                    imageURL={chat.data.image}
-                  />
-                )
-              ) : //unseen area
-              chat.data.userID == userId ? (
-                chat.data.image == null ? (
-                  chat.data.contactID == null ? (
-                    <ChatText
-                      showCheckBox={showCheckBox}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      text={chat.data.message}
-                    />
-                  ) : (
-                    <ChatContact
-                      showCheckBox={showCheckBox}
-                      props={props}
-                      contactID={chat.data.contactID}
-                      date={tmpHours + ":" + tmpMinutes}
-                      isSelf="true"
-                      contactName={chat.data.contactName}
-                    />
-                  )
-                ) : (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    isSelf="true"
-                    imageURL={chat.data.image}
-                  />
-                )
-              ) : chat.data.image == null ? (
-                chat.data.contactID == null ? (
-                  <ChatText
-                    showCheckBox={showCheckBox}
-                    date={tmpHours + ":" + tmpMinutes}
-                    text={chat.data.message}
-                  />
-                ) : (
-                  <ChatContact
-                    showCheckBox={showCheckBox}
-                    props={props}
-                    contactID={chat.data.contactID}
-                    date={tmpHours + ":" + tmpMinutes}
-                    isSelf="true"
-                    contactName={chat.data.contactName}
-                  />
-                )
+              {chat.data.contactID ? (
+                <ChatContact
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  seen={
+                    totalMessage - index >= totalMessage - totalMessageRead &&
+                    chat.data.userID == userId
+                      ? (seen = "true")
+                      : (seen = "")
+                  }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
               ) : (
                 <ChatText
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
-                  imageURL={chat.data.image}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  seen={
+                    totalMessage - index >= totalMessage - totalMessageRead &&
+                    chat.data.userID == userId
+                      ? (seen = "true")
+                      : (seen = "")
+                  }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
                 />
               )}
               {/*///////////////////////////////////////*/}
@@ -802,7 +595,8 @@ export default function ChatScreen(props) {
             onClick={onClick}
             onRemove={onRemove}
           />
-          <CustomSecondaryHeader name={name} />
+          {console.log("123" + friendImage)}
+          <CustomSecondaryHeader />
           <LinearGradient
             colors={[Colors.E4DBC0, Colors.C2A059]}
             start={[0, 0]}
@@ -1019,18 +813,7 @@ export default function ChatScreen(props) {
                 onPress={() => {
                   let tmpMessage = messages;
                   setMessages("");
-                  let createdAt =
-                    year +
-                    ":" +
-                    month +
-                    ":" +
-                    day +
-                    ":" +
-                    hour +
-                    ":" +
-                    minute +
-                    ":" +
-                    seconds;
+                  let createdAt = getTime();
                   if (tmpMessage) {
                     let doc = db
                       .collection("chat")
@@ -1075,18 +858,7 @@ export default function ChatScreen(props) {
                             .putFile(stat.path)
                             .then((response) => {
                               reference.getDownloadURL().then((url) => {
-                                let createdAt =
-                                  year +
-                                  ":" +
-                                  month +
-                                  ":" +
-                                  day +
-                                  ":" +
-                                  hour +
-                                  ":" +
-                                  minute +
-                                  ":" +
-                                  seconds;
+                                let createdAt = getTime();
 
                                 chatsRef
                                   .doc(groupID)
@@ -1108,18 +880,7 @@ export default function ChatScreen(props) {
                           .putFile(response.path.replace("file://", ""))
                           .then((response) => {
                             reference.getDownloadURL().then((url) => {
-                              let createdAt =
-                                year +
-                                ":" +
-                                month +
-                                ":" +
-                                day +
-                                ":" +
-                                hour +
-                                ":" +
-                                minute +
-                                ":" +
-                                seconds;
+                              let createdAt = getTime();
 
                               chatsRef
                                 .doc(groupID)
@@ -1161,18 +922,7 @@ export default function ChatScreen(props) {
                             .putFile(stat.path)
                             .then((response) => {
                               reference.getDownloadURL().then((url) => {
-                                let createdAt =
-                                  year +
-                                  ":" +
-                                  month +
-                                  ":" +
-                                  day +
-                                  ":" +
-                                  hour +
-                                  ":" +
-                                  minute +
-                                  ":" +
-                                  seconds;
+                                let createdAt = getTime();
 
                                 chatsRef
                                   .doc(groupID)
@@ -1194,18 +944,7 @@ export default function ChatScreen(props) {
                           .putFile(response.uri.replace("file://", ""))
                           .then((response) => {
                             reference.getDownloadURL().then((url) => {
-                              let createdAt =
-                                year +
-                                ":" +
-                                month +
-                                ":" +
-                                day +
-                                ":" +
-                                hour +
-                                ":" +
-                                minute +
-                                ":" +
-                                seconds;
+                              let createdAt = getTime();
 
                               chatsRef
                                 .doc(groupID)

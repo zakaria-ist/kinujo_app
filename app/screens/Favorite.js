@@ -11,12 +11,14 @@ import {
   ScrollView,
   Animated,
   Button,
+  Platform,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import { getStatusBarHeight } from "react-native-status-bar-height";
 import HomeProducts from "./HomeProducts";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import Translate from "../assets/Translates/Translate";
@@ -42,89 +44,6 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
-function processFavouriteHtml(props, user, products) {
-  let tmpProductHtml = [];
-  products.map((product) => {
-    let images = product.productImages.filter((image) => {
-      return image.is_hidden == 0 && image.image.is_hidden == 0;
-    });
-
-    tmpProductHtml.push(
-      <HomeProducts
-        key={product.id}
-        product_id={product.id}
-        onPress={() => {
-          props.navigation.navigate("HomeStoreList", {
-            url: product.url,
-          });
-        }}
-        idx={product.id}
-        image={
-          images.length > 0
-            ? images[0].image.image
-            : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-        }
-        office={product.brand_name}
-        name={product.name}
-        seller={product.user.shop_name}
-        price={
-          (user.is_seller
-            ? format.separator(product.store_price)
-            : format.separator(product.price)) + " 円"
-        }
-        category={product.category.name}
-        shipping={
-          product.shipping_fee == 0
-            ? Translate.t("freeShipping")
-            : "Shipping: " + format.separator(product.shipping_fee) + "円"
-        }
-      />
-    );
-  });
-  return tmpProductHtml;
-}
-function processFeatured(props, user, products) {
-  let tmpFeaturedHtml = [];
-  products.map((product) => {
-    let images = product.productImages.filter((image) => {
-      return image.is_hidden == 0 && image.image.is_hidden == 0;
-    });
-
-    tmpFeaturedHtml.push(
-      <HomeProducts
-        key={product.id}
-        product_id={product.id}
-        onPress={() => {
-          props.navigation.navigate("HomeStoreList", {
-            url: product.url,
-          });
-        }}
-        idx={product.id}
-        image={
-          images.length > 0
-            ? images[0].image.image
-            : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
-        }
-        office={product.brand_name}
-        name={product.name}
-        seller={product.user.shop_name}
-        price={
-          (user.is_seller
-            ? format.separator(product.store_price)
-            : format.separator(product.price)) + " 円"
-        }
-        category={product.category.name}
-        shipping={
-          product.shipping_fee == 0
-            ? Translate.t("freeShipping")
-            : "Shipping: " + format.separator(product.shipping_fee) + "円"
-        }
-      />
-    );
-  });
-  return tmpFeaturedHtml;
-}
-
 export default function Favorite(props) {
   const [favouriteHtml, onFavouriteHtmlChanged] = React.useState(<View></View>);
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState(<View></View>);
@@ -135,6 +54,108 @@ export default function Favorite(props) {
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
   const isFocused = useIsFocused();
+  function processFeatured(props, user, products) {
+    let tmpFeaturedHtml = [];
+    products.map((product) => {
+      let images = product.productImages.filter((image) => {
+        return image.is_hidden == 0 && image.image.is_hidden == 0;
+      });
+
+      tmpFeaturedHtml.push(
+        <HomeProducts
+          key={product.id}
+          product_id={product.id}
+          onPress={() => {
+            props.navigation.navigate("HomeStoreList", {
+              url: product.url,
+            });
+          }}
+          idx={product.id}
+          image={
+            images.length > 0
+              ? images[0].image.image
+              : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+          }
+          office={product.brand_name}
+          name={product.name}
+          seller={product.user.shop_name}
+          price={
+            (user.is_seller
+              ? format.separator(product.store_price)
+              : format.separator(product.price)) + " 円"
+          }
+          category={product.category.name}
+          removeFavourite={(favorite) => {
+            if (favorite) {
+              tmpFeaturedProduct = featuredProducts.filter((item) => {
+                return item.id != product.id;
+              });
+              onFeaturedHtmlChanged(
+                processFeatured(props, users, tmpFeaturedProduct)
+              );
+            }
+          }}
+          shipping={
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+          }
+        />
+      );
+    });
+    return tmpFeaturedHtml;
+  }
+  function processFavouriteHtml(props, user, products) {
+    let tmpProductHtml = [];
+    products.map((product) => {
+      let images = product.productImages.filter((image) => {
+        return image.is_hidden == 0 && image.image.is_hidden == 0;
+      });
+
+      tmpProductHtml.push(
+        <HomeProducts
+          key={product.id}
+          product_id={product.id}
+          onPress={() => {
+            props.navigation.navigate("HomeStoreList", {
+              url: product.url,
+            });
+          }}
+          idx={product.id}
+          image={
+            images.length > 0
+              ? images[0].image.image
+              : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
+          }
+          office={product.brand_name}
+          name={product.name}
+          seller={product.user.shop_name}
+          price={
+            (user.is_seller
+              ? format.separator(product.store_price)
+              : format.separator(product.price)) + " 円"
+          }
+          removeFavourite={(favorite) => {
+            if (favorite) {
+              tmpKinujoProduct = kinujoProducts.filter((item) => {
+                return item.id != product.id;
+              });
+              onFavouriteHtmlChanged(
+                processFavouriteHtml(props, users, tmpKinujoProduct)
+              );
+            }
+          }}
+          category={product.category.name}
+          shipping={
+            product.shipping_fee == 0
+              ? Translate.t("freeShipping")
+              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+          }
+        />
+      );
+    });
+    return tmpProductHtml;
+  }
   React.useEffect(() => {
     hideSortingAnimation();
   }, [!isFocused]);
@@ -374,7 +395,7 @@ export default function Favorite(props) {
             height: heightPercentageToDP("100%"),
             alignSelf: "center",
             width: widthPercentageToDP("80%"),
-
+            paddingTop: Platform.OS == "ios" ? getStatusBarHeight() : 0,
             position: "absolute",
             right: rightSorting,
             backgroundColor: "white",

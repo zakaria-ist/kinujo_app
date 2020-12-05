@@ -393,10 +393,14 @@ export default function Cart(props) {
   }
   React.useEffect(() => {
     for (var i = 1; i < 100; i++) {
-      cartItems.push({
-        value: i + "",
-        label: i + "",
-      });
+      if(cartItems.filter((item) => {
+        return item.value == i;
+      }).length == 0){
+        cartItems.push({
+          value: i + "",
+          label: i + "",
+        });
+      }
     }
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");

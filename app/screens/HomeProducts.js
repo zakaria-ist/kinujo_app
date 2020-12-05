@@ -50,13 +50,14 @@ export default function HomeProducts({
   category,
   shipping,
   addFavourite,
+  removeFavourite,
   productAuthorityID,
 }) {
   const isFocused = useIsFocused();
   const [favourite, setFavourite] = React.useState(false);
   const [favoriteGet, onFavorite] = React.useState("");
   const [favoriteText, showFavoriteText] = React.useState(false);
-
+  const [state, setState] = React.useState(false);
   function checkFavourite(product) {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -119,6 +120,9 @@ export default function HomeProducts({
                       .doc(product_id.toString())
                       .delete();
                     setFavourite(false);
+                    if (removeFavourite) {
+                      removeFavourite("true");
+                    }
                   } else {
                     db.collection("users")
                       .doc(userId.toString())
@@ -194,15 +198,15 @@ const styles = StyleSheet.create({
   products_left: {
     // alignItems: "center",
     paddingTop: 10,
-    marginRight: RFValue(4),
-    width: width / 2 - RFValue(24),
+    marginRight: 5,
+    width: width / 2 - 22,
     // overflow: "hidden",
   },
   products_right: {
     // alignItems: "center",
     paddingTop: 10,
-    marginLeft: RFValue(4),
-    width: width / 2 - RFValue(24),
+    marginLeft: 5,
+    width: width / 2 - 22,
     // overflow: "hidden",
   },
   product_image: {

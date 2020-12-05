@@ -13,7 +13,8 @@ import { useNavigation } from "react-navigation-hooks";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-export default function App() {
+
+export default function AppIos() {
   return (
     <BackdropProvider>
       <StatusBar barStyle="dark-content" />

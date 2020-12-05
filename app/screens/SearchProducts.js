@@ -109,6 +109,7 @@ export default function SearchProducts(props) {
               ? "Shipping :" + format.separator(product.shipping_fee) + "円"
               : "Free Shipping"
           }
+          productAuthorityID={product.user.authority.id}
         />
       );
     });
@@ -152,6 +153,7 @@ export default function SearchProducts(props) {
               ? "Shipping: " + format.separator(product.shipping_fee) + "円"
               : "Free Shipping"
           }
+          productAuthorityID={product.user.authority.id}
         />
       );
     });

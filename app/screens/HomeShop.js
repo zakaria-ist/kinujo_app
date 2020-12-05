@@ -13,7 +13,9 @@ import {
   Animated,
   TouchableWithoutFeedback,
   TextInput,
+  Platform,
 } from "react-native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import CustomFloatingButton from "../assets/CustomComponents/CustomFloatingButton";
@@ -423,6 +425,7 @@ export default function Home(props) {
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
         <Animated.View
           style={{
+            paddingTop: Platform.OS == "ios" ? getStatusBarHeight() : 0,
             zIndex: 1,
             height: heightPercentageToDP("100%"),
             alignSelf: "center",
@@ -463,6 +466,7 @@ export default function Home(props) {
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
         <Animated.View
           style={{
+            paddingTop: Platform.OS == "ios" ? getStatusBarHeight() : 0,
             zIndex: 1,
             height: heightPercentageToDP("100%"),
             alignSelf: "center",

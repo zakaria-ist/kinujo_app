@@ -271,6 +271,10 @@
   "payment":"お支払い",
   "person":"人",
   "wrongLoginDetails":"入力された情報が正しくありません",
-  "cannotUndone":"この顧客を削除しますか？ これは元に戻せません。"
+  "cannotUndone":"この顧客を削除しますか？ これは元に戻せません。",
+  "and": "そして",
+  "productQuantity":"Quantity",
+  "invalidUser":"無効なユーザー",
+  "warning":"警告"
   
 }

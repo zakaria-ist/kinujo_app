@@ -9,9 +9,12 @@ import {
   TouchableWithoutFeedback,
   DevSettings,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
+import { Select } from "react-native-propel-kit";
+
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -61,6 +64,7 @@ let controller;
 export default function SettingStore(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
+  const [controllerState, onControllerStateChanged] = React.useState(false);
   // const [state, setState] = React.useState(false);
   async function onValueChanged(language) {
     switch (language.value) {
@@ -115,7 +119,7 @@ export default function SettingStore(props) {
   }, [isFocused]);
 
   if (!isFocused) {
-    // controller.close();
+    controller.close();
   }
 
   return (
@@ -141,7 +145,7 @@ export default function SettingStore(props) {
           name={user.nickname}
           accountType={Translate.t("storeAccount")}
         />
-        <View style={{ marginTop: heightPercentageToDP("1%") }}>
+        <ScrollView style={{ marginTop: heightPercentageToDP("1%") }}>
           {/* <View style={styles.totalSalesDateContainer}>
           <Text style={{ fontSize: RFValue(13) }}>2020年0月</Text>
           <Image
@@ -354,6 +358,10 @@ export default function SettingStore(props) {
                 source={require("../assets/Images/globe.png")}
                 style={{ width: win.width / 14, height: 128 * ratioGlobe }}
               />
+              {/* <Select placeholder="Nationalité">
+                <Select.Item key={1} value={"en"} label={"English"} />
+                <Select.Item key={2} value={"ja"} label={"Japanese"} />
+              </Select> */}
               <DropDownPicker
                 zIndex={1000}
                 controller={(instance) => {
@@ -389,9 +397,12 @@ export default function SettingStore(props) {
                   color: Colors.D7CCA6,
                 }}
                 dropDownStyle={{
+                  zIndex: "1000",
                   backgroundColor: "black",
                   color: "white",
                 }}
+                onOpen={() => onControllerStateChanged(true)}
+                onClose={() => onControllerStateChanged(false)}
                 arrowSize={RFValue(17)}
                 onChangeItem={(item) => onValueChanged(item)}
               />
@@ -403,16 +414,15 @@ export default function SettingStore(props) {
                   elevation: -1,
                 }}
                 onPress={() => {
-                  if (!controller.isOpen()) {
-                    AsyncStorage.removeItem("user").then(() => {
-                      props.navigation.navigate("LoginScreen");
-                      db.collection("users")
-                        .doc(String(user.id))
-                        .collection("token")
-                        .doc(String(user.id))
-                        .delete();
-                    });
-                  }
+                  AsyncStorage.removeItem("user").then(() => {
+                    props.navigation.navigate("LoginScreen");
+                    db.collection("users")
+                      .doc(String(user.id))
+                      .collection("token")
+                      .doc(String(user.id))
+                      .delete();
+                  });
+                  AsyncStorage.removeItem("defaultAddress");
                 }}
               >
                 <View
@@ -431,14 +441,20 @@ export default function SettingStore(props) {
                       height: 512 * ratioSignOut,
                     }}
                   />
-                  <Text style={styles.textInLeftContainer}>
+                  <Text
+                    style={
+                      controllerState == true
+                        ? styles.none
+                        : styles.textInLeftContainer
+                    }
+                  >
                     {Translate.t("logout")}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>
             </View>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -482,5 +498,8 @@ const styles = StyleSheet.create({
     fontSize: RFValue(13),
     position: "absolute",
     left: 0,
+  },
+  none: {
+    display: "none",
   },
 });

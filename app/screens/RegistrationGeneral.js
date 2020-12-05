@@ -118,13 +118,13 @@ export default function RegistrationGeneral(props) {
             <View
               style={{
                 flexDirection: "row",
-                alignItems: "flex-end",
+                // backgroundColor: "orange",
+                alignItems: "center",
               }}
             >
               <CountryPicker
                 theme={{
-                  fontSize: RFValue(10),
-                  itemHeight: heightPercentageToDP("5%"),
+                  fontSize: RFValue(12),
                 }}
                 withCallingCode
                 withFilter
@@ -134,10 +134,12 @@ export default function RegistrationGeneral(props) {
                 containerButtonStyle={{
                   borderRadius: 5,
                   borderWidth: 1,
-                  borderColor: "white",
-                  paddingLeft: widthPercentageToDP("1%"),
-                  paddingVertical: heightPercentageToDP(".6%"),
-                  width: widthPercentageToDP("15%"),
+                  borderColor: "black",
+                  paddingVertical: heightPercentageToDP("1%"),
+                  alignItems: "flex-start",
+                  paddingLeft: widthPercentageToDP("3%"),
+                  alignSelf: "center",
+                  width: widthPercentageToDP("20%"),
                 }}
               />
               <TextInput
@@ -214,6 +216,8 @@ export default function RegistrationGeneral(props) {
                       Translate.t("passwordAndConfirmPasswordMustSame")
                     );
                   }
+                } else {
+                  alert.warning(Translate.t("fieldNotFilled"));
                 }
               }}
             >
@@ -272,7 +276,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     // paddingBottom: RFValue(15),
-    paddingTop: RFValue(15),
+    // paddingTop: RFValue(15),
     fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },

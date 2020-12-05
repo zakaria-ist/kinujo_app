@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   DevSettings,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -49,6 +50,7 @@ export default function SettingGeneral(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [state, setState] = React.useState(false);
+  const [controllerState, onControllerStateChanged] = React.useState(false);
   async function onValueChanged(language) {
     switch (language.value) {
       case "ja":
@@ -97,7 +99,7 @@ export default function SettingGeneral(props) {
     }
   }, [isFocused]);
   if (!isFocused) {
-    // controller.close();
+    controller.close();
   }
   return (
     <TouchableWithoutFeedback onPress={() => controller.close()}>
@@ -123,7 +125,7 @@ export default function SettingGeneral(props) {
           }}
           name={user.nickname}
         />
-        <View style={{ marginTop: heightPercentageToDP("3%") }}>
+        <ScrollView style={{ marginTop: heightPercentageToDP("3%") }}>
           <TouchableWithoutFeedback
             onPress={() => {
               props.navigation.navigate("PurchaseHistory", {
@@ -245,28 +247,34 @@ export default function SettingGeneral(props) {
                 color: Colors.D7CCA6,
               }}
               arrowSize={RFValue(17)}
-              dropDownStyle={{ backgroundColor: "#000000" }}
+              dropDownStyle={{
+                zIndex: "1000",
+                backgroundColor: "black",
+                color: "white",
+              }}
+              onOpen={() => onControllerStateChanged(true)}
+              onClose={() => onControllerStateChanged(false)}
               onChangeItem={(item) => onValueChanged(item)}
             />
           </View>
           <TouchableWithoutFeedback
             onPress={() => {
-              if (!controller.isOpen()) {
-                AsyncStorage.removeItem("user").then(() => {
-                  props.navigation.navigate("LoginScreen");
-                  db.collection("users")
-                    .doc(String(user.id))
-                    .collection("token")
-                    .doc(String(user.id))
-                    .delete();
-                });
-              }
+              AsyncStorage.removeItem("user").then(() => {
+                props.navigation.navigate("LoginScreen");
+                db.collection("users")
+                  .doc(String(user.id))
+                  .collection("token")
+                  .doc(String(user.id))
+                  .delete();
+              });
+              AsyncStorage.removeItem("defaultAddress");
             }}
           >
             <View
               style={{
                 flexDirection: "row",
                 zIndex: 1,
+
                 height: heightPercentageToDP("7%"),
                 justifyContent: "flex-start",
                 alignItems: "center",
@@ -277,12 +285,18 @@ export default function SettingGeneral(props) {
                 source={require("../assets/Images/signout.png")}
                 style={{ width: win.width / 14, height: 512 * ratioSignOut }}
               />
-              <Text style={styles.textInLeftContainer}>
+              <Text
+                style={
+                  controllerState == true
+                    ? styles.none
+                    : styles.textInLeftContainer
+                }
+              >
                 {Translate.t("logout")}
               </Text>
             </View>
           </TouchableWithoutFeedback>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -309,5 +323,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     fontSize: RFValue(14),
     left: 0,
+  },
+  none: {
+    display: "none",
   },
 });

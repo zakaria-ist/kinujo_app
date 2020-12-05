@@ -10,10 +10,23 @@ import "firebase/firestore";
 import messaging from "@react-native-firebase/messaging";
 import { firebaseConfig } from "./firebaseConfig";
 import { useNavigation } from "react-navigation-hooks";
+import {
+  notifications,
+  NotificationMessage,
+  Android,
+} from "react-native-firebase-push-notifications";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-export default function App() {
+
+const channel = new Android.Channel(
+    "chat",
+    "Chat Channel",
+    Android.Importance.Max
+).setDescription("Chat Message Channel");
+notifications.android().createChannel(channel);
+
+export default function AppAndroid() {
   return (
     <BackdropProvider>
       <StatusBar barStyle="dark-content" />
