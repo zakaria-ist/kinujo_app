@@ -133,6 +133,7 @@ export default function LoginScreen(props) {
   }, []);
   function processCountryCode(val) {
     onCallingCodeChanged(val.callingCode);
+    console.log(callingCode);
     onFlagChanged(val.flag);
   }
   return (
@@ -214,6 +215,8 @@ export default function LoginScreen(props) {
           <TouchableWithoutFeedback
             onPress={() => {
               if (phone && password) {
+                console.log(callingCode + phone);
+                console.log(password);
                 request
                   .post("user/login", {
                     tel: callingCode + phone,
@@ -222,7 +225,6 @@ export default function LoginScreen(props) {
                   .then(function (response) {
                     onPasswordChanged("");
                     onPhoneChanged("");
-
                     response = response.data;
                     if (response.success) {
                       let user = response.data.user;
@@ -333,6 +335,7 @@ export default function LoginScreen(props) {
           <TouchableWithoutFeedback
             onPress={() => {
               // props.navigation.navigate("AdvanceSetting");
+              // props.navigation.navigate("ProductInformationAddNew");
               props.navigation.navigate("TermsOfCondition");
             }}
           >

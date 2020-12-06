@@ -358,12 +358,10 @@ export default function SettingStore(props) {
                 source={require("../assets/Images/globe.png")}
                 style={{ width: win.width / 14, height: 128 * ratioGlobe }}
               />
-              {/* <Select placeholder="Nationalité">
-                <Select.Item key={1} value={"en"} label={"English"} />
-                <Select.Item key={2} value={"ja"} label={"Japanese"} />
-              </Select> */}
+
               <DropDownPicker
                 zIndex={1000}
+                elevation={999}
                 controller={(instance) => {
                   controller = instance;
                 }}
@@ -382,6 +380,7 @@ export default function SettingStore(props) {
                   height: heightPercentageToDP("6%"),
                   width: widthPercentageToDP("80%"),
                   marginLeft: widthPercentageToDP("4%"),
+                  // paddingBottom: heightPercentageToDP("5%"),
                 }}
                 style={{
                   backgroundColor: "white",
@@ -397,7 +396,8 @@ export default function SettingStore(props) {
                   color: Colors.D7CCA6,
                 }}
                 dropDownStyle={{
-                  zIndex: "1000",
+                  // height: heightPercentageToDP("15%"),
+                  // zIndex: "1000",
                   backgroundColor: "black",
                   color: "white",
                 }}
@@ -427,10 +427,13 @@ export default function SettingStore(props) {
               >
                 <View
                   style={{
+                    zIndex: -1,
                     flexDirection: "row",
                     height: heightPercentageToDP("7%"),
                     justifyContent: "flex-start",
                     alignItems: "center",
+                    marginTop:
+                      controllerState == true ? heightPercentageToDP("10%") : 0,
                     marginHorizontal: widthPercentageToDP("5.2%"),
                   }}
                 >
@@ -441,13 +444,7 @@ export default function SettingStore(props) {
                       height: 512 * ratioSignOut,
                     }}
                   />
-                  <Text
-                    style={
-                      controllerState == true
-                        ? styles.none
-                        : styles.textInLeftContainer
-                    }
-                  >
+                  <Text style={styles.textInLeftContainer}>
                     {Translate.t("logout")}
                   </Text>
                 </View>

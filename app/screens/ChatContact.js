@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 15,
     paddingVertical: 15,
-    maxWidth: width - 160,
+    // maxWidth: width - 160,
     minHeight: 20,
   },
   left_status_time: {

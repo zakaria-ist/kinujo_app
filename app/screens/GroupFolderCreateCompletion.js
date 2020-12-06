@@ -123,8 +123,9 @@ export default function GroupFolderCreateCompletion(props) {
     // props.navigation.navigate("Contact");
   }
   if (!loaded) {
+    console.log("" + friendIds.length);
     let tmpUserListHtml = [];
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < friendIds.length - 1 && 2; i++) {
       tmpUserListHtml.push(
         <View
           key={friendIds[i]}

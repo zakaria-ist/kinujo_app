@@ -34,6 +34,9 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 19 / 19;
 const ratioProfile = win.width / 13 / 22;
+const ratioFolderTab = win.width / 23 / 11;
+const ratioFolder = win.width / 13 / 23;
+const ratioCustomerList = win.width / 13 / 26;
 const ratioDownForMoreIcon = win.width / 18 / 16;
 const ratioUpIcon = win.width / 14 / 19;
 let globalFolders = [];
@@ -56,21 +59,7 @@ function getID(url) {
   return tmpUserId;
 }
 function addFriend(firstUserId, secondUserId) {
-  firestore()
-    .collection("users")
-    .doc(firstUserId)
-    .collection("friends")
-    .where("id", "==", secondUserId)
-    .get()
-    .then((querySnapshot) => {
-      if (querySnapshot.size > 0) {
-      } else {
-        db.collection("users").doc(firstUserId).collection("friends").add({
-          type: "user",
-          id: secondUserId,
-        });
-      }
-    });
+  request.addFriend(firstUserId, secondUserId);
 }
 export default function Contact(props) {
   const isFocused = useIsFocused();
@@ -315,10 +304,10 @@ export default function Contact(props) {
           <View style={styles.contactTabContainer}>
             <Image
               style={{
-                width: win.width / 13,
-                height: ratioProfile * 25,
+                width: win.width / 23,
+                height: ratioFolderTab * 13,
               }}
-              source={require("../assets/Images/profileEditingIcon.png")}
+              source={require("../assets/Images/folderTabIcon.png")}
             />
             <Text style={styles.tabLeftText}>{folders[i]["name"]}</Text>
           </View>
@@ -625,7 +614,7 @@ export default function Contact(props) {
                     <Image
                       style={{
                         width: win.width / 13,
-                        height: ratioProfile * 25,
+                        height: ratioFolder * 23,
                       }}
                       source={require("../assets/Images/folderIcon.png")}
                     />
@@ -705,7 +694,7 @@ export default function Contact(props) {
                     <Image
                       style={{
                         width: win.width / 13,
-                        height: ratioProfile * 25,
+                        height: ratioCustomerList * 24,
                       }}
                       source={require("../assets/Images/customerListIcon.png")}
                     />
@@ -882,10 +871,9 @@ export default function Contact(props) {
                                 .doc(documentSnapshot.id)
                                 .set(
                                   {
-                                    pinned:
-                                      contactPinned[longPressObj.data.id]
-                                        ? false
-                                        : true,
+                                    pinned: contactPinned[longPressObj.data.id]
+                                      ? false
+                                      : true,
                                   },
                                   {
                                     merge: true,
@@ -916,10 +904,11 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
-                      update["pinned_" + user.id] =
-                        longPressObj.data.data["pinned_" + user.id]
-                          ? false
-                          : true;
+                      update["pinned_" + user.id] = longPressObj.data.data[
+                        "pinned_" + user.id
+                      ]
+                        ? false
+                        : true;
                       db.collection("chat")
                         .doc(longPressObj.data.id)
                         .set(update, {

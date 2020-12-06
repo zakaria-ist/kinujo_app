@@ -171,7 +171,8 @@ export default function SMSAuthentication(props) {
                     });
                 })
                 .catch((error) => {
-                  alert.warning("Invalid code");
+                  alert.warning(error.code);
+                  // alert.warning("Invalid code");
                 });
             } else {
               confirm

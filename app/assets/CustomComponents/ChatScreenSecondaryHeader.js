@@ -27,27 +27,18 @@ export default function CustomKinujoWord({
   name,
   accountType,
   editProfile,
-  userUrl
 }) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const win = Dimensions.get("window");
   const ratioNext = win.width / 38 / 8;
   React.useEffect(() => {
-    if(userUrl){
-      if(userUrl != "group"){
-        request.get(userUrl).then((response) => {
-          onUserChanged(response.data);
-        });
-      }
-    } else {
-      AsyncStorage.getItem("user").then(function (url) {
-        request.get(url).then((response) => {
-          onUserChanged(response.data);
-        });
+    AsyncStorage.getItem("user").then(function (url) {
+      request.get(url).then((response) => {
+        onUserChanged(response.data);
       });
-    }
-  }, [isFocused, userUrl]);
+    });
+  }, [isFocused]);
 
   return (
     <TouchableWithoutFeedback onPress={onPress}>

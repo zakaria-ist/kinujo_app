@@ -10,9 +10,11 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   Animated,
+  Platform,
   Modal,
 } from "react-native";
 import Share from "react-native-share";
+import { getStatusBarHeight } from "react-native-status-bar-height";
 import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { RadioButton } from "react-native-paper";
@@ -69,7 +71,7 @@ export default function HomeStoreList(props) {
   const [time, setTimePassed] = React.useState(false);
   const [XsShow, onXsShow] = React.useState(true);
   const [sShow, onSShow] = React.useState(true);
-  const [quantity, onQuantityChanged] = React.useState();
+  const [quantity, onQuantityChanged] = React.useState(1);
   const [mShow, onMShow] = React.useState(true);
   const [popupHtml, onPopupHtmlChanged] = React.useState([]);
   const [cartCount, onCartCountChanged] = React.useState(0);
@@ -195,9 +197,11 @@ export default function HomeStoreList(props) {
 
   React.useEffect(() => {
     for (var i = 1; i < 10; i++) {
-      if(cartItems.filter((item) => {
-        return item.value == i;
-      }).length == 0){
+      if (
+        cartItems.filter((item) => {
+          return item.value == i;
+        }).length == 0
+      ) {
         cartItems.push({
           value: i + "",
           label: i + "",
@@ -249,10 +253,13 @@ export default function HomeStoreList(props) {
                 }
               });
 
-              if (tmpVarieties.length > 1) {
-                setName(tmpVarieties.join("x"));
+              tmpVariety = tmpVarieties.filter((item) => {
+                return item;
+              });
+              if (tmpVariety.length > 1) {
+                setName(tmpVariety.join(" x "));
               } else {
-                setName(tmpVarieties);
+                setName(tmpVariety);
               }
               janCodes = {};
               response.data.productVarieties.map((productVariety) => {
@@ -400,12 +407,16 @@ export default function HomeStoreList(props) {
             zIndex: 1,
             elevation: 1,
             position: "absolute",
-            right:
-              userAuthorityID <= 3 ? RFValue(5) : widthPercentageToDP("13%"),
+            right: 0,
+            marginRight:
+              userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("15%"),
             borderStyle: "solid",
             paddingVertical: widthPercentageToDP("1%"),
             paddingHorizontal: widthPercentageToDP("7%"),
-            marginTop: heightPercentageToDP("6.2%"),
+            marginTop:
+              Platform.OS == "ios"
+                ? getStatusBarHeight() + heightPercentageToDP("6.7%")
+                : heightPercentageToDP("6.7%"),
           }}
         >
           <View
@@ -729,17 +740,18 @@ export default function HomeStoreList(props) {
                     zIndex={999}
                     style={{
                       borderWidth: 1,
-                      backgroundColor: "transparent",
+                      backgroundColor: "white",
                       borderColor: "transparent",
                       color: "black",
                       borderRadius: 0,
                       fontSize: RFValue(12),
+                      marginLeft: widthPercentageToDP("2%"),
                       height: heightPercentageToDP("5.5%"),
                       paddingLeft: widthPercentageToDP("2%"),
                       marginVertical: heightPercentageToDP("1%"),
                     }}
                     items={cartItems}
-                    placeholder={Translate.t("unit")}
+                    placeholder={quantity}
                     defaultValue={quantity ? quantity + "" : ""}
                     containerStyle={{
                       paddingVertical: 0,
@@ -747,7 +759,7 @@ export default function HomeStoreList(props) {
                     }}
                     labelStyle={{
                       fontSize: RFValue(12),
-                      color: "gray",
+                      color: "grey",
                     }}
                     itemStyle={{
                       justifyContent: "flex-start",
@@ -757,6 +769,8 @@ export default function HomeStoreList(props) {
                     }}
                     // dropDownMaxHeight={RFValue(36)}
                     dropDownStyle={{
+                      marginLeft: widthPercentageToDP("2%"),
+                      width: widthPercentageToDP("23%"),
                       height: heightPercentageToDP("30%"),
                       backgroundColor: "#FFFFFF",
                       color: "black",
@@ -845,52 +859,51 @@ export default function HomeStoreList(props) {
           </View>
         </ScrollView>
       </Modal>
-
-      {showText == true ? (
+      <View
+        style={{
+          borderRadius: win.width / 2,
+          borderWidth: 1,
+          backgroundColor: Colors.E6DADE,
+          borderColor: "transparent",
+          zIndex: 1,
+          elevation: 1,
+          position: "absolute",
+          right: RFValue(5),
+          borderStyle: "solid",
+          paddingVertical: widthPercentageToDP("1%"),
+          paddingHorizontal: widthPercentageToDP("7%"),
+          marginTop:
+            Platform.OS == "ios"
+              ? getStatusBarHeight() + heightPercentageToDP("6.7%")
+              : heightPercentageToDP("6.7%"),
+        }}
+      >
         <View
           style={{
-            borderRadius: win.width / 2,
-            borderWidth: 1,
-            backgroundColor: Colors.E6DADE,
-            borderColor: "transparent",
-            zIndex: 1,
-            elevation: 1,
+            width: 0,
+            height: 0,
+            borderBottomWidth: RFValue(20),
+            borderRightWidth: RFValue(12),
+            borderLeftWidth: RFValue(12),
+            borderLeftColor: "transparent",
+            borderRightColor: "transparent",
+            borderBottomColor: Colors.E6DADE,
+            top: RFValue(-15),
             position: "absolute",
-            right: RFValue(5),
-            borderStyle: "solid",
-            paddingVertical: widthPercentageToDP("1%"),
-            paddingHorizontal: widthPercentageToDP("7%"),
-            marginTop: heightPercentageToDP("6.7%"),
+            right: RFValue(9),
+          }}
+        ></View>
+        <Text
+          style={{
+            fontSize: RFValue(10),
+            color: "black",
+            alignSelf: "flex-start",
           }}
         >
-          <View
-            style={{
-              width: 0,
-              height: 0,
-              borderBottomWidth: RFValue(20),
-              borderRightWidth: RFValue(12),
-              borderLeftWidth: RFValue(12),
-              borderLeftColor: "transparent",
-              borderRightColor: "transparent",
-              borderBottomColor: Colors.E6DADE,
-              top: RFValue(-15),
-              position: "absolute",
-              right: RFValue(9),
-            }}
-          ></View>
-          <Text
-            style={{
-              fontSize: RFValue(10),
-              color: "black",
-              alignSelf: "flex-start",
-            }}
-          >
-            {Translate.t("itemAddedToCart")}
-          </Text>
-        </View>
-      ) : (
-        <View></View>
-      )}
+          {Translate.t("itemAddedToCart")}
+        </Text>
+      </View>
+      {showText == true ? <View></View> : <View></View>}
       {userAuthorityID <= 3 ? (
         <View></View>
       ) : (

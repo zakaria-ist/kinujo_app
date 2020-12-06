@@ -144,7 +144,6 @@ export default function GroupChatCreation(props) {
             type: "group",
           })
           .then(function (docRef) {
-            console.log(friendIds);
             documentID = docRef.id;
             for (var i = 0; i < friendIds.length; i++) {
               friendMessageUnseenField =

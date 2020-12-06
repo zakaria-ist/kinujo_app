@@ -171,8 +171,14 @@ export default function ReceiptView(props) {
                 {order ? order.id : ""}
               </Text>
             </View>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.receiptEditingDetailsText}>
+            <View
+              style={{
+                flexDirection: "row",
+                // backgroundColor: "orange",
+                width: widthPercentageToDP("80%"),
+              }}
+            >
+              <Text numberOfLines={1} style={styles.receiptEditingDetailsText}>
                 {Translate.t("productName")} :{" "}
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
@@ -255,10 +261,14 @@ const styles = StyleSheet.create({
   },
   invoiceTextInput: {
     fontSize: RFValue(11),
+    // marginLeft: widthPercentageToDP("5%"),
     borderWidth: 2,
     borderColor: "#dddddd",
     backgroundColor: "white",
-    paddingHorizontal: widthPercentageToDP("10%"),
+    paddingLeft: widthPercentageToDP("3%"),
+    width: widthPercentageToDP("55%"),
+    // backgroundColor: "orange",
+    // paddingHorizontal: widthPercentageToDP("10%"),
     height: heightPercentageToDP("6%"),
   },
   receivedMoneyText: {

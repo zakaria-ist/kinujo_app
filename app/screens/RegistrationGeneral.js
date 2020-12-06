@@ -156,14 +156,21 @@ export default function RegistrationGeneral(props) {
               onPress={() => {
                 if (nickname && phone && password && confirm_password) {
                   if (password == confirm_password) {
+                    console.log({
+                      nickname: nickname,
+                      username: callingCode + phone,
+                      password: password,
+                      authority: "general",
+                    })
                     request
                       .post("user/register/check", {
                         nickname: nickname,
-                        username: phone,
+                        username: callingCode + phone,
                         password: password,
                         authority: "general",
                       })
                       .then(function (response) {
+                        console.log(response)
                         response = response.data;
                         if (response.success) {
                           // onConfirmPasswordChanged("")

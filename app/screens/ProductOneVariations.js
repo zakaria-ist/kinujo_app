@@ -28,7 +28,11 @@ import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 let items = [];
-export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
+export default function ProductOneVariations({
+  props,
+  pItems,
+  onItemsChanged,
+}) {
   const isFocused = useIsFocused();
   const [item, hideItem] = React.useState(false);
   const [invt, hideInvt] = React.useState(false);
@@ -44,29 +48,39 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   const [loaded, onLoaded] = React.useState(false);
   const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
 
-  React.useEffect(()=>{
-    if(pItems && pItems.name){
-      onItemNameChanged(pItems.name)
-      onIdChanged(pItems.id)
+  React.useEffect(() => {
+    if (pItems && pItems.name) {
+      onItemNameChanged(pItems.name);
+      onIdChanged(pItems.id);
     }
 
-    if(pItems && pItems.id){
-      onItemNameChanged(pItems.name)
+    if (pItems && pItems.id) {
+      onItemNameChanged(pItems.name);
     }
 
-    if(pItems && pItems.items){
+    if (pItems && pItems.items) {
       items = pItems.items;
       onProcessVariationHtml(processVariationHtml(items));
       onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+    } else {
+      items = []
+      items.push({
+        index: items.length,
+        choice: "",
+        stock: 0,
+        janCode: "",
+      });
+      onProcessVariationHtml(processVariationHtml(items));
+      onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
     }
-  }, [pItems])
+  }, [pItems]);
 
   function onUpdate() {
-    let tmpItems = items.filter((item)=>{
-      return !item.choice
-    })
+    let tmpItems = items.filter((item) => {
+      return !item.choice;
+    });
 
-    if(tmpItems.length == 0){
+    if (tmpItems.length == 0) {
       items.push({
         index: items.length,
         choice: "",
@@ -74,16 +88,16 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
         janCode: "",
       });
       onItemsChanged({
-        "id" : id,
-        "name" : itemName,
-        "items" : items
+        id: id,
+        name: itemName,
+        items: items,
       });
       onChoiceChanged("");
       onProcessVariationHtml(processVariationHtml(items));
       onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
       onLoaded(true);
     } else {
-      alert.warning("Please fill in the choice.")
+      alert.warning("Please fill in the choice.");
     }
   }
   function onProcess(items) {
@@ -93,14 +107,14 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   function processVariationDetailsHtml(items) {
     let tmpVariationDetailsHtml = [];
     items.map((product) => {
-      if(product.choice) {
+      if (product.choice) {
         tmpVariationDetailsHtml.push(
           <View style={{ width: "100%" }} key={product.index}>
-          <View style ={
-            {
-              opacity: product.delete ? 0.3 : 1
-            }
-          }>
+            <View
+              style={{
+                opacity: product.delete ? 0.3 : 1,
+              }}
+            >
               <View style={styles.icon_title_wrapper}>
                 <Text style={styles.variantName}>{product.choice}</Text>
                 <TouchableOpacity>
@@ -110,7 +124,10 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
                       resizeMode="contain"
                     />
                   ) : (
-                    <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+                    <ArrowUpIcon
+                      style={styles.widget_icon}
+                      resizeMode="contain"
+                    />
                   )}
                 </TouchableOpacity>
               </View>
@@ -124,7 +141,9 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
                       onValueChanged(value, "stock", product.index)
                     }
                   ></TextInput>
-                  <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+                  <Text style={styles.variantText}>
+                    {Translate.t("inStock")} :
+                  </Text>
                 </View>
                 <View style={styles.variantContainer}>
                   <TextInput
@@ -134,15 +153,17 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
                       onValueChanged(value, "jancode", product.index)
                     }
                   ></TextInput>
-                  <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
+                  <Text style={styles.variantText}>
+                    {Translate.t("janCode")} :
+                  </Text>
                 </View>
               </View>
-              
-              </View>
+            </View>
 
-              {!product.delete ? (<TouchableWithoutFeedback
+            {!product.delete ? (
+              <TouchableWithoutFeedback
                 onPress={() => {
-                  onValueChanged(true, "delete", product.index)
+                  onValueChanged(true, "delete", product.index);
                 }}
               >
                 <View
@@ -151,12 +172,19 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
                     { paddingBottom: heightPercentageToDP("1.5%") },
                   ]}
                 >
-                  <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-                  <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+                  <Text style={styles.variantText}>
+                    {Translate.t("delete")}
+                  </Text>
+                  <DustBinIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
                 </View>
-              </TouchableWithoutFeedback>) : (<TouchableWithoutFeedback
+              </TouchableWithoutFeedback>
+            ) : (
+              <TouchableWithoutFeedback
                 onPress={() => {
-                  onValueChanged(false, "delete", product.index)
+                  onValueChanged(false, "delete", product.index);
                 }}
               >
                 <View
@@ -166,9 +194,13 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
                   ]}
                 >
                   <Text style={styles.variantText}>Show</Text>
-                  <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+                  <DustBinIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
                 </View>
-              </TouchableWithoutFeedback>)}
+              </TouchableWithoutFeedback>
+            )}
             <View style={styles.line} />
           </View>
         );
@@ -185,17 +217,17 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
   }
   function onValueChanged(value, type, index) {
     items = items.map((product) => {
-      if(product.index == index){
-        if(type == 'jancode'){
+      if (product.index == index) {
+        if (type == "jancode") {
           product.janCode = value;
         }
-        if(type == 'stock'){
+        if (type == "stock") {
           product.stock = value;
         }
-        if(type == 'choice'){
+        if (type == "choice") {
           product.choice = value;
         }
-        if(type == 'delete'){
+        if (type == "delete") {
           product.delete = value;
         }
       }
@@ -208,12 +240,17 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
     items.map((product) => {
       tmpVariationHtml.push(
         <View style={styles.subframe} key={product.index}>
-          <Text style={{ fontSize: RFValue(14) }}>{product.index + 1}</Text>
-          <Text style={styles.text}>{Translate.t("choice")}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ fontSize: RFValue(14) }}>{product.index + 1}</Text>
+            <Text>{"  "}</Text>
+            <Text style={styles.text}>{Translate.t("choice")}</Text>
+          </View>
           <TextInput
             style={styles.textInput}
             value={product.choice}
-            onChangeText={(value) => onValueChanged(value, 'choice', product.index)}
+            onChangeText={(value) =>
+              onValueChanged(value, "choice", product.index)
+            }
           ></TextInput>
         </View>
       );
@@ -222,8 +259,7 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
     return tmpVariationHtml;
   }
 
-  React.useEffect(()=>{
-  }, [isFocused])
+  React.useEffect(() => {}, [isFocused]);
 
   return (
     <SafeAreaView>
@@ -244,16 +280,20 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
             style={styles.textInput}
             value={itemName}
             onChangeText={(value) => {
-              onItemNameChanged(value)
+              onItemNameChanged(value);
               onItemsChanged({
-                "id" : id,
-                "name" : value,
-                "items" : items
+                id: id,
+                name: value,
+                items: items,
               });
             }}
           ></TextInput>
           <ScrollView>
-            <View>{variationHtml}</View>
+            <View
+              style={{ flex: 1, marginHorizontal: widthPercentageToDP("1%") }}
+            >
+              {variationHtml}
+            </View>
           </ScrollView>
           <TouchableOpacity onPress={() => onUpdate()}>
             <View
@@ -304,9 +344,7 @@ export default function ProductOneVariations({ props, pItems, onItemsChanged}) {
       </View>
 
       <View style={styles.variantTitle}>
-        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>
-          {itemName}
-        </Text>
+        <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>{itemName}</Text>
       </View>
 
       <View style={{ width: "100%" }}>{variationDetailsHtml}</View>
@@ -405,7 +443,12 @@ const styles = StyleSheet.create({
   },
   subframe: {
     borderWidth: 1,
+    // width: widthPercentageToDP("50%"),
     borderColor: "#BD9848",
+    flex: 1,
+    // width: widthPercentageToDP("85%"),
+    padding: 10,
+    // alignSelf: "center",
     marginTop: heightPercentageToDP("2%"),
     padding: 6,
     marginLeft: -3,

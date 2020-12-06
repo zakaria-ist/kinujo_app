@@ -46,16 +46,17 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
       request.get(url).then((response) => {
         onUserChanged(response.data);
         onUserAuthorityIDChanged(response.data.authority.id);
+
+        const subscriber = db
+          .collection("users")
+          .doc(String(response.data.id))
+          .collection("carts")
+          .get()
+          .then((querySnapShot) => {
+            onCartChanged(0);
+            onCartChanged(querySnapShot.docs.length);
+          });
       });
-      onCartChanged(0);
-      const subscriber = db
-        .collection("users")
-        .doc(String(user.id))
-        .collection("carts")
-        .get()
-        .then((querySnapShot) => {
-          onCartChanged(querySnapShot.docs.length);
-        });
     });
   }, [isFocused]);
   return (

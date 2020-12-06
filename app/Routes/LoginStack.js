@@ -41,6 +41,7 @@ import Favorite from "../Screens/Favorite";
 import MemoEdit from "../Screens/MemoEdit";
 import App from "../../App";
 import AdvanceSetting from "../Screens/AdvanceSetting";
+import PurchaseCompletion from "../Screens/PurchaseCompletion";
 import ProductInformationAdd from "../Screens/ProductInformationAddNew";
 import ChatList from "../Screens/ChatList";
 import ChatListForward from "../Screens/ChatListForward";
@@ -440,6 +441,7 @@ export default function LoginStack() {
         <Stack.Screen name="FolderContactList" component={FolderContactList} />
         <Stack.Screen name="ChatContact" component={ChatContact} />
         <Stack.Screen name="HomeByCategory" component={HomeByCategory} />
+        <Stack.Screen name="PurchaseCompletion" component={PurchaseCompletion} />
         <Stack.Screen
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}

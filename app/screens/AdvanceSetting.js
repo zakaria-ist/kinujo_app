@@ -37,6 +37,7 @@ const db = firebase.firestore();
 export default function AdvanceSetting(props) {
   const [userId, onUserIdChanged] = React.useState("");
   const [customerId, onCustomerIdChanged] = React.useState("");
+  const [customer, setCustomer] = React.useState({});
   const [firebaseUser, onFirebaseUserChanged] = React.useState({});
   const [secretMode, onSecretModeChanged] = React.useState(false);
   const [blockMode, onBlockModeChanged] = React.useState(false);
@@ -60,7 +61,11 @@ export default function AdvanceSetting(props) {
       onUserIdChanged(userId);
       onCustomerIdChanged(customerId);
 
-      const subscriber = db
+      request.get("profiles/" + customerId).then((response) => {
+        console.log(response.data);
+        setCustomer(response.data);
+
+        const subscriber = db
         .collection("users")
         .doc(userId)
         .collection("customers")
@@ -72,7 +77,9 @@ export default function AdvanceSetting(props) {
             if (!firstLoaded) {
               onBlockModeChanged(tmpUser.blockMode);
               onSecretModeChanged(tmpUser.secretMode);
-              onDisplayNameChanged(tmpUser.displayName);
+              if(tmpUser.displayName){
+                onDisplayNameChanged(tmpUser.displayName ? tmpUser.displayName : response.data.nickname);
+              }
             }
             onFirstLoadedChanged(true);
           } else {
@@ -90,6 +97,7 @@ export default function AdvanceSetting(props) {
             onFirstLoadedChanged(true);
           }
         });
+      });
     });
   }, []);
 
