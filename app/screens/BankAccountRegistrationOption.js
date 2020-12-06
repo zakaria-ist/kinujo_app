@@ -28,6 +28,8 @@ const win = Dimensions.get("window");
 const ratio = win.width / 25 / 17;
 const ratioKinujo = win.width / 1.6 / 151;
 export default function BankAccountRegistration(props) {
+  const [user, setUser] = React.useState({});
+
   async function updateProfile(nextPage) {
     AsyncStorage.getItem("user").then(function(url) {
       request
@@ -50,7 +52,14 @@ export default function BankAccountRegistration(props) {
               payload: payload,
             })
             .then(function(response) {
-              props.navigation.navigate(nextPage);
+              if(user.is_approved){
+                props.navigation.reset({
+                  index: 0,
+                  routes: [{ name: "HomeStore" }],
+                });
+              } else {
+                props.navigation.navigate(nextPage);
+              }
             })
             .catch(function(error) {
               if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
@@ -65,6 +74,16 @@ export default function BankAccountRegistration(props) {
         });
     });
   }
+
+  React.useEffect(()=>{
+    AsyncStorage.getItem("user").then(function(url) {
+      request.get(url).then((response)=>{
+        console.log(response.data)
+        setUser(response.data)
+      })
+    })
+  }, [])
+
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -101,7 +120,13 @@ export default function BankAccountRegistration(props) {
           </Text>
         </View>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={
+          ()=>{
+            props.navigation.navigate("BankAccountRegistration", {
+              is_store: true
+            })
+          }
+        }>
           <View style={styles.registerBankAccountButton}>
             <Text style={styles.registerBankAccountButtonText}>
               {Translate.t("registerBankAccountNow")}

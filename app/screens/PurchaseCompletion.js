@@ -8,8 +8,20 @@ import {
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
+import AsyncStorage from "@react-native-community/async-storage";
+import Request from "../lib/request";
+
+const request = new Request();
 
 export default function PurchaseCompletion(props) {
+  const [user, setUser] = React.useState({})
+  React.useEffect(()=>{
+    AsyncStorage.getItem('user').then((url) => {
+      request.get(url).then((response)=>{
+        setUser(response.data);
+      })
+    })
+  })
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -42,7 +54,21 @@ export default function PurchaseCompletion(props) {
         >
           {Translate.t("waitUntilDelivery")}
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={
+          ()=>{
+            if(user.is_seller){
+              props.navigation.reset({
+                index: 0,
+                routes: [{ name: "HomeStore" }],
+              });
+            } else {
+              props.navigation.reset({
+                index: 0,
+                routes: [{ name: "HomeGeneral" }],
+              });
+            }
+          }
+        }>
           <View style={styles.buttonContainer}>
             <Text style={styles.buttonText}>OK</Text>
           </View>

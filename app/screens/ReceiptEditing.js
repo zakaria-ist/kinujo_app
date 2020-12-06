@@ -38,8 +38,10 @@ export default function ReceiptView(props) {
   const [orderReceipt, onOrderReceiptChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
   const [issueName, onIssueNameChange] = React.useState("");
+  const [oldIssueName, onOldIssueNameChange] = React.useState("");
 
   React.useEffect(() => {
+    console.log(props.route.params.url);
     request
       .get(props.route.params.url)
       .then(function (response) {
@@ -53,7 +55,16 @@ export default function ReceiptView(props) {
           }
         });
         onOrderReceiptChanged(lastOrderReceipt);
-        onIssueNameChange(response.data.order.purchaser.real_name);
+        onIssueNameChange(
+          lastOrderReceipt && lastOrderReceipt.to_name
+            ? lastOrderReceipt.to_name
+            : response.data.order.purchaser.real_name
+        );
+        onOldIssueNameChange(
+          lastOrderReceipt && lastOrderReceipt.to_name
+            ? lastOrderReceipt.to_name
+            : response.data.order.purchaser.real_name
+        );
         onLoaded(true);
       })
       .catch(function (error) {
@@ -98,16 +109,20 @@ export default function ReceiptView(props) {
   }, [isFocused]);
   function issueClicked() {
     if (orderReceipt) {
-      request
-        .patch(orderReceipt.url, {
-          to_name: issueName,
-        })
-        .then(() => {
-          props.navigation.navigate("ReceiptView", {
-            url: props.route.params.url,
-            issueName: issueName,
-          });
+      let updateData = {
+        to_name: issueName,
+      };
+
+      if (issueName != oldIssueName) {
+        updateData["is_copy"] = 1;
+      }
+
+      request.patch(orderReceipt.url, updateData).then(() => {
+        props.navigation.navigate("ReceiptView", {
+          url: props.route.params.url,
+          issueName: issueName,
         });
+      });
     } else {
       props.navigation.navigate("ReceiptView", {
         url: props.route.params.url,
@@ -195,8 +210,14 @@ export default function ReceiptView(props) {
                 {order ? order.id : ""}
               </Text>
             </View>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.receiptEditingDetailsText}>
+            <View
+              style={{
+                flexDirection: "row",
+                // backgroundColor: "orange",
+                width: widthPercentageToDP("80%"),
+              }}
+            >
+              <Text numberOfLines={1} style={styles.receiptEditingDetailsText}>
                 {Translate.t("productName")} :{" "}
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
@@ -295,6 +316,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingLeft: widthPercentageToDP("3%"),
     width: widthPercentageToDP("55%"),
+    // backgroundColor: "orange",
     // paddingHorizontal: widthPercentageToDP("10%"),
     height: heightPercentageToDP("6%"),
   },

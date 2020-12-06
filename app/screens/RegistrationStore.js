@@ -163,7 +163,7 @@ export default function RegistrationStore(props) {
                     request
                       .post("user/register/check", {
                         nickname: nickname,
-                        username: phone,
+                        username: callingCode + phone,
                         password: password,
                         authority: "store",
                       })

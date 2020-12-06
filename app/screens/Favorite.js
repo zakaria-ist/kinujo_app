@@ -87,11 +87,11 @@ export default function Favorite(props) {
           category={product.category.name}
           removeFavourite={(favorite) => {
             if (favorite) {
-              tmpFeaturedProduct = featuredProducts.filter((item) => {
+              featuredProducts = featuredProducts.filter((item) => {
                 return item.id != product.id;
               });
               onFeaturedHtmlChanged(
-                processFeatured(props, users, tmpFeaturedProduct)
+                processFeatured(props, users, featuredProducts)
               );
             }
           }}
@@ -137,11 +137,11 @@ export default function Favorite(props) {
           }
           removeFavourite={(favorite) => {
             if (favorite) {
-              tmpKinujoProduct = kinujoProducts.filter((item) => {
+              kinujoProducts = kinujoProducts.filter((item) => {
                 return item.id != product.id;
               });
               onFavouriteHtmlChanged(
-                processFavouriteHtml(props, users, tmpKinujoProduct)
+                processFavouriteHtml(props, users, kinujoProducts)
               );
             }
           }}
@@ -391,6 +391,10 @@ export default function Favorite(props) {
 
         <Animated.View
           style={{
+            paddingTop:
+              Platform.OS == "ios"
+                ? getStatusBarHeight() + heightPercentageToDP("3%")
+                : 0,
             zIndex: 1,
             height: heightPercentageToDP("100%"),
             alignSelf: "center",

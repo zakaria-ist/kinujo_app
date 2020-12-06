@@ -188,6 +188,7 @@
   "delete": "削除",
   "remove": "削除",
   "horizonItemName": "横軸項目名",
+  "verticalItemName": "垂直項目名",
   "upperFixed": "上部固定（or解除)",
   "nonRepresent": "非表示",
   "copy": "コピー",
@@ -273,7 +274,7 @@
   "wrongLoginDetails":"入力された情報が正しくありません",
   "cannotUndone":"この顧客を削除しますか？ これは元に戻せません。",
   "and": "そして",
-  "productQuantity":"Quantity",
+  "productQuantity":"量",
   "invalidUser":"無効なユーザー",
   "warning":"警告"
   

@@ -76,7 +76,9 @@ export default function ProfileEditingGeneral(props) {
 
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
+    let verified = AsyncStorage.getItem("verified");
     let response = await request.get(url);
+    let updateData = AsyncStorage.getItem("update-data");
     onUserChanged(response.data);
     if (updateData && updateData["type"] == "email" && verified == "1") {
       onEmailChanged(updateData["value"]);
@@ -636,6 +638,7 @@ export default function ProfileEditingGeneral(props) {
                     }}
                   />
                   <TextInput
+                    secureTextEntry={true}
                     value={password}
                     onChangeText={(value) => {
                       onPasswordChanged(value);

@@ -205,6 +205,7 @@ export default function Setting(props) {
                   }}
                 />
                 <TextInput
+                  secureTextEntry={true}
                   value={password}
                   onChangeText={(value) => onPasswordChanged(value)}
                   style={styles.textInputEdit}

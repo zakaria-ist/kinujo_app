@@ -91,6 +91,7 @@ export default function Payment(props) {
                     tax: props.route.params.tax,
                   })
                   .then(function (response) {
+                    console.log(response)
                     onSpinnerChanged(false);
                     response = response.data;
                     if (response.success) {
@@ -108,7 +109,7 @@ export default function Payment(props) {
                               .then(() => {});
                           });
 
-                          props.navigation.pop();
+                          props.navigation.navigate("PurchaseCompletion");
                         });
                     } else {
                       if (

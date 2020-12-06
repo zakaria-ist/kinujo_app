@@ -5,7 +5,7 @@ import {
   Text,
   TextInput,
   View,
-  TouchableOpacity,
+  TouchableWithoutFeedback,
   Dimensions,
   Image,
   ScrollView,
@@ -117,12 +117,17 @@ export default function PasswordReset(props) {
               ></TextInput>
             </View>
           </View>
-          <TouchableOpacity
+          <TouchableWithoutFeedback
             disabled={verficaitonButtonClicked ? true : false}
             onPress={() => {
               if (phone != "") {
                 onVerficaitonButtonClicked(true);
-                signInWithPhoneNumber(callingCode + phone);
+                console.log(callingCode + phone);
+                signInWithPhoneNumber("+" + callingCode + phone).then(()=>{
+
+                }).catch((error)=>{
+                  alert.warning(error.code);
+                })
                 onTriggerTimer(true);
               } else {
                 alert.warning(Translate.t("fieldNotFilled"));
@@ -134,7 +139,7 @@ export default function PasswordReset(props) {
                 {Translate.t("sendVerificatioCode")}
               </Text>
             </View>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback>
           {showResend == true ? (
             <Text
               style={{
@@ -151,7 +156,7 @@ export default function PasswordReset(props) {
             <View></View>
           )}
           {resend == true ? (
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               disabled={timer == 0 ? false : true}
               onPress={() => {
                 if (phone != "") {
@@ -176,7 +181,7 @@ export default function PasswordReset(props) {
               >
                 {Translate.t("clickHereIfNoReceiveVerificationCode")}
               </Text>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -215,7 +220,7 @@ export default function PasswordReset(props) {
             value={confirm_password}
           ></TextInput>
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPress={() => {
                 if (confirm) {
                   confirm
@@ -265,10 +270,10 @@ export default function PasswordReset(props) {
                                   }
                                 });
                             } else {
-                              alert.warning("password_mismatch");
+                              alert.warning("Password and confirm password mismatch.");
                             }
                           } else {
-                            alert.warning("must_filled");
+                            alert.warning("Please fill in the password and confirm password");
                           }
                         })
                         .catch((error) => {
@@ -278,8 +283,6 @@ export default function PasswordReset(props) {
                     .catch((error) => {
                       alert.warning("Invalid code");
                     });
-                } else {
-                  alert.warning("Please enter phone number to get the code");
                 }
               }}
             >
@@ -288,7 +291,7 @@ export default function PasswordReset(props) {
                   {Translate.t("changePassword")}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           </View>
         </View>
       </ScrollView>

@@ -31,7 +31,7 @@ let items = [
     horizontalItem: "",
     choices: [
       {
-        choiceIndex: 0,
+        choiceIndex: 1,
         choiceItem: "",
         janCode: "",
         stock: "",
@@ -43,7 +43,7 @@ let items = [
     horizontalItem: "",
     choices: [
       {
-        choiceIndex: 0,
+        choiceIndex: 1,
         choiceItem: "",
         janCode: "",
         stock: "",
@@ -51,8 +51,12 @@ let items = [
     ],
   },
 ];
-let globalMappingValue = {}
-export default function ProductTwoVariations({ props, pItems, onItemsChanged }) {
+let globalMappingValue = {};
+export default function ProductTwoVariations({
+  props,
+  pItems,
+  onItemsChanged,
+}) {
   const [invt, hideInvt] = React.useState(false);
   const [choice, onChoiceChanged] = React.useState("");
   const [horizontalAxis, onHorizontalAxisChanged] = React.useState("");
@@ -64,47 +68,76 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
   const [variationDetailsHtml, onProcessVariationDetailsHtml] = React.useState(
     <View></View>
   );
-  
-  React.useEffect(()=>{
-    if(pItems && pItems.mappingValue && pItems.items){
-      globalMappingValue = pItems.mappingValue
-      items = pItems.items
+
+  React.useEffect(() => {
+    if (pItems && pItems.mappingValue && pItems.items) {
+      globalMappingValue = pItems.mappingValue;
+      items = pItems.items;
+      onProcessVariationHtml(processVariationHtml(items));
+      onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+    } else {
+      globalMappingValue = {}
+      items = [
+        {
+          index: 0,
+          horizontalItem: "",
+          choices: [
+            {
+              choiceIndex: 1,
+              choiceItem: "",
+              janCode: "",
+              stock: "",
+            },
+          ],
+        },
+        {
+          index: 1,
+          horizontalItem: "",
+          choices: [
+            {
+              choiceIndex: 1,
+              choiceItem: "",
+              janCode: "",
+              stock: "",
+            },
+          ],
+        },
+      ];
       onProcessVariationHtml(processVariationHtml(items));
       onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
     }
-  }, [pItems])
+  }, [pItems]);
 
-  function populateMapping(){
+  function populateMapping() {
     mappingValue = globalMappingValue;
     items[0].choices.map((choice1) => {
-      if(choice1){
+      if (choice1) {
         items[1].choices.map((choice2) => {
-          if(choice2){
-            if(mappingValue[choice1.choiceItem]){
-              if(!mappingValue[choice1.choiceItem][choice2.choiceItem]){
+          if (choice2) {
+            if (mappingValue[choice1.choiceItem]) {
+              if (!mappingValue[choice1.choiceItem][choice2.choiceItem]) {
                 mappingValue[choice1.choiceItem][choice2.choiceItem] = {
                   stock: 0,
-                  janCode: ""
-                }
+                  janCode: "",
+                };
               }
             } else {
-              mappingValue[choice1.choiceItem] = {
-              }
+              mappingValue[choice1.choiceItem] = {};
               mappingValue[choice1.choiceItem][choice2.choiceItem] = {
                 stock: 0,
-                janCode: ""
-              }
+                janCode: "",
+              };
             }
           }
-        })
+        });
       }
-    })
+    });
     globalMappingValue = mappingValue;
-    if(onItemsChanged){
+    if (onItemsChanged) {
       onItemsChanged({
-        "items" : items,
-        "mappingValue" : globalMappingValue
-      })
+        items: items,
+        mappingValue: globalMappingValue,
+      });
     }
   }
   function addNewChoice(index, choiceIndex) {
@@ -113,21 +146,21 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
       choiceItem: "",
     };
 
-      items.map((product) => {
-        if (index == product.index) {
-          let tmpChoices = product.choices.filter((item)=>{
-            return !item.choiceItem
-          })
-          if(tmpChoices.length == 0){
-            product.choices.push(choiceObj);
-          } else {
-            alert.warning("Please fill in the choice.")
-          }
+    items.map((product) => {
+      if (index == product.index) {
+        let tmpChoices = product.choices.filter((item) => {
+          return !item.choiceItem;
+        });
+        if (tmpChoices.length == 0) {
+          product.choices.push(choiceObj);
+        } else {
+          alert.warning("Please fill in the choice.");
         }
-        return product;
-      });
-      
-    populateMapping()
+      }
+      return product;
+    });
+
+    populateMapping();
     onProcessVariationHtml(processVariationHtml(items));
     onLoaded(true);
   }
@@ -194,7 +227,11 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
       tmpVariationHtml.push(
         <View style={{ width: "100%" }} key={product.index}>
           <View style={styles.subframe}>
-            <Text style={styles.text}>{Translate.t("horizonItemName")}</Text>
+            <Text style={styles.text}>
+              {tmpVariationHtml.length == 0
+                ? Translate.t("horizonItemName")
+                : Translate.t("verticalItemName")}
+            </Text>
             <TextInput
               style={styles.textInput}
               value={product.horizontalItem}
@@ -236,14 +273,14 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
       }
       return product;
     });
-    populateMapping()
+    populateMapping();
     onProcessVariationHtml(processVariationHtml(items));
     onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
   }
   function processDetailsVariationHtml(items) {
     let tmpVariationDetailsHtml = [];
     items[0].choices.map((choice) => {
-      if(choice.choiceItem){
+      if (choice.choiceItem) {
         tmpVariationDetailsHtml.push(
           <View style={{ width: "100%" }} key={choice.choiceIndex}>
             <View style={styles.icon_title_wrapper}>
@@ -255,7 +292,10 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
                     resizeMode="contain"
                   />
                 ) : (
-                  <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+                  <ArrowUpIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
                 )}
               </TouchableOpacity>
             </View>
@@ -270,27 +310,38 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
   function populateChoiceDetailsHtml(choice1Item, choices) {
     let tmpChoiceDetailsHtml = [];
     choices.map((choice) => {
-      let isDelete = globalMappingValue[choice1Item][choice.choiceItem]['delete'];
+      let isDelete =
+        globalMappingValue[choice1Item][choice.choiceItem]["delete"];
       tmpChoiceDetailsHtml.push(
-        <View style={{
-        }}>
+        <View style={{}}>
           <View style={styles.subline} />
-          <View style ={
-            {
-              opacity: isDelete ? 0.3 : 1
-            }
-          }>
+          <View
+            style={{
+              opacity: isDelete ? 0.3 : 1,
+            }}
+          >
             <View style={styles.variantContainer}>
               <Text style={styles.colorText}>{choice.choiceItem}</Text>
               {/* onValueChanged(value, "choice", index, choice.choiceIndex) */}
               <TextInput
                 style={styles.variantStockInput}
                 editable={!isDelete}
-                value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['stock'] : ""}
+                value={
+                  globalMappingValue[choice1Item] &&
+                  globalMappingValue[choice1Item][choice.choiceItem]
+                    ? globalMappingValue[choice1Item][choice.choiceItem][
+                        "stock"
+                      ]
+                    : ""
+                }
                 onChangeText={(value) => {
-                  globalMappingValue[choice1Item][choice.choiceItem]['stock'] = value;
+                  globalMappingValue[choice1Item][choice.choiceItem][
+                    "stock"
+                  ] = value;
                   onProcessVariationHtml(processVariationHtml(items));
-                  onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+                  onProcessVariationDetailsHtml(
+                    processDetailsVariationHtml(items)
+                  );
                 }}
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
@@ -299,11 +350,22 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
               <TextInput
                 style={styles.variantInput}
                 editable={!isDelete}
-                value={globalMappingValue[choice1Item] && globalMappingValue[choice1Item][choice.choiceItem] ? globalMappingValue[choice1Item][choice.choiceItem]['janCode'] : ""}
+                value={
+                  globalMappingValue[choice1Item] &&
+                  globalMappingValue[choice1Item][choice.choiceItem]
+                    ? globalMappingValue[choice1Item][choice.choiceItem][
+                        "janCode"
+                      ]
+                    : ""
+                }
                 onChangeText={(value) => {
-                  globalMappingValue[choice1Item][choice.choiceItem]['janCode'] = value;
+                  globalMappingValue[choice1Item][choice.choiceItem][
+                    "janCode"
+                  ] = value;
                   onProcessVariationHtml(processVariationHtml(items));
-                  onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+                  onProcessVariationDetailsHtml(
+                    processDetailsVariationHtml(items)
+                  );
                 }}
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
@@ -312,9 +374,13 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
           {!isDelete ? (
             <TouchableOpacity
               onPress={() => {
-                globalMappingValue[choice1Item][choice.choiceItem]['delete'] = true;
+                globalMappingValue[choice1Item][choice.choiceItem][
+                  "delete"
+                ] = true;
                 onProcessVariationHtml(processVariationHtml(items));
-                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+                onProcessVariationDetailsHtml(
+                  processDetailsVariationHtml(items)
+                );
               }}
             >
               <View
@@ -330,9 +396,13 @@ export default function ProductTwoVariations({ props, pItems, onItemsChanged }) 
           ) : (
             <TouchableOpacity
               onPress={() => {
-                globalMappingValue[choice1Item][choice.choiceItem]['delete'] = false;
+                globalMappingValue[choice1Item][choice.choiceItem][
+                  "delete"
+                ] = false;
                 onProcessVariationHtml(processVariationHtml(items));
-                onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+                onProcessVariationDetailsHtml(
+                  processDetailsVariationHtml(items)
+                );
               }}
             >
               <View
@@ -502,10 +572,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: RFValue(14),
     width: widthPercentageToDP("60%"),
-    height: heightPercentageToDP("6%"),
+    // height: heightPercentageToDP("6%"),
+    // backgroundColor: "orange",
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),
+    // backgroundColor: "orange",
   },
   variantStockInput: {
     borderWidth: 0,
@@ -516,6 +588,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),
+    // backgroundColor: "orange",
   },
   subframe: {
     borderWidth: 1,
@@ -530,10 +603,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: RFValue(14),
     width: "100%",
+    height: heightPercentageToDP("6%"),
     marginTop: heightPercentageToDP("1%"),
     marginBottom: heightPercentageToDP("2%"),
     padding: 10,
     paddingLeft: widthPercentageToDP("2%"),
+    // backgroundColor: "orange",
   },
   text: {
     fontSize: RFValue(14),

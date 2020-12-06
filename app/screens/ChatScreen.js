@@ -96,10 +96,7 @@ function checkUpdateFriend(user1, user2) {
       .then((querySnapshot) => {
         if (querySnapshot.size > 0) {
         } else {
-          db.collection("users").doc(user1).collection("friends").add({
-            type: "user",
-            id: user2,
-          });
+          request.addFriend(user1, user2);
         }
       });
     updateFriend = true;
@@ -126,6 +123,7 @@ export default function ChatScreen(props) {
   const [prevEmoji, setPrevEmoji] = useState("");
   const [showCheckBox, onShowCheckBoxChanged] = useState(false);
   const [users, onUserChanged] = React.useState("");
+  const [userUrl, onUserUrlChanged] = React.useState("group");
   const [friendImage, onFriendImageChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
   // const [user, processUser] = useState("");
@@ -159,14 +157,15 @@ export default function ChatScreen(props) {
         tmpName = docRef.data().displayName;
       }
     });
-    if (tmpName) return tmpName;
     if (users.length > 0) {
       let user = users[0];
+      onUserUrlChanged("profiles/" + user);
       user = await request.get("profiles/" + user);
       user = user.data;
 
       return user.nickname;
     }
+    if (tmpName) return tmpName;
     return "";
   }
 
@@ -595,8 +594,7 @@ export default function ChatScreen(props) {
             onClick={onClick}
             onRemove={onRemove}
           />
-          {console.log("123" + friendImage)}
-          <CustomSecondaryHeader />
+          <CustomSecondaryHeader name={name} userUrl={userUrl}/>
           <LinearGradient
             colors={[Colors.E4DBC0, Colors.C2A059]}
             start={[0, 0]}

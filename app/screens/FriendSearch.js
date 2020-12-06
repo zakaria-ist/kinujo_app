@@ -48,10 +48,7 @@ export default function FriendSearch(props) {
     ownUserID = urls[urls.length - 1];
   });
   function sendMessageHandler(friendID, friendName) {
-    db.collection("users").doc(ownUserID).collection("friends").add({
-      type: "user",
-      id: friendID,
-    });
+    request.addFriend(ownUserID, friendID)
 
     let groupID;
     let groupName;
@@ -115,9 +112,7 @@ export default function FriendSearch(props) {
                 style={styles.friendListImage}
                 source={require("../assets/Images/profileEditingIcon.png")}
               />
-              <Text style={styles.friendListName}>
-                {friend.real_name ? friend.real_name : friend.nickname}
-              </Text>
+              <Text style={styles.friendListName}>{friend.nickname}</Text>
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -148,7 +143,7 @@ export default function FriendSearch(props) {
                   })
                   .then(function (response) {
                     tmpFriend = response.data.filter((item) => {
-                      return item.allowed_by_id == true;
+                      return !item.allowed_by_id;
                     });
                     onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
                   })

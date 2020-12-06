@@ -384,11 +384,16 @@ export default function HomeByCategory(props) {
               zIndex: 1,
               elevation: 1,
               position: "absolute",
-              right: widthPercentageToDP("13%"),
+              right: 0,
+              marginRight:
+                userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("15%"),
               borderStyle: "solid",
               paddingVertical: widthPercentageToDP("1%"),
               paddingHorizontal: widthPercentageToDP("7%"),
-              marginTop: heightPercentageToDP("6.2%"),
+              marginTop:
+                Platform.OS == "ios"
+                  ? getStatusBarHeight() + heightPercentageToDP("6.7%")
+                  : heightPercentageToDP("6.7%"),
             }}
           >
             <View
@@ -422,7 +427,10 @@ export default function HomeByCategory(props) {
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
         <Animated.View
           style={{
-            paddingTop: Platform.OS == "ios" ? getStatusBarHeight() : 0,
+            paddingTop:
+              Platform.OS == "ios"
+                ? getStatusBarHeight() + heightPercentageToDP("3%")
+                : 0,
             zIndex: 1,
             height: heightPercentageToDP("100%"),
             alignSelf: "center",

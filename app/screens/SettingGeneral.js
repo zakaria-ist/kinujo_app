@@ -274,7 +274,8 @@ export default function SettingGeneral(props) {
               style={{
                 flexDirection: "row",
                 zIndex: 1,
-
+                marginTop:
+                  controllerState == true ? heightPercentageToDP("10%") : 0,
                 height: heightPercentageToDP("7%"),
                 justifyContent: "flex-start",
                 alignItems: "center",
@@ -285,13 +286,7 @@ export default function SettingGeneral(props) {
                 source={require("../assets/Images/signout.png")}
                 style={{ width: win.width / 14, height: 512 * ratioSignOut }}
               />
-              <Text
-                style={
-                  controllerState == true
-                    ? styles.none
-                    : styles.textInLeftContainer
-                }
-              >
+              <Text style={styles.textInLeftContainer}>
                 {Translate.t("logout")}
               </Text>
             </View>

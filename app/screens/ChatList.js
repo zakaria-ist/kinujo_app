@@ -153,6 +153,9 @@ export default function ChatList(props) {
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
     let unreadMessage = 0;
 
+    tmpChats = tmpChats.filter((chat) => {
+      return !chat['delete_' + ownUserID] && !chat['hide_' + ownUserID];
+    });
     tmpChats.map((chat) => {
       if(chat.data['totalMessageRead_' + ownUserID] < chat.data['totalMessage']){
         unreadMessage++

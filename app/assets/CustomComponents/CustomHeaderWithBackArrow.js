@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   View,
   Dimensions,
   StyleSheet,
   Text,
-  StatusBar,
   SafeAreaView,
+  StatusBar,
   Platform,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -14,20 +14,18 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
-import { SvgUri } from "react-native-svg";
+import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
-import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
-import CloseBackLogo from "../icons/close_black.svg";
-import ArrowBackLogo from "../icons/arrow_back.svg";
-import CartIcon from "../icons/cart.svg";
-import FavIcon from "../icons/favorite.svg";
+import CartLogo from "../icons/cart.svg";
+import FavouriteLogo from "../icons/favorite.svg";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import Request from "../../lib/request";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useIsFocused } from "@react-navigation/native";
-import KinujoWord from "../icons/kinujo.svg";
 import { firebaseConfig } from "../../../firebaseConfig.js";
+import { Colors } from "../Colors";
+import KinujoWord from "../icons/kinujo.svg";
+import BackArrow from "../icons/arrow_back.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -36,22 +34,12 @@ const db = firebase.firestore();
 
 const win = Dimensions.get("window");
 let userId;
-export default function CustomKinujoWord({
-  onBack,
-  onClose,
-  text,
-  onPress,
-  onFavoriteChanged,
-  onFavoritePress,
-  overrideCartCount,
-  onCartCount,
-}) {
+export default function CustomKinujoWord({ text, onFavoritePress, onPress, onBack }) {
   const [cartCount, onCartChanged] = React.useState(0);
-  const ratioKinujo = win.width / 5 / 78;
+  const ratioKinujo = win.width / 4 / 78;
   const ratioFavorite = win.width / 14 / 24;
   const ratioCart = win.width / 11 / 23;
   const isFocused = useIsFocused();
-  const ratioBackArrow = win.width / 18 / 20;
   const [user, onUserChanged] = React.useState({});
   const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
   React.useEffect(() => {
@@ -59,16 +47,18 @@ export default function CustomKinujoWord({
       request.get(url).then((response) => {
         onUserChanged(response.data);
         onUserAuthorityIDChanged(response.data.authority.id);
+
+        const subscriber = db
+          .collection("users")
+          .doc(String(response.data.id))
+          .collection("carts")
+          .get()
+          .then((querySnapShot) => {
+            onCartChanged(0);
+            onCartChanged(querySnapShot.docs.length);
+          });
       });
-      onCartChanged(0);
-      const subscriber = db
-        .collection("users")
-        .doc(String(user.id))
-        .collection("carts")
-        .get()
-        .then((querySnapShot) => {
-          onCartChanged(querySnapShot.docs.length);
-        });
+
     });
   }, [isFocused]);
   return (
@@ -90,37 +80,23 @@ export default function CustomKinujoWord({
           position: "absolute",
           left: 0,
           alignItems: "center",
+          marginLeft: widthPercentageToDP("3%"),
         }}
       >
         <TouchableWithoutFeedback onPress={onBack}>
-          <ArrowBackLogo
-            style={{
-              marginLeft: widthPercentageToDP("5%"),
-            }}
-            width={win.width / 18}
-            height={20 * ratioBackArrow}
-          />
+          <BackArrow style={{ width: RFValue(20), height: RFValue(20) }} />
         </TouchableWithoutFeedback>
-        {/* <Image
-          style={{
-            width: win.width / 5,
-            height: 22 * ratioKinujo,
-            marginLeft: widthPercentageToDP("3%"),
-          }}
-          source={require("../Images/headerKinujo.png")}
-        /> */}
         <KinujoWord
           style={{
             width: win.width / 4,
             height: 22 * ratioKinujo,
-            marginLeft: widthPercentageToDP("2%"),
+            marginLeft: widthPercentageToDP("3%"),
           }}
         />
       </View>
-
       <Text
         style={{
-          fontSize: RFValue(11),
+          fontSize: RFValue(12),
         }}
       >
         {text}
@@ -159,7 +135,7 @@ export default function CustomKinujoWord({
               ) : (
                 <View></View>
               )}
-              <CartIcon
+              <CartLogo
                 style={{
                   width: win.width / 11,
                   height: 21 * ratioCart,
@@ -169,18 +145,15 @@ export default function CustomKinujoWord({
             </View>
           </TouchableWithoutFeedback>
         )}
-
-        {onFavoriteChanged == null ? (
-          <TouchableWithoutFeedback onPress={onFavoritePress}>
-            <FavIcon
-              style={{
-                width: win.width / 11,
-                height: 21 * ratioCart,
-                marginRight: widthPercentageToDP("3%"),
-              }}
-            />
-          </TouchableWithoutFeedback>
-        ) : null}
+        <TouchableWithoutFeedback onPress={onFavoritePress}>
+          <FavouriteLogo
+            style={{
+              marginRight: widthPercentageToDP("5%"),
+            }}
+            width={win.width / 11}
+            height={21 * ratioCart}
+          />
+        </TouchableWithoutFeedback>
       </View>
     </SafeAreaView>
   );

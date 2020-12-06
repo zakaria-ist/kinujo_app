@@ -126,6 +126,7 @@ export default function CustomerList(props) {
       request
         .get("customers/" + userId + "/")
         .then(function (response) {
+          console.log(response.data.customers)
           onCustomersChanged(response.data.customers);
           onCustomerHtmlChanged(
             processCustomerHtml(props, response.data.customers, "")

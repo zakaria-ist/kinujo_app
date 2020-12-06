@@ -33,6 +33,7 @@ import dynamicLinks from "@react-native-firebase/dynamic-links";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { RNCamera } from "react-native-camera";
 import ImagePicker from "react-native-image-picker";
+import Request from "../lib/request";
 import { useIsFocused } from "@react-navigation/native";
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -46,6 +47,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+const request = new Request();
 const alert = new CustomAlert();
 const db = firebase.firestore();
 
@@ -111,24 +113,10 @@ export default function QRCode(props) {
     const code = findParams(e.data, "kinujoId");
     if (code) {
       alert.warning(userId.toString());
-      db.collection("users")
-        .doc(userId.toString())
-        .collection("friends")
-        .where("id", "==", code)
-        .get()
-        .then((querySnapshot) => {
-          if (querySnapshot && querySnapshot.size > 0) {
-          } else {
-            db.collection("users")
-              .doc(userId.toString())
-              .collection("friends")
-              .add({
-                type: "user",
-                id: code,
-              });
-          }
-          alert.warning(Translate.t("friendAdded"));
-        });
+
+      request.addFriend(userId, code).then(()=>{
+        alert.warning(Translate.t("friendAdded"));
+      })
     } else {
       alert.warning(Translate.t("invalidQRcode"));
     }
@@ -239,25 +227,9 @@ export default function QRCode(props) {
                         const { values } = response; // Array of detected QR code values. Empty if nothing found.
                         const code = findParams(values[0], "kinujoId");
                         if (code) {
-                          db.collection("users")
-                            .doc(userId.toString())
-                            .collection("friends")
-                            .where("id", "==", code.toString())
-                            .get()
-                            .then((querySnapshot) => {
-                              if (querySnapshot && querySnapshot.size > 0) {
-                              } else {
-                                db.collection("users")
-                                  .doc(userId.toString())
-                                  .collection("friends")
-                                  .add({
-                                    type: "user",
-                                    id: code,
-                                  });
-                              }
-                              alert.warning(Translate.t("friendAdded"));
-                            })
-                            .catch((error) => {});
+                          request.addFriend(userId, code).then(()=>{
+                            alert.warning(Translate.t("friendAdded"));
+                          })
                         } else {
                           alert.warning(Translate.t("invalidQRcode"));
                         }

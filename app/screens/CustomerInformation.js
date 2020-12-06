@@ -211,37 +211,6 @@ export default function CustomerInformation(props) {
         }
       });
   };
-  function addFriend() {
-    let exists = false;
-    db.collection("users")
-      .doc(userId)
-      .collection("friends")
-      .get()
-      .then((snapShot) => {
-        snapShot.forEach((docRef) => {
-          if (docRef.data().id == String(chatPersonID)) {
-            sendMessageHandler();
-            exists = true;
-          }
-        });
-        console.log(exists);
-        if (exists == false) {
-          db.collection("users")
-            .doc(userId)
-            .collection("friends")
-            .add({
-              type: "user",
-              id: String(chatPersonID),
-            })
-            .then(sendMessageHandler());
-        }
-      });
-    // .add({
-    //   type: "user",
-    //   id: String(chatPersonID),
-    // })
-    // .then(sendMessageHandler());
-  }
   AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {

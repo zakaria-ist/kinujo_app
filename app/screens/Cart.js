@@ -176,25 +176,27 @@ export default function Cart(props) {
     let tmpCartHtml = [];
     let isVis = [];
     for (i = 0; i < maps.length; i++) {
-      console.log(maps);
       let item = maps[i];
       let tmpProducts = products.filter((product) => {
+        console.log(product.id + " = " + item.product_id);
         return product.id == item.product_id;
       });
-      let product = tmpProducts[0];
-      let quantity = item.quantity;
-      let realIndex = 1000 - i;
-      let idx = i;
-      isVis[idx] = false;
-      // onShippingChanged(product.shipping_fee);
-      // if (cartItemShow == true) {
-      //   for (let j = 0; j < isVis.length; j++) {
-      //     if (idx !== j) {
-      //       isVis[j].close();
-      //     }
-      //   }
-      // }
-      tmpCartHtml.push(
+      if(tmpProducts.length > 0){
+
+        let product = tmpProducts[0];
+        let quantity = item.quantity;
+        let realIndex = 1000 - i;
+        let idx = i;
+        isVis[idx] = false;
+        // onShippingChanged(product.shipping_fee);
+        // if (cartItemShow == true) {
+        //   for (let j = 0; j < isVis.length; j++) {
+        //     if (idx !== j) {
+        //       isVis[j].close();
+        //     }
+        //   }
+        // }
+        tmpCartHtml.push(
         // <TouchableWithoutFeedback onPress={() => controller.close()}>
         <TouchableWithoutFeedback>
           <View
@@ -286,8 +288,6 @@ export default function Cart(props) {
               >
                 <TouchableWithoutFeedback
                   onPress={() => {
-                    console.log(product.id);
-                    console.log(firebaseProducts);
                     let tmpFirebaseProducts = firebaseProducts.filter(
                       (tmpProduct) => {
                         return item.id == tmpProduct.id;
@@ -344,7 +344,10 @@ export default function Cart(props) {
           </View>
         </TouchableWithoutFeedback>
       );
+      }
     }
+
+    console.log(tmpCartHtml)
     return tmpCartHtml;
   }
 
@@ -432,7 +435,6 @@ export default function Cart(props) {
         });
       AsyncStorage.getItem("defaultAddress").then((address) => {
         if (address != null) {
-          console.log(address);
           request.get(address).then((response) => {
             onAddressHtmlChanged(getAddressHtml(response.data, ""));
             onSelectedChanged(response.data.id);
