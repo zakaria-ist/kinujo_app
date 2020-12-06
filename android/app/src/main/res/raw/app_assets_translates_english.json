@@ -46,7 +46,7 @@
   "passwordChanged": "Password changed.",
   "pleaseLoginFromLoginScreen": "Please login from the login screen.",
   "unkownError": "Unknown Error",
-  "fieldNotFilled": "All fields must be filled.",
+  "fieldNotFilled": "Please fill in all the fields.",
   "passwordAndConfirmPasswordMustSame": "Password and confirm password must be same.",
   "setting": "Setting ",
   "purchaseHistory": "Purchase History",
@@ -275,6 +275,10 @@
     "payment":"Payment",
     "person":"Person",
     "wrongLoginDetails":"The information entered is incorrect",
-    "cannotUndone":"Do you want to remove this customer?This can't be undone."
+    "cannotUndone":"Do you want to remove this customer?This can't be undone.",
+    "and": "and",
+    "productQuantity":"Quantity",
+    "invalidUser":"Invalid user",
+    "warning":"Warning"
 
 }
