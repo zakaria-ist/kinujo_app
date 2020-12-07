@@ -77,7 +77,6 @@ export default function Contact(props) {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
           for (var i = 0; i < users.length; i++) {
-            console.log(users[i] + " = " + friendID);
             if (users[i] == friendID) {
               groupID = snapShot.doc.id;
             }
@@ -410,12 +409,10 @@ export default function Contact(props) {
           let items = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
-            // console.log(item.delete);
             if (
               (item.type == "user" && item.delete == null) ||
               item.delete == false
             ) {
-              console.log(item.id);
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"];
             }
@@ -859,6 +856,11 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
+                      contactPinned[longPressObj.data.id] = contactPinned[longPressObj.data.id]
+                      ? false
+                      : true
+                  populateUser();
+
                       db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
@@ -873,18 +875,25 @@ export default function Contact(props) {
                                 .doc(documentSnapshot.id)
                                 .set(
                                   {
-                                    pinned: contactPinned[longPressObj.data.id]
-                                      ? false
-                                      : true,
+                                    pinned: contactPinned[longPressObj.data.id],
                                   },
                                   {
                                     merge: true,
                                   }
                                 )
                                 .then(() => {
-                                  populateUser();
                                 });
                             });
+                          } else {
+                            db.collection("users")
+                              .doc(String(user.id))
+                              .collection("friends")
+                              .add({
+                                id: String(longPressObj.data.id),
+                                pinned: contactPinned[longPressObj.data.id],
+                              })
+                              .then(() => {
+                              });
                           }
                         });
                     } else if (longPressObj.type == "folder") {

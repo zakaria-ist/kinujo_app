@@ -205,7 +205,7 @@ export default function SMSAuthentication(props) {
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           onPress={() => {
-            AsyncStorage.setItem("verified", "1").then(() => {
+            AsyncStorage.setItem("verified", "0").then(() => {
               props.navigation.pop();
             });
           }}

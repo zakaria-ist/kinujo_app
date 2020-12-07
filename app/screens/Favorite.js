@@ -185,35 +185,36 @@ export default function Favorite(props) {
     if (type == "latestFirst") {
       if (tmpFeaturedProducts) {
         tmpFeaturedProducts = featuredProducts.sort((a, b) => {
-          let date1 = new Date(a.created);
-          let date2 = new Date(b.created);
+          let date1 = new Date(a.opened_date);
+          let date2 = new Date(b.opened_date);
+
           if (date1 < date2) {
-            return -1;
+            return 1;
           }
           if (date1 > date2) {
-            return 1;
+            return -1;
           }
           return 0;
         });
       }
-      if (tmpKinujoProducts) {
-        tmpKinujoProducts = kinujoProducts.sort((a, b) => {
-          let date1 = new Date(a.created);
-          let date2 = new Date(b.created);
-          if (date1 < date2) {
-            return -1;
-          }
-          if (date1 > date2) {
-            return 1;
-          }
-          return 0;
-        });
-      }
+      tmpKinujoProducts = kinujoProducts.sort((a, b) => {
+        let date1 = new Date(a.opened_date);
+        let date2 = new Date(b.opened_date);
+        if (date1 < date2) {
+          return 1;
+        }
+        if (date1 > date2) {
+          return -1;
+        }
+        return 0;
+      });
+
+      onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
+      onFavouriteHtmlChanged(
+        processFavouriteHtml(props, users, tmpKinujoProducts)
+      );
     }
-    onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
-    onFavouriteHtmlChanged(
-      processFavouriteHtml(props, users, tmpKinujoProducts)
-    );
+
     if (type == "LowToHigh") {
       if (tmpFeaturedProducts) {
         tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
@@ -396,10 +397,9 @@ export default function Favorite(props) {
                 ? getStatusBarHeight() + heightPercentageToDP("3%")
                 : 0,
             zIndex: 1,
-            height: heightPercentageToDP("100%"),
+            height: heightPercentageToDP("150%"),
             alignSelf: "center",
             width: widthPercentageToDP("80%"),
-            paddingTop: Platform.OS == "ios" ? getStatusBarHeight() : 0,
             position: "absolute",
             right: rightSorting,
             backgroundColor: "white",
@@ -410,18 +410,9 @@ export default function Favorite(props) {
               backgroundColor: "white",
               borderBottomWidth: 1,
               borderBottomColor: Colors.D7CCA6,
-              marginTop: heightPercentageToDP("3%"),
             }}
           >
-            <Text
-              style={{
-                fontSize: RFValue(12),
-                color: "white",
-                textAlign: "center",
-              }}
-            >
-              {Translate.t("sorting")}
-            </Text>
+            <Text style={styles.categoryTitle}>{Translate.t("sorting")}</Text>
           </View>
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("latestFirst")}

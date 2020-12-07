@@ -217,7 +217,7 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={chat.data["delete_" + userId] ? true : false}
+            delete={chat.data["delete_" + userId] || chat.data["delete"] ? true : false}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -287,7 +287,7 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={chat.data["delete_" + userId] ? true : false}
+            delete={chat.data["delete_" + userId] || chat.data["delete"] ? true : false}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -359,7 +359,7 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={chat.data["delete_" + userId] ? true : false}
+            delete={chat.data["delete_" + userId] || chat.data["delete"] ? true : false}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -661,7 +661,6 @@ export default function ChatScreen(props) {
                     onPress={() => {
                       let update = {};
                       update["delete_" + userId] =
-                        longPressObj.data["delete_" + userId] == "" ||
                         longPressObj.data["delete_" + userId]
                           ? false
                           : true;
@@ -681,17 +680,19 @@ export default function ChatScreen(props) {
                   </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback
                     onPress={() => {
+                      let update = {};
+                      update["delete"] =
+                        longPressObj.data["delete"]
+                          ? false
+                          : true;
                       db.collection("chat")
                         .doc(groupID)
                         .collection("messages")
                         .doc(longPressObj.id)
-                        .delete()
-                        .then(function () {
-                          unsubscribe();
-                          onShowPopUpChanged(false);
-                          onChatHtmlChanged([]);
-                          tmpChatHtml = [];
+                        .set(update, {
+                          merge: true,
                         });
+                      onShowPopUpChanged(false);
                     }}
                   >
                     <Text style={styles.popUpText}>

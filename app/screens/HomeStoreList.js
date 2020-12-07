@@ -830,7 +830,10 @@ export default function HomeStoreList(props) {
                           .collection("carts")
                           .get()
                           .then((querySnapShot) => {
-                            onCartCountChanged(querySnapShot.docs.length);
+                            // console.log(querySnapShot);
+                            console.log("444" + querySnapShot.size);
+                            onCartCountChanged(querySnapShot.size);
+                            // console.log("333" + querySnapShot.docs.length);
                           });
                       } else {
                         alert.warning(

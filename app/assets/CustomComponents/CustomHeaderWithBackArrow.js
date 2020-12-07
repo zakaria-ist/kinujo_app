@@ -50,6 +50,7 @@ export default function CustomKinujoWord({
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
+  const [state, setState] = React.useState(false);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
@@ -64,11 +65,20 @@ export default function CustomKinujoWord({
           .then((querySnapShot) => {
             onCartChanged(0);
             onCartCount(querySnapShot.docs.length);
-            onCartChanged(overrideCartCount);
+            onCartChanged(querySnapShot.docs.length);
+            console.log(overrideCartCount);
           });
       });
     });
   }, [isFocused]);
+  React.useEffect(() => {
+    if (overrideCartCount) {
+      console.log("overRideCart", overrideCartCount);
+      onCartChanged(overrideCartCount);
+      // setState(!state);
+    }
+  });
+
   return (
     <SafeAreaView
       style={{

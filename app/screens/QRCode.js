@@ -402,7 +402,7 @@ export default function QRCode(props) {
             >
               <View style={[styles.qr_image]}>
                 <QRCodeIcon
-                  size={widthPercentageToDP(60)}
+                  size={widthPercentageToDP(60) > 500 ? 500 : widthPercentageToDP(60)}
                   value={
                     store
                       ? storeLink
@@ -460,13 +460,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: height / 2 - heightPercentageToDP("10%"),
+    height: height / 2 - heightPercentageToDP("20%"),
+    width: "100%",
     backgroundColor: "transparent",
-    paddingBottom: heightPercentageToDP("5%"),
+    paddingBottom: heightPercentageToDP("10%"),
   },
   scan_qr_frame: {
-    width: 200,
-    height: "100%",
+    width: height / 2 - heightPercentageToDP("20%"),
   },
   qrcode_button: {
     height: height / 2 - heightPercentageToDP("12%"),
@@ -524,5 +524,7 @@ const styles = StyleSheet.create({
   qr_image: {
     width: widthPercentageToDP(60),
     height: height / 2,
+    flex: 1,
+    alignItems: "center"
   },
 });

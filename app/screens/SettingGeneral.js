@@ -200,63 +200,133 @@ export default function SettingGeneral(props) {
               />
             </View>
           </TouchableWithoutFeedback>
-          <View
-            style={{
-              flexDirection: "row",
-              height: heightPercentageToDP("7.5%"),
-              justifyContent: "flex-start",
-              alignItems: "center",
-              marginHorizontal: widthPercentageToDP("4%"),
-              marginTop: heightPercentageToDP("1%"),
-            }}
-          >
-            <Image
-              source={require("../assets/Images/globe.png")}
-              style={{ width: win.width / 12, height: 128 * ratioGlobe }}
-            />
-            <DropDownPicker
-              zIndex={1000}
-              controller={(instance) => (controller = instance)}
-              items={[
-                {
-                  label: "English",
-                  value: "en",
-                },
-                {
-                  label: "Japanese",
-                  value: "ja",
-                },
-              ]}
-              defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
-              containerStyle={{
-                height: heightPercentageToDP("6%"),
-                width: widthPercentageToDP("80%"),
-                marginLeft: widthPercentageToDP("4%"),
-              }}
+          {Platform.OS == "ios" ? (
+            <View
               style={{
-                backgroundColor: "#fafafa",
-              }}
-              itemStyle={{
+                zIndex: 999,
+                flexDirection: "row",
+                height: heightPercentageToDP("7.5%"),
                 justifyContent: "flex-start",
+                alignItems: "center",
+                marginHorizontal: widthPercentageToDP("4%"),
+                marginTop: heightPercentageToDP("1%"),
+                // borderBottomWidth: 1,
+                // borderBottomColor: Colors.F0EEE9,
               }}
-              labelStyle={{
-                fontSize: RFValue(9),
-                color: Colors.D7CCA6,
+            >
+              <Image
+                source={require("../assets/Images/globe.png")}
+                style={{ width: win.width / 14, height: 128 * ratioGlobe }}
+              />
+
+              <DropDownPicker
+                zIndex={1000}
+                elevation={999}
+                controller={(instance) => {
+                  controller = instance;
+                }}
+                items={[
+                  {
+                    label: "English",
+                    value: "en",
+                  },
+                  {
+                    label: "Japanese",
+                    value: "ja",
+                  },
+                ]}
+                defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
+                containerStyle={{
+                  height: heightPercentageToDP("6%"),
+                  width: widthPercentageToDP("80%"),
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+                style={{
+                  backgroundColor: "white",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                labelStyle={{
+                  fontSize: RFValue(9),
+                  color: Colors.D7CCA6,
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.D7CCA6,
+                }}
+                dropDownStyle={{
+                  backgroundColor: "black",
+                  color: "white",
+                }}
+                onOpen={() => onControllerStateChanged(true)}
+                onClose={() => onControllerStateChanged(false)}
+                arrowSize={RFValue(17)}
+                onChangeItem={(item) => onValueChanged(item)}
+              />
+            </View>
+          ) : (
+            <View
+              style={{
+                flexDirection: "row",
+                height: heightPercentageToDP("7.5%"),
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginHorizontal: widthPercentageToDP("4%"),
+                marginTop: heightPercentageToDP("1%"),
               }}
-              selectedtLabelStyle={{
-                color: Colors.D7CCA6,
-              }}
-              arrowSize={RFValue(17)}
-              dropDownStyle={{
-                zIndex: "1000",
-                backgroundColor: "black",
-                color: "white",
-              }}
-              onOpen={() => onControllerStateChanged(true)}
-              onClose={() => onControllerStateChanged(false)}
-              onChangeItem={(item) => onValueChanged(item)}
-            />
-          </View>
+            >
+              <Image
+                source={require("../assets/Images/globe.png")}
+                style={{ width: win.width / 14, height: 128 * ratioGlobe }}
+              />
+
+              <DropDownPicker
+                zIndex={1000}
+                elevation={999}
+                controller={(instance) => {
+                  controller = instance;
+                }}
+                items={[
+                  {
+                    label: "English",
+                    value: "en",
+                  },
+                  {
+                    label: "Japanese",
+                    value: "ja",
+                  },
+                ]}
+                defaultValue={defaultLanguage == "ja" ? "ja" : "en"}
+                containerStyle={{
+                  height: heightPercentageToDP("6%"),
+                  width: widthPercentageToDP("80%"),
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+                style={{
+                  backgroundColor: "white",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                labelStyle={{
+                  fontSize: RFValue(9),
+                  color: Colors.D7CCA6,
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.D7CCA6,
+                }}
+                dropDownStyle={{
+                  backgroundColor: "black",
+                  color: "white",
+                }}
+                onOpen={() => onControllerStateChanged(true)}
+                onClose={() => onControllerStateChanged(false)}
+                arrowSize={RFValue(17)}
+                onChangeItem={(item) => onValueChanged(item)}
+              />
+            </View>
+          )}
+
           <TouchableWithoutFeedback
             onPress={() => {
               AsyncStorage.removeItem("user").then(() => {

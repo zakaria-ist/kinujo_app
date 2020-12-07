@@ -48,12 +48,14 @@ const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 let featuredProducts;
 export default function Home(props) {
+  const [userAuthorityId, setUserAuthorityId] = React.useState(0);
   const [favoriteText, showFavoriteText] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
   const [showCategory, onCategoryShow] = React.useState(false);
   const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
   const [showSorting, onSortingShow] = React.useState(false);
+  const [selected, onSelected] = React.useState("");
   const isFocused = useIsFocused();
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
@@ -64,34 +66,73 @@ export default function Home(props) {
   const shopName = props.route.params.shopName;
   function filterProductsBySorting(type) {
     let tmpFeaturedProducts = featuredProducts;
-    if (type == "latestFirst") {
-      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
-        let date1 = new Date(a.created);
-        let date2 = new Date(b.created);
-        if (date1 < date2) {
-          return -1;
-        }
-        if (date1 > date2) {
-          return 1;
-        }
-        return 0;
-      });
 
-      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+    if (type == "latestFirst") {
+      if (featuredProducts) {
+        onSelected("latestFirst");
+        tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+          let date1 = new Date(a.opened_date);
+          let date2 = new Date(b.opened_date);
+
+          if (date1 < date2) {
+            return 1;
+          }
+          if (date1 > date2) {
+            return -1;
+          }
+          return 0;
+        });
+        onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+      }
     }
     if (type == "HighToLow") {
-      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
-        return a.store_price - b.store_price;
-      });
+      if (featuredProducts) {
+        onSelected("HighToLow");
+        tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+          return a.store_price - b.store_price;
+        });
 
-      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+        onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+      }
     }
     if (type == "LowToHigh") {
-      tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
-        return b.store_price - a.store_price;
-      });
+      if (featuredProducts) {
+        onSelected("LowToHigh");
+        tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
+          return b.store_price - a.store_price;
+        });
 
-      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+        onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+      }
+    }
+    if (type == "reset") {
+      onSelected("");
+      request.get("products/").then(function (response) {
+        let products = response.data;
+        products = products.sort((p1, p2) => {
+          if (p1.created > p2.created) {
+            return -1;
+          }
+          return 1;
+        });
+
+        products = products.filter((product) => {
+          let date = new Date(product.is_opened);
+          return (
+            product.is_opened == 1 &&
+            new Date() > date &&
+            product.is_hidden == 0 &&
+            product.is_draft == 0
+          );
+        });
+
+        featuredProducts = products.filter((product) => {
+          if (product.user.shop_name == shopName) {
+            return product.user.authority.id != 1;
+          }
+        });
+        onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
+      });
     }
     hideSortingAnimation();
   }
@@ -164,15 +205,6 @@ export default function Home(props) {
           </View>
         </TouchableWithoutFeedback>
       );
-      //   tmpCategoryHtml.push(
-      //     <TouchableWithoutFeedback
-      //       onPress={() => navigateToCategorisePage(category.id, category.name)}
-      //     >
-      //       <View style={styles.categoryContainer} key={category.id}>
-      //         <Text>{category.name}</Text>
-      //       </View>
-      //     </TouchableWithoutFeedback>
-      //   );
     });
     return tmpCategoryHtml;
   }
@@ -187,6 +219,7 @@ export default function Home(props) {
         .get(url)
         .then(function (response) {
           onUserChanged(response.data);
+          setUserAuthorityId(response.data.authority.id);
         })
         .catch(function (error) {
           if (
@@ -284,17 +317,12 @@ export default function Home(props) {
         useNativeDriver: false,
       }).start();
   }
-  //   function navigateToCategorisePage(categoryId, categoryName) {
-  //     hideCategoryAnimation();
-  //     props.navigation.navigate("HomeByCategory", {
-  //       categoryID: categoryId,
-  //       categoryName: categoryName,
-  //     });
-  //   }
+  function hideAll() {
+    hideCategoryAnimation();
+    hideSortingAnimation();
+  }
   return (
-    <TouchableWithoutFeedback
-      onPress={(() => hideCategoryAnimation(), hideSortingAnimation())}
-    >
+    <TouchableWithoutFeedback onPress={() => hideAll()}>
       <SafeAreaView>
         <CustomHeader
           text="Product List"
@@ -435,7 +463,7 @@ export default function Home(props) {
                 ? getStatusBarHeight() + heightPercentageToDP("3%")
                 : 0,
             zIndex: 1,
-            height: heightPercentageToDP("100%"),
+            height: heightPercentageToDP("150%"),
             alignSelf: "center",
             width: widthPercentageToDP("80%"),
             position: "absolute",
@@ -479,7 +507,7 @@ export default function Home(props) {
                 ? getStatusBarHeight() + heightPercentageToDP("3%")
                 : 0,
             zIndex: 1,
-            height: heightPercentageToDP("100%"),
+            height: heightPercentageToDP("150%"),
             alignSelf: "center",
             width: widthPercentageToDP("80%"),
             position: "absolute",
@@ -499,41 +527,96 @@ export default function Home(props) {
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("latestFirst")}
           >
-            <View style={styles.categoryContainer}>
+            <View
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+                backgroundColor: selected == "latestFirst" ? "orange" : "white",
+              }}
+            >
               <Text>Latest First</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("LowToHigh")}
           >
-            <View style={styles.categoryContainer}>
+            <View
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+                backgroundColor: selected == "LowToHigh" ? "orange" : "white",
+              }}
+            >
               <Text>Price Low to High</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("HighToLow")}
           >
-            <View style={styles.categoryContainer}>
+            <View
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+                backgroundColor: selected == "HighToLow" ? "orange" : "white",
+              }}
+            >
               <Text>Price High to Low</Text>
             </View>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
-            <View
-              style={{
-                position: "absolute",
-                bottom: heightPercentageToDP("8%"),
-                right: widthPercentageToDP("3%"),
-                borderWidth: 1,
-                borderRadius: 5,
-                backgroundColor: "white",
-                alignItems: "center",
-                paddingVertical: heightPercentageToDP(".7%"),
-                paddingHorizontal: widthPercentageToDP("2%"),
-              }}
+          <View
+            style={{
+              flexDirection: "row",
+              // position: "absolute",
+              justifyContent: "space-evenly",
+              // bottom: heightPercentageToDP("8%"),
+              // marginTop: heightPercentageToDP("10%"),
+              bottom: 0,
+              right: 0,
+              marginTop: heightPercentageToDP("60%"),
+              // right: widthPercentageToDP("3%"),
+              // backgroundColor: "orange",
+            }}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => filterProductsBySorting("reset")}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{"Reset"}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
+              <View
+                style={{
+                  // position: "absolute",
+                  // bottom: heightPercentageToDP("8%"),
+                  // right: widthPercentageToDP("3%"),
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </Animated.View>
         <ScrollView style={styles.home_product_view}>
           {featuredHtml.length > 0 ? (
