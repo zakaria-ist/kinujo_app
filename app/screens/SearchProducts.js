@@ -229,7 +229,7 @@ export default function SearchProducts(props) {
                 onSearchTermChanged(value);
                 let tmpProducts = products.filter((product) => {
                   return (
-                    JSON.stringify(product)
+                    product.name
                       .toLowerCase()
                       .indexOf(value.toLowerCase()) >= 0
                   );

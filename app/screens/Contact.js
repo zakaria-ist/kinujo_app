@@ -410,10 +410,12 @@ export default function Contact(props) {
           let items = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
+            // console.log(item.delete);
             if (
               (item.type == "user" && item.delete == null) ||
               item.delete == false
             ) {
+              console.log(item.id);
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"];
             }
@@ -888,7 +890,6 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "folder") {
                       let update = {};
                       update["pinned"] =
-                        longPressObj.data.data["pinned"] == "" ||
                         longPressObj.data.data["pinned"]
                           ? false
                           : true;

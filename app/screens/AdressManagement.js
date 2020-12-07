@@ -42,7 +42,9 @@ export default function AddressManagement(props) {
   const [buildingName, onBuildingNameChanged] = React.useState("");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   let controller;
-
+  function handlePhone(value) {
+    onPhoneNumberChanged(value.replace(/[^0-9]/g, ""));
+  }
   if (!prefectureLoaded) {
     request
       .get("prefectures/")
@@ -65,6 +67,7 @@ export default function AddressManagement(props) {
               onZipcodeChanged(response.data.zip1);
               onPrefectureChanged(response.data.prefecture);
               onAddChanged(response.data.address1);
+              onAddress2Changed(response.data.address2);
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
             })
@@ -160,7 +163,7 @@ export default function AddressManagement(props) {
                   if (tmpPrefectures.length > 0) {
                     onPrefectureChanged(tmpPrefectures[0].value);
                   }
-                  onAddChanged(address.city + " " + address.area)
+                  onAddChanged(address.city + " " + address.area);
                 }
               });
             }}
@@ -204,11 +207,12 @@ export default function AddressManagement(props) {
             onChangeText={(text) => onAddress2Changed(text)}
           ></TextInput>
           <TextInput
+            keyboardType={"numeric"}
             placeholder={Translate.t("profileEditPhoneNumber")}
             placeholderTextColor={Colors.D7CCA6}
             style={styles.textInput}
             value={phoneNumber}
-            onChangeText={(text) => onPhoneNumberChanged(text)}
+            onChangeText={(text) => handlePhone(text)}
           ></TextInput>
         </View>
         <TouchableWithoutFeedback
@@ -220,10 +224,9 @@ export default function AddressManagement(props) {
                 name: name,
                 prefecture: prefecture,
                 tel: phoneNumber,
-                user: url,
                 zip1: zipcode,
-              }
-              if(address2) data['address2'] = address2;
+              };
+              if (address2) data["address2"] = address2;
               request
                 .patch(
                   props.route.params.url.replace(
@@ -262,8 +265,8 @@ export default function AddressManagement(props) {
                   tel: phoneNumber,
                   user: url,
                   zip1: zipcode,
-                }
-                if(address2) data['address2'] = address2;
+                };
+                if (address2) data["address2"] = address2;
                 request
                   .post("insertAddresses/", data)
                   .then(function (response) {

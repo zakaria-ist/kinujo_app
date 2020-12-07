@@ -27,7 +27,7 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioRemove = win.width / 20 / 16;
 const ratioAdd = win.width / 21 / 14;
-
+let type;
 function processAddressHtml(props, addresses, status = "") {
   alert.warning(JSON.stringify(addresses));
   let tmpAddresses = [];
@@ -114,6 +114,7 @@ export default function ShippingList(props) {
       props.navigation.pop();
     });
   }
+  type = props.route.params.type;
   function load() {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -131,6 +132,7 @@ export default function ShippingList(props) {
             let address = response.data.addresses[i];
             tmpAddresses.push(
               <TouchableWithoutFeedback
+                disabled={type == "cart" ? false : true}
                 key={i}
                 onPress={() => setDefaultAddress(address.url)}
               >
@@ -171,28 +173,55 @@ export default function ShippingList(props) {
                       </TouchableWithoutFeedback>
                       <TouchableWithoutFeedback
                         onPress={() => {
-                          request
-                            .delete(address.url)
-                            .then(function (response) {
-                              load();
-                            })
-                            .catch(function (error) {
-                              if (
-                                error &&
-                                error.response &&
-                                error.response.data &&
-                                Object.keys(error.response.data).length > 0
-                              ) {
-                                alert.warning(
-                                  error.response.data[
-                                    Object.keys(error.response.data)[0]
-                                  ][0] +
-                                    "(" +
-                                    Object.keys(error.response.data)[0] +
-                                    ")"
-                                );
-                              }
-                            });
+                          Alert.alert(
+                            Translate.t("warning"),
+                            Translate.t("removeAddress"),
+                            [
+                              {
+                                text: "YES",
+                                onPress: () => {
+                                  request
+                                    .delete(address.url)
+                                    .then(function (response) {
+                                      AsyncStorage.getItem("defaultAddress").then((url) => {
+                                        if(url == address.url){
+                                          AsyncStorage.removeItem("defaultAddress").then(()=>{
+                                            load();
+                                          })
+                                        } else {
+                                          load();
+                                        }
+                                      });
+                                    })
+                                    .catch(function (error) {
+                                      if (
+                                        error &&
+                                        error.response &&
+                                        error.response.data &&
+                                        Object.keys(error.response.data)
+                                          .length > 0
+                                      ) {
+                                        alert.warning(
+                                          error.response.data[
+                                            Object.keys(error.response.data)[0]
+                                          ][0] +
+                                            "(" +
+                                            Object.keys(
+                                              error.response.data
+                                            )[0] +
+                                            ")"
+                                        );
+                                      }
+                                    });
+                                },
+                              },
+                              {
+                                text: "NO",
+                                onPress: () => {},
+                              },
+                            ],
+                            { cancelable: false }
+                          );
                         }}
                       >
                         <Image

@@ -66,37 +66,41 @@ export default function AdvanceSetting(props) {
         setCustomer(response.data);
 
         const subscriber = db
-        .collection("users")
-        .doc(userId)
-        .collection("customers")
-        .doc(customerId)
-        .onSnapshot((documentSnapshot) => {
-          if (documentSnapshot.data()) {
-            let tmpUser = documentSnapshot.data();
-            onFirebaseUserChanged(documentSnapshot.data());
-            if (!firstLoaded) {
-              onBlockModeChanged(tmpUser.blockMode);
-              onSecretModeChanged(tmpUser.secretMode);
-              if(tmpUser.displayName){
-                onDisplayNameChanged(tmpUser.displayName ? tmpUser.displayName : response.data.nickname);
+          .collection("users")
+          .doc(userId)
+          .collection("customers")
+          .doc(customerId)
+          .onSnapshot((documentSnapshot) => {
+            if (documentSnapshot.data()) {
+              let tmpUser = documentSnapshot.data();
+              onFirebaseUserChanged(documentSnapshot.data());
+              if (!firstLoaded) {
+                onBlockModeChanged(tmpUser.blockMode);
+                onSecretModeChanged(tmpUser.secretMode);
+                if (tmpUser.displayName) {
+                  onDisplayNameChanged(
+                    tmpUser.displayName
+                      ? tmpUser.displayName
+                      : response.data.nickname
+                  );
+                }
               }
+              onFirstLoadedChanged(true);
+            } else {
+              onFirebaseUserChanged({
+                memo: "",
+                displayName: "",
+                secret_mode: false,
+                block: false,
+              });
+              if (!firstLoaded) {
+                onBlockModeChanged(false);
+                onSecretModeChanged(false);
+                onDisplayNameChanged("");
+              }
+              onFirstLoadedChanged(true);
             }
-            onFirstLoadedChanged(true);
-          } else {
-            onFirebaseUserChanged({
-              memo: "",
-              displayName: "",
-              secret_mode: false,
-              block: false,
-            });
-            if (!firstLoaded) {
-              onBlockModeChanged(false);
-              onSecretModeChanged(false);
-              onDisplayNameChanged("");
-            }
-            onFirstLoadedChanged(true);
-          }
-        });
+          });
       });
     });
   }, []);

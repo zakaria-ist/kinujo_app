@@ -57,6 +57,11 @@ function findParams(data, param) {
   return "";
 }
 
+async function saveProduct(props, link){
+  let product_id = findParams(link, "product_id");
+  await AsyncStorage.setItem("product", product_id);
+}
+
 async function performUrl(props, link) {
   let userId = findParams(link, "userId");
   let store = findParams(link, "is_store");
@@ -71,6 +76,10 @@ async function performUrl(props, link) {
 async function init(props, foreground) {
   let url = await AsyncStorage.getItem("user");
   if (url) {
+    let link = await dynamicLinks().getInitialLink();
+    if (link) {
+      await saveProduct(props, link.url)
+    }
     request
       .get(url)
       .then(function (response) {
@@ -104,6 +113,7 @@ async function init(props, foreground) {
   } else {
     let link = await dynamicLinks().getInitialLink();
     if (link) {
+      await saveProduct(props, link.url)
       await performUrl(props, link.url);
     } else {
       if (foreground) {
@@ -122,6 +132,7 @@ export default function LoginScreen(props) {
     let unsubscribe;
     init(props, () => {
       unsubscribe = dynamicLinks().onLink((link) => {
+        saveProduct(props, link.url);
         performUrl(props, link.url);
       });
     });
