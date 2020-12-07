@@ -76,10 +76,12 @@ export default function ProfileEditingGeneral(props) {
 
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
-    let verified = AsyncStorage.getItem("verified");
+    let verified = await AsyncStorage.getItem("verified");
     let response = await request.get(url);
-    let updateData = AsyncStorage.getItem("update-data");
-    onUserChanged(response.data);
+    let updateData = await AsyncStorage.getItem("update-data");
+    if(updateData){
+      updateData = JSON.parse(updateData);
+    }
     if (updateData && updateData["type"] == "email" && verified == "1") {
       onEmailChanged(updateData["value"]);
       request.post("user/change-email", {
@@ -102,12 +104,20 @@ export default function ProfileEditingGeneral(props) {
     } else {
       onPhoneNumberChanged(response.data.tel);
     }
+    console.log(verified);
+    console.log(updateData);
     if (updateData && updateData["type"] == "password" && verified == "1") {
+      console.log(verified);
+      console.log(updateData);
       request.post("password/reset", {
         tel: response.data.tel,
         password: updateData["value"],
         confirm_password: updateData["value"],
-      });
+      }).then((res)=>{
+        console.log(res);
+      }).catch((error)=>{
+        console.log(error);
+      })
       await AsyncStorage.removeItem("update-data");
       await AsyncStorage.removeItem("verified");
     }
@@ -517,8 +527,22 @@ export default function ProfileEditingGeneral(props) {
                     color="transparent"
                     reverseColor="black"
                     onPress={() => {
-                      onEditPhoneNumberChanged(false);
-                      promptUpdate(props, user, "tel", phoneNumber);
+                      if (phoneNumber) {
+                        onEditPhoneNumberChanged(false);
+                        promptUpdate(props, user, "tel", phoneNumber);
+                      } else {
+                        Alert.alert(
+                          Translate.t("warning"),
+                          Translate.t("fieldEmpty"),
+                          [
+                            {
+                              text: "OK",
+                              onPress: () => {},
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
                     }}
                   />
                   <TextInput
@@ -574,8 +598,22 @@ export default function ProfileEditingGeneral(props) {
                     color="transparent"
                     reverseColor="black"
                     onPress={() => {
-                      onEditEmailChanged(false);
-                      promptUpdate(props, user, "email", email);
+                      if (email) {
+                        onEditEmailChanged(false);
+                        promptUpdate(props, user, "email", email);
+                      } else {
+                        Alert.alert(
+                          Translate.t("warning"),
+                          Translate.t("fieldEmpty"),
+                          [
+                            {
+                              text: "OK",
+                              onPress: () => {},
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
                     }}
                   />
                   <TextInput
@@ -633,7 +671,7 @@ export default function ProfileEditingGeneral(props) {
                     onPress={() => {
                       onEditPasswordChanged(false);
                       let tmpPassword = password;
-                      // onPasswordChanged("********")
+                      onPasswordChanged("********")
                       promptUpdate(props, user, "password", tmpPassword);
                     }}
                   />
@@ -669,7 +707,12 @@ export default function ProfileEditingGeneral(props) {
                       onPasswordChanged("");
                     }}
                   />
-                  <Text style={{ fontSize: RFValue(12) }}>{password}</Text>
+                  <TextInput
+                    secureTextEntry={true}
+                    style={{ fontSize: RFValue(12) }}
+                  >
+                    {password}
+                  </TextInput>
                 </View>
               )}
             </View>

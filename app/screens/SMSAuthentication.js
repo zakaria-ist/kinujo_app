@@ -183,6 +183,7 @@ export default function SMSAuthentication(props) {
                   });
                 })
                 .catch((error) => {
+                  console.log(error);
                   AsyncStorage.setItem("verified", "0").then(() => {
                     props.navigation.pop();
                   });

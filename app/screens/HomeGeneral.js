@@ -78,6 +78,22 @@ export default function Home(props) {
       }
     });
 
+  React.useEffect(()=>{
+    AsyncStorage.getItem("product").then((product_id) => {
+      AsyncStorage.removeItem("product").then(()=>{
+        let tmpProductId = product_id;
+        if(tmpProductId){
+          let apiUrl = request.getApiUrl() + "products/" + tmpProductId;
+          props.navigation.navigate("HomeStoreList", {
+            url: apiUrl,
+          });
+        }
+      })
+    });
+    
+    AsyncStorage.removeItem("product");
+  }, [])
+
   React.useEffect(() => {
     hideCategoryAnimation();
   }, [!isFocused]);
@@ -271,6 +287,7 @@ export default function Home(props) {
       .get("products/")
       .then(function (response) {
         let products = response.data;
+        console.log(products)
         products = products.sort((p1, p2) => {
           if (p1.created > p2.created) {
             return -1;

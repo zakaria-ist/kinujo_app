@@ -25,6 +25,8 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import Person from "../assets/icons/personPink.svg";
 import Chat from "../assets/icons/chat.svg";
+import Close from "../assets/icons/close_black.svg";
+import AddMember from "../assets/icons/addMember.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -161,7 +163,7 @@ export default function GroupFolderCreateCompletion(props) {
         }}
       >
         <TouchableWithoutFeedback onPress={() => cancelHanlder()}>
-          <Image
+          {/* <Image
             style={{
               width: win.width / 20,
               height: 15 * ratioCancel,
@@ -169,6 +171,14 @@ export default function GroupFolderCreateCompletion(props) {
               marginTop: heightPercentageToDP("3%"),
             }}
             source={require("../assets/Images/blackCancelIcon.png")}
+          /> */}
+          <Close
+            style={{
+              width: win.width / 20,
+              height: 15 * ratioCancel,
+              marginLeft: widthPercentageToDP("5%"),
+              marginTop: heightPercentageToDP("3%"),
+            }}
           />
         </TouchableWithoutFeedback>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -228,7 +238,7 @@ export default function GroupFolderCreateCompletion(props) {
                   alignItems: "center",
                 }}
               >
-                <Image
+                {/* <Image
                   style={{
                     width: RFValue(50),
                     height: RFValue(50),
@@ -236,6 +246,14 @@ export default function GroupFolderCreateCompletion(props) {
                     backgroundColor: Colors.E6DADE,
                   }}
                   source={require("../assets/Images/addMemberIcon.png")}
+                /> */}
+                <AddMember
+                  style={{
+                    width: RFValue(50),
+                    height: RFValue(50),
+                    borderRadius: win.width / 2,
+                    backgroundColor: Colors.E6DADE,
+                  }}
                 />
                 <Text style={styles.textForIcon}>
                   {Translate.t("addMember")}

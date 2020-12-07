@@ -244,6 +244,7 @@ export default function SalesManagement(props) {
       onDateChange(date);
       tmpDate = date;
     }
+    // console.log(commissionProducts);
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
         let periods = commissionProduct["order_product"]["order"][
@@ -254,6 +255,7 @@ export default function SalesManagement(props) {
         return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
       }
     );
+    // console.log(salesProducts);
     let tmpSaleProducts = salesProducts.filter((saleProduct) => {
       let periods = saleProduct["order_product"]["order"]["created"].split("-");
       let year = periods[0];

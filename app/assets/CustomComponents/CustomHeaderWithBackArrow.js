@@ -34,7 +34,15 @@ const db = firebase.firestore();
 
 const win = Dimensions.get("window");
 let userId;
-export default function CustomKinujoWord({ text, onFavoritePress, onPress, onBack }) {
+export default function CustomKinujoWord({
+  text,
+  onFavoritePress,
+  onPress,
+  onBack,
+
+  onCartCount,
+  overrideCartCount,
+}) {
   const [cartCount, onCartChanged] = React.useState(0);
   const ratioKinujo = win.width / 4 / 78;
   const ratioFavorite = win.width / 14 / 24;
@@ -55,10 +63,10 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress, onBac
           .get()
           .then((querySnapShot) => {
             onCartChanged(0);
-            onCartChanged(querySnapShot.docs.length);
+            onCartCount(querySnapShot.docs.length);
+            onCartChanged(overrideCartCount);
           });
       });
-
     });
   }, [isFocused]);
   return (

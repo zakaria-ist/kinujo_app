@@ -48,7 +48,7 @@ export default function FriendSearch(props) {
     ownUserID = urls[urls.length - 1];
   });
   function sendMessageHandler(friendID, friendName) {
-    request.addFriend(ownUserID, friendID)
+    request.addFriend(ownUserID, friendID);
 
     let groupID;
     let groupName;
@@ -143,7 +143,8 @@ export default function FriendSearch(props) {
                   })
                   .then(function (response) {
                     tmpFriend = response.data.filter((item) => {
-                      return !item.allowed_by_id;
+                      console.log(item.is_hidden);
+                      return !item.allowed_by_id && item.is_hidden == 0;
                     });
                     onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
                   })

@@ -181,7 +181,7 @@ export default function ReceiptView(props) {
               <Text numberOfLines={1} style={styles.receiptEditingDetailsText}>
                 {Translate.t("productName")} :{" "}
               </Text>
-              <Text style={styles.receiptEditingDetailsText}>
+              <Text numberOfLines={1} style={styles.receiptEditingProductText}>
                 {order && order.product_jan_code
                   ? order.product_jan_code.horizontal
                     ? order.product_jan_code.horizontal.product_variety.product
@@ -309,5 +309,10 @@ const styles = StyleSheet.create({
   },
   receiptEditingDetailsText: {
     fontSize: RFValue(12),
+  },
+  receiptEditingProductText: {
+    // backgroundColor: "orange",
+    fontSize: RFValue(12),
+    width: widthPercentageToDP("65%"),
   },
 });

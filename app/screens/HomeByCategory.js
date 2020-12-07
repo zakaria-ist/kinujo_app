@@ -50,6 +50,7 @@ const win = Dimensions.get("window");
 let kinujoProducts;
 let featuredProducts;
 let categoryDetails;
+let sellers = [];
 
 export default function HomeByCategory(props) {
   const [favoriteText, showFavoriteText] = React.useState(false);
@@ -60,6 +61,7 @@ export default function HomeByCategory(props) {
   const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
   const [officialProductCount, onOfficialProductCount] = React.useState(0);
   const [featuredProductCount, onFeaturedProductCount] = React.useState(0);
+  const [sellCount, setSellerCount] = React.useState(0);
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
@@ -75,7 +77,9 @@ export default function HomeByCategory(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
-      ++featuredProductCount;
+      if(!sellers.includes(product.user.id)){
+        sellers.push(product.user.id);
+      }
       tmpFeaturedHtml.push(
         <HomeProducts
           key={product.id}
@@ -111,7 +115,7 @@ export default function HomeByCategory(props) {
         />
       );
     });
-    onFeaturedProductCount(featuredProductCount);
+    setSellerCount(sellers.length)
     return tmpFeaturedHtml;
   }
 
@@ -119,10 +123,12 @@ export default function HomeByCategory(props) {
     let tmpKinujoHtml = [];
     let officialProductCount = 0;
     kinujoProducts.map((product) => {
+      if(!sellers.includes(product.user.id)){
+        sellers.push(product.user.id);
+      }
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
-      ++officialProductCount;
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
@@ -158,7 +164,7 @@ export default function HomeByCategory(props) {
         />
       );
     });
-    onOfficialProductCount(officialProductCount);
+    setSellerCount(sellers.length);
     return tmpKinujoHtml;
   }
   function filterProductsByCateogry(type) {
@@ -166,28 +172,29 @@ export default function HomeByCategory(props) {
     let tmpFeaturedProducts = featuredProducts;
     if (type == "latestFirst") {
       tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
-        let date1 = new Date(a.created);
-        let date2 = new Date(b.created);
+        let date1 = new Date(a.opened_date);
+        let date2 = new Date(b.opened_date);
 
         if (date1 < date2) {
-          return -1;
+          return 1;
         }
         if (date1 > date2) {
-          return 1;
+          return -1;
         }
         return 0;
       });
       tmpKinujoProducts = tmpKinujoProducts.sort((a, b) => {
-        let date1 = new Date(a.created);
-        let date2 = new Date(b.created);
+        let date1 = new Date(a.opened_date);
+        let date2 = new Date(b.opened_date);
         if (date1 < date2) {
-          return -1;
+          return 1;
         }
         if (date1 > date2) {
-          return 1;
+          return -1;
         }
         return 0;
       });
+      sellers = []
       onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
       onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
     }

@@ -116,6 +116,7 @@ export default function ContactShare(props) {
   function processUserHtml(props, users) {
     let tmpUserHtml = [];
     users.map((user) => {
+      console.log(user.image.image);
       tmpUserHtml.push(
         <TouchableWithoutFeedback
           key={user.id}
@@ -124,14 +125,34 @@ export default function ContactShare(props) {
           }}
         >
           <View style={styles.contactTabContainer}>
-            <Image
+            {/* <Image
               style={{
                 width: win.width / 13,
                 height: ratioProfile * 25,
                 marginLeft: widthPercentageToDP("1%"),
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
-            />
+            /> */}
+            {user.image != null ? (
+              <Image
+                style={{
+                  width: RFValue(35),
+                  height: RFValue(35),
+                  marginLeft: widthPercentageToDP("1%"),
+                  borderRadius: win.width / 2,
+                }}
+                source={{ uri: user.image.image }}
+              />
+            ) : (
+              <Image
+                style={{
+                  width: win.width / 13,
+                  height: ratioProfile * 25,
+                  marginLeft: widthPercentageToDP("1%"),
+                }}
+                source={require("../assets/Images/profileEditingIcon.png")}
+              />
+            )}
             <Text style={styles.tabLeftText}>{user.nickname}</Text>
           </View>
         </TouchableWithoutFeedback>

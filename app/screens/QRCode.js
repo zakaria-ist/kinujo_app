@@ -100,11 +100,19 @@ async function buildLink(userId, is_store) {
 export default function QRCode(props) {
   const isFocused = useIsFocused();
   const [inviteShow, setInviteShow] = useState(false);
+  const [user, onUserChanged] = React.useState({});
   const [popupQR, setPopupQR] = useState(false);
   const [userId, onUserIDChanged] = useState(false);
   const [store, onStoreChanged] = useState(0);
   const [storeLink, onStoreLinkChanged] = useState("");
   const [userLink, onUserLinkChanged] = useState("");
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then(function (url) {
+      request.get(url).then((response) => {
+        onUserChanged(response.data);
+      });
+    });
+  }, [isFocused]);
   React.useEffect(() => {
     setPopupQR(false);
   }, [!isFocused]);
@@ -114,9 +122,9 @@ export default function QRCode(props) {
     if (code) {
       alert.warning(userId.toString());
 
-      request.addFriend(userId, code).then(()=>{
+      request.addFriend(userId, code).then(() => {
         alert.warning(Translate.t("friendAdded"));
-      })
+      });
     } else {
       alert.warning(Translate.t("invalidQRcode"));
     }
@@ -227,9 +235,9 @@ export default function QRCode(props) {
                         const { values } = response; // Array of detected QR code values. Empty if nothing found.
                         const code = findParams(values[0], "kinujoId");
                         if (code) {
-                          request.addFriend(userId, code).then(()=>{
+                          request.addFriend(userId, code).then(() => {
                             alert.warning(Translate.t("friendAdded"));
-                          })
+                          });
                         } else {
                           alert.warning(Translate.t("invalidQRcode"));
                         }
@@ -311,24 +319,28 @@ export default function QRCode(props) {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.button_frame}>
-              <TouchableOpacity
-                style={[
-                  styles.submit,
-                  {
-                    backgroundColor: "#E6DADE",
-                  },
-                ]}
-                onPress={() => {
-                  onStoreChanged(1);
-                  setPopupQR(true);
-                }}
-              >
-                <Text style={styles.submit_text}>
-                  {Translate.t("storeAccInvite")}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            {user.is_seller ? (
+              <View style={styles.button_frame}>
+                <TouchableOpacity
+                  style={[
+                    styles.submit,
+                    {
+                      backgroundColor: "#E6DADE",
+                    },
+                  ]}
+                  onPress={() => {
+                    onStoreChanged(1);
+                    setPopupQR(true);
+                  }}
+                >
+                  <Text style={styles.submit_text}>
+                    {Translate.t("storeAccInvite")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View></View>
+            )}
             <View style={styles.button_frame}>
               <TouchableOpacity
                 style={[

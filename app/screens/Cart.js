@@ -12,6 +12,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
+import { Alert } from "react-native";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { Colors } from "../assets/Colors.js";
 import { Picker } from "react-native-propel-kit";
@@ -101,7 +102,11 @@ export default function Cart(props) {
           >
             <Text style={{ fontSize: RFValue(12) }}>No Address</Text>
             <TouchableWithoutFeedback
-              onPress={() => props.navigation.navigate("ShippingList")}
+              onPress={() =>
+                props.navigation.navigate("ShippingList", {
+                  type: "cart",
+                })
+              }
             >
               <View style={styles.buttonContainer}>
                 <Text style={{ fontSize: RFValue(11), color: "white" }}>
@@ -123,7 +128,11 @@ export default function Cart(props) {
           >
             <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
             <TouchableWithoutFeedback
-              onPress={() => props.navigation.navigate("ShippingList")}
+              onPress={() =>
+                props.navigation.navigate("ShippingList", {
+                  type: "cart",
+                })
+              }
             >
               <View style={styles.buttonContainer}>
                 <Text style={{ fontSize: RFValue(11), color: "white" }}>
@@ -181,8 +190,7 @@ export default function Cart(props) {
         console.log(product.id + " = " + item.product_id);
         return product.id == item.product_id;
       });
-      if(tmpProducts.length > 0){
-
+      if (tmpProducts.length > 0) {
         let product = tmpProducts[0];
         let quantity = item.quantity;
         let realIndex = 1000 - i;
@@ -197,157 +205,166 @@ export default function Cart(props) {
         //   }
         // }
         tmpCartHtml.push(
-        // <TouchableWithoutFeedback onPress={() => controller.close()}>
-        <TouchableWithoutFeedback>
-          <View
-            key={i}
-            style={{
-              flexDirection: "row",
-              backgroundColor: Colors.F0EEE9,
-              height: heightPercentageToDP("20%"),
-              marginTop: heightPercentageToDP("2%"),
-              paddingHorizontal: widthPercentageToDP("4%"),
-              paddingBottom: heightPercentageToDP("14%"),
-              zIndex: realIndex,
-            }}
-          >
+          // <TouchableWithoutFeedback onPress={() => controller.close()}>
+          <TouchableWithoutFeedback>
             <View
+              key={i}
               style={{
-                width: widthPercentageToDP("60%"),
+                flexDirection: "row",
+                backgroundColor: Colors.F0EEE9,
+                height: heightPercentageToDP("20%"),
+                marginTop: heightPercentageToDP("2%"),
+                paddingHorizontal: widthPercentageToDP("4%"),
+                paddingBottom: heightPercentageToDP("14%"),
+                zIndex: realIndex,
               }}
             >
-              <Text style={styles.cartTabText}>{product.name}</Text>
-              <Text style={styles.cartTabText}>
-                {is_store
-                  ? format.separator(product.store_price)
-                  : format.separator(product.price)}
-                円
-              </Text>
-              <Text style={styles.cartTabText}>{item.name}</Text>
-            </View>
-            <View style={styles.tabRightContainer}>
-              <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
-              <DropDownPicker
-                controller={(instance) => {
-                  controller = instance;
-                }}
-                // zIndex={9999}
-                style={{
-                  borderWidth: 1,
-                  backgroundColor: "white",
-                  borderColor: "transparent",
-                  color: "black",
-                  fontSize: RFValue(11),
-                  paddingLeft: widthPercentageToDP("2%"),
-                }}
-                items={cartItems}
-                controller={(instance) => (isVis[idx] = instance)}
-                defaultValue={quantity ? quantity + "" : ""}
-                containerStyle={{
-                  height: RFValue(40),
-                  width: widthPercentageToDP("20%"),
-                }}
-                labelStyle={{
-                  fontSize: RFValue(10),
-                  color: "gray",
-                }}
-                itemStyle={{
-                  justifyContent: "flex-start",
-                }}
-                selectedtLabelStyle={{
-                  color: Colors.F0EEE9,
-                }}
-                placeholder={Translate.t("unit")}
-                dropDownStyle={{
-                  width: widthPercentageToDP("20%"),
-                  backgroundColor: "white",
-                  color: "black",
-                  height: heightPercentageToDP("10.5%"),
-                  zIndex: realIndex,
-                }}
-                onOpen={() => {
-                  for (let j = 0; j < isVis.length; j++) {
-                    if (idx !== j) {
-                      isVis[j].close();
-                    }
-                  }
-                }}
-                onChangeItem={(ci) => {
-                  if (ci) {
-                    onValueChanged(item.id, ci.value, is_store);
-                  }
-                }}
-              />
-
               <View
                 style={{
-                  flexDirection: "row-reverse",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  width: widthPercentageToDP("60%"),
                 }}
               >
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let tmpFirebaseProducts = firebaseProducts.filter(
-                      (tmpProduct) => {
-                        return item.id == tmpProduct.id;
+                <Text style={styles.cartTabText}>{product.name}</Text>
+                <Text style={styles.cartTabText}>
+                  {is_store
+                    ? format.separator(product.store_price)
+                    : format.separator(product.price)}
+                  円
+                </Text>
+                <Text style={styles.cartTabText}>{item.name}</Text>
+              </View>
+              <View style={styles.tabRightContainer}>
+                <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
+                <DropDownPicker
+                  controller={(instance) => {
+                    controller = instance;
+                  }}
+                  // zIndex={9999}
+                  style={{
+                    borderWidth: 1,
+                    backgroundColor: "white",
+                    borderColor: "transparent",
+                    color: "black",
+                    fontSize: RFValue(11),
+                    paddingLeft: widthPercentageToDP("2%"),
+                  }}
+                  items={cartItems}
+                  controller={(instance) => (isVis[idx] = instance)}
+                  defaultValue={quantity ? quantity + "" : ""}
+                  containerStyle={{
+                    height: RFValue(40),
+                    width: widthPercentageToDP("20%"),
+                  }}
+                  labelStyle={{
+                    fontSize: RFValue(10),
+                    color: "gray",
+                  }}
+                  itemStyle={{
+                    justifyContent: "flex-start",
+                  }}
+                  selectedtLabelStyle={{
+                    color: Colors.F0EEE9,
+                  }}
+                  placeholder={Translate.t("unit")}
+                  dropDownStyle={{
+                    width: widthPercentageToDP("20%"),
+                    backgroundColor: "white",
+                    color: "black",
+                    height: heightPercentageToDP("10.5%"),
+                    zIndex: realIndex,
+                  }}
+                  onOpen={() => {
+                    for (let j = 0; j < isVis.length; j++) {
+                      if (idx !== j) {
+                        isVis[j].close();
                       }
-                    );
-                    let firebaseProduct = tmpFirebaseProducts[0];
-                    db.collection("users")
-                      .doc(userId.toString())
-                      .collection("carts")
-                      .doc(product.id.toString())
-                      .set(
-                        {
-                          quantity: firebaseProduct.quantity,
-                        },
-                        {
-                          merge: true,
-                        }
+                    }
+                  }}
+                  onChangeItem={(ci) => {
+                    if (ci) {
+                      db.collection("users")
+                        .doc(userId.toString())
+                        .collection("carts")
+                        .doc(item.id.toString())
+                        .set({
+                          quantity: ci.value
+                        }, {
+                          merge: true
+                        });
+                      onValueChanged(item.id, ci.value, is_store);
+                    }
+                  }}
+                />
+
+                <View
+                  style={{
+                    flexDirection: "row-reverse",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      // let tmpFd
+                    }}
+                  >
+                    <View style={styles.buttonContainer}>
+                      <Text style={styles.buttonText}>
+                        {Translate.t("change")}
+                      </Text>
+                    </View>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      Alert.alert(
+                        Translate.t("warning"),
+                        Translate.t("deleteItem"),
+                        [
+                          {
+                            text: "YES",
+                            onPress: () => {
+                              firebaseProducts = firebaseProducts.filter(
+                                (firebaseProduct) => {
+                                  console.log(firebaseProduct)
+                                  console.log(item)
+                                  return firebaseProduct.id != item.id;
+                                }
+                              );
+                              let tmpIds = ids.filter((id) => {
+                                return id != product.id;
+                              });
+                              ids = tmpIds;
+                              onUpdate(tmpIds, firebaseProducts, false);
+                              db.collection("users")
+                                .doc(userId.toString())
+                                .collection("carts")
+                                .doc(product.id.toString())
+                                .delete();
+                            },
+                          },
+                          {
+                            text: "NO",
+                            onPress: () => {},
+                          },
+                        ],
+                        { cancelable: false }
                       );
-                    alert.warning("Cart Updated.");
-                  }}
-                >
-                  <View style={styles.buttonContainer}>
-                    <Text style={styles.buttonText}>
-                      {Translate.t("change")}
-                    </Text>
-                  </View>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    firebaseProducts = firebaseProducts.filter(
-                      (firebaseProduct) => {
-                        return firebaseProduct.id != product.id;
-                      }
-                    );
-                    let tmpIds = ids.filter((id) => {
-                      return id != product.id;
-                    });
-                    ids = tmpIds;
-                    onUpdate(tmpIds, firebaseProducts, false);
-                    db.collection("users")
-                      .doc(userId.toString())
-                      .collection("carts")
-                      .doc(product.id.toString())
-                      .delete();
-                  }}
-                >
-                  <RemoveLogo
-                    source={require("../assets/icons/removeIcon.svg")}
-                    style={styles.removeIcon}
-                  />
-                </TouchableWithoutFeedback>
+                    }}
+                  >
+                    <RemoveLogo
+                      source={require("../assets/icons/removeIcon.svg")}
+                      style={styles.removeIcon}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
             </View>
-          </View>
-        </TouchableWithoutFeedback>
-      );
+          </TouchableWithoutFeedback>
+        );
       }
     }
 
-    console.log(tmpCartHtml)
+    console.log(tmpCartHtml);
     return tmpCartHtml;
   }
 
@@ -396,9 +413,11 @@ export default function Cart(props) {
   }
   React.useEffect(() => {
     for (var i = 1; i < 100; i++) {
-      if(cartItems.filter((item) => {
-        return item.value == i;
-      }).length == 0){
+      if (
+        cartItems.filter((item) => {
+          return item.value == i;
+        }).length == 0
+      ) {
         cartItems.push({
           value: i + "",
           label: i + "",
@@ -440,7 +459,6 @@ export default function Cart(props) {
             onSelectedChanged(response.data.id);
           });
         } else {
-          // alert.warning
           request
             .get("addressList/" + userId + "/")
             .then((response) => {
@@ -462,7 +480,9 @@ export default function Cart(props) {
                       <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
                       <TouchableWithoutFeedback
                         onPress={() =>
-                          props.navigation.navigate("ShippingList")
+                          props.navigation.navigate("ShippingList", {
+                            type: "cart",
+                          })
                         }
                       >
                         <View style={styles.buttonContainer}>

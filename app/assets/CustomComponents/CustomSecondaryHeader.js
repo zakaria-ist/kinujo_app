@@ -27,15 +27,15 @@ export default function CustomKinujoWord({
   name,
   accountType,
   editProfile,
-  userUrl
+  userUrl,
 }) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const win = Dimensions.get("window");
   const ratioNext = win.width / 38 / 8;
   React.useEffect(() => {
-    if(userUrl){
-      if(userUrl != "group"){
+    if (userUrl) {
+      if (userUrl != "group") {
         request.get(userUrl).then((response) => {
           onUserChanged(response.data);
         });

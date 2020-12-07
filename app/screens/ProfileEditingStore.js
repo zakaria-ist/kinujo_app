@@ -12,6 +12,7 @@ import {
   TextInput,
   ScrollView,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { NavigationEvents } from "react-navigation";
@@ -79,13 +80,15 @@ export default function ProfileEditingGeneral(props) {
 
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
-    let verified = AsyncStorage.getItem("verified");
+    let verified = await AsyncStorage.getItem("verified");
     let response = await request.get(url);
-    let updateData = AsyncStorage.getItem("update-data");
+    let updateData = await AsyncStorage.getItem("update-data");
+    if(updateData){
+      updateData = JSON.parse(updateData);
+    }
     onShopNameChanged(response.data.shop_name);
     onNickNameChanged(response.data.nickname);
     onUserChanged(response.data);
-    console.log(response.data)
 
     if (updateData && updateData["type"] == "email" && verified == "1") {
       onEmailChanged(updateData["value"]);
@@ -678,8 +681,22 @@ export default function ProfileEditingGeneral(props) {
                     color="transparent"
                     reverseColor="black"
                     onPress={() => {
-                      onEditPhoneNumberChanged(false);
-                      promptUpdate(props, user, "tel", phoneNumber);
+                      if (phoneNumber) {
+                        onEditPhoneNumberChanged(false);
+                        promptUpdate(props, user, "tel", phoneNumber);
+                      } else {
+                        Alert.alert(
+                          Translate.t("warning"),
+                          Translate.t("fieldEmpty"),
+                          [
+                            {
+                              text: "OK",
+                              onPress: () => {},
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
                     }}
                   />
                   <TextInput
@@ -734,8 +751,22 @@ export default function ProfileEditingGeneral(props) {
                     color="transparent"
                     reverseColor="black"
                     onPress={() => {
-                      onEditEmailChanged(false);
-                      promptUpdate(props, user, "email", email);
+                      if (email) {
+                        onEditEmailChanged(false);
+                        promptUpdate(props, user, "email", email);
+                      } else {
+                        Alert.alert(
+                          Translate.t("warning"),
+                          Translate.t("fieldEmpty"),
+                          [
+                            {
+                              text: "OK",
+                              onPress: () => {},
+                            },
+                          ],
+                          { cancelable: false }
+                        );
+                      }
                     }}
                   />
                   <TextInput
@@ -793,7 +824,7 @@ export default function ProfileEditingGeneral(props) {
                     onPress={() => {
                       onEditPasswordChanged(false);
                       let tmpPassword = password;
-                      // onPasswordChanged("********")
+                      onPasswordChanged("********")
                       promptUpdate(props, user, "password", tmpPassword);
                     }}
                   />
@@ -829,7 +860,12 @@ export default function ProfileEditingGeneral(props) {
                       onPasswordChanged("");
                     }}
                   />
-                  <Text style={{ fontSize: RFValue(12) }}>{password}</Text>
+                  <TextInput
+                    secureTextEntry={true}
+                    style={{ fontSize: RFValue(12) }}
+                  >
+                    {password}
+                  </TextInput>
                 </View>
               )}
             </View>

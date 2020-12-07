@@ -63,7 +63,7 @@ export default function HomeStoreList(props) {
   const [user, onUserChanged] = React.useState({});
   const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
   const [product, onProductChanged] = React.useState({});
-  const [selectedJanCode, onSelectedJanCodeChanged] = React.useState({});
+  const [selectedJanCode, onSelectedJanCodeChanged] = React.useState(null);
   const [selectedName, onSelectedNameChanged] = React.useState("");
   const [images, onImagesChanged] = React.useState({});
   const [show, onShowChanged] = React.useState({});
@@ -158,7 +158,7 @@ export default function HomeStoreList(props) {
 
   function populatePopupHtml(props, tmpProduct, tmpJanCodes, selected) {
     if (tmpProduct.variety == 1) {
-      console.log(tmpJanCodes);
+      // console.log(tmpJanCodes);
       return populatePopupList(props, tmpProduct, tmpJanCodes, selected);
     } else if (tmpProduct.variety == 0) {
       onSelectedJanCodeChanged(
@@ -409,7 +409,7 @@ export default function HomeStoreList(props) {
             position: "absolute",
             right: 0,
             marginRight:
-              userAuthorityId <= 3 ? RFValue(5) : widthPercentageToDP("15%"),
+              userAuthorityID <= 3 ? RFValue(5) : widthPercentageToDP("15%"),
             borderStyle: "solid",
             paddingVertical: widthPercentageToDP("1%"),
             paddingHorizontal: widthPercentageToDP("7%"),
@@ -460,6 +460,7 @@ export default function HomeStoreList(props) {
         }}
         overrideCartCount={cartCount}
       />
+
       <View style={styles.product_content}>
         <ScrollView>
           <View
@@ -791,9 +792,8 @@ export default function HomeStoreList(props) {
                 >
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      if (selectedJanCode && quantity) {
+                      if ((selectedJanCode || !name) && quantity) {
                         onShowChanged(false);
-
                         db.collection("users")
                           .doc(user.id.toString())
                           .collection("carts")
@@ -815,6 +815,7 @@ export default function HomeStoreList(props) {
                                 name: selectedName,
                               });
                           });
+                        onSelectedJanCodeChanged(null);
                         onShowText(true);
                         setTimeout(
                           function () {
@@ -859,51 +860,55 @@ export default function HomeStoreList(props) {
           </View>
         </ScrollView>
       </Modal>
-      <View
-        style={{
-          borderRadius: win.width / 2,
-          borderWidth: 1,
-          backgroundColor: Colors.E6DADE,
-          borderColor: "transparent",
-          zIndex: 1,
-          elevation: 1,
-          position: "absolute",
-          right: RFValue(5),
-          borderStyle: "solid",
-          paddingVertical: widthPercentageToDP("1%"),
-          paddingHorizontal: widthPercentageToDP("7%"),
-          marginTop:
-            Platform.OS == "ios"
-              ? getStatusBarHeight() + heightPercentageToDP("6.7%")
-              : heightPercentageToDP("6.7%"),
-        }}
-      >
+
+      {showText == true ? (
         <View
           style={{
-            width: 0,
-            height: 0,
-            borderBottomWidth: RFValue(20),
-            borderRightWidth: RFValue(12),
-            borderLeftWidth: RFValue(12),
-            borderLeftColor: "transparent",
-            borderRightColor: "transparent",
-            borderBottomColor: Colors.E6DADE,
-            top: RFValue(-15),
+            borderRadius: win.width / 2,
+            borderWidth: 1,
+            backgroundColor: Colors.E6DADE,
+            borderColor: "transparent",
+            zIndex: 1,
+            elevation: 1,
             position: "absolute",
-            right: RFValue(9),
-          }}
-        ></View>
-        <Text
-          style={{
-            fontSize: RFValue(10),
-            color: "black",
-            alignSelf: "flex-start",
+            right: RFValue(5),
+            borderStyle: "solid",
+            paddingVertical: widthPercentageToDP("1%"),
+            paddingHorizontal: widthPercentageToDP("7%"),
+            marginTop:
+              Platform.OS == "ios"
+                ? getStatusBarHeight() + heightPercentageToDP("6.7%")
+                : heightPercentageToDP("6.7%"),
           }}
         >
-          {Translate.t("itemAddedToCart")}
-        </Text>
-      </View>
-      {showText == true ? <View></View> : <View></View>}
+          <View
+            style={{
+              width: 0,
+              height: 0,
+              borderBottomWidth: RFValue(20),
+              borderRightWidth: RFValue(12),
+              borderLeftWidth: RFValue(12),
+              borderLeftColor: "transparent",
+              borderRightColor: "transparent",
+              borderBottomColor: Colors.E6DADE,
+              top: RFValue(-15),
+              position: "absolute",
+              right: RFValue(9),
+            }}
+          ></View>
+          <Text
+            style={{
+              fontSize: RFValue(10),
+              color: "black",
+              alignSelf: "flex-start",
+            }}
+          >
+            {Translate.t("itemAddedToCart")}
+          </Text>
+        </View>
+      ) : (
+        <View></View>
+      )}
       {userAuthorityID <= 3 ? (
         <View></View>
       ) : (

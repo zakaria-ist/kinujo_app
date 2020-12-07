@@ -213,9 +213,11 @@ export default function SalesManagement(props) {
       request
         .get("saleProducts/" + userId + "/")
         .then(function (response) {
-          salesProducts = [];
-          if (response.data.salesProducts) {
-            salesProducts = response.data.salesProducts;
+          // salesProducts = [];
+          if (response.data.saleProducts) {
+            salesProducts = response.data.saleProducts;
+          } else {
+            salesProducts = [];
           }
           onUpdate();
         })
@@ -254,12 +256,6 @@ export default function SalesManagement(props) {
         return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
       }
     );
-    let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-      let periods = saleProduct["order_product"]["order"]["created"].split("-");
-      let year = periods[0];
-      let month = periods[1];
-      return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
-    });
     onCommissionsChanged(tmpCommissionProducts);
     onComissionHtmlChanged(
       processCommissionHtml(tmpCommissionProducts, status)
@@ -269,7 +265,13 @@ export default function SalesManagement(props) {
       commissionTotal += commission.amount;
     });
     onTotalCommissionChanged(commissionTotal);
-
+    let tmpSaleProducts = salesProducts.filter((saleProduct) => {
+      // console.log(saleProduct.order_product);
+      let periods = saleProduct.created.split("-");
+      let year = periods[0];
+      let month = periods[1];
+      return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+    });
     onSalesChanged(tmpSaleProducts);
     onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
     let saleTotal = 0;
@@ -278,11 +280,9 @@ export default function SalesManagement(props) {
     });
     onTotalSaleChanged(saleTotal);
 
-    // onTotalChanged(
-    //   format.separator(
-    //     parseFloat(commissionTotal) + parseFloat(saleTotal)
-    //   )
-    // );
+    onTotalChanged(
+      format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
+    );
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>

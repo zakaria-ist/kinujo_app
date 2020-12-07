@@ -524,18 +524,17 @@ export default function ProductInformationAddNew(props) {
     });
   }
 
-  function handleNumberInput(value, type) {
-    if (value && type == "generalPrice") {
-      onPriceChanged(value.replace(/[^0-9]/g, ""));
-      if (user.is_master) {
-        onStorePriceChanged(value * 0.7 + "");
-      } else if (user.is_seller) {
-        onStorePriceChanged(value * 0.8 + "");
-      }
+  function handleGeneralPrice(value) {
+    onPriceChanged(value.replace(/[^0-9]/g, ""));
+    console.log(user);
+    if (user.is_master) {
+      onStorePriceChanged(value * 0.7 + "");
+    } else if (user.is_seller) {
+      onStorePriceChanged(value * 0.8 + "");
     }
-    if (value && type == "shipping") {
-      onShippingChanged(value.replace(/[^0-9]/g, ""));
-    }
+  }
+  function handleShippingPrice(value) {
+    onShippingChanged(value.replace(/[^0-9]/g, ""));
   }
   return (
     <SafeAreaView>
@@ -703,14 +702,16 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="published" />
+                  value="published"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("published")}
                 </Text>
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="unpublished" />
+                  value="unpublished"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("nonPublished")}
                 </Text>
@@ -731,13 +732,13 @@ export default function ProductInformationAddNew(props) {
                   color: "white",
                   fontSize: RFValue(12),
                   borderWidth: 1,
-                  width: widthPercentageToDP("50%"),
+                  width: widthPercentageToDP("60%"),
                   height: heightPercentageToDP("5%"),
                   alignItems: "center",
                   color: "black",
                   borderRadius: 5,
                   marginLeft: widthPercentageToDP("3%"),
-                  paddingLeft: widthPercentageToDP("10%"),
+                  paddingLeft: widthPercentageToDP("7%"),
                   paddingVertical: heightPercentageToDP("1%"),
                   // borderColor: Colors.CECECE,
                 }}
@@ -774,14 +775,14 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="new" />
-                <Text style={styles.radioButtonText}>
-                  {Translate.t("new")}
-                </Text>
+                  value="new"
+                />
+                <Text style={styles.radioButtonText}>{Translate.t("new")}</Text>
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="secondHand" />
+                  value="secondHand"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("secondHand")}
                 </Text>
@@ -796,24 +797,27 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="allUser" />
+                  value="allUser"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("allUser")}
                 </Text>
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="generalUser" />
+                  value="generalUser"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("generalUser")}
                 </Text>
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                   value="storeUser" />
-                 <Text style={styles.radioButtonText}>
-                   {Translate.t("storeUser")}
-                 </Text>
+                  value="storeUser"
+                />
+                <Text style={styles.radioButtonText}>
+                  {Translate.t("storeUser")}
+                </Text>
               </RadioButton.Group>
             </View>
             <Text style={styles.releaseDateWarningText}>
@@ -833,13 +837,7 @@ export default function ProductInformationAddNew(props) {
                   style={styles.productPricingTextInput}
                   value={price}
                   onChangeText={(value) => {
-                    handleNumberInput(value, "generalPrice");
-                    // onPriceChanged(value);
-                    // if (user.is_master) {
-                    //   onStorePriceChanged(value * 0.7 + "");
-                    // } else if (user.is_seller) {
-                    //   onStorePriceChanged(value * 0.8 + "");
-                    // }
+                    handleGeneralPrice(value);
                   }}
                 ></TextInput>
                 <Text style={styles.productPricingText}>
@@ -867,15 +865,15 @@ export default function ProductInformationAddNew(props) {
                 <TextInput
                   keyboardType={"numeric"}
                   style={styles.productPricingTextInput}
-                  value={shipping ? shipping : 0}
-                  onChangeText={(value) => handleNumberInput(value, "shipping")}
+                  value={shipping}
+                  onChangeText={(value) => handleShippingPrice(value)}
                 ></TextInput>
                 <Text style={styles.productPricingText}>
                   {Translate.t("shipping")} :
                 </Text>
               </View>
             </View>
-            <Text style={[styles.text,{marginTop:15}]}>
+            <Text style={[styles.text, { marginTop: 15 }]}>
               {Translate.t("productPageDisplayMethod")}
             </Text>
             <View style={styles.radioGroupContainer}>
@@ -888,7 +886,8 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="slidingType" />
+                  value="slidingType"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("slidingType")}
                 </Text>
@@ -896,7 +895,8 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Android
                   uncheckedColor="#FFF"
                   color="#BD9848"
-                  value="lrType" />
+                  value="lrType"
+                />
                 <Text style={styles.radioButtonText}>
                   {Translate.t("lrType")}
                 </Text>

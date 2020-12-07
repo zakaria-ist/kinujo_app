@@ -104,7 +104,9 @@ export default function Setting(props) {
     let url = await AsyncStorage.getItem("user");
     let updateData = await AsyncStorage.getItem("update-data");
     let verified = await AsyncStorage.getItem("verified");
-    updateData = JSON.parse(updateData);
+    if(updateData){
+      updateData = JSON.parse(updateData);
+    }
     let response = await request.get(url);
     onUserChanged(response.data);
     if (updateData && updateData["type"] == "email" && verified == "1") {
@@ -200,7 +202,7 @@ export default function Setting(props) {
                   onPress={() => {
                     onEditPasswordChanged(false);
                     let tmpPassword = password;
-                    // onPasswordChanged("********")
+                    onPasswordChanged("********")
                     promptUpdate(props, user, "password", tmpPassword);
                   }}
                 />

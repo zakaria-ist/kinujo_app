@@ -276,6 +276,12 @@
   "and": "そして",
   "productQuantity":"量",
   "invalidUser":"無効なユーザー",
-  "warning":"警告"
+  "warning":"警告",
+  "removeAddress":"このアドレスを削除しますか？",
+  "deleteItem":"このアイテムを削除しますか？",
+  "information":"情報",
+  "cartUpdated":"カートが更新されました",
+  "fieldEmpty":"フィールドを空にすることはできません"
+
   
 }
