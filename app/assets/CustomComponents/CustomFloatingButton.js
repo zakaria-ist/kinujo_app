@@ -37,7 +37,7 @@ export default function CustomBlackBackArrow({ onPress, icon }) {
           bottom:
             insets.bottom +
             insets.top +
-            PixelRatio.roundToNearestPixel(120 / PixelRatio.get()),
+            PixelRatio.roundToNearestPixel(RFValue(180) / PixelRatio.get()),
           right: 20,
           shadowColor: "#000",
           shadowOffset: {

@@ -70,17 +70,17 @@ function getDate(string) {
 async function getDetail(ownId, data) {
   if (data.type && data.type == "group") {
     return {
-      "name" : data.groupName,
-      "image" : ""
+      name: data.groupName,
+      image: "",
     };
   }
   if (data.users.length > 2) {
     return {
-      "name" : data.groupName,
-      "image" : ""
+      name: data.groupName,
+      image: "",
     };
   }
-  
+
   let users = data.users.filter((user) => {
     return user != ownId;
   });
@@ -103,13 +103,13 @@ async function getDetail(ownId, data) {
     user = user.data;
     djangoName = user.nickname;
     return {
-      "name" : firebaseName ? firebaseName : djangoName,
-      "image" : user.image ? user.image.image : ""
+      name: firebaseName ? firebaseName : djangoName,
+      image: user.image ? user.image.image : "",
     };
   }
   return {
-    "name" : "",
-    "image" : ""
+    name: "",
+    image: "",
   };
 }
 
@@ -147,282 +147,265 @@ export default function ChatList(props) {
       });
   }
 
-  function processChat(tmpChats, ownUserID){
+  function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
     let unreadMessage = 0;
 
     tmpChats = tmpChats.filter((chat) => {
-      return !chat['delete_' + ownUserID] && !chat['hide_' + ownUserID];
+      return !chat["delete_" + ownUserID] && !chat["hide_" + ownUserID];
     });
     tmpChats.map((chat) => {
-      if(chat.data['totalMessageRead_' + ownUserID] < chat.data['totalMessage']){
-        unreadMessage++
+      if (
+        chat.data["totalMessageRead_" + ownUserID] < chat.data["totalMessage"]
+      ) {
+        unreadMessage++;
       }
 
       totalUnseenMessage = 0;
       totalUnseenMessage =
         chat.data[unseenMessageCountField] + totalUnseenMessage;
-        unseenObj[chat.id] = totalUnseenMessage;
-        let tmpGroupID = groupID.filter((item) => {
-          return item == chat.id;
-        });
-        if (tmpGroupID.length >= 1) {
-          for (var i = 0; i < tmpChatHtml.length; i++) {
-            if (tmpChatHtml[i].key == chat.id) {
-              tmpChatHtml.splice(i, 1); //find poisition delete
+      unseenObj[chat.id] = totalUnseenMessage;
+      let tmpGroupID = groupID.filter((item) => {
+        return item == chat.id;
+      });
+      if (tmpGroupID.length >= 1) {
+        for (var i = 0; i < tmpChatHtml.length; i++) {
+          if (tmpChatHtml[i].key == chat.id) {
+            tmpChatHtml.splice(i, 1); //find poisition delete
+          }
+        }
+        tmpChatHtml = _.without(tmpChatHtml, chat.id);
+      }
+      getUnseenMessageCount(chat.id, ownUserID);
+      let date = chat.data.lastMessageTime
+        ? chat.data.lastMessageTime.split(":")
+        : tmpCreatedAt.split(":");
+      let tmpMonth = date[1];
+      let tmpDay = date[2]; //message created at
+      let tmpHours = date[3];
+      let tmpMinutes = date[4];
+      lastReadDate = chat.data[lastReadDateField];
+
+      name = chat.name;
+      image = chat.image;
+
+      if (tmpDay == today) {
+        tmpChatHtml.unshift(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            date={
+              chat.data.lastMessageTime
+                ? chat.data.lastMessageTime
+                : tmpCreatedAt
             }
-          }
-          tmpChatHtml = _.without(tmpChatHtml, chat.id);
-        }
-        getUnseenMessageCount(chat.id, ownUserID);
-        let date = chat.data.lastMessageTime
-          ? chat.data.lastMessageTime.split(":")
-          : tmpCreatedAt.split(":");
-        let tmpMonth = date[1];
-        let tmpDay = date[2]; //message created at
-        let tmpHours = date[3];
-        let tmpMinutes = date[4];
-        lastReadDate = chat.data[lastReadDateField];
-
-        name = chat.name;
-        image = chat.image;
-
-        if (tmpDay == today) {
-          tmpChatHtml.unshift(
-            <TouchableWithoutFeedback
-              key={chat.id}
-              date={
-                chat.data.lastMessageTime
-                  ? chat.data.lastMessageTime
-                  : tmpCreatedAt
-              }
-              pinned={
-                chat.data["pinned_" + ownUserID] ? true : false
-              }
-              hide={chat.data["hide_" + ownUserID] ? true : false}
-              delete={
-                chat.data["delete_" + ownUserID] ? true : false
-              }
-              onPress={() =>
-                props.navigation.navigate("ChatScreen", {
-                  type: chat.data.type,
-                  groupID: chat.id,
-                  groupName: chat.name,
-                })
-              }
-              onLongPress={() => {
-                onLongPressObjChanged({
-                  id: chat.id,
-                  data: chat.data,
-                  name: chat.name,
-                });
-                onShowChanged(true);
-              }}
-            >
-              <View style={styles.tabContainer}>
-                {image ? (<Image 
-                source={{ uri: image }}
-                style={styles.tabImage} />) : (<Image style={styles.tabImage} />)}
-                <View style={styles.descriptionContainer}>
-                  <Text style={styles.tabText}>{name}</Text>
-                  <Text style={styles.tabText}>
-                    {chat.data.message}
-                  </Text>
-                </View>
-                <View style={styles.tabRightContainer}>
-                  {tmpDay == today ? (
-                    <Text style={styles.tabText}>
-                      {tmpHours + ":" + tmpMinutes}
-                    </Text>
-                  ) : (
-                    <Text style={styles.tabText}>
-                      {tmpMonth + "/" + tmpDay}
-                    </Text>
-                  )}
-                  {chat.data[unseenMessageCountField] &&
-                  chat.data[unseenMessageCountField] > 0 ? (
-                    <View style={styles.notificationNumberContainer}>
-                      <Text style={styles.notificationNumberText}>
-                        {chat.data[unseenMessageCountField]}
-                      </Text>
-                    </View>
-                  ) : (
-                    <View></View>
-                  )}
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          );
-        } else if (tmpDay == today - 1) {
-          tmpChatHtml.unshift(
-            <TouchableWithoutFeedback
-              key={chat.id}
-              date={
-                chat.data.lastMessageTime
-                  ? chat.data.lastMessageTime
-                  : tmpCreatedAt
-              }
-              pinned={
-                chat.data["pinned_" + ownUserID] ? true : false
-              }
-              hide={chat.data["hide_" + ownUserID] ? true : false}
-              delete={
-                chat.data["delete_" + ownUserID] ? true : false
-              }
-              onPress={() =>
-                props.navigation.navigate("ChatScreen", {
-                  type: chat.data.type,
-                  groupID: chat.id,
-                  groupName: chat.name,
-                })
-              }
-              onLongPress={() => {
-                onLongPressObjChanged({
-                  id: chat.id,
-                  data: chat.data,
-                  name: chat.name,
-                });
-                onShowChanged(true);
-              }}
-            >
-              <View style={styles.tabContainer}>
-                {image ? (<Image 
-                source={{ uri: image }}
-                style={styles.tabImage} />) : (<Image style={styles.tabImage} />)}
-                <View style={styles.descriptionContainer}>
-                  <Text style={styles.tabText}>{name}</Text>
-                  <Text style={styles.tabText}>
-                    {chat.data.message}
-                  </Text>
-                </View>
-                <View style={styles.tabRightContainer}>
-                  {tmpDay == today - 1 ? (
-                    <Text style={styles.tabText}>{"Yesterday"}</Text>
-                  ) : (
-                    <Text style={styles.tabText}>
-                      {tmpMonth + "/" + tmpDay}
-                    </Text>
-                  )}
-                  {chat.data[unseenMessageCountField] &&
-                  chat.data[unseenMessageCountField] > 0 ? (
-                    <View style={styles.notificationNumberContainer}>
-                      <Text style={styles.notificationNumberText}>
-                        {chat.data[unseenMessageCountField]}
-                      </Text>
-                    </View>
-                  ) : (
-                    <View></View>
-                  )}
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          );
-        } else {
-          tmpChatHtml.unshift(
-            <TouchableWithoutFeedback
-              key={chat.id}
-              date={
-                chat.data.lastMessageTime
-                  ? chat.data.lastMessageTime
-                  : tmpCreatedAt
-              }
-              pinned={
-                chat.data["pinned_" + ownUserID] ? true : false
-              }
-              hide={chat.data["hide_" + ownUserID] ? true : false}
-              delete={
-                chat.data["delete_" + ownUserID] ? true : false
-              }
-              onPress={() =>
-                props.navigation.navigate("ChatScreen", {
-                  type: chat.data.type,
-                  groupID: chat.id,
-                  groupName: chat.name,
-                })
-              }
-              onLongPress={() => {
-                onLongPressObjChanged({
-                  id: chat.id,
-                  data: chat.data,
-                  name: chat.name,
-                });
-                onShowChanged(true);
-              }}
-            >
-              <View style={styles.tabContainer}>
+            pinned={chat.data["pinned_" + ownUserID] ? true : false}
+            hide={chat.data["hide_" + ownUserID] ? true : false}
+            delete={chat.data["delete_" + ownUserID] ? true : false}
+            onPress={() =>
+              props.navigation.navigate("ChatScreen", {
+                type: chat.data.type,
+                groupID: chat.id,
+                groupName: chat.name,
+              })
+            }
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                data: chat.data,
+                name: chat.name,
+              });
+              onShowChanged(true);
+            }}
+          >
+            <View style={styles.tabContainer}>
+              {image ? (
+                <Image source={{ uri: image }} style={styles.tabImage} />
+              ) : (
                 <Image style={styles.tabImage} />
-                <View style={styles.descriptionContainer}>
-                  <Text style={styles.tabText}>{name}</Text>
-                  <Text style={styles.tabText}>
-                    {chat.data.message}
-                  </Text>
-                </View>
-                <View style={styles.tabRightContainer}>
-                  <Text style={styles.tabText}>
-                    {tmpMonth + "/" + tmpDay}
-                  </Text>
-                  {chat.data[unseenMessageCountField] &&
-                  chat.data[unseenMessageCountField] > 0 ? (
-                    <View style={styles.notificationNumberContainer}>
-                      <Text style={styles.notificationNumberText}>
-                        {chat.data[unseenMessageCountField]}
-                      </Text>
-                    </View>
-                  ) : (
-                    <View></View>
-                  )}
-                </View>
+              )}
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.tabText}>{name}</Text>
+                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
               </View>
-            </TouchableWithoutFeedback>
-          );
+              <View style={styles.tabRightContainer}>
+                {tmpDay == today ? (
+                  <Text style={styles.tabText}>
+                    {tmpHours + ":" + tmpMinutes}
+                  </Text>
+                ) : (
+                  <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
+                )}
+                {chat.data[unseenMessageCountField] &&
+                chat.data[unseenMessageCountField] > 0 ? (
+                  <View style={styles.notificationNumberContainer}>
+                    <Text style={styles.notificationNumberText}>
+                      {chat.data[unseenMessageCountField]}
+                    </Text>
+                  </View>
+                ) : (
+                  <View></View>
+                )}
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      } else if (tmpDay == today - 1) {
+        tmpChatHtml.unshift(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            date={
+              chat.data.lastMessageTime
+                ? chat.data.lastMessageTime
+                : tmpCreatedAt
+            }
+            pinned={chat.data["pinned_" + ownUserID] ? true : false}
+            hide={chat.data["hide_" + ownUserID] ? true : false}
+            delete={chat.data["delete_" + ownUserID] ? true : false}
+            onPress={() =>
+              props.navigation.navigate("ChatScreen", {
+                type: chat.data.type,
+                groupID: chat.id,
+                groupName: chat.name,
+              })
+            }
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                data: chat.data,
+                name: chat.name,
+              });
+              onShowChanged(true);
+            }}
+          >
+            <View style={styles.tabContainer}>
+              {image ? (
+                <Image source={{ uri: image }} style={styles.tabImage} />
+              ) : (
+                <Image style={styles.tabImage} />
+              )}
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.tabText}>{name}</Text>
+                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+              </View>
+              <View style={styles.tabRightContainer}>
+                {tmpDay == today - 1 ? (
+                  <Text style={styles.tabText}>{"Yesterday"}</Text>
+                ) : (
+                  <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
+                )}
+                {chat.data[unseenMessageCountField] &&
+                chat.data[unseenMessageCountField] > 0 ? (
+                  <View style={styles.notificationNumberContainer}>
+                    <Text style={styles.notificationNumberText}>
+                      {chat.data[unseenMessageCountField]}
+                    </Text>
+                  </View>
+                ) : (
+                  <View></View>
+                )}
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      } else {
+        tmpChatHtml.unshift(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            date={
+              chat.data.lastMessageTime
+                ? chat.data.lastMessageTime
+                : tmpCreatedAt
+            }
+            pinned={chat.data["pinned_" + ownUserID] ? true : false}
+            hide={chat.data["hide_" + ownUserID] ? true : false}
+            delete={chat.data["delete_" + ownUserID] ? true : false}
+            onPress={() =>
+              props.navigation.navigate("ChatScreen", {
+                type: chat.data.type,
+                groupID: chat.id,
+                groupName: chat.name,
+              })
+            }
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                data: chat.data,
+                name: chat.name,
+              });
+              onShowChanged(true);
+            }}
+          >
+            <View style={styles.tabContainer}>
+              {console.log(chat)}
+              <Image style={styles.tabImage} />
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.tabText}>{name}</Text>
+                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+              </View>
+              <View style={styles.tabRightContainer}>
+                <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
+                {chat.data[unseenMessageCountField] &&
+                chat.data[unseenMessageCountField] > 0 ? (
+                  <View style={styles.notificationNumberContainer}>
+                    <Text style={styles.notificationNumberText}>
+                      {chat.data[unseenMessageCountField]}
+                    </Text>
+                  </View>
+                ) : (
+                  <View></View>
+                )}
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      }
+      groupID.push(chat.id);
+      totalUnseenMessage = 0;
+      for (var i in unseenObj) {
+        totalUnseenMessage += unseenObj[i];
+      }
+      tmpChatHtml.sort((html1, html2) => {
+        if (html1.props["pinned"] && !html2.props["pinned"]) {
+          return 1;
         }
-        groupID.push(chat.id);
-        totalUnseenMessage = 0;
-        for (var i in unseenObj) {
-          totalUnseenMessage += unseenObj[i];
-        }
-        tmpChatHtml.sort((html1, html2) => {
-          if (html1.props["pinned"] && !html2.props["pinned"]) {
-            return 1;
-          }
 
-          if (!html1.props["pinned"] && html2.props["pinned"]) {
+        if (!html1.props["pinned"] && html2.props["pinned"]) {
+          return -1;
+        }
+
+        if (html1.props["pinned"] && html2.props["pinned"]) {
+          let date1 = getDate(html1.props["date"]);
+          let date2 = getDate(html2.props["date"]);
+
+          if (date1 > date2) {
             return -1;
           }
-
-          if (html1.props["pinned"] && html2.props["pinned"]) {
-            let date1 = getDate(html1.props["date"]);
-            let date2 = getDate(html2.props["date"]);
-
-            if (date1 > date2) {
-              return -1;
-            }
-            if (date1 < date2) {
-              return 1;
-            }
+          if (date1 < date2) {
+            return 1;
           }
+        }
 
-          if (!html1.props["pinned"] && !html2.props["pinned"]) {
-            let date1 = getDate(html1.props["date"]);
-            let date2 = getDate(html2.props["date"]);
+        if (!html1.props["pinned"] && !html2.props["pinned"]) {
+          let date1 = getDate(html1.props["date"]);
+          let date2 = getDate(html2.props["date"]);
 
-            if (date1 > date2) {
-              return -1;
-            }
-            if (date1 < date2) {
-              return 1;
-            }
+          if (date1 > date2) {
+            return -1;
           }
-          return 0;
-        });
-        const resultChatHtml = tmpChatHtml.filter((html) => {
-          return !html.props["hide"] && !html.props["delete"];
-        });
-        onChatHtmlChanged(resultChatHtml);
-    })
-    setTotalUnread(unreadMessage)
+          if (date1 < date2) {
+            return 1;
+          }
+        }
+        return 0;
+      });
+      const resultChatHtml = tmpChatHtml.filter((html) => {
+        return !html.props["hide"] && !html.props["delete"];
+      });
+      onChatHtmlChanged(resultChatHtml);
+    });
+    setTotalUnread(unreadMessage);
   }
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
@@ -438,52 +421,52 @@ export default function ChatList(props) {
         querySnapShot.forEach((snapShot) => {
           if (snapShot && snapShot.exists) {
             let tmpChats = chats.filter((chat) => {
-              return chat.id == snapShot.id
-            })
-            if(tmpChats.length == 0){
+              return chat.id == snapShot.id;
+            });
+            if (tmpChats.length == 0) {
               getDetail(ownUserID, snapShot.data()).then(function (detail) {
                 chats.push({
-                  id : snapShot.id,
+                  id: snapShot.id,
                   data: snapShot.data(),
                   name: detail.name,
-                  image: detail.image
-                })
+                  image: detail.image,
+                });
                 processChat(chats, ownUserID);
-              })
+              });
             } else {
               chats = chats.map((chat) => {
-                if(chat.id == snapShot.id){
-                  chat.data = snapShot.data()
+                if (chat.id == snapShot.id) {
+                  chat.data = snapShot.data();
                 }
                 return chat;
-              })
+              });
               processChat(chats, ownUserID);
             }
           }
         });
       });
-      return unsubscribe;
+    return unsubscribe;
   }
 
   React.useEffect(() => {
     AsyncStorage.getItem("chat").then((item) => {
-      if(item){
+      if (item) {
         AsyncStorage.removeItem("chat");
         item = JSON.parse(item);
         props.navigation.push("ChatScreen", item);
       }
-    })
+    });
 
     let unsubscribe;
-    chats = []
-    firstLoad().then((unsub)=>{
+    chats = [];
+    firstLoad().then((unsub) => {
       unsubscribe = unsub;
-    })
+    });
 
     return function () {
-      chats = []
-      onChatHtmlChanged([])
-      if(unsubscribe){
+      chats = [];
+      onChatHtmlChanged([]);
+      if (unsubscribe) {
         unsubscribe();
       }
     };

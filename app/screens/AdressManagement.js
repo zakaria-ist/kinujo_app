@@ -78,6 +78,7 @@ export default function AddressManagement(props) {
                 error.response.data &&
                 Object.keys(error.response.data).length > 0
               ) {
+                alert.warning("1");
                 alert.warning(
                   error.response.data[Object.keys(error.response.data)[0]][0] +
                     "(" +
@@ -95,6 +96,7 @@ export default function AddressManagement(props) {
           error.response.data &&
           Object.keys(error.response.data).length > 0
         ) {
+          alert.warning("2");
           alert.warning(
             error.response.data[Object.keys(error.response.data)[0]][0] +
               "(" +
@@ -141,7 +143,7 @@ export default function AddressManagement(props) {
             onChangeText={(text) => onBuildingNameChanged(text)}
           ></TextInput>
           <TextInput
-            placeholder={Translate.t("name")}
+            placeholder={Translate.t("nameOfSeller")}
             placeholderTextColor={Colors.D7CCA6}
             style={styles.textInput}
             value={name}
@@ -175,14 +177,14 @@ export default function AddressManagement(props) {
             defaultValue={prefecture ? prefecture : ""}
             containerStyle={{ height: heightPercentageToDP("8%") }}
             labelStyle={{
-              fontSize: RFValue(12),
-              color: Colors.F0EEE9,
+              fontSize: RFValue(10),
+              color: Colors.D7CCA6,
             }}
             itemStyle={{
               justifyContent: "flex-start",
             }}
             selectedtLabelStyle={{
-              color: Colors.F0EEE9,
+              color: Colors.D7CCA6,
             }}
             placeholder={Translate.t("prefecture")}
             dropDownStyle={{ backgroundColor: "#000000" }}
@@ -245,6 +247,7 @@ export default function AddressManagement(props) {
                     error.response.data &&
                     Object.keys(error.response.data).length > 0
                   ) {
+                    alert.warning("3");
                     alert.warning(
                       error.response.data[
                         Object.keys(error.response.data)[0]
@@ -287,14 +290,18 @@ export default function AddressManagement(props) {
                       error.response.data &&
                       Object.keys(error.response.data).length > 0
                     ) {
-                      alert.warning(
+                      let tmpErrorMessage =
                         error.response.data[
                           Object.keys(error.response.data)[0]
                         ][0] +
-                          "(" +
-                          Object.keys(error.response.data)[0] +
-                          ")"
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")";
+                      // alert.warning(tmpErrorMessage);
+                      let errorMessage = String(
+                        tmpErrorMessage.split("(").pop()
                       );
+                      alert.warning(Translate.t("(" + errorMessage));
                     }
                   });
               });
@@ -317,7 +324,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderColor: "transparent",
     borderRadius: 0,
-    fontSize: RFValue(9),
+    fontSize: RFValue(10),
     height: heightPercentageToDP("5.8%"),
     paddingLeft: widthPercentageToDP("2%"),
     marginVertical: heightPercentageToDP("1%"),

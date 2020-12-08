@@ -213,9 +213,10 @@ export default function SalesManagement(props) {
       request
         .get("saleProducts/" + userId + "/")
         .then(function (response) {
-          salesProducts = [];
-          if (response.data.salesProducts) {
-            salesProducts = response.data.salesProducts;
+          if (response.data.saleProducts) {
+            salesProducts = response.data.saleProducts;
+          } else {
+            salesProducts = [];
           }
           onUpdate();
         })
@@ -257,7 +258,8 @@ export default function SalesManagement(props) {
     );
     // console.log(salesProducts);
     let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-      let periods = saleProduct["order_product"]["order"]["created"].split("-");
+      // console.log(saleProduct.order_product);
+      let periods = saleProduct.created.split("-");
       let year = periods[0];
       let month = periods[1];
       return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
