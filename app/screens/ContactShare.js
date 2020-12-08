@@ -116,7 +116,6 @@ export default function ContactShare(props) {
   function processUserHtml(props, users) {
     let tmpUserHtml = [];
     users.map((user) => {
-      console.log(user.image.image);
       tmpUserHtml.push(
         <TouchableWithoutFeedback
           key={user.id}
@@ -208,6 +207,8 @@ export default function ContactShare(props) {
           request
             .get("user/byIds/", {
               ids: ids,
+              userId: userId,
+              type: "contact",
             })
             .then(function (response) {
               onUserHtmlChanged(processUserHtml(props, response.data.users));
