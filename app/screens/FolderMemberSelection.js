@@ -115,6 +115,7 @@ export default function FolderMemberSelection(props) {
                 type: "contact",
               })
               .then(function (response) {
+                console.log(response.data.users.length);
                 //response = get use details from url
                 onUserHtmlChanged(
                   processUserHtml(props, response.data.users, tmpFriend)
@@ -189,7 +190,11 @@ export default function FolderMemberSelection(props) {
       let item = friendMaps.filter((tmp) => {
         return tmp.id == user.id;
       });
-      item = item[0];
+      if(item.length > 0){
+        item = item[0];
+      } else {
+        item = null;
+      }
       tmpUserHtml.push(
         <TouchableWithoutFeedback
           key={user.id}
@@ -232,7 +237,7 @@ export default function FolderMemberSelection(props) {
                   color={Colors.E6DADE}
                   uncheckedColor={Colors.E6DADE}
                   disabled={false}
-                  value={item.checkStatus}
+                  value={item ? item.checkStatus : false}
                   onValueChange={() => onValueChange(user.id)}
                 />
               </View>

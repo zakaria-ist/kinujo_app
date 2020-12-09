@@ -29,6 +29,7 @@ export default function RegisterCompletion(props) {
         .get(url)
         .then(function (response) {
           response = response.data;
+          let user = response;
           let payload = response.payload;
           if (payload) {
             payload = JSON.parse(payload);
@@ -46,10 +47,17 @@ export default function RegisterCompletion(props) {
               payload: payload,
             })
             .then(function (response) {
-              props.navigation.reset({
-                index: 0,
-                routes: [{name: nextPage}],
-              });
+              if (user.is_store && !user.is_master && user.is_approved) {
+                props.navigation.reset({
+                  index: 0,
+                  routes: [{name: "HomeStore"}],
+                });
+              } else {
+                props.navigation.reset({
+                  index: 0,
+                  routes: [{name: "HomeGeneral"}],
+                });
+              }
             })
             .catch(function (error) {
               if (
@@ -123,11 +131,7 @@ export default function RegisterCompletion(props) {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            if (props.route.params.authority == "general") {
-              updateProfile("HomeGeneral");
-            } else {
-              updateProfile("HomeStore");
-            }
+            updateProfile();
           }}
         >
           <View style={styles.okButton}>
