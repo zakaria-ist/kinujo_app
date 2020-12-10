@@ -31,6 +31,7 @@ import i18n from "i18n-js";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
+import NextArrow from "../assets/icons/nextArrow.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -144,10 +145,11 @@ export default function SettingGeneral(props) {
               <Text style={styles.textInLeftContainer}>
                 {Translate.t("purchaseHistory")}
               </Text>
-              <Image
+              <NextArrow style={styles.nextIcon} />
+              {/* <Image
                 style={styles.nextIcon}
                 source={require("../assets/Images/next.png")}
-              />
+              /> */}
             </View>
           </TouchableWithoutFeedback>
 
@@ -169,10 +171,7 @@ export default function SettingGeneral(props) {
               <Text style={styles.textInLeftContainer}>
                 {Translate.t("setting")}
               </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
+              <NextArrow style={styles.nextIcon} />
             </View>
           </TouchableWithoutFeedback>
 
@@ -194,10 +193,7 @@ export default function SettingGeneral(props) {
               <Text style={styles.textInLeftContainer}>
                 {Translate.t("shippingList")}
               </Text>
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
+              <NextArrow style={styles.nextIcon} />
             </View>
           </TouchableWithoutFeedback>
           {Platform.OS == "ios" ? (
@@ -378,10 +374,12 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    // width: win.width / 38,
+    // height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
+    right: widthPercentageToDP("1%"),
   },
   textInLeftContainer: {
     marginLeft: widthPercentageToDP("12%"),

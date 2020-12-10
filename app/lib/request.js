@@ -106,7 +106,7 @@ class Request {
     db.collection("users")
       .doc(String(userId))
       .collection("friends")
-      .where("id", "=", String(friendId))
+      .where("id", "==", String(friendId))
       .get()
       .then((snapshot) => {
         if (snapshot && snapshot.size > 0) {
@@ -114,7 +114,7 @@ class Request {
             db.collection("users")
               .doc(String(userId))
               .collection("friends")
-              .doc(snapshot.id)
+              .doc(docRef.id)
               .set(
                 {
                   delete: false,

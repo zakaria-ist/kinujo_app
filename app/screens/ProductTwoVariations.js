@@ -76,7 +76,7 @@ export default function ProductTwoVariations({
       onProcessVariationHtml(processVariationHtml(items));
       onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
     } else {
-      globalMappingValue = {}
+      globalMappingValue = {};
       items = [
         {
           index: 0,
@@ -172,7 +172,7 @@ export default function ProductTwoVariations({
           <View
             style={{
               height: "100%",
-              marginHorizontal: widthPercentageToDP("1%"),
+              marginHorizontal: widthPercentageToDP("4%"),
               flexDirection: "row",
               alignItems: "flex-end",
             }}
@@ -182,10 +182,11 @@ export default function ProductTwoVariations({
             >
               <View
                 style={
-                  choice.choiceIndex == choices.length - 1
+                  choice.choiceIndex == choices.length
                     ? styles.addNewChoice
                     : styles.none
                 }
+                // style={styles.addNewChoice}
               >
                 <Text
                   style={{
@@ -348,6 +349,7 @@ export default function ProductTwoVariations({
             </View>
             <View style={styles.variantContainer}>
               <TextInput
+                maxLength={13}
                 style={styles.variantInput}
                 editable={!isDelete}
                 value={

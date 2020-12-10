@@ -134,7 +134,7 @@ export default function HomeStoreList(props) {
       if (!tmpJanCode.is_hidden) {
         tmpHtml.push(
           <View key={key} style={styles.variationTabs}>
-            <RadioButton
+            <RadioButton.Android
               status={selected === tmpJanCode.id ? "checked" : "unchecked"}
               onPress={() => {
                 onSelectedJanCodeChanged(tmpJanCode.id);
@@ -735,7 +735,7 @@ export default function HomeStoreList(props) {
                       marginLeft: widthPercentageToDP("1.3%"),
                     }}
                   >
-                    {Translate.t("productQuantity")}
+                    {Translate.t("unit")}
                   </Text>
                   <DropDownPicker
                     zIndex={999}

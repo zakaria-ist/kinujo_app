@@ -48,9 +48,8 @@ export default function FriendSearch(props) {
     ownUserID = urls[urls.length - 1];
   });
   function sendMessageHandler(friendID, friendName) {
-    request.addFriend(ownUserID, friendID);
-
-    let groupID;
+    request.addFriend(ownUserID, friendID).then(()=>{
+      let groupID;
     let groupName;
     chatRef
       .where("users", "array-contains", ownUserID)
@@ -93,6 +92,7 @@ export default function FriendSearch(props) {
             });
         }
       });
+    });
   }
 
   function processFriendHtml(props, friends) {

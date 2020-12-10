@@ -189,6 +189,7 @@ export default function ChatScreen(props) {
     if (showEmoji == false) {
       onShowEmojiChanged(true);
       setInputBarPosition(heightPercentageToDP("30%"));
+      scrollViewReference.current.scrollToEnd();
     } else {
       hideEmoji();
     }
@@ -217,7 +218,11 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={chat.data["delete_" + userId] || chat.data["delete"] ? true : false}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -287,7 +292,11 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={chat.data["delete_" + userId] || chat.data["delete"] ? true : false}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -359,7 +368,11 @@ export default function ChatScreen(props) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
-            delete={chat.data["delete_" + userId] || chat.data["delete"] ? true : false}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -594,7 +607,7 @@ export default function ChatScreen(props) {
             onClick={onClick}
             onRemove={onRemove}
           />
-          <CustomSecondaryHeader name={name} userUrl={userUrl}/>
+          <CustomSecondaryHeader name={name} userUrl={userUrl} />
           <LinearGradient
             colors={[Colors.E4DBC0, Colors.C2A059]}
             start={[0, 0]}
@@ -606,12 +619,13 @@ export default function ChatScreen(props) {
               onContentSizeChange={() =>
                 scrollViewReference.current.scrollToEnd({ animated: true })
               }
-              style={{
-                width: "100%",
-                paddingTop: heightPercentageToDP("1%"),
-                paddingBottom: heightPercentageToDP("5%"),
-              }}
+              style={
+                showEmoji == true
+                  ? styles.scrollViewStyleWithEmoji
+                  : styles.scrollViewStyleWithoutEmoji
+              }
             >
+              {console.log(showEmoji)}
               {chatHtml}
             </ScrollView>
           </LinearGradient>
@@ -660,10 +674,11 @@ export default function ChatScreen(props) {
                   <TouchableWithoutFeedback
                     onPress={() => {
                       let update = {};
-                      update["delete_" + userId] =
-                        longPressObj.data["delete_" + userId]
-                          ? false
-                          : true;
+                      update["delete_" + userId] = longPressObj.data[
+                        "delete_" + userId
+                      ]
+                        ? false
+                        : true;
                       db.collection("chat")
                         .doc(groupID)
                         .collection("messages")
@@ -681,10 +696,9 @@ export default function ChatScreen(props) {
                   <TouchableWithoutFeedback
                     onPress={() => {
                       let update = {};
-                      update["delete"] =
-                        longPressObj.data["delete"]
-                          ? false
-                          : true;
+                      update["delete"] = longPressObj.data["delete"]
+                        ? false
+                        : true;
                       db.collection("chat")
                         .doc(groupID)
                         .collection("messages")
@@ -1131,5 +1145,19 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("7%") - 20,
     width: heightPercentageToDP("7%") - 20,
     margin: "auto",
+  },
+  scrollViewStyleWithoutEmoji: {
+    width: "100%",
+    // paddingTop: heightPercentageToDP("1%"),
+    // paddingBottom: heightPercentageToDP("5%"),
+    marginBottom: 0,
+    // showEmoji == true ? heightPercentageToDP("30%") : 0,
+  },
+  scrollViewStyleWithEmoji: {
+    width: "100%",
+    // paddingTop: heightPercentageToDP("1%"),
+    // paddingBottom: heightPercentageToDP("5%"),
+    marginBottom: heightPercentageToDP("30%"),
+    // showEmoji == true ? heightPercentageToDP("30%") : 0,
   },
 });

@@ -63,7 +63,7 @@ export default function ProductOneVariations({
       onProcessVariationHtml(processVariationHtml(items));
       onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
     } else {
-      items = []
+      items = [];
       items.push({
         index: items.length,
         choice: "",
@@ -147,6 +147,7 @@ export default function ProductOneVariations({
                 </View>
                 <View style={styles.variantContainer}>
                   <TextInput
+                    maxLength={13}
                     style={styles.variantInput}
                     value={product.janCode}
                     onChangeText={(value) =>
