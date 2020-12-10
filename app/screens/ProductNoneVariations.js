@@ -30,12 +30,12 @@ export default function ProductNoneVariations({
   props,
   pItems,
   onItemsChanged,
+  type,
 }) {
   const [invt, hideInvt] = React.useState(false);
   const [janCode, setJanCode] = React.useState("");
-  const [stock, setStock] = React.useState("");
+  const [stock, setStock] = React.useState(0);
   const [id, setId] = React.useState("");
-
   React.useEffect(() => {
     if (pItems) {
       setJanCode(pItems.janCode);
@@ -45,7 +45,18 @@ export default function ProductNoneVariations({
       setStock(pItems.id);
     }
   }, [pItems]);
-
+  function handleStock(value) {
+    setStock(value.replace(/[^0-9]/g, ""));
+    if (onItemsChanged) {
+      onItemsChanged({
+        id: id,
+        janCode: janCode,
+        stock: stock,
+      });
+    }
+  }
+  console.log(janCode);
+  console.log(stock);
   return (
     <SafeAreaView>
       {/*項目名*/}
@@ -68,77 +79,86 @@ export default function ProductNoneVariations({
 
         <Text style={styles.text}>{Translate.t("inStock")}</Text>
         <TextInput
+          keyboardType={"numeric"}
           style={styles.textInput}
           value={stock}
           onChangeText={(value) => {
-            setStock(stock);
-            if (onItemsChanged) {
-              onItemsChanged({
-                id: id,
-                janCode: janCode,
-                stock: value,
-              });
-            }
+            setStock(value);
+            handleStock(value);
           }}
         ></TextInput>
 
         <View style={styles.line} />
       </View>
+      {type == "newProduct" ? (
+        <View></View>
+      ) : (
+        <View
+          style={{
+            width: widthPercentageToDP("89%"),
+          }}
+        >
+          <View>
+            <View style={styles.icon_title_wrapper}>
+              <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
+              <TouchableOpacity onPress={() => hideInvt(!invt)}>
+                {invt ? (
+                  <ArrowDownIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <ArrowUpIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
 
-      <View
-        style={{
-          width: widthPercentageToDP("89%"),
-        }}
-      >
-        {/*在庫*/}
-        <View style={styles.icon_title_wrapper}>
-          <Text style={styles.text}>{Translate.t("stockEdit")}</Text>
-          <TouchableOpacity onPress={() => hideInvt(!invt)}>
-            {invt ? (
-              <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />
-            ) : (
-              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
-            )}
-          </TouchableOpacity>
-        </View>
-        <View style={invt ? styles.none : null}>
-          <Text style={{ fontSize: RFValue(14) }}>
-            {Translate.t("stockEditWarning")}
-          </Text>
-          <Text style={{ fontSize: RFValue(14), marginBottom: 20 }}>
-            {Translate.t("stockEditDescription")}
-          </Text>
+            <View style={invt ? styles.none : null}>
+              <Text style={{ fontSize: RFValue(14) }}>
+                {Translate.t("stockEditWarning")}
+              </Text>
+              <Text style={{ fontSize: RFValue(14), marginBottom: 20 }}>
+                {Translate.t("stockEditDescription")}
+              </Text>
 
-          <View style={styles.variantContainer}>
-            <TouchableOpacity>
-              <View
-                style={{
-                  backgroundColor: Colors.deepGrey,
-                  marginTop: heightPercentageToDP("2%"),
-                  marginBottom: heightPercentageToDP("2%"),
-                  marginLeft: widthPercentageToDP("2%"),
-                  borderRadius: 5,
-                  alignItems: "center",
-                  padding: widthPercentageToDP("1%"),
-                  alignSelf: "flex-end",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: RFValue("11"),
-                    color: "#FFF",
-                  }}
-                >
-                  {Translate.t("stockRegister")}
+              <View style={styles.variantContainer}>
+                <TouchableOpacity>
+                  <View
+                    style={{
+                      backgroundColor: Colors.deepGrey,
+                      marginTop: heightPercentageToDP("2%"),
+                      marginBottom: heightPercentageToDP("2%"),
+                      marginLeft: widthPercentageToDP("2%"),
+                      borderRadius: 5,
+                      alignItems: "center",
+                      padding: widthPercentageToDP("1%"),
+                      alignSelf: "flex-end",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: RFValue("11"),
+                        color: "#FFF",
+                      }}
+                    >
+                      {Translate.t("stockRegister")}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TextInput style={styles.variantInput}></TextInput>
+                <Text style={styles.variantText}>
+                  {Translate.t("inStock")} :
                 </Text>
               </View>
-            </TouchableOpacity>
-            <TextInput style={styles.variantInput}></TextInput>
-            <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+            </View>
           </View>
+
+          <View style={styles.line} />
         </View>
-        <View style={styles.line} />
-      </View>
+      )}
     </SafeAreaView>
   );
 }

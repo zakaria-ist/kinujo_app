@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -26,6 +27,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { TextInput } from "react-native-gesture-handler";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
+import Person from "../assets/icons/default_avatar.svg";
+import AddMember from "../assets/icons/addMember.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -85,14 +88,36 @@ export default function CreateFolder(props) {
                 tmpUserHtml.push(
                   <TouchableWithoutFeedback key={user.id}>
                     <View style={styles.memberTabsContainer}>
-                      <Image
-                        style={{
-                          width: RFValue(40),
-                          height: RFValue(40),
-                          borderRadius: win.width / 2,
-                          backgroundColor: Colors.DCDCDC,
-                        }}
-                      />
+                      {user && user.image && user.image.image ? (
+                        <Image
+                          style={{
+                            width: RFValue(38),
+                            height: RFValue(38),
+                            borderRadius: win.width / 2,
+                            backgroundColor: Colors.DCDCDC,
+                          }}
+                          source={{ uri: user.image.image }}
+                        />
+                      ) : (
+                        // <Image
+                        //   style={{
+                        //     width: RFValue(38),
+                        //     height: RFValue(38),
+                        //     borderRadius: win.width / 2,
+                        //     // backgroundColor: Colors.DCDCDC,
+                        //   }}
+                        //   source={require("../assets/Images/profileEditingIcon.png")}
+                        // />
+                        <Person
+                          style={{
+                            width: RFValue(38),
+                            height: RFValue(38),
+                            borderRadius: win.width / 2,
+                            // backgroundColor: Colors.DCDCDC,
+                          }}
+                        />
+                      )}
+
                       <Text style={styles.folderText}>{user.nickname}</Text>
                     </View>
                   </TouchableWithoutFeedback>
@@ -105,31 +130,45 @@ export default function CreateFolder(props) {
       });
   }, [isFocused]);
   function folderCreate() {
-    if (folderName != "") {
-      AsyncStorage.removeItem("tmpIds");
-      if (friendIds) {
-        db.collection("users")
-          .doc(userId)
-          .collection("folders")
-          .add({
-            folderName: folderName,
-            type: "folder",
-            users: friendIds,
-            usersName: friendNames,
-          })
-          .then((docRef) => {
-            props.navigation.navigate("GroupFolderCreateCompletion", {
-              groupDocumentID: docRef.id,
+    if (friendIds.length != 0) {
+      if (folderName != "") {
+        AsyncStorage.removeItem("tmpIds");
+        if (friendIds) {
+          db.collection("users")
+            .doc(userId)
+            .collection("folders")
+            .add({
+              folderName: folderName,
               type: "folder",
-              groupName: folderName,
-              friendNames: friendNames,
-              friendIds: friendIds,
-              ownUserID: userId,
+              users: friendIds,
+              usersName: friendNames,
+            })
+            .then((docRef) => {
+              props.navigation.navigate("GroupFolderCreateCompletion", {
+                groupDocumentID: docRef.id,
+                type: "folder",
+                groupName: folderName,
+                friendNames: friendNames,
+                friendIds: friendIds,
+                ownUserID: userId,
+              });
             });
-          });
+        }
+      } else {
+        alert.warning("Please fill in the folder name");
       }
-    } else {
-      alert.warning("Please fill in the folder name");
+    } else if (friendIds.length == 0) {
+      Alert.alert(
+        Translate.t("warning"),
+        Translate.t("addOneOrMoreContact"),
+        [
+          {
+            text: "OK",
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
     }
   }
   function addMemberHandler() {
@@ -197,14 +236,14 @@ export default function CreateFolder(props) {
           </View>
           <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
             <View style={styles.memberListContainer}>
-              <Image
+              <AddMember
                 style={{
                   width: RFValue(38),
                   height: RFValue(38),
                   borderRadius: win.width / 2,
                   backgroundColor: Colors.E6DADE,
                 }}
-                source={require("../assets/Images/addMemberIcon.png")}
+                // source={require("../assets/Images/addMemberIcon.png")}
               />
               <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>

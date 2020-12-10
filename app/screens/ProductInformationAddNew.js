@@ -8,6 +8,8 @@ import {
   Button,
   TouchableOpacity,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
@@ -84,6 +86,7 @@ export default function ProductInformationAddNew(props) {
   const [spinner, onSpinnerChanged] = React.useState(false);
   const [product, onProductChanged] = React.useState(false);
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
+  let type = props.route.params.type;
   function getId(url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {
@@ -553,201 +556,206 @@ export default function ProductInformationAddNew(props) {
       />
       <CustomSecondaryHeader name={user.nickname} accountType={""} />
       <View style={{ height: height - heightPercentageToDP("20%") }}>
-        <ScrollView>
-          <View style={styles.formContainer}>
-            <Text style={styles.text}>{Translate.t("productName")}</Text>
-            <TextInput
-              style={styles.textInput}
-              value={productName}
-              onChangeText={(value) => {
-                onProductNameChanged(value);
-              }}
-            ></TextInput>
-
-            <Text style={styles.text}>{Translate.t("brandName")}</Text>
-            <TextInput
-              style={styles.textInput}
-              value={brandName}
-              onChangeText={(value) => onBrandNameChanged(value)}
-            ></TextInput>
-
-            <Text style={styles.text}>{Translate.t("prStatement")}</Text>
-            <TextInput
-              multiline={true}
-              numberOfLines={4}
-              style={styles.prStatementInput}
-              value={pr}
-              onChangeText={(value) => onPrChanged(value)}
-            ></TextInput>
-
-            <Text style={styles.text}>{Translate.t("productIDURL")}</Text>
-            <TextInput
-              style={styles.textInput}
-              value={productId}
-              onChangeText={(value) => onProductIdChanged(value)}
-            ></TextInput>
-
-            <Text style={styles.text}>{Translate.t("productCategory")}</Text>
-            <DropDownPicker
-              style={styles.text}
-              items={productCategories}
-              defaultValue={productCategory ? productCategory : null}
-              containerStyle={{
-                paddingVertical: 0,
-                width: widthPercentageToDP("86%"),
-              }}
-              labelStyle={{
-                fontSize: RFValue(12),
-                color: "gray",
-              }}
-              itemStyle={{
-                justifyContent: "flex-start",
-              }}
-              selectedtLabelStyle={{
-                color: Colors.F0EEE9,
-              }}
-              dropDownStyle={{
-                backgroundColor: "#FFFFFF",
-                color: "black",
-                zIndex: 1000,
-              }}
-              placeholder={""}
-              onChangeItem={(ci) => {
-                onProductCategoryChanged(ci.value);
-              }}
-            />
-
-            <Text style={styles.text}>{Translate.t("variation")}</Text>
-            <View style={styles.radioGroupContainer}>
-              <RadioButton.Group
-                style={{ alignItems: "flex-start" }}
-                onValueChange={(variant) => {
-                  if (!props.route.params.url) {
-                    onValueChanged(variant);
-                  }
+        <KeyboardAvoidingView>
+          <ScrollView>
+            <View style={styles.formContainer}>
+              <Text style={styles.text}>{Translate.t("productName")}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={productName}
+                onChangeText={(value) => {
+                  onProductNameChanged(value);
                 }}
-                value={productVariation}
-              >
-                <View style={styles.radionButtonLabel}>
-                  <RadioButton.Android
-                    value="one"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {"1 "}
-                    {Translate.t("item")}
-                  </Text>
-                </View>
-                <View style={styles.radionButtonLabel}>
-                  <RadioButton.Android
-                    value="two"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {"2 "}
-                    {Translate.t("item")}
-                  </Text>
-                </View>
-                <View style={styles.radionButtonLabel}>
-                  <RadioButton.Android
-                    value="none"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("none")}
-                  </Text>
-                </View>
-              </RadioButton.Group>
-            </View>
+              ></TextInput>
 
-            <View style={styles.line} />
+              <Text style={styles.text}>{Translate.t("brandName")}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={brandName}
+                onChangeText={(value) => onBrandNameChanged(value)}
+              ></TextInput>
 
-            {/*1 項目*/}
-            <View style={productVariation !== "one" ? styles.none : null}>
-              <ProductOneVariations
-                pItems={oneVariationItems}
-                onItemsChanged={(items) => {
-                  onOneVariationItemsChanged(items);
+              <Text style={styles.text}>{Translate.t("prStatement")}</Text>
+              <TextInput
+                multiline={true}
+                numberOfLines={4}
+                style={styles.prStatementInput}
+                value={pr}
+                onChangeText={(value) => onPrChanged(value)}
+              ></TextInput>
+
+              <Text style={styles.text}>{Translate.t("productIDURL")}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={productId}
+                onChangeText={(value) => onProductIdChanged(value)}
+              ></TextInput>
+
+              <Text style={styles.text}>{Translate.t("productCategory")}</Text>
+              <DropDownPicker
+                style={styles.text}
+                items={productCategories}
+                defaultValue={productCategory ? productCategory : null}
+                containerStyle={{
+                  paddingVertical: 0,
+                  width: widthPercentageToDP("86%"),
+                }}
+                labelStyle={{
+                  fontSize: RFValue(12),
+                  color: "gray",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.F0EEE9,
+                }}
+                dropDownStyle={{
+                  backgroundColor: "#FFFFFF",
+                  color: "black",
+                  zIndex: 1000,
+                }}
+                placeholder={""}
+                onChangeItem={(ci) => {
+                  onProductCategoryChanged(ci.value);
                 }}
               />
-            </View>
-            <View style={productVariation !== "two" ? styles.none : null}>
-              <ProductTwoVariations
-                pItems={twoVariationItems}
-                onItemsChanged={(items) => {
-                  onTwoVariationItemsChanged(items);
-                }}
-              />
-            </View>
-            <View style={productVariation !== "none" ? styles.none : null}>
-              {
-                <ProductNoneVariations
-                  pItems={noneVariationItems}
+
+              <Text style={styles.text}>{Translate.t("variation")}</Text>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  style={{ alignItems: "flex-start" }}
+                  onValueChange={(variant) => {
+                    if (!props.route.params.url) {
+                      onValueChanged(variant);
+                    }
+                  }}
+                  value={productVariation}
+                >
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="one"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {"1 "}
+                      {Translate.t("item")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="two"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {"2 "}
+                      {Translate.t("item")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="none"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("none")}
+                    </Text>
+                  </View>
+                </RadioButton.Group>
+              </View>
+
+              <View style={styles.line} />
+
+              {/*1 項目*/}
+              <View style={productVariation !== "one" ? styles.none : null}>
+                <ProductOneVariations
+                  pItems={oneVariationItems}
+                  // type={type}
                   onItemsChanged={(items) => {
-                    onNoneVariationItemsChanged(items);
+                    onOneVariationItemsChanged(items);
                   }}
                 />
-              }
-            </View>
+              </View>
+              <View style={productVariation !== "two" ? styles.none : null}>
+                <ProductTwoVariations
+                  pItems={twoVariationItems}
+                  // type={type}
+                  onItemsChanged={(items) => {
+                    onTwoVariationItemsChanged(items);
+                  }}
+                />
+              </View>
+              <View style={productVariation !== "none" ? styles.none : null}>
+                {
+                  <ProductNoneVariations
+                    pItems={noneVariationItems}
+                    type={type}
+                    onItemsChanged={(items) => {
+                      onNoneVariationItemsChanged(items);
+                    }}
+                  />
+                }
+              </View>
 
-            <Text style={styles.text}>{Translate.t("publishState")}</Text>
-            <View style={styles.radioGroupContainer}>
-              <RadioButton.Group
-                onValueChange={(newValue) => onPublishStateChanged(newValue)}
-                value={publishState}
-              >
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="published"
-                />
+              <Text style={styles.text}>{Translate.t("publishState")}</Text>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  onValueChange={(newValue) => onPublishStateChanged(newValue)}
+                  value={publishState}
+                >
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="published"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("published")}
+                  </Text>
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="unpublished"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("nonPublished")}
+                  </Text>
+                </RadioButton.Group>
+              </View>
+              <View style={styles.releaseDateContainer}>
                 <Text style={styles.radioButtonText}>
-                  {Translate.t("published")}
+                  {Translate.t("publishedDate")} :
                 </Text>
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="unpublished"
-                />
-                <Text style={styles.radioButtonText}>
-                  {Translate.t("nonPublished")}
-                </Text>
-              </RadioButton.Group>
-            </View>
-            <View style={styles.releaseDateContainer}>
-              <Text style={styles.radioButtonText}>
-                {Translate.t("publishedDate")} :
-              </Text>
-              {/* {publishDate ? (
+                {/* {publishDate ? (
                 <Text style={fontSize}>{publishDate}</Text>
               ) : ( */}
-              <DatePicker
-                title="Select Published Date"
-                placeholder="Select Published Date"
-                textStyle={((alignSelf = "center"), (color = "blue"))}
-                style={{
-                  color: "white",
-                  fontSize: RFValue(12),
-                  borderWidth: 1,
-                  width: widthPercentageToDP("60%"),
-                  height: heightPercentageToDP("5%"),
-                  alignItems: "center",
-                  color: "black",
-                  borderRadius: 5,
-                  marginLeft: widthPercentageToDP("3%"),
-                  paddingLeft: widthPercentageToDP("7%"),
-                  paddingVertical: heightPercentageToDP("1%"),
-                  // borderColor: Colors.CECECE,
-                }}
-                onDateChange={(date) => {
-                  onPublishDateChanged(date);
-                }}
-              />
-              {/* )} */}
-              {/* <DatePicker
+                <DatePicker
+                  // title="Select Published Date"
+                  placeholder="Select Published Date"
+                  initialValue={new Date()}
+                  textStyle={((alignSelf = "center"), (color = "blue"))}
+                  style={{
+                    color: "white",
+                    fontSize: RFValue(12),
+                    borderWidth: 1,
+                    width: widthPercentageToDP("60%"),
+                    height: heightPercentageToDP("5%"),
+                    alignItems: "center",
+                    color: "black",
+                    borderRadius: 5,
+                    marginLeft: widthPercentageToDP("3%"),
+                    paddingLeft: widthPercentageToDP("7%"),
+                    paddingVertical: heightPercentageToDP("1%"),
+                    // borderColor: Colors.CECECE,
+                  }}
+                  onDateChange={(date) => {
+                    onPublishDateChanged(date);
+                  }}
+                />
+                {/* )} */}
+                {/* <DatePicker
                 style={{
                   marginLeft: widthPercentageToDP("1%"),
                   width: widthPercentageToDP("40%"),
@@ -757,123 +765,129 @@ export default function ProductInformationAddNew(props) {
                   onPublishDateChanged(date);
                 }}
               /> */}
-              {/* <TextInput
+                {/* <TextInput
                 style={styles.releaseDateTextInput}
                 value={publishDate}
                 onChangeText={(value) => onPublishDateChanged(value)}
               ></TextInput> */}
-            </View>
-            <Text style={styles.releaseDateWarningText}>
-              {Translate.t("publishWarning")}
-            </Text>
-            <Text style={styles.text}>{Translate.t("productStatus")}</Text>
-            <View style={styles.radioGroupContainer}>
-              <RadioButton.Group
-                onValueChange={(newValue) => onProductStatusChanged(newValue)}
-                value={productStatus}
-              >
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="new"
-                />
-                <Text style={styles.radioButtonText}>{Translate.t("new")}</Text>
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="secondHand"
-                />
-                <Text style={styles.radioButtonText}>
-                  {Translate.t("secondHand")}
-                </Text>
-              </RadioButton.Group>
-            </View>
-            <Text style={styles.text}>{Translate.t("targetUser")}</Text>
-            <View style={styles.radioGroupContainer}>
-              <RadioButton.Group
-                onValueChange={(newValue) => onTargetUserChanged(newValue)}
-                value={targetUser}
-              >
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="allUser"
-                />
-                <Text style={styles.radioButtonText}>
-                  {Translate.t("allUser")}
-                </Text>
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="generalUser"
-                />
-                <Text style={styles.radioButtonText}>
-                  {Translate.t("generalUser")}
-                </Text>
-                <RadioButton.Android
-                  uncheckedColor="#FFF"
-                  color="#BD9848"
-                  value="storeUser"
-                />
-                <Text style={styles.radioButtonText}>
-                  {Translate.t("storeUser")}
-                </Text>
-              </RadioButton.Group>
-            </View>
-            <Text style={styles.releaseDateWarningText}>
-              {Translate.t("notVisibleToUser")}
-            </Text>
-            <Text style={styles.text}>
-              {Translate.t("pricingExcludingTax")}
-            </Text>
-            <View
-              style={{
-                width: "100%",
-              }}
-            >
-              <View style={styles.productPricingContainer}>
-                <TextInput
-                  keyboardType={"numeric"}
-                  style={styles.productPricingTextInput}
-                  value={price}
-                  onChangeText={(value) => {
-                    handleGeneralPrice(value);
-                  }}
-                ></TextInput>
-                <Text style={styles.productPricingText}>
-                  {Translate.t("generalPrice")} :
-                </Text>
               </View>
-              <View style={styles.productPricingContainer}>
-                <TextInput
-                  editable={false}
-                  keyboardType={"numeric"}
-                  style={styles.storePriceInput}
-                  value={storePrice}
-                  onChangeText={(value) => onStorePriceChanged(value)}
-                ></TextInput>
-                <View style={{ alignItems: "flex-end" }}>
-                  <Text style={styles.productPricingText}>
-                    {Translate.t("storePrice")} :
+              <Text style={styles.releaseDateWarningText}>
+                {Translate.t("publishWarning")}
+              </Text>
+              <Text style={styles.text}>{Translate.t("productStatus")}</Text>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  onValueChange={(newValue) => onProductStatusChanged(newValue)}
+                  value={productStatus}
+                >
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="new"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("new")}
                   </Text>
-                  <Text style={{ color: "red", fontSize: RFValue(7) }}>
-                    {Translate.t("automaticCalculation")}
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="secondHand"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("secondHand")}
+                  </Text>
+                </RadioButton.Group>
+              </View>
+              <Text style={styles.text}>{Translate.t("targetUser")}</Text>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  onValueChange={(newValue) => onTargetUserChanged(newValue)}
+                  value={targetUser}
+                >
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="allUser"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("allUser")}
+                  </Text>
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="generalUser"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("generalUser")}
+                  </Text>
+                  <RadioButton.Android
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                    value="storeUser"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("storeUser")}
+                  </Text>
+                </RadioButton.Group>
+              </View>
+              <Text style={styles.releaseDateWarningText}>
+                {Translate.t("notVisibleToUser")}
+              </Text>
+              <Text style={styles.text}>
+                {Translate.t("pricingExcludingTax")}
+              </Text>
+              <View
+                style={{
+                  width: "100%",
+                  paddingTop: RFValue(10),
+                }}
+              >
+                <View style={styles.productPricingContainer}>
+                  <Text style={styles.productCurrency}>円</Text>
+                  <TextInput
+                    keyboardType={"numeric"}
+                    style={styles.productPricingTextInput}
+                    value={price}
+                    onChangeText={(value) => {
+                      handleGeneralPrice(value);
+                    }}
+                  ></TextInput>
+                  <Text style={styles.productPricingText}>
+                    {Translate.t("generalPrice")} :
+                  </Text>
+                </View>
+                <View style={styles.productPricingContainer}>
+                  <Text style={styles.productCurrency}>円</Text>
+                  <TextInput
+                    editable={false}
+                    keyboardType={"numeric"}
+                    style={styles.storePriceInput}
+                    value={storePrice}
+                    onChangeText={(value) => onStorePriceChanged(value)}
+                  ></TextInput>
+                  <View style={{ alignItems: "flex-end" }}>
+                    <Text style={styles.productPricingText}>
+                      {Translate.t("storePrice")} :
+                    </Text>
+                    <Text style={{ color: "red", fontSize: RFValue(7) }}>
+                      {Translate.t("automaticCalculation")}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.productPricingContainer}>
+                  <Text style={styles.productCurrency}>円</Text>
+                  <TextInput
+                    keyboardType={"numeric"}
+                    style={styles.productPricingTextInput}
+                    value={shipping}
+                    onChangeText={(value) => handleShippingPrice(value)}
+                  ></TextInput>
+                  <Text style={styles.productPricingText}>
+                    {Translate.t("shipping")} :
                   </Text>
                 </View>
               </View>
-              <View style={styles.productPricingContainer}>
-                <TextInput
-                  keyboardType={"numeric"}
-                  style={styles.productPricingTextInput}
-                  value={shipping}
-                  onChangeText={(value) => handleShippingPrice(value)}
-                ></TextInput>
-                <Text style={styles.productPricingText}>
-                  {Translate.t("shipping")} :
-                </Text>
-              </View>
-            </View>
-            {/* <Text style={[styles.text, { marginTop: 15 }]}>
+              {/* <Text style={[styles.text, { marginTop: 15 }]}>
               {Translate.t("productPageDisplayMethod")}
             </Text>
             <View style={styles.radioGroupContainer}>
@@ -902,193 +916,212 @@ export default function ProductInformationAddNew(props) {
                 </Text>
               </RadioButton.Group>
             </View> */}
-            <Text style={styles.text}>{Translate.t("productImage")}</Text>
-            {productImageHtml}
-            <View
-              style={{
-                marginTop: heightPercentageToDP("1%"),
-                marginBottom: heightPercentageToDP("1%"),
-                height: 1,
-                width: "100%",
-                height: heightPercentageToDP("30%"),
-                borderRadius: 1,
-                borderWidth: 1,
-                borderColor: Colors.deepGrey,
-                borderStyle: "dashed",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              {productImages.length < 5 ? (
-                <TouchableWithoutFeedback
-                  style={{
-                    width: "100%",
-                    height: heightPercentageToDP("30%"),
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  onPress={() => {
-                    const options = {
-                      noData: true,
-                    };
-                    ImagePicker.launchImageLibrary(options, (response) => {
-                      if (response.uri) {
-                        const formData = new FormData();
-                        formData.append("image", {
-                          ...response,
-                          uri:
-                            Platform.OS === "android"
-                              ? response.uri
-                              : response.uri.replace("file://", ""),
-                          name: "mobile-" + uuid.v4() + ".jpg",
-                          type: "image/jpeg", // it may be necessary in Android.
-                        });
-                        request
-                          .post("images/", formData, {
-                            "Content-Type": "multipart/form-data",
-                          })
-                          .then((response) => {
-                            let tmpImages = productImages;
-                            tmpImages.push(response.data);
-                            onProductImagesChanged(tmpImages);
-                            let html = [];
-                            tmpImages.map((image) => {
-                              html.push(
-                                <View
-                                  key={image.id}
-                                  style={{
-                                    marginTop: heightPercentageToDP("1%"),
-                                    height: 1,
-                                    width: "100%",
-                                    height: heightPercentageToDP("30%"),
-                                    borderRadius: 1,
-                                    borderWidth: 1,
-                                    borderColor: Colors.deepGrey,
-                                    borderStyle: "dashed",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Image
+              <Text style={styles.text}>{Translate.t("productImage")}</Text>
+              {productImageHtml}
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("1%"),
+                  marginBottom: heightPercentageToDP("1%"),
+                  height: 1,
+                  width: "100%",
+                  height: heightPercentageToDP("30%"),
+                  borderRadius: 1,
+                  borderWidth: 1,
+                  borderColor: Colors.deepGrey,
+                  borderStyle: "dashed",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {productImages.length < 5 ? (
+                  <TouchableWithoutFeedback
+                    style={{
+                      width: "100%",
+                      height: heightPercentageToDP("30%"),
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      const options = {
+                        noData: true,
+                      };
+                      ImagePicker.launchImageLibrary(options, (response) => {
+                        if (response.uri) {
+                          const formData = new FormData();
+                          formData.append("image", {
+                            ...response,
+                            uri:
+                              Platform.OS === "android"
+                                ? response.uri
+                                : response.uri.replace("file://", ""),
+                            name: "mobile-" + uuid.v4() + ".jpg",
+                            type: "image/jpeg", // it may be necessary in Android.
+                          });
+                          request
+                            .post("images/", formData, {
+                              "Content-Type": "multipart/form-data",
+                            })
+                            .then((response) => {
+                              let tmpImages = productImages;
+                              tmpImages.push(response.data);
+                              onProductImagesChanged(tmpImages);
+                              let html = [];
+                              tmpImages.map((image) => {
+                                html.push(
+                                  <View
+                                    key={image.id}
                                     style={{
+                                      marginTop: heightPercentageToDP("1%"),
+                                      height: 1,
                                       width: "100%",
                                       height: heightPercentageToDP("30%"),
-                                      position: "absolute",
+                                      borderRadius: 1,
+                                      borderWidth: 1,
+                                      borderColor: Colors.deepGrey,
+                                      borderStyle: "dashed",
+                                      justifyContent: "center",
+                                      alignItems: "center",
                                     }}
-                                    source={{ uri: image.image }}
-                                  />
-                                </View>
-                              );
+                                  >
+                                    <Image
+                                      style={{
+                                        width: "100%",
+                                        height: heightPercentageToDP("30%"),
+                                        position: "absolute",
+                                      }}
+                                      source={{ uri: image.image }}
+                                    />
+                                  </View>
+                                );
+                              });
+                              onProductImageHtmlChanged(html);
+                            })
+                            .catch((error) => {
+                              alert.warning(JSON.stringify(error));
+                              if (
+                                error &&
+                                error.response &&
+                                error.response.data &&
+                                Object.keys(error.response.data).length > 0
+                              ) {
+                                alert.warning(
+                                  error.response.data[
+                                    Object.keys(error.response.data)[0]
+                                  ][0]
+                                );
+                              }
                             });
-                            onProductImageHtmlChanged(html);
-                          })
-                          .catch((error) => {
-                            alert.warning(JSON.stringify(error));
-                            if (
-                              error &&
-                              error.response &&
-                              error.response.data &&
-                              Object.keys(error.response.data).length > 0
-                            ) {
-                              alert.warning(
-                                error.response.data[
-                                  Object.keys(error.response.data)[0]
-                                ][0]
-                              );
-                            }
-                          });
-                      }
-                    });
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: win.width / 10,
-                      height: 28 * ratioProductAddIcon,
-                      position: "absolute",
-                    }}
-                    source={require("../assets/Images/productAddIcon.png")}
-                  />
-                  <Text
-                    style={{
-                      marginTop: heightPercentageToDP("15%"),
-                      fontSize: RFValue(12),
+                        }
+                      });
                     }}
                   >
-                    {Translate.t("uploadAPhoto")}
+                    <Image
+                      style={{
+                        width: win.width / 10,
+                        height: 28 * ratioProductAddIcon,
+                        position: "absolute",
+                      }}
+                      source={require("../assets/Images/productAddIcon.png")}
+                    />
+                    <Text
+                      style={{
+                        marginTop: heightPercentageToDP("15%"),
+                        fontSize: RFValue(12),
+                      }}
+                    >
+                      {Translate.t("uploadAPhoto")}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                ) : null}
+              </View>
+              <Text style={styles.text}>
+                {Translate.t("productDescription")}
+              </Text>
+              <TextInput
+                style={styles.productDescriptionInput}
+                multiline={true}
+                value={productDescription}
+                onChangeText={(value) => onProductDescriptionChanged(value)}
+              ></TextInput>
+            </View>
+            <View style={styles.allButtonContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (props.route.params.url) {
+                    saveProduct(1);
+                  } else {
+                    createProduct(1);
+                  }
+                }}
+              >
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>
+                    {Translate.t("saveDraft")}
                   </Text>
-                </TouchableWithoutFeedback>
-              ) : null}
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  if (productImages.length == 0) {
+                    Alert.alert(
+                      Translate.t("warning"),
+                      Translate.t("uploadPicture"),
+                      [
+                        {
+                          text: "OK",
+                          onPress: () => {},
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  } else {
+                    if (props.route.params.url) {
+                      saveProduct(0);
+                    } else {
+                      createProduct(0);
+                    }
+                  }
+                }}
+              >
+                <View style={styles.buttonContainer}>
+                  <Text style={styles.buttonText}>
+                    {Translate.t("listing")}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.text}>{Translate.t("productDescription")}</Text>
-            <TextInput
-              style={styles.productDescriptionInput}
-              multiline={true}
-              value={productDescription}
-              onChangeText={(value) => onProductDescriptionChanged(value)}
-            ></TextInput>
-          </View>
-          <View style={styles.allButtonContainer}>
             <TouchableOpacity
               onPress={() => {
-                if (props.route.params.url) {
-                  saveProduct(1);
-                } else {
-                  createProduct(1);
-                }
+                request
+                  .patch(props.route.params.url, {
+                    is_hidden: 1,
+                  })
+                  .then((response) => {
+                    props.navigation.pop();
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
               }}
             >
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>
-                  {Translate.t("saveDraft")}
-                </Text>
+              <View
+                style={{
+                  backgroundColor: Colors.E6DADE,
+                  width: widthPercentageToDP("35%"),
+                  borderRadius: 5,
+                  alignSelf: "center",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: heightPercentageToDP("6%"),
+                  padding: widthPercentageToDP("1.4%"),
+                  marginBottom: heightPercentageToDP("3%"),
+                }}
+              >
+                <Text style={styles.buttonText}>{Translate.t("delete")}</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                if (props.route.params.url) {
-                  saveProduct(0);
-                } else {
-                  createProduct(0);
-                }
-              }}
-            >
-              <View style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>{Translate.t("listing")}</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              request
-                .patch(props.route.params.url, {
-                  is_hidden: 1,
-                })
-                .then((response) => {
-                  props.navigation.pop();
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-            }}
-          >
-            <View
-              style={{
-                backgroundColor: Colors.E6DADE,
-                width: widthPercentageToDP("35%"),
-                borderRadius: 5,
-                alignSelf: "center",
-                alignItems: "center",
-                justifyContent: "center",
-                height: heightPercentageToDP("6%"),
-                padding: widthPercentageToDP("1.4%"),
-                marginBottom: heightPercentageToDP("3%"),
-              }}
-            >
-              <Text style={styles.buttonText}>{Translate.t("delete")}</Text>
-            </View>
-          </TouchableOpacity>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </SafeAreaView>
   );
@@ -1200,6 +1233,13 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),
   },
+  productCurrency: {
+    position: "absolute",
+    top: heightPercentageToDP("1%"),
+    paddingTop: RFValue(10),
+    left: widthPercentageToDP("2%"),
+    zIndex: 10,
+  },
   storePriceInput: {
     borderWidth: 0,
     backgroundColor: "#D3D3D3",
@@ -1213,6 +1253,7 @@ const styles = StyleSheet.create({
   productPricingContainer: {
     flexDirection: "row-reverse",
     alignItems: "center",
+    position: "relative",
   },
   productPricingText: {
     fontSize: RFValue(9),

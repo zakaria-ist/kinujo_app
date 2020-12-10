@@ -29,6 +29,7 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import DefaultAvatar from "../assets/icons/default_avatar.svg";
 const db = firebase.firestore();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
@@ -184,9 +185,9 @@ export default function ChatContact({
                   source={{ uri: contactImage }}
                 />
               ) : (
-                <Image
+                <DefaultAvatar
                   style={styles.contact_avatar}
-                  source={require("../assets/Images/profileEditingIcon.png")}
+                  resizeMode="contain"
                 />
               )}
               <Text style={styles.contact_name}>{contactName}</Text>
@@ -284,8 +285,8 @@ const styles = StyleSheet.create({
     borderRadius: width / 2,
     borderColor: "#464A00",
     borderWidth: 1,
-    width: RFValue(50),
-    height: RFValue(50),
+    width: RFValue(35),
+    height: RFValue(35),
     marginLeft: 5,
     marginRight: 5,
     backgroundColor: "#fff",

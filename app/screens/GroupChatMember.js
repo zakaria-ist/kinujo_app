@@ -27,6 +27,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import CheckBox from "@react-native-community/checkbox";
 import { search } from "react-native-country-picker-modal/lib/CountryService";
+import Person from "../assets/icons/default_avatar.svg";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -39,7 +40,7 @@ const db = firebase.firestore();
 let ids = [];
 let tmpFriend = [];
 let tmpFriendIds = [];
-let users = []
+let users = [];
 export default function FolderMemberSelection(props) {
   const [searchText, onSearchTextChanged] = React.useState("");
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
@@ -163,9 +164,9 @@ export default function FolderMemberSelection(props) {
     let tmpUserHtml = [];
     users.map((user) => {
       let item = friendMaps.filter((tmp) => {
-        return tmp.id == user.id;
+        return tmp.id == user.id && tmp.id != userId;
       });
-      if(item.length > 0){
+      if (item.length > 0) {
         item = item[0];
       } else {
         item = null;
@@ -184,7 +185,14 @@ export default function FolderMemberSelection(props) {
                 source={{ uri: user.image.image }}
               />
             ) : (
-              <Image style={styles.memberImage} />
+              <Person
+                style={{
+                  width: RFValue(40),
+                  height: RFValue(40),
+                  borderRadius: win.width / 2,
+                  // backgroundColor: Colors.DCDCDC,
+                }}
+              />
             )}
             <Text style={styles.tabContainerText}>{user.nickname}</Text>
             <View style={styles.checkBoxContainer}>
@@ -249,14 +257,18 @@ export default function FolderMemberSelection(props) {
               <TextInput
                 value={searchText}
                 onChangeText={(value) => {
-                  onSearchTextChanged(value)
+                  onSearchTextChanged(value);
 
                   let tmpUsers = users.filter((user) => {
-                    return JSON.stringify(user).toLowerCase().indexOf(value.toLowerCase()) >= 0;
-                  })
+                    return (
+                      JSON.stringify(user)
+                        .toLowerCase()
+                        .indexOf(value.toLowerCase()) >= 0
+                    );
+                  });
                   onUserHtmlChanged(
                     processUserHtml(props, tmpUsers, tmpFriend)
-                  );  
+                  );
                 }}
                 placeholder={Translate.t("search")}
                 placeholderTextColor={Colors.grey}

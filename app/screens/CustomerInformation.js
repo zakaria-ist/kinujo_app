@@ -29,6 +29,9 @@ import QRCodeIcon from "react-native-qrcode-svg";
 import CloseBlackIcon from "../assets/icons/close_black.svg";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { useIsFocused } from "@react-navigation/native";
+import QRCode from "../assets/icons/qrcode.svg";
+import Chat from "../assets/icons/chat.svg";
+import Next from "../assets/icons/nextArrow.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -389,9 +392,9 @@ export default function CustomerInformation(props) {
             <Text style={styles.textInContainer}>
               {Translate.t("folderSetting")}
             </Text>
-            <Image
+            <Next
               style={styles.nextIcon}
-              source={require("../assets/Images/next.png")}
+              // source={require("../assets/Images/next.png")}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -418,9 +421,9 @@ export default function CustomerInformation(props) {
               >
                 QQ
               </Text>
-              <Image
+              <Next
                 style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
+                // source={require("../assets/Images/next.png")}
               />
             </View>
           </View>
@@ -436,9 +439,9 @@ export default function CustomerInformation(props) {
             <Text style={styles.textInContainer}>
               {Translate.t("advancedSetting")}
             </Text>
-            <Image
+            <Next
               style={styles.nextIcon}
-              source={require("../assets/Images/next.png")}
+              // source={require("../assets/Images/next.png")}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -452,12 +455,18 @@ export default function CustomerInformation(props) {
         >
           <TouchableWithoutFeedback onPress={sendMessageHandler}>
             <View style={{ alignItems: "center" }}>
-              <Image
+              {/* <Image
                 style={{
                   width: win.width / 12,
                   height: 18 * ratioChatIcon,
                 }}
                 source={require("../assets/Images/chatIcon.png")}
+              /> */}
+              <Chat
+                style={{
+                  width: win.width / 12,
+                  height: 18 * ratioChatIcon,
+                }}
               />
               <Text style={styles.textForQRandMessage}>
                 {Translate.t("sendAMessage")}
@@ -466,12 +475,11 @@ export default function CustomerInformation(props) {
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback onPress={() => setPopupQR(true)}>
             <View style={{ alignItems: "center" }}>
-              <Image
+              <QRCode
                 style={{
                   width: win.width / 13,
                   height: 21 * ratioQRIcon,
                 }}
-                source={require("../assets/Images/QRIcon.png")}
               />
               <Text style={styles.textForQRandMessage}>
                 {Translate.t("QRCode")}
@@ -584,8 +592,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.F0EEE9,
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
     right: 0,
   },

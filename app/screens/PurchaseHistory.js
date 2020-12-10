@@ -11,6 +11,7 @@ import {
   Button,
   Animated,
   SafeAreaView,
+  TextInput,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -24,10 +25,12 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-import { TextInput, TouchableOpacity } from "react-native-gesture-handler";
 import firebase from "firebase/app";
+import Next from "../assets/icons/nextArrow.svg";
+import Search from "../assets/icons/search.svg";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
+import Shop from "../assets/icons/shop.svg";
 const db = firebase.firestore();
 var kanjidate = require("kanjidate");
 import Format from "../lib/format";
@@ -38,7 +41,7 @@ const win = Dimensions.get("window");
 const ratioStoreIcon = win.width / 12 / 20;
 const ratioNext = win.width / 38 / 8;
 const ratioSearch = win.width / 24 / 19;
-const ratioCancel = win.width / 42 / 15;
+const ratioCancel = win.width / 25 / 15;
 let userId;
 export default function PurchaseHistory(props) {
   const [orders, onOrdersChanged] = React.useState({});
@@ -75,7 +78,7 @@ export default function PurchaseHistory(props) {
                     height: RFValue(45),
                     width: RFValue(45),
                   }}
-                  source={require("../assets/Images/profileEditingIcon.png")}
+                  source={require("../assets/Images/cover_img.jpg")}
                 />
                 <View
                   style={{
@@ -93,10 +96,15 @@ export default function PurchaseHistory(props) {
                   </Text>
                   <Text>{format.separator(order.unit_price)} 円</Text>
                 </View>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <View
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("3%"),
+                  }}
+                >
+                  <Next style={styles.nextIcon} />
+                </View>
               </View>
 
               <TouchableWithoutFeedback
@@ -112,10 +120,15 @@ export default function PurchaseHistory(props) {
                   <Text style={styles.productInformationText}>
                     {Translate.t("detail")}
                   </Text>
-                  <Image
-                    style={styles.nextIcon}
-                    source={require("../assets/Images/next.png")}
-                  />
+                  <View
+                    style={{
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("3%"),
+                    }}
+                  >
+                    <Next style={styles.nextIcon} />
+                  </View>
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
@@ -127,19 +140,25 @@ export default function PurchaseHistory(props) {
                   <Text style={styles.productInformationText}>
                     {Translate.t("inquiry")}
                   </Text>
-                  <Image
-                    style={styles.nextIcon}
-                    source={require("../assets/Images/next.png")}
-                  />
+                  <View
+                    style={{
+                      position: "absolute",
+                      // paddingVertical: heightPercentageToDP("2%"),
+                      right: 0,
+                      marginRight: widthPercentageToDP("3%"),
+                    }}
+                  >
+                    <Next style={styles.nextIcon} />
+                  </View>
                 </View>
               </TouchableWithoutFeedback>
               <View style={styles.productInformationContainer}>
-                <Image
+                <Shop
                   style={{
                     width: win.width / 12,
                     height: 17 * ratioStoreIcon,
                   }}
-                  source={require("../assets/Images/purchaseHistoryProductStoreIcon.png")}
+                  // source={require("../assets/Images/purchaseHistoryProductStoreIcon.png")}
                 />
                 <Text
                   style={{
@@ -390,16 +409,16 @@ export default function PurchaseHistory(props) {
                 marginHorizontal: widthPercentageToDP("1.5%"),
               }}
             >
-              <Image
+              <Search
                 style={{
                   width: win.width / 24,
                   height: ratioSearch * 19,
                   position: "absolute",
                   left: 0,
-                  marginLeft: widthPercentageToDP("4%"),
+                  marginLeft: widthPercentageToDP("3%"),
                   alignSelf: "center",
+                  zIndex: 1,
                 }}
-                source={require("../assets/Images/searchIcon.png")}
               />
               <TextInput
                 placeholder="Product Name"
@@ -499,45 +518,59 @@ export default function PurchaseHistory(props) {
                 flexDirection: "row",
                 alignItems: "center",
                 flex: 1,
-                marginTop: heightPercentageToDP("30%"),
-                marginHorizontal: widthPercentageToDP("1%"),
-                justifyContent: "space-between",
-                backgroundColor: "white",
-              }}
-            >
-              {/* <Image
-              style={{
-                width: win.width / 42,
-                height: ratioCancel * 15,
+                // marginTop: heightPercentageToDP("30%"),
+                bottom: 0,
                 position: "absolute",
-                left: 0,
-                marginLeft: widthPercentageToDP("3%"),
-              }}
-              source={require("../assets/Images/blackCancelIcon.png")}
-            /> */}
-              {/* <Text
-              style={{
-                fontSize: RFValue(14),
-                marginLeft: widthPercentageToDP("8%"),
-                marginBottom: heightPercentageToDP(".3%"),
+                marginHorizontal: widthPercentageToDP("1%"),
+                marginBottom: heightPercentageToDP("5%"),
+                justifyContent: "space-evenly",
+                // backgroundColor: "orange",
+                width: "100%",
               }}
             >
-              Cancel all conditions
-            </Text>
-            <TouchableOpacity>
-              <View
+              <Image
                 style={{
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  borderColor: Colors.CECECE,
-                  padding: widthPercentageToDP("2%"),
-                  paddingHorizontal: widthPercentageToDP("3%"),
-                  marginRight: widthPercentageToDP("3%"),
+                  width: win.width / 25,
+                  height: ratioCancel * 15,
+                  position: "absolute",
+                  left: 0,
+                  borderRadius: win.width / 2,
+                  backgroundColor: "black",
+                  marginLeft: widthPercentageToDP("3%"),
+                }}
+                source={require("../assets/Images/cancelIcon.png")}
+              />
+              <Text
+                style={{
+                  fontSize: RFValue(14),
+                  marginLeft: widthPercentageToDP("3%"),
+                  marginBottom: heightPercentageToDP(".3%"),
                 }}
               >
-                <Text style={styles.dateTabText}>Done</Text>
-              </View>
-            </TouchableOpacity> */}
+                Cancel all conditions
+              </Text>
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  Animated.timing(right, {
+                    toValue: widthPercentageToDP("-80%"),
+                    duration: 500,
+                    useNativeDriver: false,
+                  }).start()
+                }
+              >
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    borderColor: Colors.CECECE,
+                    padding: widthPercentageToDP("1%"),
+                    paddingHorizontal: widthPercentageToDP("3%"),
+                    // marginRight: widthPercentageToDP("2%"),
+                  }}
+                >
+                  <Text style={styles.dateTabText}>Done</Text>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
           </Animated.View>
           <ScrollView
@@ -567,15 +600,15 @@ export default function PurchaseHistory(props) {
                   >
                     {Translate.t("narrowDown")}
                   </Text>
-                  <Image
+                  <Next
                     style={{
-                      width: win.width / 50,
-                      height: 15 * ratioNext,
+                      width: RFValue(12),
+                      height: RFValue(12),
                       position: "absolute",
                       right: 0,
                       marginRight: widthPercentageToDP("3%"),
                     }}
-                    source={require("../assets/Images/next.png")}
+                    // source={require("../assets/Images/next.png")}
                   />
                 </View>
               </TouchableWithoutFeedback>
@@ -606,30 +639,33 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP("3%"),
   },
   nextIcon: {
-    paddingBottom: heightPercentageToDP("3%"),
-    width: win.width / 50,
-    height: 15 * ratioNext,
-    position: "absolute",
-    right: 0,
+    // paddingBottom: heightPercentageToDP("3%"),
+    width: RFValue(15),
+    height: RFValue(15),
+    // position: "absolute",
+    // right: 0,
+    // marginRight: widthPercentageToDP("3%"),
   },
   purchaseHistoryProductContainer: {
     // backgroundColor: "orange",
     justifyContent: "center",
     borderWidth: 1,
+    flex: 1,
     borderColor: Colors.D7CCA6,
     backgroundColor: Colors.F6F6F6,
     paddingBottom: widthPercentageToDP("3%"),
     marginTop: heightPercentageToDP("1%"),
+    // backgroundColor: "orange",
   },
   productInformationContainer: {
     // backgroundColor: "orange",
     flexDirection: "row",
     alignItems: "center",
-    marginTop: heightPercentageToDP("2%"),
+    // marginTop: heightPercentageToDP("2%"),
     marginHorizontal: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.CECECE,
-    paddingBottom: heightPercentageToDP("2%"),
+    paddingVertical: heightPercentageToDP("2%"),
   },
   productInformationText: {
     fontSize: RFValue(12),
@@ -648,6 +684,6 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("8%"),
   },
   dateTabText: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(12),
   },
 });

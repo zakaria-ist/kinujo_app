@@ -22,67 +22,13 @@ import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-
+import Person from "../assets/icons/default_avatar.svg";
+import Search from "../assets/icons/search.svg";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 19 / 19;
 const ratioNext = win.width / 38 / 8;
-
-function processCustomerHtml(props, customers, search = "") {
-  let tmpCustomerHtml = [];
-  let tmpCustomers = customers;
-  if (search) {
-    tmpCustomers = customers.filter((customer) => {
-      return JSON.stringify(customer).indexOf(search) >= 0;
-    });
-  }
-  for (var i = 0; i < tmpCustomers.length; i++) {
-    let customer = tmpCustomers[i];
-    tmpCustomerHtml.push(
-      <TouchableWithoutFeedback
-        key={i}
-        onPress={() => {
-          props.navigation.navigate("CustomerInformation", {
-            url: customer.url,
-          });
-        }}
-      >
-        <View style={styles.customerListTableftContainer}>
-          <Image
-            style={styles.customerListProfileImage}
-            source={require("../assets/Images/profileEditingIcon.png")}
-          />
-          <Text style={styles.customerListName}>
-            {customer.real_name ? customer.real_name : customer.nickname}
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              position: "absolute",
-              right: 0,
-            }}
-          >
-            <Text
-              style={{
-                marginRight: widthPercentageToDP("8%"),
-                fontSize: RFValue(13),
-                alignSelf: "center",
-              }}
-            >
-              {customer.created.split("T")[0]}
-            </Text>
-            <Image
-              style={styles.nextIcon}
-              source={require("../assets/Images/next.png")}
-            />
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  }
-  return tmpCustomerHtml;
-}
 
 export default function CustomerList(props) {
   const [customers, onCustomersChanged] = React.useState({});
@@ -91,30 +37,100 @@ export default function CustomerList(props) {
   const [customerHtml, onCustomerHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
 
-  if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-    });
+  function processCustomerHtml(props, customers, search = "") {
+    let tmpCustomerHtml = [];
+    let tmpCustomers = customers;
+    if (search) {
+      tmpCustomers = customers.filter((customer) => {
+        return JSON.stringify(customer).indexOf(search) >= 0;
+      });
+    }
+    for (var i = 0; i < tmpCustomers.length; i++) {
+      let customer = tmpCustomers[i];
+      tmpCustomerHtml.push(
+        <TouchableWithoutFeedback
+          key={i}
+          onPress={() => {
+            props.navigation.navigate("CustomerInformation", {
+              url: customer.url,
+            });
+          }}
+        >
+          <View style={styles.customerListTableftContainer}>
+            {console.log(user.image.image)}
+            {user && user.image.image != null ? (
+              <Image
+                style={{
+                  width: RFValue(40),
+                  height: RFValue(40),
+                  borderRadius: win.width / 2,
+                  backgroundColor: Colors.DCDCDC,
+                }}
+                source={{ uri: user.image.image }}
+              />
+            ) : (
+              <Person
+                style={{
+                  width: RFValue(40),
+                  height: RFValue(40),
+                }}
+              />
+            )}
+
+            <Text style={styles.customerListName}>
+              {customer.real_name ? customer.real_name : customer.nickname}
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                position: "absolute",
+                right: 0,
+              }}
+            >
+              <Text
+                style={{
+                  marginRight: widthPercentageToDP("8%"),
+                  fontSize: RFValue(13),
+                  alignSelf: "center",
+                }}
+              >
+                {customer.created.split("T")[0]}
+              </Text>
+              <Image
+                style={styles.nextIcon}
+                source={require("../assets/Images/next.png")}
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    }
+    return tmpCustomerHtml;
   }
+  // if (!user.url) {
+  AsyncStorage.getItem("user").then(function (url) {
+    request
+      .get(url)
+      .then(function (response) {
+        onUserChanged(response.data);
+      })
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
+  });
+  // }
 
   if (!loaded) {
     AsyncStorage.getItem("user").then(function (url) {
@@ -126,7 +142,7 @@ export default function CustomerList(props) {
       request
         .get("customers/" + userId + "/")
         .then(function (response) {
-          console.log(response.data.customers)
+          console.log(response.data.customers);
           onCustomersChanged(response.data.customers);
           onCustomerHtmlChanged(
             processCustomerHtml(props, response.data.customers, "")
@@ -189,10 +205,8 @@ export default function CustomerList(props) {
             onCustomerHtmlChanged(processCustomerHtml(props, customers, value));
           }}
         ></TextInput>
-        <Image
-          style={styles.searchIcon}
-          source={require("../assets/Images/searchIcon.png")}
-        />
+
+        <Search style={styles.searchIcon} />
       </View>
       <View>
         <ScrollView>{customerHtml}</ScrollView>
@@ -248,6 +262,7 @@ const styles = StyleSheet.create({
     height: RFValue(40),
     alignSelf: "center",
     borderRadius: win.width / 2,
+    backgroundColor: "white",
   },
   customerListName: {
     fontSize: RFValue(13),

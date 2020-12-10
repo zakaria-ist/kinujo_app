@@ -1150,7 +1150,8 @@ const styles = StyleSheet.create({
     width: "100%",
     // paddingTop: heightPercentageToDP("1%"),
     // paddingBottom: heightPercentageToDP("5%"),
-    marginBottom: 0,
+    marginBottom: 5,
+    paddingBottom: 30,
     // showEmoji == true ? heightPercentageToDP("30%") : 0,
   },
   scrollViewStyleWithEmoji: {
@@ -1158,6 +1159,7 @@ const styles = StyleSheet.create({
     // paddingTop: heightPercentageToDP("1%"),
     // paddingBottom: heightPercentageToDP("5%"),
     marginBottom: heightPercentageToDP("30%"),
+    paddingBottom: 30,
     // showEmoji == true ? heightPercentageToDP("30%") : 0,
   },
 });

@@ -30,6 +30,7 @@ const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+auth().setLanguageCode("ja");
 const currentUser = auth().currentUser;
 import Translate from "../assets/Translates/Translate";
 export default function SMSAuthentication(props) {
@@ -41,7 +42,7 @@ export default function SMSAuthentication(props) {
   async function signInWithPhoneNumber(phoneNumber) {
     // console.log(phoneNumber);
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-    auth().useAppLanguage();
+
     setConfirm(confirmation);
   }
 

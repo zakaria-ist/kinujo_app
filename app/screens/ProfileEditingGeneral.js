@@ -79,7 +79,7 @@ export default function ProfileEditingGeneral(props) {
     let verified = await AsyncStorage.getItem("verified");
     let response = await request.get(url);
     let updateData = await AsyncStorage.getItem("update-data");
-    if(updateData){
+    if (updateData) {
       updateData = JSON.parse(updateData);
     }
     if (updateData && updateData["type"] == "email" && verified == "1") {
@@ -109,15 +109,18 @@ export default function ProfileEditingGeneral(props) {
     if (updateData && updateData["type"] == "password" && verified == "1") {
       console.log(verified);
       console.log(updateData);
-      request.post("password/reset", {
-        tel: response.data.tel,
-        password: updateData["value"],
-        confirm_password: updateData["value"],
-      }).then((res)=>{
-        console.log(res);
-      }).catch((error)=>{
-        console.log(error);
-      })
+      request
+        .post("password/reset", {
+          tel: response.data.tel,
+          password: updateData["value"],
+          confirm_password: updateData["value"],
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
       await AsyncStorage.removeItem("update-data");
       await AsyncStorage.removeItem("verified");
     }
@@ -211,7 +214,13 @@ export default function ProfileEditingGeneral(props) {
       }
     });
   };
-
+  function validateEmail(address) {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(address) === false) {
+      return false;
+    }
+    return true;
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
@@ -294,6 +303,7 @@ export default function ProfileEditingGeneral(props) {
                 }}
               >
                 <TextInput
+                  autoFocus={true}
                   placeholder="入力してください"
                   placeholderTextColor="white"
                   maxLength={255}
@@ -598,13 +608,13 @@ export default function ProfileEditingGeneral(props) {
                     color="transparent"
                     reverseColor="black"
                     onPress={() => {
-                      if (email) {
-                        onEditEmailChanged(false);
+                      onEditEmailChanged(false);
+                      if (validateEmail(email) == true) {
                         promptUpdate(props, user, "email", email);
                       } else {
                         Alert.alert(
                           Translate.t("warning"),
-                          Translate.t("fieldEmpty"),
+                          Translate.t("invalidEmail"),
                           [
                             {
                               text: "OK",
@@ -671,7 +681,7 @@ export default function ProfileEditingGeneral(props) {
                     onPress={() => {
                       onEditPasswordChanged(false);
                       let tmpPassword = password;
-                      onPasswordChanged("********")
+                      onPasswordChanged("********");
                       promptUpdate(props, user, "password", tmpPassword);
                     }}
                   />
@@ -756,10 +766,10 @@ export default function ProfileEditingGeneral(props) {
             </Text>
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : "grey"}
+              thumbColor={addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey}
               style={styles.switch}
               onValueChange={(value) => {
-                onAddingFriendsByIDChanged(value);
+                onAddingFriendsByIDChanged(!value);
                 request
                   .patch(user.url, {
                     allowed_by_id: value ? 1 : 0,
@@ -783,7 +793,7 @@ export default function ProfileEditingGeneral(props) {
                     }
                   });
               }}
-              value={addingFriendsByID}
+              value={!addingFriendsByID}
             />
           </View>
           <View style={styles.tabContainer}>
@@ -793,11 +803,13 @@ export default function ProfileEditingGeneral(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={
-                allowAddingFriendsByPhoneNumber == 1 ? Colors.D7CCA6 : "grey"
+                allowAddingFriendsByPhoneNumber == 0
+                  ? Colors.D7CCA6
+                  : Colors.grey
               }
               style={styles.switch}
               onValueChange={(value) => {
-                onAllowAddingFriendsByPhoneNumber(value);
+                onAllowAddingFriendsByPhoneNumber(!value);
                 request
                   .patch(user.url, {
                     allowed_by_tel: value ? 1 : 0,
@@ -821,7 +833,7 @@ export default function ProfileEditingGeneral(props) {
                     }
                   });
               }}
-              value={allowAddingFriendsByPhoneNumber}
+              value={!allowAddingFriendsByPhoneNumber}
             />
           </View>
         </View>
