@@ -234,7 +234,7 @@
 
   "addToCart": "Add to cart",
   "cart":"Cart",
-  "unit":"Unit",
+  "unit":"Quantity",
   "change":"Change",
   "Subtotal":"Subtotal",
   "gst":"GST",
@@ -286,10 +286,16 @@
     "information":"Information",
     "cartUpdated":"Cart Updated.",
     "fieldEmpty":"The field can't be empty.",
+    "(username)":"The contact number is registered. Please insert another number.",
     "(address_name)":"The adress name can't be empty.",
     "(name)":"The real name can't be empty.",
     "(zip1)":"The postal code can't be empty.",
     "(address1)":"The address can't be empty.",
-    "(tel)":"The phone number can't be empty."
+    "(tel)":"The phone number can't be empty.",
+    "normal":"Normal",
+    "current":"Current",
+    "savings":"Savings",
+    "bankCode":"Bank Code",
+    "branchCode":"Branch Code"
 
 }

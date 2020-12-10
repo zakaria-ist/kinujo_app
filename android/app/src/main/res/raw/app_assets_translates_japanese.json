@@ -19,7 +19,7 @@
   "agree": "同意する",
   "logout" : "ログアウト",
   "totalSale" : "総売上",
-  "sentVerificationCode": "08012345678へ認証コードを送信しました。",
+  "sentVerificationCode": "へ認証コードを送信しました。",
   "authenticate": "認証する",
   "enterVerificationCode": "認証コードを入力してください",
   "storeAccountSelection": "ストアアカウントの選択",
@@ -188,7 +188,7 @@
   "delete": "削除",
   "remove": "削除",
   "horizonItemName": "横軸項目名",
-  "verticalItemName": "垂直項目名",
+  "verticalItemName": "縦軸項目名",
   "upperFixed": "上部固定（or解除)",
   "nonRepresent": "非表示",
   "copy": "コピー",
@@ -282,11 +282,17 @@
   "information":"情報",
   "cartUpdated":"カートが更新されました",
   "fieldEmpty":"フィールドを空にすることはできません",
+  "(username)":"連絡先番号が登録されています。 別の番号を挿入してください。",
   "(address_name)":"住所名を空にすることはできません。",
     "(name)":"本名を空にすることはできません。",
     "(zip1)":"郵便番号を空にすることはできません。",
     "(address1)":"アドレスを空にすることはできません。",
-    "(tel)":"電話番号を空にすることはできません。"
+    "(tel)":"電話番号を空にすることはできません。",
+    "normal":"普通",
+    "current":"当座",
+    "savings":"貯蓄",
+    "bankCode":"銀行番号",
+    "branchCode":"支店コード"
 
   
 }
