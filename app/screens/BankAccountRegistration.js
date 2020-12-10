@@ -26,7 +26,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { ScrollView } from "react-native-gesture-handler";
-var zenginCode = require('zengin-code');
+var zenginCode = require("zengin-code");
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -132,13 +132,13 @@ export default function BankAccountRegistration(props) {
         />
         <View style={styles.textInputContainer}>
           <TextInput
-            placeholder={"Bank Code"}
+            placeholder={Translate.t("bankCode")}
             placeholderTextColor={Colors.deepGrey}
             style={styles.textInput}
             onChangeText={(text) => {
-              onBankCodeChanged(text)
-              if(zenginCode[text]){
-                onFinancialNameChanged(zenginCode[text]['name'])
+              onBankCodeChanged(text);
+              if (zenginCode[text]) {
+                onFinancialNameChanged(zenginCode[text]["name"]);
               }
             }}
             value={bankCode}
@@ -153,14 +153,16 @@ export default function BankAccountRegistration(props) {
             value={financialName}
           ></TextInput>
           <TextInput
-            placeholder={"Branch Code"}
+            placeholder={Translate.t("branchCode")}
             placeholderTextColor={Colors.deepGrey}
             style={styles.textInput}
             onChangeText={(text) => {
-              onBranckCodeChanged(text)
-              if(zenginCode[bankCode]){
-                if(zenginCode[bankCode]['branches'][text]){
-                  onBranchNameChanged(zenginCode[bankCode]['branches'][text]['name'])
+              onBranckCodeChanged(text);
+              if (zenginCode[bankCode]) {
+                if (zenginCode[bankCode]["branches"][text]) {
+                  onBranchNameChanged(
+                    zenginCode[bankCode]["branches"][text]["name"]
+                  );
                 }
               }
             }}
@@ -179,15 +181,15 @@ export default function BankAccountRegistration(props) {
             style={styles.textInput}
             items={[
               {
-                label: "Normal",
+                label: Translate.t("normal"),
                 value: "1",
               },
               {
-                label: "Current",
+                label: Translate.t("current"),
                 value: "2",
               },
               {
-                label: "Savings",
+                label: Translate.t("savings"),
                 value: "3",
               },
             ]}
@@ -212,6 +214,7 @@ export default function BankAccountRegistration(props) {
             // }}
           />
           <TextInput
+            maxLength={7}
             placeholder={Translate.t("accountNumber")}
             placeholderTextColor={Colors.deepGrey}
             style={styles.textInput}
@@ -236,7 +239,7 @@ export default function BankAccountRegistration(props) {
                 financialName &&
                 branchName &&
                 accountType &&
-                accountNumber &&
+                accountNumber.length == 7 &&
                 accountHolder
               ) {
                 AsyncStorage.getItem("user").then(function (url) {

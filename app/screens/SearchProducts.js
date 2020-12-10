@@ -221,6 +221,7 @@ export default function SearchProducts(props) {
             onPress={() => props.navigation.navigate("ContactSearch")}
           >
             <TextInput
+              autoFocus={true}
               placeholder={Translate.t("search")}
               placeholderTextColor={Colors.grey}
               style={styles.searchContactInput}
@@ -229,9 +230,7 @@ export default function SearchProducts(props) {
                 onSearchTermChanged(value);
                 let tmpProducts = products.filter((product) => {
                   return (
-                    product.name
-                      .toLowerCase()
-                      .indexOf(value.toLowerCase()) >= 0
+                    product.name.toLowerCase().indexOf(value.toLowerCase()) >= 0
                   );
                 });
                 performProductHtml(tmpProducts);

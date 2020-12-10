@@ -417,9 +417,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   selfPadding: {
-    paddingRight: widthPercentageToDP("3%"),
+    paddingRight: widthPercentageToDP("3%") > 20 ? 20 : widthPercentageToDP("3%"),
   },
   notSelfPadding: {
-    paddingLeft: widthPercentageToDP("3%"),
+    paddingLeft: widthPercentageToDP("1%") > 20 ? 20 : widthPercentageToDP("1%"),
   },
 });

@@ -143,7 +143,7 @@ export default function ChatContact({
       <SafeAreaView style={{ marginTop: heightPercentageToDP("1%") }}>
         {/*Left Side*/}
         <View style={isSelf ? styles.right : styles.left} collapsable={false}>
-          <View>
+          <View style={isSelf ? styles.selfPadding : styles.notSelfPadding}>
             {image && !isSelf ? (
               <Image
                 style={[isSelf ? styles.none : styles.avatar]}
@@ -214,6 +214,7 @@ export default function ChatContact({
                   style={{
                     width: width / 35,
                     height: ratioSeenTick * 10,
+                    resizeMode: "stretch",
                   }}
                 />
               ) : (
@@ -272,9 +273,9 @@ const styles = StyleSheet.create({
     right: 0,
   },
   avatar: {
-    borderRadius: width / 2,
     width: RFValue(30),
     height: RFValue(30),
+    borderRadius: width / 2,
     marginLeft: 15,
     marginRight: 5,
     backgroundColor: "#fff",
@@ -353,17 +354,15 @@ const styles = StyleSheet.create({
   left_status_text: {
     position: "absolute",
     textAlign: "left",
-    width: 60,
     paddingLeft: 10,
     fontSize: RFValue(8),
     bottom: 12,
-    left: 0,
+    left: 10,
     marginBottom: heightPercentageToDP("2%"),
   },
   right_status_text: {
     position: "absolute",
     textAlign: "right",
-    width: 60,
     paddingRight: 10,
     fontSize: RFValue(8),
     bottom: 12,
@@ -375,5 +374,11 @@ const styles = StyleSheet.create({
   },
   left: {
     flexDirection: "row",
+  },
+  selfPadding: {
+    paddingRight: widthPercentageToDP("3%"),
+  },
+  notSelfPadding: {
+    paddingLeft: widthPercentageToDP("1%"),
   },
 });

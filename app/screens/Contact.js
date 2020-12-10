@@ -27,6 +27,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import ArrowDownLogo from "../assets/icons/arrow_down.svg";
+import ArrowUpLogo from "../assets/icons/arrow_up.svg";
 import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 const request = new Request();
@@ -627,24 +628,25 @@ export default function Contact(props) {
                         flexDirection: "row",
                         alignItems: "center",
                         paddingBottom: heightPercentageToDP("2%"),
+                        // backgroundColor: "blue",
                       }}
                     >
                       <Text style={styles.countText}>{folderCount}</Text>
                       {showFolders == false ? (
-                        <Image
+                        <ArrowDownLogo
                           style={{
-                            width: win.width / 18,
-                            height: 8 * ratioDownForMoreIcon,
+                            width: RFValue(15),
+                            height: RFValue(15),
+                            marginRight: widthPercentageToDP("1%"),
                           }}
-                          source={require("../assets/Images/downForMoreIcon.png")}
                         />
                       ) : (
-                        <Image
+                        <ArrowUpLogo
                           style={{
-                            width: win.width / 19,
-                            height: 8 * ratioUpIcon,
+                            width: RFValue(15),
+                            height: RFValue(15),
+                            marginRight: widthPercentageToDP("1%"),
                           }}
-                          source={require("../assets/Images/upIcon.png")}
                         />
                       )}
                     </View>
@@ -711,20 +713,20 @@ export default function Contact(props) {
                     >
                       <Text style={styles.countText}>{groupCount}</Text>
                       {showGroups == false ? (
-                        <Image
+                        <ArrowDownLogo
                           style={{
-                            width: win.width / 18,
-                            height: 8 * ratioDownForMoreIcon,
+                            width: RFValue(15),
+                            height: RFValue(15),
+                            marginRight: widthPercentageToDP("1%"),
                           }}
-                          source={require("../assets/Images/downForMoreIcon.png")}
                         />
                       ) : (
-                        <Image
+                        <ArrowUpLogo
                           style={{
-                            width: win.width / 19,
-                            height: 8 * ratioUpIcon,
+                            width: RFValue(15),
+                            height: RFValue(15),
+                            marginRight: widthPercentageToDP("1%"),
                           }}
-                          source={require("../assets/Images/upIcon.png")}
                         />
                       )}
                     </View>
@@ -791,20 +793,20 @@ export default function Contact(props) {
                     >
                       <Text style={styles.countText}>{friendCount}</Text>
                       {showFriends == false ? (
-                        <Image
+                        <ArrowDownLogo
                           style={{
-                            width: win.width / 18,
-                            height: 8 * ratioDownForMoreIcon,
+                            width: RFValue(15),
+                            height: RFValue(15),
+                            marginRight: widthPercentageToDP("1%"),
                           }}
-                          source={require("../assets/Images/downForMoreIcon.png")}
                         />
                       ) : (
-                        <Image
+                        <ArrowUpLogo
                           style={{
-                            width: win.width / 19,
-                            height: 8 * ratioUpIcon,
+                            width: RFValue(15),
+                            height: RFValue(15),
+                            marginRight: widthPercentageToDP("1%"),
                           }}
-                          source={require("../assets/Images/upIcon.png")}
                         />
                       )}
                     </View>
@@ -856,10 +858,12 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
-                      contactPinned[longPressObj.data.id] = contactPinned[longPressObj.data.id]
-                      ? false
-                      : true
-                  populateUser();
+                      contactPinned[longPressObj.data.id] = contactPinned[
+                        longPressObj.data.id
+                      ]
+                        ? false
+                        : true;
+                      populateUser();
 
                       db.collection("users")
                         .doc(String(user.id))
@@ -881,8 +885,7 @@ export default function Contact(props) {
                                     merge: true,
                                   }
                                 )
-                                .then(() => {
-                                });
+                                .then(() => {});
                             });
                           } else {
                             db.collection("users")
@@ -892,16 +895,14 @@ export default function Contact(props) {
                                 id: String(longPressObj.data.id),
                                 pinned: contactPinned[longPressObj.data.id],
                               })
-                              .then(() => {
-                              });
+                              .then(() => {});
                           }
                         });
                     } else if (longPressObj.type == "folder") {
                       let update = {};
-                      update["pinned"] =
-                        longPressObj.data.data["pinned"]
-                          ? false
-                          : true;
+                      update["pinned"] = longPressObj.data.data["pinned"]
+                        ? false
+                        : true;
                       db.collection("users")
                         .doc(user.id.toString())
                         .collection("folders")
@@ -1223,6 +1224,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.F0EEE9,
     paddingBottom: heightPercentageToDP("2%"),
     marginHorizontal: widthPercentageToDP("1%"),
+    // backgroundColor: "orange",
   },
   tabRightContainer: {
     flexDirection: "row-reverse",

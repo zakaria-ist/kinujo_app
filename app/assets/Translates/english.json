@@ -234,7 +234,7 @@
 
   "addToCart": "Add to cart",
   "cart":"Cart",
-  "unit":"Unit",
+  "unit":"Quantity",
   "change":"Change",
   "Subtotal":"Subtotal",
   "gst":"GST",
@@ -291,6 +291,11 @@
     "(name)":"The real name can't be empty.",
     "(zip1)":"The postal code can't be empty.",
     "(address1)":"The address can't be empty.",
-    "(tel)":"The phone number can't be empty."
+    "(tel)":"The phone number can't be empty.",
+    "normal":"Normal",
+    "current":"Current",
+    "savings":"Savings",
+    "bankCode":"Bank Code",
+    "branchCode":"Branch Code"
 
 }

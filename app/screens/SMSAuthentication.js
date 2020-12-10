@@ -23,7 +23,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
-
+import i18n from "i18n-js";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -41,6 +41,7 @@ export default function SMSAuthentication(props) {
   async function signInWithPhoneNumber(phoneNumber) {
     // console.log(phoneNumber);
     const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    auth().useAppLanguage();
     setConfirm(confirmation);
   }
 
@@ -82,7 +83,9 @@ export default function SMSAuthentication(props) {
             textAlign: "center",
           }}
         >
-          {Translate.t("sentVerificationCode")} +{phone}
+          {i18n.locale == "ja"
+            ? phone + Translate.t("sentVerificationCode")
+            : Translate.t("sentVerificationCode") + phone}
         </Text>
         <TextInput
           style={styles.verificationCode}

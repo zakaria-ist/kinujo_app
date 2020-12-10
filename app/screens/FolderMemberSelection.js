@@ -28,6 +28,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import CheckBox from "@react-native-community/checkbox";
 import ArrowDownLogo from "../assets/icons/arrow_down.svg";
+import NextArrow from "../assets/icons/nextArrow.svg";
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig, "kinujo");
@@ -190,7 +191,7 @@ export default function FolderMemberSelection(props) {
       let item = friendMaps.filter((tmp) => {
         return tmp.id == user.id;
       });
-      if(item.length > 0){
+      if (item.length > 0) {
         item = item[0];
       } else {
         item = null;
@@ -476,12 +477,14 @@ export default function FolderMemberSelection(props) {
             style={{
               borderTopWidth: 1,
               flexDirection: "row",
-              paddingTop: heightPercentageToDP("2%"),
+              // paddingTop: heightPercentageToDP("2%"),
               alignItems: "center",
               borderBottomWidth: 1,
               borderColor: Colors.F0EEE9,
-              paddingBottom: heightPercentageToDP("2%"),
+              // paddingBottom: heightPercentageToDP("2%"),
+              paddingVertical: heightPercentageToDP("2%"),
               marginTop: heightPercentageToDP("1.5%"),
+              // backgroundColor: "orange",
             }}
           >
             <Image
@@ -494,19 +497,9 @@ export default function FolderMemberSelection(props) {
             />
             <Text style={styles.tabText}> {Translate.t("friend")}</Text>
             {friendChatShow == true ? (
-              <ArrowDownLogo
-                width={widthPercentageToDP("5%")}
-                height={heightPercentageToDP("100%")}
-                resizeMode="contain"
-                position="absolute"
-                right={0}
-                marginRight={widthPercentageToDP("3%")}
-              />
+              <ArrowDownLogo style={styles.nextIcon} />
             ) : (
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
+              <NextArrow style={styles.nextIcon} />
             )}
           </View>
         </TouchableWithoutFeedback>
@@ -582,10 +575,14 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    // width: win.width / 38,
+    // height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
     right: 0,
-    marginRight: widthPercentageToDP("2%"),
+    marginRight: widthPercentageToDP("3%"),
+
+    // paddingTop: heightPercentageToDP("2%"),
   },
 });

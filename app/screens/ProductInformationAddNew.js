@@ -873,7 +873,7 @@ export default function ProductInformationAddNew(props) {
                 </Text>
               </View>
             </View>
-            <Text style={[styles.text, { marginTop: 15 }]}>
+            {/* <Text style={[styles.text, { marginTop: 15 }]}>
               {Translate.t("productPageDisplayMethod")}
             </Text>
             <View style={styles.radioGroupContainer}>
@@ -901,7 +901,7 @@ export default function ProductInformationAddNew(props) {
                   {Translate.t("lrType")}
                 </Text>
               </RadioButton.Group>
-            </View>
+            </View> */}
             <Text style={styles.text}>{Translate.t("productImage")}</Text>
             {productImageHtml}
             <View

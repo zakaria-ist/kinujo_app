@@ -53,6 +53,7 @@ export default function PurchaseHistory(props) {
     let tmpOrderHtml = [];
     for (var i = 0; i < orders.length; i++) {
       let order = orders[i];
+      console.log(order);
       tmpOrderHtml.push(
         <TouchableWithoutFeedback key={i}>
           <View>

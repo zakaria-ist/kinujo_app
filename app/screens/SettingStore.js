@@ -37,13 +37,11 @@ const format = new Format();
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
+import NextArrow from "../assets/icons/nextArrow.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -66,20 +64,20 @@ export default function SettingStore(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [controllerState, onControllerStateChanged] = React.useState(false);
-  // const [state, setState] = React.useState(false);
+  const [state, setState] = React.useState(false);
   async function onValueChanged(language) {
     switch (language.value) {
       case "ja":
         await AsyncStorage.setItem("language", "ja");
         i18n.locale = "ja";
-        // setState(!state);
-        DevSettings.reload();
+        setState(!state);
+        // DevSettings.reload();
         break;
       case "en":
         AsyncStorage.setItem("language", "en");
         i18n.locale = "en";
-        // setState(!state);
-        DevSettings.reload();
+        setState(!state);
+        // DevSettings.reload();
         break;
     }
   }
@@ -181,7 +179,7 @@ export default function SettingStore(props) {
               >
                 {format.separator(user.profit)}円
               </Text>
-              <Image
+              {/* <Image
                 style={{
                   width: win.width / 38,
                   height: 15 * ratioNext,
@@ -191,6 +189,15 @@ export default function SettingStore(props) {
                   marginRight: widthPercentageToDP("3%"),
                 }}
                 source={require("../assets/Images/next.png")}
+              /> */}
+              <NextArrow
+                style={{
+                  width: RFValue(15),
+                  height: RFValue(15),
+                  position: "absolute",
+                  right: widthPercentageToDP("3%"),
+                  alignSelf: "center",
+                }}
               />
             </View>
           </TouchableWithoutFeedback>
@@ -215,10 +222,7 @@ export default function SettingStore(props) {
                 <Text style={styles.textInLeftContainer}>
                   {Translate.t("customerList")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </TouchableWithoutFeedback>
 
@@ -240,10 +244,7 @@ export default function SettingStore(props) {
                 <Text style={styles.textInLeftContainer}>
                   {Translate.t("productListManagement")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </TouchableWithoutFeedback>
 
@@ -265,10 +266,7 @@ export default function SettingStore(props) {
                 <Text style={styles.textInLeftContainer}>
                   {Translate.t("purchaseHistory")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
@@ -289,10 +287,7 @@ export default function SettingStore(props) {
                 <Text style={styles.textInLeftContainer}>
                   {Translate.t("setting")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
@@ -313,10 +308,7 @@ export default function SettingStore(props) {
                 <Text style={styles.textInLeftContainer}>
                   {Translate.t("registeredbank/creditcard")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback
@@ -337,10 +329,7 @@ export default function SettingStore(props) {
                 <Text style={styles.textInLeftContainer}>
                   {Translate.t("shippingList")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </TouchableWithoutFeedback>
             {Platform.OS == "ios" ? (
@@ -548,10 +537,12 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.F0EEE9,
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    // width: win.width / 38,
+    // height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
+    right: widthPercentageToDP("1%"),
   },
   textInLeftContainer: {
     marginLeft: widthPercentageToDP("12%"),
