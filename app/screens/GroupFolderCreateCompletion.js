@@ -23,7 +23,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
-import Person from "../assets/icons/personPink.svg";
+import Person from "../assets/icons/default_avatar.svg";
 import Chat from "../assets/icons/chat.svg";
 import Close from "../assets/icons/close_black.svg";
 import AddMember from "../assets/icons/addMember.svg";

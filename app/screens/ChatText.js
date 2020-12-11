@@ -172,6 +172,7 @@ export default function ChatText({
                   width: width / 3,
                   height: 250 * ratioImage,
                   resizeMode: "stretch",
+                  marginBottom: 10
                 }}
               />
             </View>
@@ -417,9 +418,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   selfPadding: {
-    paddingRight: widthPercentageToDP("3%") > 20 ? 20 : widthPercentageToDP("3%"),
+    paddingRight: Math.min(20, widthPercentageToDP("3%")),
   },
   notSelfPadding: {
-    paddingLeft: widthPercentageToDP("1%") > 20 ? 20 : widthPercentageToDP("1%"),
+    paddingLeft: Math.min(20, widthPercentageToDP("1%")),
   },
 });

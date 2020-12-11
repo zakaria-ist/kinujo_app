@@ -253,7 +253,9 @@ export default function AdvanceSetting(props) {
                       userId: customerId,
                       parentId: userId,
                     })
-                    .then(function (response) {});
+                    .then(function (response) {
+                      props.navigation.pop(3);
+                    });
                 },
               },
               {

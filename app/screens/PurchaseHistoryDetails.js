@@ -20,7 +20,15 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
+import Next from "../assets/icons/nextArrow.svg";
+import Shop from "../assets/icons/shop.svg";
+import AsyncStorage from "@react-native-community/async-storage";
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
+const db = firebase.firestore();
 const format = new Format();
+let userId;
 var kanjidate = require("kanjidate");
 
 const request = new Request();
@@ -32,7 +40,15 @@ const ratioNext = win.width / 38 / 8;
 export default function PurchaseHistoryDetails(props) {
   const [order, onOrderChanged] = React.useState({});
   const [loaded, onLoaded] = React.useState(false);
+
   if (!loaded) {
+    AsyncStorage.getItem("user").then(function (url) {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+    });
     request
       .get(props.route.params.url)
       .then(function (response) {
@@ -53,6 +69,62 @@ export default function PurchaseHistoryDetails(props) {
               Object.keys(error.response.data)[0] +
               ")"
           );
+        }
+      });
+  }
+
+  function redirectToChat(orderID, orderName) {
+    let groupID;
+    let groupName;
+    let deleted = "delete_" + userId;
+    db.collection("chat")
+      .where("users", "array-contains", userId)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == orderID) {
+              groupID = snapShot.doc.id;
+            }
+          }
+        });
+        if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
+          props.navigation.push("ChatScreen", {
+            groupID: groupID,
+            groupName: orderName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + userId;
+          let friendMessageUnseenField = "unseenMessageCount_" + orderID;
+          let ownTotalMessageReadField = "totalMessageRead_" + userId;
+          let friendTotalMessageReadField = "totalMessageRead_" + orderID;
+          db.collection("chat")
+            .add({
+              groupName: orderName,
+              users: [userId, orderID],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function (docRef) {
+              props.navigation.push("ChatScreen", {
+                groupID: docRef.id,
+                groupName: orderName,
+              });
+            });
         }
       });
   }
@@ -91,7 +163,13 @@ export default function PurchaseHistoryDetails(props) {
             }}
             source={require("../assets/Images/profileEditingIcon.png")}
           />
-          <View style={{ marginLeft: widthPercentageToDP("3%") }}>
+          <View
+            style={{
+              marginLeft: widthPercentageToDP("3%"),
+              // backgroundColor: "orange",
+              width: widthPercentageToDP("75%"),
+            }}
+          >
             <Text style={styles.productInformationText}>
               {order && order.order
                 ? order.product_jan_code.horizontal
@@ -133,15 +211,19 @@ export default function PurchaseHistoryDetails(props) {
             {order && order.order ? order.id : ""}
           </Text>
         </View>
-        <View style={styles.productInformationContainer}>
-          <Text style={styles.productInformationText}>
-            {Translate.t("inquiry")}
-          </Text>
-          <Image
-            style={styles.nextIcon}
-            source={require("../assets/Images/next.png")}
-          />
-        </View>
+        <TouchableWithoutFeedback
+          onPress={() => redirectToChat(order.id, order.order.seller.shop_name)}
+        >
+          <View style={styles.productInformationContainer}>
+            <Text style={styles.productInformationText}>
+              {Translate.t("inquiry")}
+            </Text>
+            <Next
+              style={styles.nextIcon}
+              // source={require("../assets/Images/next.png")}
+            />
+          </View>
+        </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           onPress={() => {
             props.navigation.navigate("ReceiptEditing", {
@@ -153,9 +235,9 @@ export default function PurchaseHistoryDetails(props) {
             <Text style={styles.productInformationText}>
               {Translate.t("invoiceIssue")}
             </Text>
-            <Image
+            <Next
               style={styles.nextIcon}
-              source={require("../assets/Images/next.png")}
+              // source={require("../assets/Images/next.png")}
             />
           </View>
         </TouchableWithoutFeedback>
@@ -208,9 +290,9 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
+    right: widthPercentageToDP("3%"),
   },
 });

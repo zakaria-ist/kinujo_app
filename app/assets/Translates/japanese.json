@@ -292,7 +292,13 @@
     "current":"当座",
     "savings":"貯蓄",
     "bankCode":"銀行番号",
-    "branchCode":"支店コード"
+    "branchCode":"支店コード",
+    "addOneOrMoreContact":"連絡先を1つ以上選択してください",
+    "invalidEmail":"有効なメールアドレスを入力してください。",
+    "uploadPicture":"少なくとも1枚の写真をアップロードしてください。",
+    "reissue":"再発行",
+    "newItemDelete":"このエントリを削除しますか？",
+    "existingItemDelete":"このアイテムを削除しますか？ このアクションは元に戻せません。"
 
   
 }

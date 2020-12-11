@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -25,6 +26,7 @@ import Request from "../lib/request";
 import { useIsFocused } from "@react-navigation/native";
 import CustomAlert from "../lib/alert";
 import storage from "@react-native-firebase/storage";
+import Person from "../assets/icons/default_avatar.svg";
 const alert = new CustomAlert();
 const request = new Request();
 const win = Dimensions.get("window");
@@ -100,14 +102,22 @@ export default function GroupChatCreation(props) {
                           source={{ uri: user.image.image }}
                         />
                       ) : (
-                        <Image
+                        <Person
                           style={{
                             width: RFValue(38),
                             height: RFValue(38),
                             borderRadius: win.width / 2,
-                            backgroundColor: Colors.DCDCDC,
+                            // backgroundColor: Colors.DCDCDC,
                           }}
                         />
+                        // <Image
+                        //   style={{
+                        //     width: RFValue(38),
+                        //     height: RFValue(38),
+                        //     borderRadius: win.width / 2,
+                        //     backgroundColor: Colors.DCDCDC,
+                        //   }}
+                        // />
                       )}
 
                       <Text style={styles.folderText}>{user.nickname}</Text>
@@ -123,54 +133,68 @@ export default function GroupChatCreation(props) {
   }, [isFocused]);
   // console.log(friendIds);
   function groupCreate() {
-    if (groupName != "") {
-      AsyncStorage.removeItem("tmpIds");
-      if (friendIds) {
-        db.collection("users").doc(String(userId)).collection("groups").add({
-          groupName: groupName,
-          usersName: friendNames,
-        });
-
-        friendIds.push(String(userId));
-        let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
-        let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
-        db.collection("chat")
-          .add({
-            [ownMessageUnseenField]: 0,
-            [ownTotalMessageReadField]: 0,
+    if (friendIds.length != 0) {
+      if (groupName != "") {
+        AsyncStorage.removeItem("tmpIds");
+        if (friendIds) {
+          db.collection("users").doc(String(userId)).collection("groups").add({
             groupName: groupName,
-
-            totalMessage: 0,
-            type: "group",
-          })
-          .then(function (docRef) {
-            documentID = docRef.id;
-            for (var i = 0; i < friendIds.length; i++) {
-              friendMessageUnseenField =
-                "unseenMessageCount_" + String(friendIds[i]);
-              friendTotalMessageReadField =
-                "totalMessageRead_" + String(friendIds[i]);
-              db.collection("chat")
-                .doc(documentID)
-                .update({
-                  users: friendIds,
-                  [friendTotalMessageReadField]: 0,
-                  [friendMessageUnseenField]: 0,
-                });
-            }
-            props.navigation.navigate("GroupFolderCreateCompletion", {
-              groupDocumentID: documentID,
-              type: "group",
-              groupName: groupName,
-              friendNames: friendNames,
-              friendIds: friendIds,
-              ownUserID: userId,
-            });
+            usersName: friendNames,
           });
+
+          friendIds.push(String(userId));
+          let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
+          let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
+          db.collection("chat")
+            .add({
+              [ownMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              groupName: groupName,
+
+              totalMessage: 0,
+              type: "group",
+            })
+            .then(function (docRef) {
+              documentID = docRef.id;
+              for (var i = 0; i < friendIds.length; i++) {
+                friendMessageUnseenField =
+                  "unseenMessageCount_" + String(friendIds[i]);
+                friendTotalMessageReadField =
+                  "totalMessageRead_" + String(friendIds[i]);
+                db.collection("chat")
+                  .doc(documentID)
+                  .update({
+                    users: friendIds,
+                    [friendTotalMessageReadField]: 0,
+                    [friendMessageUnseenField]: 0,
+                  });
+              }
+              props.navigation.navigate("GroupFolderCreateCompletion", {
+                groupDocumentID: documentID,
+                type: "group",
+                groupName: groupName,
+                friendNames: friendNames,
+                friendIds: friendIds,
+                ownUserID: userId,
+              });
+            });
+        }
+        setGroupName("");
+      } else {
+        alert.warning("Please fill in the group name");
       }
-      setGroupName("");
-    } else {
-      alert.warning("Please fill in the group name");
+    } else if (friendIds.length == 0) {
+      Alert.alert(
+        Translate.t("warning"),
+        Translate.t("addOneOrMoreContact"),
+        [
+          {
+            text: "OK",
+            onPress: () => {},
+          },
+        ],
+        { cancelable: false }
+      );
     }
   }
   function addMemberHandler() {

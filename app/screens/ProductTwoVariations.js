@@ -172,9 +172,13 @@ export default function ProductTwoVariations({
           <View
             style={{
               height: "100%",
-              marginHorizontal: widthPercentageToDP("4%"),
+              marginHorizontal: widthPercentageToDP("1%"),
               flexDirection: "row",
               alignItems: "flex-end",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              marginBottom: RFValue("12"),
             }}
           >
             <TouchableOpacity
@@ -205,8 +209,7 @@ export default function ProductTwoVariations({
               padding: widthPercentageToDP("1%"),
             }}
           >
-            <Text style={styles.text}>{Translate.t("choice")}</Text>
-            <View style={styles.multiVariant}>
+            <View style={styles.subMultiVariant}>
               <Text style={styles.text}>{choice.choiceIndex}</Text>
               <TextInput
                 style={styles.textInput}
@@ -240,7 +243,7 @@ export default function ProductTwoVariations({
                 onValueChanged(value, "horizontalItem", product.index)
               }
             ></TextInput>
-
+            <Text style={styles.text_choice}>{Translate.t("choice")}</Text>
             {processChoiceHtml(product.index, product.choices)}
           </View>
           <View style={styles.line} />
@@ -536,7 +539,20 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("90%"),
     marginRight: widthPercentageToDP("-4%"),
   },
+  text_choice: {
+    fontSize: RFValue(14),
+    marginBottom: heightPercentageToDP("2%"),
+    paddingRight: widthPercentageToDP("2%"),
+    paddingLeft: RFValue("12") * 4,
+  },
   multiVariant: {
+    flexDirection: "row",
+    alignItems: "center",
+    overflow: "hidden",
+    position: "relative",
+    paddingLeft: RFValue("12") * 4,
+  },
+  subMultiVariant: {
     flexDirection: "row",
     alignItems: "center",
     overflow: "hidden",

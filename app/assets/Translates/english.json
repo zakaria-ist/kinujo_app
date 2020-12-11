@@ -190,7 +190,7 @@
   "horizonItemName": "Horizontal Axis Name",
   "verticalItemName": "Vertical Axis Name",
   "upperFixed": "Upper fixed (or release)",
-  "nonRepresent": "Non-representation",
+  "nonRepresent": "Hide",
   "copy": "Copy",
   "forward": "Forward",
   "cancelOnlyMe": "Cancel (Only Me)",
@@ -296,6 +296,12 @@
     "current":"Current",
     "savings":"Savings",
     "bankCode":"Bank Code",
-    "branchCode":"Branch Code"
+    "branchCode":"Branch Code",
+    "addOneOrMoreContact":"Please select one or more contacts.",
+    "invalidEmail":"Please insert a valid email address.",
+    "uploadPicture":"Please upload at least 1 picture.",
+    "reissue":"Reissue",
+    "newItemDelete":"Do you want to remove this entry? ",
+    "existingItemDelete":"Do you want to remove this item? This action can't be undone. "
 
 }

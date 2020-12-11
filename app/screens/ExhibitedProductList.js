@@ -54,6 +54,7 @@ function processProductHtml(props, products, status) {
         <TouchableWithoutFeedback
           onPress={() => {
             props.navigation.navigate("ProductInformationAddNew", {
+              type: "existingProduct",
               url: product.url,
             });
           }}
@@ -128,61 +129,60 @@ export default function ExhibitedProductList(props) {
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
 
-
-  React.useEffect(()=>{
+  React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       let userId = urls[urls.length - 1];
-        request
-          .get(url)
-          .then(function (response) {
-            onUserChanged(response.data);
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-        request
-          .get("sellerProducts/" + userId + "/")
-          .then(function (response) {
-            onProductsChanged(response.data.products);
-            onProductHtmlChanged(
-              processProductHtml(props, response.data.products, status)
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
             );
-            onLoaded(true);
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-            onLoaded(true);
-          });
-      });
-  }, [isFocused])
+          }
+        });
+      request
+        .get("sellerProducts/" + userId + "/")
+        .then(function (response) {
+          onProductsChanged(response.data.products);
+          onProductHtmlChanged(
+            processProductHtml(props, response.data.products, status)
+          );
+          onLoaded(true);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+          onLoaded(true);
+        });
+    });
+  }, [isFocused]);
   return (
     <SafeAreaView>
       <CustomHeader
@@ -282,6 +282,7 @@ export default function ExhibitedProductList(props) {
         <TouchableWithoutFeedback
           onPress={() => {
             props.navigation.navigate("ProductInformationAddNew", {
+              type: "newProduct",
               is_store: props.route.params.is_store,
             });
           }}

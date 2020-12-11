@@ -30,6 +30,7 @@ const request = new Request();
 const alert = new CustomAlert();
 import postal_code from "japan-postal-code-oasis";
 const win = Dimensions.get("window");
+
 export default function AddressManagement(props) {
   const [prefectures, onPrefecturesChanged] = React.useState([]);
   const [prefectureLoaded, onPrefectureLoadedChanged] = React.useState(false);
@@ -78,7 +79,7 @@ export default function AddressManagement(props) {
                 error.response.data &&
                 Object.keys(error.response.data).length > 0
               ) {
-                alert.warning("1");
+                // alert.warning("1");
                 alert.warning(
                   error.response.data[Object.keys(error.response.data)[0]][0] +
                     "(" +
@@ -96,7 +97,7 @@ export default function AddressManagement(props) {
           error.response.data &&
           Object.keys(error.response.data).length > 0
         ) {
-          alert.warning("2");
+          // alert.warning("2");
           alert.warning(
             error.response.data[Object.keys(error.response.data)[0]][0] +
               "(" +
@@ -112,6 +113,22 @@ export default function AddressManagement(props) {
       "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
     );
   }, []);
+
+  function handlePostalCode(value) {
+    onZipcodeChanged(value.replace(/[^0-9]/g, ""));
+    postal_code(value).then((address) => {
+      if (address && address.prefecture) {
+        let tmpPrefectures = prefectures.filter((prefecture) => {
+          return prefecture.label == address.prefecture;
+        });
+
+        if (tmpPrefectures.length > 0) {
+          onPrefectureChanged(tmpPrefectures[0].value);
+        }
+        onAddChanged(address.city + " " + address.area);
+      }
+    });
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -155,19 +172,7 @@ export default function AddressManagement(props) {
             style={styles.textInput}
             value={zipcode}
             onChangeText={(text) => {
-              onZipcodeChanged(text);
-              postal_code(text).then((address) => {
-                if (address && address.prefecture) {
-                  let tmpPrefectures = prefectures.filter((prefecture) => {
-                    return prefecture.label == address.prefecture;
-                  });
-
-                  if (tmpPrefectures.length > 0) {
-                    onPrefectureChanged(tmpPrefectures[0].value);
-                  }
-                  onAddChanged(address.city + " " + address.area);
-                }
-              });
+              handlePostalCode(text);
             }}
           ></TextInput>
           <DropDownPicker
@@ -247,7 +252,7 @@ export default function AddressManagement(props) {
                     error.response.data &&
                     Object.keys(error.response.data).length > 0
                   ) {
-                    alert.warning("3");
+                    // alert.warning("3");
                     alert.warning(
                       error.response.data[
                         Object.keys(error.response.data)[0]

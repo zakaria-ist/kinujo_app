@@ -58,13 +58,13 @@ export default function SettingGeneral(props) {
         await AsyncStorage.setItem("language", "ja");
         i18n.locale = "ja";
         setState(!state);
-        DevSettings.reload();
+        // DevSettings.reload();
         break;
       case "en":
         AsyncStorage.setItem("language", "en");
         i18n.locale = "en";
         setState(!state);
-        DevSettings.reload();
+        // DevSettings.reload();
         break;
     }
   }

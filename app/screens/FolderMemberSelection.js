@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   Animated,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -29,6 +30,8 @@ import firebase from "firebase/app";
 import CheckBox from "@react-native-community/checkbox";
 import ArrowDownLogo from "../assets/icons/arrow_down.svg";
 import NextArrow from "../assets/icons/nextArrow.svg";
+import Person from "../assets/icons/default_avatar.svg";
+import Search from "../assets/icons/search.svg";
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig, "kinujo");
@@ -116,7 +119,7 @@ export default function FolderMemberSelection(props) {
                 type: "contact",
               })
               .then(function (response) {
-                console.log(response.data.users.length);
+                // console.log(response.data.users.length);
                 //response = get use details from url
                 onUserHtmlChanged(
                   processUserHtml(props, response.data.users, tmpFriend)
@@ -189,7 +192,10 @@ export default function FolderMemberSelection(props) {
     let tmpUserHtml = [];
     users.map((user) => {
       let item = friendMaps.filter((tmp) => {
-        return tmp.id == user.id;
+        return tmp.id == user.id && tmp.id != userId;
+        // console.log(tmp.id);
+        // console.log("mine" + userId);
+        // console.log("user" + user.id);
       });
       if (item.length > 0) {
         item = item[0];
@@ -222,12 +228,20 @@ export default function FolderMemberSelection(props) {
                   source={{ uri: user.image.image }}
                 />
               ) : (
-                <Image
+                // <Image
+                //   style={{
+                //     width: RFValue(40),
+                //     height: RFValue(40),
+                //     borderRadius: win.width / 2,
+                //     backgroundColor: Colors.DCDCDC,
+                //   }}
+                // />
+                <Person
                   style={{
                     width: RFValue(40),
                     height: RFValue(40),
                     borderRadius: win.width / 2,
-                    backgroundColor: Colors.DCDCDC,
+                    // backgroundColor: Colors.DCDCDC,
                   }}
                 />
               )}
@@ -286,6 +300,7 @@ export default function FolderMemberSelection(props) {
           </Text>
         </View>
       </TouchableWithoutFeedback>
+      {/* <ScrollView> */}
       <View
         style={{
           marginHorizontal: widthPercentageToDP("4%"),
@@ -305,9 +320,9 @@ export default function FolderMemberSelection(props) {
               placeholderTextColor={Colors.grey}
               style={styles.searchInput}
             ></TextInput>
-            <Image
+            <Search
               style={styles.searchIcon}
-              source={require("../assets/Images/searchIcon.png")}
+              // source={require("../assets/Images/searchIcon.png")}
             />
           </View>
         </View>
@@ -487,13 +502,13 @@ export default function FolderMemberSelection(props) {
               // backgroundColor: "orange",
             }}
           >
-            <Image
+            <Person
               style={{
                 width: win.width / 13,
                 height: ratioProfile * 25,
                 marginLeft: widthPercentageToDP("1%"),
               }}
-              source={require("../assets/Images/profileEditingIcon.png")}
+              // source={require("../assets/Images/profileEditingIcon.png")}
             />
             <Text style={styles.tabText}> {Translate.t("friend")}</Text>
             {friendChatShow == true ? (
@@ -503,7 +518,7 @@ export default function FolderMemberSelection(props) {
             )}
           </View>
         </TouchableWithoutFeedback>
-        {userHtml}
+        <ScrollView>{userHtml}</ScrollView>
         {/* <Animated.View
           style={{
             marginTop: heightPercentageToDP(".5%"),
@@ -532,6 +547,7 @@ export default function FolderMemberSelection(props) {
           </View>
         </Animated.View> */}
       </View>
+      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }

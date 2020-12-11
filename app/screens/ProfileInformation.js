@@ -28,6 +28,7 @@ import { Icon } from "react-native-elements";
 import { DatePicker } from "react-native-propel-kit";
 import { Picker } from "@react-native-picker/picker";
 import { fallbacks } from "i18n-js";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -39,7 +40,9 @@ let controller;
   var dt = "2016-05-02T00:00:00";
   console.log(Moment(dt).format("d MMM")); */
 }
-
+let day = new Date().getDate();
+let month = new Date().getMonth() + 1;
+let year = new Date().getFullYear();
 export default function ProfileInformation(props) {
   const [user, onUserChanged] = React.useState({});
   const [editName, onEditNameChanged] = React.useState(false);
@@ -58,7 +61,9 @@ export default function ProfileInformation(props) {
   const [prefecture, onPrefectureChanged] = React.useState("");
   const [address1, onAddress1Changed] = React.useState("");
   const [address2, onAddress2Changed] = React.useState("");
+  const [date, setDate] = React.useState(day + "-" + month + "-" + year);
   const [pickerShow, onPickerShow] = React.useState(false);
+  const isFocused = useIsFocused();
   function updateUser(user, field, value) {
     if (!value) return;
     if (field == "birthday") {
@@ -71,7 +76,38 @@ export default function ProfileInformation(props) {
     obj[field] = value;
     request
       .patch(user.url, obj)
-      .then(function (response) {})
+      .then(function (response) {
+        AsyncStorage.getItem("user").then(function (url) {
+          request
+            .get(url)
+            .then(function (response) {
+              onUserChanged(response.data);
+              onNameChanged(response.data.real_name);
+              onNicknameChanged(response.data.nickname);
+              onGenderChanged(response.data.gender);
+              onBirthdayChanged(response.data.birthday);
+              onPostalCodeChanged(response.data.zipcode);
+              onPrefectureChanged(response.data.prefecture_id);
+              onAddress1Changed(response.data.address1);
+              onAddress2Changed(response.data.address2);
+            })
+            .catch(function (error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
+        });
+      })
       .catch(function (error) {
         if (
           error &&
@@ -88,39 +124,43 @@ export default function ProfileInformation(props) {
         }
       });
   }
-  if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          onNameChanged(response.data.real_name);
-          onNicknameChanged(response.data.nickname);
-          onGenderChanged(response.data.gender);
-          onBirthdayChanged(response.data.birthday);
-          onPostalCodeChanged(response.data.zipcode);
-          onPrefectureChanged(response.data.prefecture_id);
-          onAddress1Changed(response.data.address1);
-          onAddress2Changed(response.data.address2);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-    });
+  React.useEffect(() => {
+    loadUser();
+  }, [isFocused]);
+  function loadUser() {
+    if (!user.url) {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            onNameChanged(response.data.real_name);
+            onNicknameChanged(response.data.nickname);
+            onGenderChanged(response.data.gender);
+            onBirthdayChanged(response.data.birthday);
+            onPostalCodeChanged(response.data.zipcode);
+            onPrefectureChanged(response.data.prefecture_id);
+            onAddress1Changed(response.data.address1);
+            onAddress2Changed(response.data.address2);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
+    }
   }
-
   if (
     editName == true ||
     editNickname == true ||
@@ -166,7 +206,7 @@ export default function ProfileInformation(props) {
                   alignItems: "center",
                   justifyContent: "flex-start",
                   marginRight: widthPercentageToDP("-3%"),
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                 }}
               >
                 <Icon
@@ -197,7 +237,7 @@ export default function ProfileInformation(props) {
                   alignItems: "center",
                   justifyContent: "flex-start",
                   marginRight: widthPercentageToDP("-3%"),
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                 }}
               >
                 <Icon
@@ -227,7 +267,7 @@ export default function ProfileInformation(props) {
                   alignItems: "center",
                   justifyContent: "flex-start",
                   marginRight: widthPercentageToDP("-3%"),
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                 }}
               >
                 <Icon
@@ -258,7 +298,7 @@ export default function ProfileInformation(props) {
                   alignItems: "center",
                   justifyContent: "flex-start",
                   marginRight: widthPercentageToDP("-3%"),
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                 }}
               >
                 <Icon
@@ -356,13 +396,16 @@ export default function ProfileInformation(props) {
                 }}
               >
                 <DatePicker
-                  title="Select Your Birthday"
+                  title={date}
+                  placeholder={date}
+                  initialValue={new Date()}
                   style={{
                     borderWidth: 1,
                     width: widthPercentageToDP("30%"),
                     height: heightPercentageToDP("5%"),
                     borderRadius: 5,
-
+                    paddingVertical: heightPercentageToDP("1%"),
+                    paddingHorizontal: heightPercentageToDP("1%"),
                     borderColor: Colors.CECECE,
                     marginRight: widthPercentageToDP("3%"),
                   }}
@@ -396,7 +439,7 @@ export default function ProfileInformation(props) {
             ) : (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -422,7 +465,7 @@ export default function ProfileInformation(props) {
             {editPostalCode == true ? (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -453,7 +496,7 @@ export default function ProfileInformation(props) {
             ) : (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -483,7 +526,7 @@ export default function ProfileInformation(props) {
             {editPrefecture == true ? (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -514,7 +557,7 @@ export default function ProfileInformation(props) {
             ) : (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -544,7 +587,7 @@ export default function ProfileInformation(props) {
             {editAddress1 == true ? (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -575,7 +618,7 @@ export default function ProfileInformation(props) {
             ) : (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -605,7 +648,7 @@ export default function ProfileInformation(props) {
             {editAddress2 == true ? (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -636,7 +679,7 @@ export default function ProfileInformation(props) {
             ) : (
               <View
                 style={{
-                  paddingBottom: heightPercentageToDP("2%"),
+                  paddingVertical: heightPercentageToDP("3%"),
                   position: "absolute",
                   right: 0,
                   flexDirection: "row-reverse",
@@ -669,11 +712,12 @@ const styles = StyleSheet.create({
   productInformationContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: heightPercentageToDP("2%"),
+    // marginTop: heightPercentageToDP("2%"),
+    paddingVertical: heightPercentageToDP("3%"),
     marginHorizontal: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
-    paddingBottom: heightPercentageToDP("2%"),
+    // paddingBottom: heightPercentageToDP("2%"),
     // backgroundColor: "orange",
   },
   ddproductInformationContainer: {

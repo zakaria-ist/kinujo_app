@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "../assets/Colors.js";
@@ -22,6 +23,8 @@ import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import Add from "../assets/icons/add.svg";
+import Dustbin from "../assets/icons/dustbin.svg";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -92,9 +95,9 @@ function processAddressHtml(props, addresses, status = "") {
                     });
                 }}
               >
-                <Image
+                <Dustbin
                   style={styles.removeIcon}
-                  source={require("../assets/Images/removeIcon.png")}
+                  // source={require("../assets/Images/removeIcon.png")}
                 />
               </TouchableWithoutFeedback>
             </View>
@@ -105,6 +108,7 @@ function processAddressHtml(props, addresses, status = "") {
   }
   return tmpAddresses;
 }
+
 export default function ShippingList(props) {
   const [addresses, onAddressesChanged] = React.useState([]);
   const [addressHtml, onAddressHtmlChanged] = React.useState(<View></View>);
@@ -183,11 +187,15 @@ export default function ShippingList(props) {
                                   request
                                     .delete(address.url)
                                     .then(function (response) {
-                                      AsyncStorage.getItem("defaultAddress").then((url) => {
-                                        if(url == address.url){
-                                          AsyncStorage.removeItem("defaultAddress").then(()=>{
+                                      AsyncStorage.getItem(
+                                        "defaultAddress"
+                                      ).then((url) => {
+                                        if (url == address.url) {
+                                          AsyncStorage.removeItem(
+                                            "defaultAddress"
+                                          ).then(() => {
                                             load();
-                                          })
+                                          });
                                         } else {
                                           load();
                                         }
@@ -224,9 +232,9 @@ export default function ShippingList(props) {
                           );
                         }}
                       >
-                        <Image
+                        <Dustbin
                           style={styles.removeIcon}
-                          source={require("../assets/Images/removeIcon.png")}
+                          // source={require("../assets/Images/removeIcon.png")}
                         />
                       </TouchableWithoutFeedback>
                     </View>
@@ -284,9 +292,9 @@ export default function ShippingList(props) {
                 marginTop: heightPercentageToDP("2%"),
               }}
             >
-              <Image
+              <Add
                 style={{ width: win.width / 21, height: 14 * ratioAdd }}
-                source={require("../assets/Images/addAddressIcon.png")}
+                // source={require("../assets/Images/addAddressIcon.png")}
               />
 
               <Text

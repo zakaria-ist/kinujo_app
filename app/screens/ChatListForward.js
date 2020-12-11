@@ -85,6 +85,7 @@ export default function ChatList(props) {
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
   const [forwardChatHtml, onForwardChatHtmlChanged] = React.useState([]);
   const [loaded, onLoaded] = React.useState(false);
+  const [user, onUserChanged] = React.useState({});
 
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
