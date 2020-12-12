@@ -52,7 +52,7 @@ export default function Payment(props) {
       />
       <CustomHeader
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => {

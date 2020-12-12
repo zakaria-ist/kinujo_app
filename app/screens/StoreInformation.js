@@ -82,7 +82,7 @@ export default function StoreInformation(props) {
       <CustomHeader
         onFavoriteChanged="noFavorite"
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onPress={() => {
           props.navigation.navigate("Cart");

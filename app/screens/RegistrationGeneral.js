@@ -56,7 +56,7 @@ export default function RegistrationGeneral(props) {
         style={{ flex: 1 }}
       > */}
         <ScrollView style={{ flex: 1 }}>
-          <WhiteBackArrow onPress={() => props.navigation.pop()} />
+          <WhiteBackArrow onPress={() => props.navigation.goBack()} />
           <View
             style={{
               justifyContent: "center",

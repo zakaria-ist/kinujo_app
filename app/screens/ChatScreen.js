@@ -590,7 +590,7 @@ export default function ChatScreen(props) {
         >
           <CustomHeader
             text={Translate.t("chat")}
-            onBack={() => props.navigation.pop()}
+            onBack={() => props.navigation.goBack()}
             onFavoritePress={() => props.navigation.navigate("Favorite")}
             onPress={() => props.navigation.navigate("Cart")}
           />

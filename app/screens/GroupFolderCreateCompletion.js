@@ -116,12 +116,12 @@ export default function GroupFolderCreateCompletion(props) {
 
   function addMemberHandler() {
     AsyncStorage.setItem("ids", JSON.stringify(friendIds));
-    props.navigation.pop();
+    props.navigation.goBack();
   }
   function cancelHanlder() {
     AsyncStorage.removeItem("ids");
     let routes = props.navigation.dangerouslyGetState().routes;
-    props.navigation.pop(2);
+    props.navigation.goBack(2);
     // props.navigation.navigate("Contact");
   }
   if (!loaded) {

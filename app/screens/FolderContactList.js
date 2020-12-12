@@ -186,7 +186,7 @@ export default function FolderContactList(props) {
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         text={Translate.t("contact")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}

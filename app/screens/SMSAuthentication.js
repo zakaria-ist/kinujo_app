@@ -183,13 +183,13 @@ export default function SMSAuthentication(props) {
                 .confirm(code)
                 .then(() => {
                   AsyncStorage.setItem("verified", "1").then(() => {
-                    props.navigation.pop();
+                    props.navigation.goBack();
                   });
                 })
                 .catch((error) => {
                   console.log(error);
                   AsyncStorage.setItem("verified", "0").then(() => {
-                    props.navigation.pop();
+                    props.navigation.goBack();
                   });
                 });
             }
@@ -210,7 +210,7 @@ export default function SMSAuthentication(props) {
         <TouchableWithoutFeedback
           onPress={() => {
             AsyncStorage.setItem("verified", "0").then(() => {
-              props.navigation.pop();
+              props.navigation.goBack();
             });
           }}
         >

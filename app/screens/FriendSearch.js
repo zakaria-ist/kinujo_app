@@ -126,7 +126,7 @@ export default function FriendSearch(props) {
         text={Translate.t("friendSearch")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.pop()}
+        onBack={() => props.navigation.goBack()}
       />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>

@@ -450,7 +450,7 @@ export default function HomeByCategory(props) {
           onPress={() => {
             props.navigation.navigate("Cart");
           }}
-          onBack={() => props.navigation.pop()}
+          onBack={() => props.navigation.goBack()}
         />
 
         <CustomSecondaryHeader

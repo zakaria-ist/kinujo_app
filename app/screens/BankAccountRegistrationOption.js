@@ -93,7 +93,7 @@ export default function BankAccountRegistration(props) {
     >
       <SafeAreaView style={{ flex: 1 }}>
         <View>
-          <WhiteBackArrow onPress={() => props.navigation.pop()} />
+          <WhiteBackArrow onPress={() => props.navigation.goBack()} />
           <Image
             style={{
               width: win.width / 1.6,

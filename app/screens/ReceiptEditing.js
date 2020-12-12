@@ -139,7 +139,7 @@ export default function ReceiptView(props) {
           onPress={() => {
             props.navigation.navigate("Cart");
           }}
-          onBack={() => props.navigation.pop()}
+          onBack={() => props.navigation.goBack()}
         />
         <CustomSecondaryHeader
           name={user.nickname}

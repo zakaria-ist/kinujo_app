@@ -358,7 +358,7 @@ export default function ChatList(props) {
             createdAt: createdAt,
           })
           .then(function () {
-            props.navigation.pop();
+            props.navigation.goBack();
           });
       }
     });
@@ -381,7 +381,7 @@ export default function ChatList(props) {
       <CustomHeader
         text={Translate.t("chat")}
         onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.pop()}
+        onBack={() => props.navigation.goBack()}
         onFavoriteChanged="noFavorite"
       />
       <ScrollView>

@@ -110,7 +110,7 @@ export default function ContactShare(props) {
                 totalMessage: totalMessageCount + 1,
               });
           });
-        props.navigation.pop();
+        props.navigation.goBack();
       });
   }
   function processUserHtml(props, users) {

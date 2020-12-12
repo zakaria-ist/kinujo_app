@@ -453,7 +453,7 @@ export default function HomeStoreList(props) {
         }}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onCartCount={(count) => {
           onCartCountChanged(count);

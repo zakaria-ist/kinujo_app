@@ -81,7 +81,7 @@ export default function ProductInformationAdd(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         text={Translate.t("productInformation")}
-        onBack={() => props.navigation.pop()}
+        onBack={() => props.navigation.goBack()}
         onPress={() => {
           props.navigation.navigate("Cart");
         }}

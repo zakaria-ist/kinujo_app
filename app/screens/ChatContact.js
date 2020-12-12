@@ -95,7 +95,7 @@ export default function ChatContact({
                 groupName: contactName,
               })
             ).then(() => {
-              props.navigation.pop();
+              props.navigation.goBack();
             });
           } else {
             let ownMessageUnseenField = "unseenMessageCount_" + userId;
@@ -120,7 +120,7 @@ export default function ChatContact({
                     groupName: contactName,
                   })
                 ).then(() => {
-                  props.navigation.pop();
+                  props.navigation.goBack();
                 });
               });
           }

@@ -143,7 +143,7 @@ export default function AddressManagement(props) {
           // onPrefecturesChanged([]);
           // onPrefectureLoadedChanged(false);
           // controller.reset();
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onPress={() => {
           props.navigation.navigate("Cart");
@@ -243,7 +243,7 @@ export default function AddressManagement(props) {
                   data
                 )
                 .then(function (response) {
-                  props.navigation.pop();
+                  props.navigation.goBack();
                 })
                 .catch(function (error) {
                   if (
@@ -286,7 +286,7 @@ export default function AddressManagement(props) {
                     // onPhoneNumberChanged("");
                     // onPrefecturesChanged([]);
                     // onPrefectureLoadedChanged(false);
-                    props.navigation.pop();
+                    props.navigation.goBack();
                   })
                   .catch(function (error) {
                     if (
