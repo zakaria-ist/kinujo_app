@@ -236,6 +236,7 @@ export default function ProductInformationAddNew(props) {
                   stock: vertical.stock + "",
                   janCode: vertical.jan_code,
                   hidden: vertical.is_hidden ? true : false,
+                  delete: vertical.is_hidden ? true : false
                 });
               }
               onOneVariationItemsChanged(tmpItems);
@@ -266,113 +267,121 @@ export default function ProductInformationAddNew(props) {
 
               firstProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  rawMapping[productVarietySelection.id] =
-                    productVarietySelection.selection;
-                  tmpItems["items"][0]["choices"].push({
-                    choiceIndex: tmpItems["items"][0]["choices"].length,
-                    choiceItem: productVarietySelection.selection,
-                    id: productVarietySelection.id,
-                  });
+                  if(!productVarietySelection.is_hidden){
+                    rawMapping[productVarietySelection.id] =
+                      productVarietySelection.selection;
+                    tmpItems["items"][0]["choices"].push({
+                      choiceIndex: tmpItems["items"][0]["choices"].length,
+                      choiceItem: productVarietySelection.selection,
+                      id: productVarietySelection.id,
+                    });
+                  }
                 }
               );
               secondProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  rawMapping[productVarietySelection.id] =
-                    productVarietySelection.selection;
-                  tmpItems["items"][1]["choices"].push({
-                    choiceIndex: tmpItems["items"][1]["choices"].length,
-                    choiceItem: productVarietySelection.selection,
-                    id: productVarietySelection.id,
-                  });
+                  if(!productVarietySelection.is_hidden){
+                    rawMapping[productVarietySelection.id] =
+                      productVarietySelection.selection;
+                    tmpItems["items"][1]["choices"].push({
+                      choiceIndex: tmpItems["items"][1]["choices"].length,
+                      choiceItem: productVarietySelection.selection,
+                      id: productVarietySelection.id,
+                    });
+                  }
                 }
               );
 
               firstProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map(
-                    (horizontal) => {
-                      if (horizontal.horizontal && horizontal.vertical) {
-                        let horizontalId = getId(horizontal.horizontal);
-                        let verticalId = getId(horizontal.vertical);
-                        if (
-                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                        ) {
-                          tmpItems["mappingValue"][
-                            rawMapping[horizontalId]
-                          ] = {};
+                  if(!productVarietySelection.is_hidden){
+                    productVarietySelection.jancode_horizontal.map(
+                      (horizontal) => {
+                        if (horizontal.horizontal && horizontal.vertical && !horizontal.is_hidden) {
+                          let horizontalId = getId(horizontal.horizontal);
+                          let verticalId = getId(horizontal.vertical);
+                          if (
+                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                          ) {
+                            tmpItems["mappingValue"][
+                              rawMapping[horizontalId]
+                            ] = {};
+                          }
+                          tmpItems["mappingValue"][rawMapping[horizontalId]][
+                            rawMapping[verticalId]
+                          ] = {
+                            id: horizontal.id,
+                            stock: horizontal.stock + "",
+                            janCode: horizontal.jan_code,
+                            delete: horizontal.is_hidden ? true : false,
+                          };
+                        }
+                      }
+                    );
+                    productVarietySelection.jancode_vertical.map((vertical) => {
+                      if (vertical.horizontal && vertical.vertical && !vertical.is_hidden) {
+                        let horizontalId = getId(vertical.horizontal);
+                        let verticalId = getId(vertical.vertical);
+                        if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                          tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
                         }
                         tmpItems["mappingValue"][rawMapping[horizontalId]][
                           rawMapping[verticalId]
                         ] = {
-                          id: horizontal.id,
-                          stock: horizontal.stock + "",
-                          janCode: horizontal.jan_code,
-                          delete: horizontal.is_hidden ? true : false,
+                          id: vertical.id,
+                          stock: vertical.stock + "",
+                          janCode: vertical.jan_code,
+                          delete: vertical.is_hidden ? true : false,
                         };
                       }
-                    }
-                  );
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    if (vertical.horizontal && vertical.vertical) {
-                      let horizontalId = getId(vertical.horizontal);
-                      let verticalId = getId(vertical.vertical);
-                      if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                        tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
-                      }
-                      tmpItems["mappingValue"][rawMapping[horizontalId]][
-                        rawMapping[verticalId]
-                      ] = {
-                        id: vertical.id,
-                        stock: vertical.stock + "",
-                        janCode: vertical.jan_code,
-                        delete: vertical.is_hidden ? true : false,
-                      };
-                    }
-                  });
+                    });
+                  }
                 }
               );
               secondProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map(
-                    (horizontal) => {
-                      if (horizontal.horizontal && horizontal.vertical) {
-                        let horizontalId = getId(horizontal.horizontal);
-                        let verticalId = getId(horizontal.vertical);
-                        if (
-                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                        ) {
-                          tmpItems["mappingValue"][
-                            rawMapping[horizontalId]
-                          ] = {};
+                  if(!productVarietySelection.is_hidden){
+                    productVarietySelection.jancode_horizontal.map(
+                      (horizontal) => {
+                        if (horizontal.horizontal && horizontal.vertical && !horizontal.is_hidden) {
+                          let horizontalId = getId(horizontal.horizontal);
+                          let verticalId = getId(horizontal.vertical);
+                          if (
+                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                          ) {
+                            tmpItems["mappingValue"][
+                              rawMapping[horizontalId]
+                            ] = {};
+                          }
+                          tmpItems["mappingValue"][rawMapping[horizontalId]][
+                            rawMapping[verticalId]
+                          ] = {
+                            id: horizontal.id,
+                            stock: horizontal.stock + "",
+                            janCode: horizontal.jan_code,
+                            delete: horizontal.is_hidden ? true : false,
+                          };
+                        }
+                      }
+                    );
+                    productVarietySelection.jancode_vertical.map((vertical) => {
+                      if (vertical.horizontal && vertical.vertical && !vertical.is_hidden) {
+                        let horizontalId = getId(vertical.horizontal);
+                        let verticalId = getId(vertical.vertical);
+                        if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
+                          tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
                         }
                         tmpItems["mappingValue"][rawMapping[horizontalId]][
                           rawMapping[verticalId]
                         ] = {
-                          id: horizontal.id,
-                          stock: horizontal.stock + "",
-                          janCode: horizontal.jan_code,
-                          delete: horizontal.is_hidden ? true : false,
+                          id: vertical.id,
+                          stock: vertical.stock + "",
+                          janCode: vertical.jan_code,
+                          delete: vertical.is_hidden ? true : false,
                         };
                       }
-                    }
-                  );
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    if (vertical.horizontal && vertical.vertical) {
-                      let horizontalId = getId(vertical.horizontal);
-                      let verticalId = getId(vertical.vertical);
-                      if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                        tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
-                      }
-                      tmpItems["mappingValue"][rawMapping[horizontalId]][
-                        rawMapping[verticalId]
-                      ] = {
-                        id: vertical.id,
-                        stock: vertical.stock + "",
-                        janCode: vertical.jan_code,
-                        delete: vertical.is_hidden ? true : false,
-                      };
-                    }
-                  });
+                    });
+                  }
                 }
               );
               onTwoVariationItemsChanged(tmpItems);
@@ -417,7 +426,7 @@ export default function ProductInformationAddNew(props) {
           price: price,
           storePrice: storePrice,
           shipping: shipping,
-          productPageDisplayMethod: productPageDisplayMethod,
+          productPageDisplayMethod: productPageDisplayMethod ? productPageDisplayMethod : "none",
           productImages: productImages,
           productDescription: productDescription,
           targetUser: targetUser,
@@ -427,8 +436,9 @@ export default function ProductInformationAddNew(props) {
         .then((response) => {
           onSpinnerChanged(false);
           response = response.data;
+          console.log(response)
           if (response.success) {
-            props.navigation.goBack();
+            // props.navigation.goBack();
           } else {
             if (response.errors && Object.keys(response.errors).length > 0) {
               alert.warning(
@@ -437,6 +447,8 @@ export default function ProductInformationAddNew(props) {
                   Object.keys(response.errors)[0] +
                   ")"
               );
+            } else if(response.errors.length > 0){
+              alert.warning(response.errors[0])
             } else if (response.error) {
               alert.warning(response.error);
             }
@@ -466,7 +478,6 @@ export default function ProductInformationAddNew(props) {
       });
       let userId = urls[urls.length - 1];
       onSpinnerChanged(true);
-      console.log(twoVariationItems);
       request
         .post("editProduct/" + userId + "/", {
           id: product.id,
@@ -485,7 +496,7 @@ export default function ProductInformationAddNew(props) {
           price: price,
           storePrice: storePrice,
           shipping: shipping,
-          productPageDisplayMethod: productPageDisplayMethod,
+          productPageDisplayMethod: productPageDisplayMethod ? productPageDisplayMethod : "none",
           productImages: productImages,
           productDescription: productDescription,
           targetUser: targetUser,
@@ -529,7 +540,6 @@ export default function ProductInformationAddNew(props) {
 
   function handleGeneralPrice(value) {
     onPriceChanged(value.replace(/[^0-9]/g, ""));
-    console.log(user);
     if (user.is_master) {
       onStorePriceChanged(value * 0.7 + "");
     } else if (user.is_seller) {
@@ -733,6 +743,7 @@ export default function ProductInformationAddNew(props) {
               ) : ( */}
                 <DatePicker
                   // title="Select Published Date"
+                  format="YYYY-MM-DD"
                   placeholder="Select Published Date"
                   initialValue={new Date()}
                   textStyle={((alignSelf = "center"), (color = "blue"))}
@@ -750,7 +761,7 @@ export default function ProductInformationAddNew(props) {
                     paddingVertical: heightPercentageToDP("1%"),
                     // borderColor: Colors.CECECE,
                   }}
-                  onDateChange={(date) => {
+                  onChange={(date) => {
                     onPublishDateChanged(date);
                   }}
                 />

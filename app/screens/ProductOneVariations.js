@@ -101,6 +101,9 @@ export default function ProductOneVariations({
     }
   }
   function onProcess(items) {
+    items = items.filter((item) => {
+      return !item.delete;
+    })
     onProcessVariationHtml(processVariationHtml(items));
     onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
   }

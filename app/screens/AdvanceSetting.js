@@ -254,7 +254,7 @@ export default function AdvanceSetting(props) {
                       parentId: userId,
                     })
                     .then(function (response) {
-                      props.navigation.goBack(3);
+                      props.navigation.navigate("CustomerList");
                     });
                 },
               },

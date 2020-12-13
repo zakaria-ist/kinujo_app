@@ -161,7 +161,7 @@ export default function PurchaseHistoryDetails(props) {
               height: RFValue(45),
               width: RFValue(45),
             }}
-            source={require("../assets/Images/profileEditingIcon.png")}
+            source={require("../assets/Images/cover_img.jpg")}
           />
           <View
             style={{
@@ -200,7 +200,12 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("orderDate")}
           </Text>
           <Text style={styles.productSourceText}>
-            {order && order.order ? order.order.created : ""}
+            {order && order.order ?
+              kanjidate.format(
+                "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+" {h:2}:{M:2}",
+                new Date(order.order.created)
+              )
+              : ""}
           </Text>
         </View>
         <View style={styles.productInformationContainer}>

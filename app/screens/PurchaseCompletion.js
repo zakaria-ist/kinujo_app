@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -14,14 +20,14 @@ import Request from "../lib/request";
 const request = new Request();
 
 export default function PurchaseCompletion(props) {
-  const [user, setUser] = React.useState({})
-  React.useEffect(()=>{
-    AsyncStorage.getItem('user').then((url) => {
-      request.get(url).then((response)=>{
+  const [user, setUser] = React.useState({});
+  React.useEffect(() => {
+    AsyncStorage.getItem("user").then((url) => {
+      request.get(url).then((response) => {
         setUser(response.data);
-      })
-    })
-  })
+      });
+    });
+  });
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -54,21 +60,23 @@ export default function PurchaseCompletion(props) {
         >
           {Translate.t("waitUntilDelivery")}
         </Text>
-        <TouchableOpacity onPress={
-          ()=>{
-            if(user.is_seller){
-              props.navigation.reset({
-                index: 0,
-                routes: [{ name: "HomeStore" }],
-              });
+        <TouchableOpacity
+          onPress={() => {
+            if (user.is_seller) {
+              // props.navigation.reset({
+              //   index: 0,
+              //   routes: [{ name: "HomeStore" }],
+              // });
+              props.navigation.navigate("HomeStore");
             } else {
-              props.navigation.reset({
-                index: 0,
-                routes: [{ name: "HomeGeneral" }],
-              });
+              // props.navigation.reset({
+              //   index: 0,
+              //   routes: [{ name: "HomeGeneral" }],
+              // });
+              props.navigation.navigate("HomeGeneral");
             }
-          }
-        }>
+          }}
+        >
           <View style={styles.buttonContainer}>
             <Text style={styles.buttonText}>OK</Text>
           </View>

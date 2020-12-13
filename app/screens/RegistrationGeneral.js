@@ -27,6 +27,7 @@ import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 import { ScrollView } from "react-native-gesture-handler";
 import CountryPicker from "react-native-country-picker-modal";
 import { call } from "react-native-reanimated";
+import * as Localization from "expo-localization";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -43,6 +44,7 @@ export default function RegistrationGeneral(props) {
     onCallingCodeChanged(val.callingCode);
     onFlagChanged(val.flag);
   }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -161,7 +163,7 @@ export default function RegistrationGeneral(props) {
                       username: callingCode + phone,
                       password: password,
                       authority: "general",
-                    })
+                    });
                     request
                       .post("user/register/check", {
                         nickname: nickname,
@@ -170,7 +172,7 @@ export default function RegistrationGeneral(props) {
                         authority: "general",
                       })
                       .then(function (response) {
-                        console.log(response)
+                        console.log(response);
                         response = response.data;
                         if (response.success) {
                           // onConfirmPasswordChanged("")

@@ -67,9 +67,19 @@ export default function PurchaseHistory(props) {
               }}
             >
               {kanjidate.format(
-                "{Y:4}年{M:2}月{D:2}日 ({G:1}) {h:2}:{M:2}",
+                "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+" ",
                 new Date(order.order.created)
-              )}
+              )}({
+                Translate.t(kanjidate.format(
+                  "{W:2}",
+                  new Date(order.order.created)
+                ))
+              }){
+                kanjidate.format(
+                  " {h:2}:{M:2}",
+                  new Date(order.order.created)
+                )
+              }
             </Text>
             <View style={styles.purchaseHistoryProductContainer}>
               <View style={styles.productInformationContainer}>
@@ -95,6 +105,7 @@ export default function PurchaseHistory(props) {
                           .name}
                   </Text>
                   <Text>{format.separator(order.unit_price)} 円</Text>
+                  {/* <Text>{format.separator(order.total_price)} 円</Text> */}
                 </View>
                 <View
                   style={{
@@ -244,7 +255,7 @@ export default function PurchaseHistory(props) {
             tmpYears.push(year);
           }
         });
-        let tmpOrderProducts = response.data.orderProducts.filter((order) => {
+        let tmpOrderProducts = response.data.orderProducts.reverse().filter((order) => {
           let year = kanjidate.format("{Y:4}", new Date(order.created));
           return year == type || type == "all";
         });

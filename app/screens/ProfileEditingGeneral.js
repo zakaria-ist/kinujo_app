@@ -132,7 +132,11 @@ export default function ProfileEditingGeneral(props) {
   React.useEffect(() => {
     loadUser();
   }, [isFocused]);
-
+  React.useEffect(() => {
+    onEditEmailChanged(false);
+    onEditPasswordChanged(false);
+    onEditPhoneNumberChanged(false);
+  }, [!isFocused]);
   function updateUser(user, field, value) {
     if (!value) return;
     let obj = {};
