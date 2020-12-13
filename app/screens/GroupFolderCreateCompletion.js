@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -121,18 +122,19 @@ export default function GroupFolderCreateCompletion(props) {
   function cancelHanlder() {
     AsyncStorage.removeItem("ids");
     let routes = props.navigation.dangerouslyGetState().routes;
-    props.navigation.goBack(2);
+    props.navigation.navigate("ChatList");
     // props.navigation.navigate("Contact");
   }
   if (!loaded) {
     console.log("" + friendIds.length);
     let tmpUserListHtml = [];
-    for (var i = 0; i < friendIds.length - 1 && 2; i++) {
+    for (var i = 0; i < friendIds.length - 1; i++) {
       tmpUserListHtml.push(
         <View
           key={friendIds[i]}
           style={{
             alignItems: "center",
+            width: widthPercentageToDP("25%"),
           }}
         >
           <Person
@@ -142,7 +144,14 @@ export default function GroupFolderCreateCompletion(props) {
               borderRadius: win.width / 2,
             }}
           />
-          <Text style={styles.textForIcon}>{friendNames[i]}</Text>
+          <Text
+            style={{
+              fontSize: RFValue(11),
+              marginTop: heightPercentageToDP("1.5%"),
+            }}
+          >
+            {friendNames[i]}
+          </Text>
         </View>
       );
     }
@@ -150,10 +159,13 @@ export default function GroupFolderCreateCompletion(props) {
     onLoaded(true);
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader onPress={() => props.navigation.navigate("Cart")} />
-      <View
+      <ScrollView
         style={{
+          // backgroundColor: "orange",
+          flex: 1,
+          marginVertical: heightPercentageToDP("5%"),
           marginHorizontal: widthPercentageToDP("3%"),
           borderWidth: 2,
           marginTop: heightPercentageToDP("3%"),
@@ -219,7 +231,7 @@ export default function GroupFolderCreateCompletion(props) {
               }}
             >
               <Text style={styles.text}>{Translate.t("member")} - </Text>
-              <Text style={styles.text}>( {friendIds.length} )</Text>
+              <Text style={styles.text}>( {friendIds.length - 1} )</Text>
             </View>
           </View>
         </View>
@@ -230,6 +242,9 @@ export default function GroupFolderCreateCompletion(props) {
               flexDirection: "row",
               justifyContent: "space-evenly",
               marginTop: heightPercentageToDP("8%"),
+              alignSelf: "center",
+              flexWrap: "wrap",
+              marginHorizontal: widthPercentageToDP("5%"),
             }}
           >
             <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
@@ -238,15 +253,6 @@ export default function GroupFolderCreateCompletion(props) {
                   alignItems: "center",
                 }}
               >
-                {/* <Image
-                  style={{
-                    width: RFValue(50),
-                    height: RFValue(50),
-                    borderRadius: win.width / 2,
-                    backgroundColor: Colors.E6DADE,
-                  }}
-                  source={require("../assets/Images/addMemberIcon.png")}
-                /> */}
                 <AddMember
                   style={{
                     width: RFValue(50),
@@ -265,7 +271,7 @@ export default function GroupFolderCreateCompletion(props) {
           {/* /////////////////////////////////////////////////////////////*/}
           {props.route.params.type != "folder" ? (
             <TouchableWithoutFeedback onPress={() => redirectToChat()}>
-              <View>
+              <View style={{ marginBottom: heightPercentageToDP("5%") }}>
                 <Chat
                   style={{
                     width: win.width / 7,
@@ -290,7 +296,7 @@ export default function GroupFolderCreateCompletion(props) {
             <View></View>
           )}
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

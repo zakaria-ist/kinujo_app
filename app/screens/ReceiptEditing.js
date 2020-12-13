@@ -186,7 +186,7 @@ export default function ReceiptView(props) {
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
                 {kanjidate.format(
-                  "{Y:4}年{M:2}月{D:2}日",
+                  "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+"",
                   new Date(order.created)
                 )}
               </Text>
@@ -197,7 +197,7 @@ export default function ReceiptView(props) {
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
                 {kanjidate.format(
-                  "{Y:4}年{M:2}月{D:2}日",
+                  "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+"",
                   new Date(order.created)
                 )}
               </Text>

@@ -625,7 +625,7 @@ export default function ChatScreen(props) {
                   : styles.scrollViewStyleWithoutEmoji
               }
             >
-              {console.log(showEmoji)}
+              {/*console.log(showEmoji)*/}
               {chatHtml}
             </ScrollView>
           </LinearGradient>

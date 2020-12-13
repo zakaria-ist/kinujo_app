@@ -8,6 +8,7 @@ import {
   Button,
   TouchableOpacity,
   SafeAreaView,
+  TouchableWithoutFeedback
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
@@ -164,6 +165,30 @@ export default function ProductTwoVariations({
     onProcessVariationHtml(processVariationHtml(items));
     onLoaded(true);
   }
+  function deleteChoice(index, choiceIndex) {
+    console.log("ADD " + choiceIndex)
+    items.map((product) => {
+      if (index == product.index) {
+        product.choices = product.choices.filter((choice) => {
+          return choice.choiceItem != choiceIndex;
+        });
+
+        let choices = []
+
+        product.choices.map((choice) => {
+          choice['choiceIndex'] = choices.length + 1;
+          choices.push(choice);
+        })
+
+        product.choices = choices;
+      }
+      return product;
+    });
+
+    populateMapping();
+    onProcessVariationHtml(processVariationHtml(items));
+    onLoaded(true);
+  }
   function processChoiceHtml(index, choices) {
     let tmpChoiceHtml = [];
     choices.map((choice) => {
@@ -218,7 +243,27 @@ export default function ProductTwoVariations({
                   onValueChanged(value, "choice", index, choice.choiceIndex)
                 }
               ></TextInput>
+              
             </View>
+          </View>
+          <View>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  deleteChoice(index, choice.choiceItem)
+                }}
+              >
+                <View
+                  style={[
+                    styles.variantContainer,
+                    { paddingBottom: heightPercentageToDP("1.5%") },
+                  ]}
+                >
+                  <DustBinIcon
+                    style={styles.widget_icon}
+                    resizeMode="contain"
+                  />
+                </View>
+              </TouchableWithoutFeedback>
           </View>
         </View>
       );
@@ -376,51 +421,6 @@ export default function ProductTwoVariations({
               <Text style={styles.variantText}>{Translate.t("janCode")} :</Text>
             </View>
           </View>
-          {!isDelete ? (
-            <TouchableOpacity
-              onPress={() => {
-                globalMappingValue[choice1Item][choice.choiceItem][
-                  "delete"
-                ] = true;
-                onProcessVariationHtml(processVariationHtml(items));
-                onProcessVariationDetailsHtml(
-                  processDetailsVariationHtml(items)
-                );
-              }}
-            >
-              <View
-                style={[
-                  styles.variantContainer,
-                  { paddingBottom: heightPercentageToDP("1.5%") },
-                ]}
-              >
-                <Text style={styles.variantText}>{Translate.t("delete")}</Text>
-                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={() => {
-                globalMappingValue[choice1Item][choice.choiceItem][
-                  "delete"
-                ] = false;
-                onProcessVariationHtml(processVariationHtml(items));
-                onProcessVariationDetailsHtml(
-                  processDetailsVariationHtml(items)
-                );
-              }}
-            >
-              <View
-                style={[
-                  styles.variantContainer,
-                  { paddingBottom: heightPercentageToDP("1.5%") },
-                ]}
-              >
-                <Text style={styles.variantText}>Show</Text>
-                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
-              </View>
-            </TouchableOpacity>
-          )}
         </View>
       );
     });

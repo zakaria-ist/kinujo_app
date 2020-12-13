@@ -77,7 +77,13 @@ export default function ProfileEditingGeneral(props) {
   ] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const isFocused = useIsFocused();
-
+  React.useEffect(() => {
+    onEditEmailChanged(false);
+    onEditPasswordChanged(false);
+    onEditPhoneNumberChanged(false);
+    onEditNickNameChanged(false);
+    onEditShopNameChanged(false);
+  }, [!isFocused]);
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
     let verified = await AsyncStorage.getItem("verified");
@@ -336,6 +342,7 @@ export default function ProfileEditingGeneral(props) {
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onBack={() => {
             props.navigation.goBack();
+            // props.navigation.navigate("ChatList");
           }}
           onPress={() => {
             props.navigation.navigate("Cart");

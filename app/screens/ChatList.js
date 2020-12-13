@@ -190,8 +190,7 @@ export default function ChatList(props) {
 
       name = chat.name;
       image = chat.image;
-
-      if (tmpDay == today) {
+      if (tmpDay == today && chat.data.totalMessage > 0) {
         tmpChatHtml.unshift(
           <TouchableWithoutFeedback
             key={chat.id}
@@ -251,7 +250,7 @@ export default function ChatList(props) {
             </View>
           </TouchableWithoutFeedback>
         );
-      } else if (tmpDay == today - 1) {
+      } else if (tmpDay == today - 1 && chat.data.totalMessage > 0) {
         tmpChatHtml.unshift(
           <TouchableWithoutFeedback
             key={chat.id}
@@ -309,7 +308,7 @@ export default function ChatList(props) {
             </View>
           </TouchableWithoutFeedback>
         );
-      } else {
+      } else if (chat.data.totalMessage > 0) {
         tmpChatHtml.unshift(
           <TouchableWithoutFeedback
             key={chat.id}
@@ -338,7 +337,7 @@ export default function ChatList(props) {
             }}
           >
             <View style={styles.tabContainer}>
-              {console.log(chat)}
+              {/*console.log(chat)*/}
               <Image style={styles.tabImage} />
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>

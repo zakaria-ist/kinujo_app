@@ -1,7 +1,4 @@
-import {
-  View,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, TouchableWithoutFeedback } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useRoute } from "@react-navigation/native";
 import LoginScreen from "../Screens/LoginScreen";
@@ -105,7 +102,7 @@ function BottomNavigationGeneral(props) {
           }}
         />
         <Tab.Screen
-          name="ContactGeneral"
+          name="ContactStore"
           component={Contact}
           options={{
             tabBarLabel: "Contact",
@@ -144,30 +141,421 @@ function BottomNavigationGeneral(props) {
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
         />
+        <Tab.Screen
+          name="ShippingList"
+          component={ShippingList}
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeShop"
+          component={HomeShop}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatListForward"
+          component={ChatListForward}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProfileEditingGeneral"
+          component={ProfileEditingGeneral}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProfileEditingGeneral"
+          component={ProfileEditingGeneral}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerList"
+          component={CustomerList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ExhibitedProductList"
+          component={ExhibitedProductList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="App"
+          component={App}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseHistory"
+          component={PurchaseHistory}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Setting"
+          component={Setting}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="BankAccountRegistration"
+          component={BankAccountRegistration}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerInformation"
+          component={CustomerInformation}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerInformationDetails"
+          component={CustomerInformationDetails}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProfileInformation"
+          component={ProfileInformation}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="StoreInformation"
+          component={StoreInformation}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SalesManagement"
+          component={SalesManagement}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Cart"
+          component={Cart}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Favorite"
+          component={Favorite}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="MemoEdit"
+          component={MemoEdit}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdvanceSetting"
+          component={AdvanceSetting}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductInformationAddNew"
+          component={ProductInformationAddNew}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductInformationAdd"
+          component={ProductInformationAdd}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatList"
+          component={ChatList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactGeneral"
+          component={BottomNavigationGeneral}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactSearch"
+          component={ContactSearch}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatScreen"
+          component={ChatScreen}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FriendSearch"
+          component={FriendSearch}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatCreation"
+          component={GroupChatCreation}
+        />
+
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CreateFolder"
+          component={CreateFolder}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatMember"
+          component={GroupChatMember}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdressManagement"
+          component={AdressManagement}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptView"
+          component={ReceiptView}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptEditing"
+          component={ReceiptEditing}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactShare"
+          component={ContactShare}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SearchProducts"
+          component={SearchProducts}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Payment"
+          component={Payment}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FolderContactList"
+          component={FolderContactList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatContact"
+          component={ChatContact}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeByCategory"
+          component={HomeByCategory}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseCompletion"
+          component={PurchaseCompletion}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseHistoryDetails"
+          component={PurchaseHistoryDetails}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FolderMemberSelection"
+          component={FolderMemberSelection}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupFolderCreateCompletion"
+          component={GroupFolderCreateCompletion}
+        />
       </Tab.Navigator>
     );
   } else {
     return (
       <Tab.Navigator
-        initialRouteName="HomeGeneral"
+        initialRouteName="HomeStore"
         tabBarOptions={{
           showLabel: false,
           showIcon: true,
           activeTintColor: "#e91e63",
         }}
+        backBehavior="history"
       >
         <Tab.Screen
-          name="HomeGeneral"
+          name="HomeStore"
           component={HomeGeneral}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Home",
             tabBarIcon: () => <HomeLogo width={25} height={25} />,
           }}
         />
         <Tab.Screen
-          name="ContactGeneral"
+          name="ContactStore"
           component={Contact}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Contact",
             tabBarIcon: () => <PersonLogo width={25} height={25} />,
           }}
@@ -176,14 +564,34 @@ function BottomNavigationGeneral(props) {
           name="Chat"
           component={ChatList}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Chat",
             tabBarIcon: () => <ChatLogo width={25} height={25} />,
+          }}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatCreation"
+          component={GroupChatCreation}
+        />
+        <Tab.Screen
+          name="SalesManagementBottom"
+          component={SalesManagementBottom}
+          options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
+            tabBarLabel: "SalesManagementBottom",
+            tabBarIcon: () => <MoneyLogo width={25} height={25} />,
           }}
         />
         <Tab.Screen
           name="QRCode"
           component={QRCode}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "QRCode",
             tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
           }}
@@ -192,9 +600,389 @@ function BottomNavigationGeneral(props) {
           name="SettingGeneral"
           component={SettingGeneral}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Setting",
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
+        />
+        <Tab.Screen
+          name="ShippingList"
+          component={ShippingList}
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeShop"
+          component={HomeShop}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatListForward"
+          component={ChatListForward}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProfileEditingGeneral"
+          component={ProfileEditingGeneral}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProfileEditingStore"
+          component={ProfileEditingStore}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerList"
+          component={CustomerList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ExhibitedProductList"
+          component={ExhibitedProductList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="App"
+          component={App}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseHistory"
+          component={PurchaseHistory}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Setting"
+          component={Setting}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="BankAccountRegistration"
+          component={BankAccountRegistration}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerInformation"
+          component={CustomerInformation}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerInformationDetails"
+          component={CustomerInformationDetails}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProfileInformation"
+          component={ProfileInformation}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="StoreInformation"
+          component={StoreInformation}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SalesManagement"
+          component={SalesManagement}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Cart"
+          component={Cart}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Favorite"
+          component={Favorite}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="MemoEdit"
+          component={MemoEdit}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdvanceSetting"
+          component={AdvanceSetting}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductInformationAddNew"
+          component={ProductInformationAddNew}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductInformationAdd"
+          component={ProductInformationAdd}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatList"
+          component={ChatList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactGeneral"
+          component={BottomNavigationGeneral}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactSearch"
+          component={ContactSearch}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatScreen"
+          component={ChatScreen}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FriendSearch"
+          component={FriendSearch}
+        />
+
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CreateFolder"
+          component={CreateFolder}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatMember"
+          component={GroupChatMember}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdressManagement"
+          component={AdressManagement}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptView"
+          component={ReceiptView}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptEditing"
+          component={ReceiptEditing}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactShare"
+          component={ContactShare}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SearchProducts"
+          component={SearchProducts}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Payment"
+          component={Payment}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FolderContactList"
+          component={FolderContactList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatContact"
+          component={ChatContact}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeByCategory"
+          component={HomeByCategory}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseCompletion"
+          component={PurchaseCompletion}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseHistoryDetails"
+          component={PurchaseHistoryDetails}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FolderMemberSelection"
+          component={FolderMemberSelection}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupFolderCreateCompletion"
+          component={GroupFolderCreateCompletion}
         />
       </Tab.Navigator>
     );
@@ -202,7 +990,7 @@ function BottomNavigationGeneral(props) {
 }
 
 class CustomTabButton extends React.Component {
-  render() {    
+  render() {
     const {
       onPress,
       onLongPress,
@@ -211,12 +999,18 @@ class CustomTabButton extends React.Component {
       ...props
     } = this.props;
 
-    console.log(show);
     if(!show) return null;
 
-    return <TouchableWithoutFeedback onPress={onPress} onLongPress={onLongPress} hitSlop={{ left: 15, right: 15, top: 5, bottom: 5 }} accessibilityLabel={accessibilityLabel}>
+    return (
+      <TouchableWithoutFeedback
+        onPress={onPress}
+        onLongPress={onLongPress}
+        hitSlop={{ left: 15, right: 15, top: 5, bottom: 5 }}
+        accessibilityLabel={accessibilityLabel}
+      >
         <View {...props} />
-      </TouchableWithoutFeedback>;
+      </TouchableWithoutFeedback>
+    );
   }
 }
 
@@ -285,130 +1079,391 @@ function BottomNavigationStore(props) {
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
         />
-        <Tab.Screen name="ShippingList" component={ShippingList}
+        <Tab.Screen
+          name="ShippingList"
+          component={ShippingList}
           options={{
-            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,
-          }} />
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeShop" component={HomeShop} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeShop"
+          component={HomeShop}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatListForward" component={ChatListForward} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatListForward"
+          component={ChatListForward}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProfileEditingGeneral"
           component={ProfileEditingGeneral}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProfileEditingStore"
           component={ProfileEditingStore}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CustomerList" component={CustomerList} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerList"
+          component={CustomerList}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ExhibitedProductList"
           component={ExhibitedProductList}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="App" component={App} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="App"
+          component={App}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseHistory" component={PurchaseHistory} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseHistory"
+          component={PurchaseHistory}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Setting" component={Setting} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Setting"
+          component={Setting}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="BankAccountRegistration"
           component={BankAccountRegistration}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="CustomerInformation"
           component={CustomerInformation}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="CustomerInformationDetails"
           component={CustomerInformationDetails}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProfileInformation"
           component={ProfileInformation}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="StoreInformation" component={StoreInformation} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="StoreInformation"
+          component={StoreInformation}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SalesManagement" component={SalesManagement} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SalesManagement"
+          component={SalesManagement}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Cart" component={Cart} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Cart"
+          component={Cart}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Favorite" component={Favorite} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Favorite"
+          component={Favorite}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="MemoEdit" component={MemoEdit} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="MemoEdit"
+          component={MemoEdit}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdvanceSetting" component={AdvanceSetting} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdvanceSetting"
+          component={AdvanceSetting}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProductInformationAddNew"
           component={ProductInformationAddNew}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProductInformationAdd"
           component={ProductInformationAdd}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatList" component={ChatList} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatList"
+          component={ChatList}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ContactGeneral"
           component={BottomNavigationGeneral}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactSearch" component={ContactSearch} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactSearch"
+          component={ContactSearch}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatScreen" component={ChatScreen} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatScreen"
+          component={ChatScreen}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FriendSearch" component={FriendSearch} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FriendSearch"
+          component={FriendSearch}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatCreation" component={GroupChatCreation} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatCreation"
+          component={GroupChatCreation}
+        />
+
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CreateFolder" component={CreateFolder} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CreateFolder"
+          component={CreateFolder}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatMember" component={GroupChatMember} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatMember"
+          component={GroupChatMember}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdressManagement" component={AdressManagement} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdressManagement"
+          component={AdressManagement}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptView" component={ReceiptView} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptView"
+          component={ReceiptView}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptEditing" component={ReceiptEditing} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptEditing"
+          component={ReceiptEditing}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactShare" component={ContactShare} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactShare"
+          component={ContactShare}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SearchProducts" component={SearchProducts} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SearchProducts"
+          component={SearchProducts}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Payment" component={Payment} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Payment"
+          component={Payment}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FolderContactList" component={FolderContactList} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FolderContactList"
+          component={FolderContactList}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatContact" component={ChatContact} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatContact"
+          component={ChatContact}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeByCategory" component={HomeByCategory} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeByCategory"
+          component={HomeByCategory}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseCompletion" component={PurchaseCompletion} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseCompletion"
+          component={PurchaseCompletion}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="FolderMemberSelection"
           component={FolderMemberSelection}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="GroupFolderCreateCompletion"
           component={GroupFolderCreateCompletion}
         />
@@ -462,6 +1517,15 @@ options={{            tabBarButton: (props) => <CustomTabButton show={false} {..
           }}
         />
         <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatCreation"
+          component={GroupChatCreation}
+        />
+        <Tab.Screen
           name="QRCode"
           component={QRCode}
           options={{
@@ -479,130 +1543,382 @@ options={{            tabBarButton: (props) => <CustomTabButton show={false} {..
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
         />
-        <Tab.Screen name="ShippingList" component={ShippingList}
+        <Tab.Screen
+          name="ShippingList"
+          component={ShippingList}
           options={{
-            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,
-          }} />
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeShop" component={HomeShop} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeShop"
+          component={HomeShop}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatListForward" component={ChatListForward} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatListForward"
+          component={ChatListForward}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProfileEditingGeneral"
           component={ProfileEditingGeneral}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProfileEditingStore"
           component={ProfileEditingStore}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CustomerList" component={CustomerList} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CustomerList"
+          component={CustomerList}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ExhibitedProductList"
           component={ExhibitedProductList}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="App" component={App} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="App"
+          component={App}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseHistory" component={PurchaseHistory} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseHistory"
+          component={PurchaseHistory}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Setting" component={Setting} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Setting"
+          component={Setting}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="BankAccountRegistration"
           component={BankAccountRegistration}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="CustomerInformation"
           component={CustomerInformation}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="CustomerInformationDetails"
           component={CustomerInformationDetails}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProfileInformation"
           component={ProfileInformation}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="StoreInformation" component={StoreInformation} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="StoreInformation"
+          component={StoreInformation}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SalesManagement" component={SalesManagement} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SalesManagement"
+          component={SalesManagement}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Cart" component={Cart} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Cart"
+          component={Cart}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Favorite" component={Favorite} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Favorite"
+          component={Favorite}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="MemoEdit" component={MemoEdit} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="MemoEdit"
+          component={MemoEdit}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdvanceSetting" component={AdvanceSetting} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdvanceSetting"
+          component={AdvanceSetting}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProductInformationAddNew"
           component={ProductInformationAddNew}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ProductInformationAdd"
           component={ProductInformationAdd}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatList" component={ChatList} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatList"
+          component={ChatList}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="ContactGeneral"
           component={BottomNavigationGeneral}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactSearch" component={ContactSearch} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactSearch"
+          component={ContactSearch}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatScreen" component={ChatScreen} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatScreen"
+          component={ChatScreen}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FriendSearch" component={FriendSearch} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FriendSearch"
+          component={FriendSearch}
+        />
+
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatCreation" component={GroupChatCreation} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="CreateFolder"
+          component={CreateFolder}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CreateFolder" component={CreateFolder} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="GroupChatMember"
+          component={GroupChatMember}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatMember" component={GroupChatMember} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="AdressManagement"
+          component={AdressManagement}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdressManagement" component={AdressManagement} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptView"
+          component={ReceiptView}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptView" component={ReceiptView} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ReceiptEditing"
+          component={ReceiptEditing}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptEditing" component={ReceiptEditing} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ContactShare"
+          component={ContactShare}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactShare" component={ContactShare} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SearchProducts"
+          component={SearchProducts}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SearchProducts" component={SearchProducts} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="Payment"
+          component={Payment}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Payment" component={Payment} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="FolderContactList"
+          component={FolderContactList}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FolderContactList" component={FolderContactList} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ChatContact"
+          component={ChatContact}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatContact" component={ChatContact} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeByCategory"
+          component={HomeByCategory}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeByCategory" component={HomeByCategory} />
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="PurchaseCompletion"
+          component={PurchaseCompletion}
+        />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseCompletion" component={PurchaseCompletion} />
-        <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="PurchaseHistoryDetails"
           component={PurchaseHistoryDetails}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="FolderMemberSelection"
           component={FolderMemberSelection}
         />
         <Tab.Screen
-options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
           name="GroupFolderCreateCompletion"
           component={GroupFolderCreateCompletion}
         />

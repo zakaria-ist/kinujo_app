@@ -24,15 +24,17 @@ import {
 } from "react-native-responsive-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 import i18n from "i18n-js";
+import * as Localization from "expo-localization";
 const request = new Request();
 const alert = new CustomAlert();
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-auth().setLanguageCode("ja");
 const currentUser = auth().currentUser;
 import Translate from "../assets/Translates/Translate";
+auth().setLanguageCode(Localization.locale);
+// console.log(Localization.locale);
 export default function SMSAuthentication(props) {
   const win = Dimensions.get("window");
   const ratioKinujo = win.width / 1.6 / 151;
@@ -210,7 +212,7 @@ export default function SMSAuthentication(props) {
         <TouchableWithoutFeedback
           onPress={() => {
             AsyncStorage.setItem("verified", "0").then(() => {
-              props.navigation.goBack();
+              props.navigation.pop();
             });
           }}
         >

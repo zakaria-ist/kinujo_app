@@ -40,18 +40,17 @@ export default function ProductNoneVariations({
     if (pItems) {
       setJanCode(pItems.janCode);
       if (pItems.stock) {
-        setStock(pItems.stock);
+        setStock(pItems.stock.replace(/[^0-9]/g, ""));
       }
-      setStock(pItems.id);
+      // setStock(pItems.id);
     }
   }, [pItems]);
   function handleStock(value) {
-    setStock(value.replace(/[^0-9]/g, ""));
     if (onItemsChanged) {
       onItemsChanged({
         id: id,
         janCode: janCode,
-        stock: stock,
+        stock: value,
       });
     }
   }
