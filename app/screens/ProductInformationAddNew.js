@@ -428,7 +428,7 @@ export default function ProductInformationAddNew(props) {
           onSpinnerChanged(false);
           response = response.data;
           if (response.success) {
-            props.navigation.pop();
+            props.navigation.goBack();
           } else {
             if (response.errors && Object.keys(response.errors).length > 0) {
               alert.warning(
@@ -497,7 +497,7 @@ export default function ProductInformationAddNew(props) {
           response = response.data;
           console.log(response);
           if (response.success) {
-            // props.navigation.pop();
+            // props.navigation.goBack();
           } else {
             if (response.errors && Object.keys(response.errors).length > 0) {
               alert.warning(
@@ -549,7 +549,7 @@ export default function ProductInformationAddNew(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         text={Translate.t("productInformation")}
-        onBack={() => props.navigation.pop()}
+        onBack={() => props.navigation.goBack()}
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
@@ -1097,7 +1097,7 @@ export default function ProductInformationAddNew(props) {
                     is_hidden: 1,
                   })
                   .then((response) => {
-                    props.navigation.pop();
+                    props.navigation.goBack();
                   })
                   .catch((error) => {
                     console.log(error);

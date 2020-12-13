@@ -113,7 +113,7 @@ export default function AdvanceSetting(props) {
       <CustomHeader
         text="详细设定"
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -254,7 +254,7 @@ export default function AdvanceSetting(props) {
                       parentId: userId,
                     })
                     .then(function (response) {
-                      props.navigation.pop(3);
+                      props.navigation.goBack(3);
                     });
                 },
               },

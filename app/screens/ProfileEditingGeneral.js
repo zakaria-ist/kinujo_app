@@ -329,7 +329,7 @@ export default function ProfileEditingGeneral(props) {
         <CustomHeader
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onBack={() => {
-            props.navigation.pop();
+            props.navigation.goBack();
           }}
           onPress={() => {
             props.navigation.navigate("Cart");

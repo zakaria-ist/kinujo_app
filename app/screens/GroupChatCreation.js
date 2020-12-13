@@ -207,7 +207,7 @@ export default function GroupChatCreation(props) {
         text={Translate.t("groupChatCreate")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.pop()}
+        onBack={() => props.navigation.goBack()}
       />
       <TouchableWithoutFeedback onPress={() => groupCreate()}>
         <Text

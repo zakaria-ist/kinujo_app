@@ -209,7 +209,7 @@ export default function SearchProducts(props) {
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         text={Translate.t("searchProduct")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}

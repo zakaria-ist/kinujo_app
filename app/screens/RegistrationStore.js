@@ -51,7 +51,7 @@ export default function RegistrationStore(props) {
         style={{ flex: 1 }}
       >
         <ScrollView style={{ flex: 1 }}>
-          <WhiteBackArrow onPress={() => props.navigation.pop()} />
+          <WhiteBackArrow onPress={() => props.navigation.goBack()} />
           <View
             style={{
               justifyContent: "center",
@@ -235,7 +235,7 @@ export default function RegistrationStore(props) {
               </View>
             </TouchableWithoutFeedback>
             <View
-              onPress={() => props.navigation.pop()}
+              onPress={() => props.navigation.goBack()}
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
@@ -244,7 +244,7 @@ export default function RegistrationStore(props) {
               }}
             >
               <Text
-                onPress={() => props.navigation.pop()}
+                onPress={() => props.navigation.goBack()}
                 style={{
                   color: Colors.white,
                   fontSize: RFValue(12),
@@ -254,7 +254,7 @@ export default function RegistrationStore(props) {
                 {Translate.t("nonBeautician")}
               </Text>
               <Image
-                onPress={() => props.navigation.pop()}
+                onPress={() => props.navigation.goBack()}
                 style={{
                   alignSelf: "center",
                   marginLeft: 5,

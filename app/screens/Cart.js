@@ -584,7 +584,7 @@ export default function Cart(props) {
         <CustomHeader
           text={Translate.t("cart")}
           onBack={() => {
-            props.navigation.pop();
+            props.navigation.goBack();
           }}
           onPress={() => {
             props.navigation.navigate("Cart");

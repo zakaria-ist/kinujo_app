@@ -182,7 +182,7 @@ export default function CreateFolder(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
       />
       <TouchableWithoutFeedback onPress={() => folderCreate()}>

@@ -331,7 +331,7 @@ export default function Home(props) {
             props.navigation.navigate("Cart");
           }}
           onBack={() => {
-            props.navigation.pop();
+            props.navigation.goBack();
           }}
         />
 

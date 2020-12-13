@@ -271,7 +271,7 @@ export default function FolderMemberSelection(props) {
       }
     });
     AsyncStorage.setItem("ids", JSON.stringify(selectedId));
-    props.navigation.pop();
+    props.navigation.goBack();
   }
   return (
     <SafeAreaView>

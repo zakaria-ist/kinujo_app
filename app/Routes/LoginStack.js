@@ -1,3 +1,7 @@
+import {
+  View,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useRoute } from "@react-navigation/native";
 import LoginScreen from "../Screens/LoginScreen";
@@ -197,6 +201,25 @@ function BottomNavigationGeneral(props) {
   }
 }
 
+class CustomTabButton extends React.Component {
+  render() {    
+    const {
+      onPress,
+      onLongPress,
+      show,
+      accessibilityLabel,
+      ...props
+    } = this.props;
+
+    console.log(show);
+    if(!show) return null;
+
+    return <TouchableWithoutFeedback onPress={onPress} onLongPress={onLongPress} hitSlop={{ left: 15, right: 15, top: 5, bottom: 5 }} accessibilityLabel={accessibilityLabel}>
+        <View {...props} />
+      </TouchableWithoutFeedback>;
+  }
+}
+
 function BottomNavigationStore(props) {
   let isShow = false;
   if (props && props.route && props.route.state) {
@@ -262,6 +285,133 @@ function BottomNavigationStore(props) {
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
         />
+        <Tab.Screen name="ShippingList" component={ShippingList}
+          options={{
+            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,
+          }} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeShop" component={HomeShop} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatListForward" component={ChatListForward} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProfileEditingGeneral"
+          component={ProfileEditingGeneral}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProfileEditingStore"
+          component={ProfileEditingStore}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CustomerList" component={CustomerList} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ExhibitedProductList"
+          component={ExhibitedProductList}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="App" component={App} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseHistory" component={PurchaseHistory} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Setting" component={Setting} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="BankAccountRegistration"
+          component={BankAccountRegistration}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="CustomerInformation"
+          component={CustomerInformation}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="CustomerInformationDetails"
+          component={CustomerInformationDetails}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProfileInformation"
+          component={ProfileInformation}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="StoreInformation" component={StoreInformation} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SalesManagement" component={SalesManagement} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Cart" component={Cart} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Favorite" component={Favorite} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="MemoEdit" component={MemoEdit} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdvanceSetting" component={AdvanceSetting} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProductInformationAddNew"
+          component={ProductInformationAddNew}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProductInformationAdd"
+          component={ProductInformationAdd}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatList" component={ChatList} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ContactGeneral"
+          component={BottomNavigationGeneral}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactSearch" component={ContactSearch} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatScreen" component={ChatScreen} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FriendSearch" component={FriendSearch} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatCreation" component={GroupChatCreation} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CreateFolder" component={CreateFolder} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatMember" component={GroupChatMember} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdressManagement" component={AdressManagement} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptView" component={ReceiptView} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptEditing" component={ReceiptEditing} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactShare" component={ContactShare} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SearchProducts" component={SearchProducts} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Payment" component={Payment} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FolderContactList" component={FolderContactList} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatContact" component={ChatContact} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeByCategory" component={HomeByCategory} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseCompletion" component={PurchaseCompletion} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="PurchaseHistoryDetails"
+          component={PurchaseHistoryDetails}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="FolderMemberSelection"
+          component={FolderMemberSelection}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="GroupFolderCreateCompletion"
+          component={GroupFolderCreateCompletion}
+        />
       </Tab.Navigator>
     );
   } else {
@@ -273,11 +423,13 @@ function BottomNavigationStore(props) {
           showIcon: true,
           activeTintColor: "#e91e63",
         }}
+        backBehavior="history"
       >
         <Tab.Screen
           name="HomeStore"
           component={HomeGeneral}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Home",
             tabBarIcon: () => <HomeLogo width={25} height={25} />,
           }}
@@ -286,6 +438,7 @@ function BottomNavigationStore(props) {
           name="ContactStore"
           component={Contact}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Contact",
             tabBarIcon: () => <PersonLogo width={25} height={25} />,
           }}
@@ -294,6 +447,7 @@ function BottomNavigationStore(props) {
           name="Chat"
           component={ChatList}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Chat",
             tabBarIcon: () => <ChatLogo width={25} height={25} />,
           }}
@@ -302,6 +456,7 @@ function BottomNavigationStore(props) {
           name="SalesManagementBottom"
           component={SalesManagementBottom}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "SalesManagementBottom",
             tabBarIcon: () => <MoneyLogo width={25} height={25} />,
           }}
@@ -310,6 +465,7 @@ function BottomNavigationStore(props) {
           name="QRCode"
           component={QRCode}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "QRCode",
             tabBarIcon: () => <QRCodeLogo width={25} height={25} />,
           }}
@@ -318,9 +474,137 @@ function BottomNavigationStore(props) {
           name="SettingStore"
           component={SettingStore}
           options={{
+            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Setting",
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
+        />
+        <Tab.Screen name="ShippingList" component={ShippingList}
+          options={{
+            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,
+          }} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeShop" component={HomeShop} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatListForward" component={ChatListForward} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProfileEditingGeneral"
+          component={ProfileEditingGeneral}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProfileEditingStore"
+          component={ProfileEditingStore}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CustomerList" component={CustomerList} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ExhibitedProductList"
+          component={ExhibitedProductList}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="App" component={App} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseHistory" component={PurchaseHistory} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Setting" component={Setting} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="BankAccountRegistration"
+          component={BankAccountRegistration}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="CustomerInformation"
+          component={CustomerInformation}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="CustomerInformationDetails"
+          component={CustomerInformationDetails}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProfileInformation"
+          component={ProfileInformation}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="StoreInformation" component={StoreInformation} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SalesManagement" component={SalesManagement} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Cart" component={Cart} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Favorite" component={Favorite} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="MemoEdit" component={MemoEdit} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdvanceSetting" component={AdvanceSetting} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProductInformationAddNew"
+          component={ProductInformationAddNew}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ProductInformationAdd"
+          component={ProductInformationAdd}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatList" component={ChatList} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="ContactGeneral"
+          component={BottomNavigationGeneral}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactSearch" component={ContactSearch} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatScreen" component={ChatScreen} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FriendSearch" component={FriendSearch} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatCreation" component={GroupChatCreation} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="CreateFolder" component={CreateFolder} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="GroupChatMember" component={GroupChatMember} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="AdressManagement" component={AdressManagement} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptView" component={ReceiptView} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ReceiptEditing" component={ReceiptEditing} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ContactShare" component={ContactShare} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="SearchProducts" component={SearchProducts} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="Payment" component={Payment} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="FolderContactList" component={FolderContactList} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="ChatContact" component={ChatContact} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="HomeByCategory" component={HomeByCategory} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }}  name="PurchaseCompletion" component={PurchaseCompletion} />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="PurchaseHistoryDetails"
+          component={PurchaseHistoryDetails}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="FolderMemberSelection"
+          component={FolderMemberSelection}
+        />
+        <Tab.Screen
+options={{            tabBarButton: (props) => <CustomTabButton show={false} {...props} />,          }} 
+          name="GroupFolderCreateCompletion"
+          component={GroupFolderCreateCompletion}
         />
       </Tab.Navigator>
     );
@@ -341,7 +625,6 @@ export default function LoginStack() {
           component={RegistrationGeneral}
         />
         <Stack.Screen name="RegistrationStore" component={RegistrationStore} />
-        <Stack.Screen name="HomeShop" component={HomeShop} />
         <Stack.Screen name="SMSAuthentication" component={SMSAuthentication} />
         <Stack.Screen
           name="AccountExamination"
@@ -356,7 +639,6 @@ export default function LoginStack() {
           name="RegisterCompletion"
           component={RegisterCompletion}
         />
-        <Stack.Screen name="ChatListForward" component={ChatListForward} />
         <Stack.Screen name="TermsOfCondition" component={TermsOfCondition} />
         <Stack.Screen
           name="StoreAccountSelection"
@@ -369,91 +651,6 @@ export default function LoginStack() {
         <Stack.Screen name="HomeGeneral" component={BottomNavigationGeneral} />
         <Stack.Screen name="HomeStore" component={BottomNavigationStore} />
         <Stack.Screen name="HomeStoreList" component={HomeStoreList} />
-        <Stack.Screen
-          name="ProfileEditingGeneral"
-          component={ProfileEditingGeneral}
-        />
-        <Stack.Screen
-          name="ProfileEditingStore"
-          component={ProfileEditingStore}
-        />
-        <Stack.Screen name="CustomerList" component={CustomerList} />
-        <Stack.Screen
-          name="ExhibitedProductList"
-          component={ExhibitedProductList}
-        />
-        <Stack.Screen name="App" component={App} />
-        <Stack.Screen name="PurchaseHistory" component={PurchaseHistory} />
-        <Stack.Screen name="Setting" component={Setting} />
-        <Stack.Screen
-          name="BankAccountRegistration"
-          component={BankAccountRegistration}
-        />
-        <Stack.Screen
-          name="CustomerInformation"
-          component={CustomerInformation}
-        />
-        <Stack.Screen
-          name="CustomerInformationDetails"
-          component={CustomerInformationDetails}
-        />
-        <Stack.Screen
-          name="ProfileInformation"
-          component={ProfileInformation}
-        />
-        <Stack.Screen name="StoreInformation" component={StoreInformation} />
-        <Stack.Screen name="SalesManagement" component={SalesManagement} />
-        <Stack.Screen
-          name="SalesManagementBottom"
-          component={BottomNavigationStore}
-        />
-        <Stack.Screen name="Cart" component={Cart} />
-        <Stack.Screen name="Favorite" component={Favorite} />
-        <Stack.Screen name="MemoEdit" component={MemoEdit} />
-        <Stack.Screen name="AdvanceSetting" component={AdvanceSetting} />
-        <Stack.Screen name="ShippingList" component={ShippingList} />
-        <Stack.Screen
-          name="ProductInformationAddNew"
-          component={ProductInformationAddNew}
-        />
-        <Stack.Screen
-          name="ProductInformationAdd"
-          component={ProductInformationAdd}
-        />
-        <Stack.Screen name="ChatList" component={ChatList} />
-        <Stack.Screen
-          name="ContactGeneral"
-          component={BottomNavigationGeneral}
-        />
-        <Stack.Screen name="ContactStore" component={BottomNavigationStore} />
-        <Stack.Screen name="ContactSearch" component={ContactSearch} />
-        <Stack.Screen name="ChatScreen" component={ChatScreen} />
-        <Stack.Screen name="FriendSearch" component={FriendSearch} />
-        <Stack.Screen name="GroupChatCreation" component={GroupChatCreation} />
-        <Stack.Screen name="CreateFolder" component={CreateFolder} />
-        <Stack.Screen name="GroupChatMember" component={GroupChatMember} />
-        <Stack.Screen name="AdressManagement" component={AdressManagement} />
-        <Stack.Screen name="ReceiptView" component={ReceiptView} />
-        <Stack.Screen name="ReceiptEditing" component={ReceiptEditing} />
-        <Stack.Screen name="ContactShare" component={ContactShare} />
-        <Stack.Screen name="SearchProducts" component={SearchProducts} />
-        <Stack.Screen name="Payment" component={Payment} />
-        <Stack.Screen name="FolderContactList" component={FolderContactList} />
-        <Stack.Screen name="ChatContact" component={ChatContact} />
-        <Stack.Screen name="HomeByCategory" component={HomeByCategory} />
-        <Stack.Screen name="PurchaseCompletion" component={PurchaseCompletion} />
-        <Stack.Screen
-          name="PurchaseHistoryDetails"
-          component={PurchaseHistoryDetails}
-        />
-        <Stack.Screen
-          name="FolderMemberSelection"
-          component={FolderMemberSelection}
-        />
-        <Stack.Screen
-          name="GroupFolderCreateCompletion"
-          component={GroupFolderCreateCompletion}
-        />
       </Stack.Navigator>
     </NavigationContainer>
   );

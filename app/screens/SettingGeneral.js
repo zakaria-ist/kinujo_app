@@ -110,7 +110,7 @@ export default function SettingGeneral(props) {
             props.navigation.navigate("Favorite");
           }}
           onBack={() => {
-            props.navigation.pop();
+            props.navigation.goBack();
           }}
           onPress={() => {
             props.navigation.navigate("Cart");

@@ -133,7 +133,7 @@ export default function PurchaseHistoryDetails(props) {
       <CustomHeader
         text={Translate.t("purchaseHistory")}
         onFavoriteChanged="noFavorite"
-        onBack={() => props.navigation.pop()}
+        onBack={() => props.navigation.goBack()}
         onPress={() => {
           props.navigation.navigate("Cart");
         }}

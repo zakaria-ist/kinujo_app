@@ -290,7 +290,7 @@ export default function SalesManagement(props) {
         text={Translate.t("salesManagement")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onPress={() => {
           props.navigation.navigate("Cart");

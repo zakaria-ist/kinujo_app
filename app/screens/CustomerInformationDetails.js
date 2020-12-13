@@ -18,7 +18,7 @@ export default function CustomerInformationDetails(props) {
     <SafeAreaView>
       <CustomHeader
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => {

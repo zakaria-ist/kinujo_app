@@ -171,7 +171,7 @@ export default function CustomerList(props) {
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => {

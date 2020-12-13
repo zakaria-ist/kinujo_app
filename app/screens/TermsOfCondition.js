@@ -31,7 +31,7 @@ export default function TermsOfCondition(props) {
       style={{ flex: 1 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
-        <WhiteBackArrow onPress={() => props.navigation.pop()} />
+        <WhiteBackArrow onPress={() => props.navigation.goBack()} />
         <Image
           style={{
             width: win.width / 1.6,

@@ -362,7 +362,7 @@ export default function Favorite(props) {
           text={Translate.t("favorite")}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => props.navigation.navigate("Cart")}
-          onBack={() => props.navigation.pop()}
+          onBack={() => props.navigation.goBack()}
         />
         <View style={styles.discription_header}>
           <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>

@@ -477,7 +477,7 @@ export default function ChatList(props) {
         <CustomHeader
           text={Translate.t("chat")}
           onPress={() => props.navigation.navigate("Cart")}
-          onBack={() => props.navigation.pop()}
+          onBack={() => props.navigation.goBack()}
           onFavoriteChanged="noFavorite"
         />
         <ScrollView>

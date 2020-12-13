@@ -116,7 +116,7 @@ export default function BankAccountRegistration(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onPress={() => {
           props.navigation.navigate("Cart");
@@ -276,7 +276,7 @@ export default function BankAccountRegistration(props) {
                           onBranchNameChanged("");
                           onFinancialNameChanged("");
                           onAccountTypeChanged("");
-                          props.navigation.pop();
+                          props.navigation.goBack();
                         })
                         .catch(function (error) {
                           alert.warning(

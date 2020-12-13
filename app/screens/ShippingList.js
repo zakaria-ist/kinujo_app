@@ -115,7 +115,7 @@ export default function ShippingList(props) {
   const [loaded, onLoaded] = React.useState(false);
   function setDefaultAddress(url) {
     AsyncStorage.setItem("defaultAddress", url).then(function () {
-      props.navigation.pop();
+      props.navigation.goBack();
     });
   }
   type = props.route.params.type;
@@ -271,7 +271,7 @@ export default function ShippingList(props) {
       <CustomHeader
         text={Translate.t("addressee")}
         onBack={() => {
-          props.navigation.pop();
+          props.navigation.goBack();
         }}
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}

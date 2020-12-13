@@ -67,7 +67,7 @@ export default function PasswordReset(props) {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
         <View>
-          <BlackBackArrow onPress={() => props.navigation.pop()} />
+          <BlackBackArrow onPress={() => props.navigation.goBack()} />
           <Image
             style={{
               width: win.width / 1.6,
