@@ -770,7 +770,7 @@ export default function HomeByCategory(props) {
             <View></View>
           )}
           {featuredHtml.length > 0 ? (
-            <View style={styles.section_product}>{featuredHtml}</View>
+            <View style={styles.section_product2}>{featuredHtml}</View>
           ) : (
             <View></View>
           )}
@@ -813,6 +813,7 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
   },
   home_product_view: {
+    // flex: 1,
     // paddingBottom: heightPercentageToDP("15%"),
     height: heightPercentageToDP("82%"),
     padding: 15,
@@ -838,7 +839,13 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: heightPercentageToDP("15%"),
+    // marginBottom: heightPercentageToDP("25%"),
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  section_product2: {
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

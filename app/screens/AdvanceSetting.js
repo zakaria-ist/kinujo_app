@@ -79,9 +79,7 @@ export default function AdvanceSetting(props) {
                 onSecretModeChanged(tmpUser.secretMode);
                 if (tmpUser.displayName) {
                   onDisplayNameChanged(
-                    tmpUser.displayName
-                      ? tmpUser.displayName
-                      : response.data.nickname
+                    response.data.nickname ? response.data.nickname : ""
                   );
                 }
               }

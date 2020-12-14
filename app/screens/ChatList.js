@@ -12,10 +12,12 @@ import {
   ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import Person from "../assets/icons/default_avatar.svg";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
@@ -219,10 +221,11 @@ export default function ChatList(props) {
             }}
           >
             <View style={styles.tabContainer}>
+              {console.log(chat.image)}
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (
-                <Image style={styles.tabImage} />
+                <Person style={styles.tabImage} />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -282,7 +285,7 @@ export default function ChatList(props) {
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (
-                <Image style={styles.tabImage} />
+                <Person style={styles.tabImage} />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -338,7 +341,11 @@ export default function ChatList(props) {
           >
             <View style={styles.tabContainer}>
               {/*console.log(chat)*/}
-              <Image style={styles.tabImage} />
+              {image ? (
+                <Image source={{ uri: image }} style={styles.tabImage} />
+              ) : (
+                <Person style={styles.tabImage} />
+              )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>{chat.data.lastMessage}</Text>

@@ -10,6 +10,9 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   Alert,
+  ScrollView,
+  TextInput,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
@@ -28,12 +31,7 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import ProductNoneVariations from "./ProductNoneVariations";
 import ProductOneVariations from "./ProductOneVariations";
 import ProductTwoVariations from "./ProductTwoVariations";
-import {
-  ScrollView,
-  TextInput,
-  TouchableWithoutFeedback,
-} from "react-native-gesture-handler";
-// import DatePicker from "react-native-datepicker";
+import DateTimePicker from "react-native-datepicker";
 import { DatePicker } from "react-native-propel-kit";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -58,6 +56,7 @@ let janCode = [];
 let productStock = [];
 let choices = [];
 export default function ProductInformationAddNew(props) {
+  const scrollViewReference = React.useRef();
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
   const [productName, onProductNameChanged] = React.useState("");
@@ -95,6 +94,39 @@ export default function ProductInformationAddNew(props) {
     let userId = urls[urls.length - 1];
     return userId;
   }
+  React.useEffect(() => {
+    scrollViewReference.current.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  }, [isFocused]);
+  React.useEffect(() => {
+    onProductNameChanged("");
+    onNoneVariationItemsChanged([]);
+    onOneVariationItemsChanged([]);
+    onTwoVariationItemsChanged([]);
+    onBrandNameChanged("");
+    onPrChanged("");
+    onProductIdChanged("");
+    onProductCategoryChanged("");
+    onProductVariationChanged("none");
+    onPublishStateChanged("");
+    onPublishDateChanged("");
+    onProductStatusChanged("");
+    onTargetUserChanged("");
+    onPriceChanged("");
+    onStorePriceChanged("");
+    onShippingChanged("");
+    onProductPageDisplayMethodChanged(""), onProductImagesChanged([]);
+    onProductImageHtmlChanged([]);
+    onProductDescriptionChanged("");
+    onSpinnerChanged(false);
+    onProductChanged(false);
+    onProductCategoriesChanged([]);
+    onTwoVariationItemsChanged("");
+    onOneVariationItemsChanged("");
+    onNoneVariationItemsChanged("");
+  }, [!isFocused]);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request
@@ -236,7 +268,7 @@ export default function ProductInformationAddNew(props) {
                   stock: vertical.stock + "",
                   janCode: vertical.jan_code,
                   hidden: vertical.is_hidden ? true : false,
-                  delete: vertical.is_hidden ? true : false
+                  delete: vertical.is_hidden ? true : false,
                 });
               }
               onOneVariationItemsChanged(tmpItems);
@@ -267,7 +299,7 @@ export default function ProductInformationAddNew(props) {
 
               firstProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  if(!productVarietySelection.is_hidden){
+                  if (!productVarietySelection.is_hidden) {
                     rawMapping[productVarietySelection.id] =
                       productVarietySelection.selection;
                     tmpItems["items"][0]["choices"].push({
@@ -280,7 +312,7 @@ export default function ProductInformationAddNew(props) {
               );
               secondProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  if(!productVarietySelection.is_hidden){
+                  if (!productVarietySelection.is_hidden) {
                     rawMapping[productVarietySelection.id] =
                       productVarietySelection.selection;
                     tmpItems["items"][1]["choices"].push({
@@ -294,10 +326,14 @@ export default function ProductInformationAddNew(props) {
 
               firstProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  if(!productVarietySelection.is_hidden){
+                  if (!productVarietySelection.is_hidden) {
                     productVarietySelection.jancode_horizontal.map(
                       (horizontal) => {
-                        if (horizontal.horizontal && horizontal.vertical && !horizontal.is_hidden) {
+                        if (
+                          horizontal.horizontal &&
+                          horizontal.vertical &&
+                          !horizontal.is_hidden
+                        ) {
                           let horizontalId = getId(horizontal.horizontal);
                           let verticalId = getId(horizontal.vertical);
                           if (
@@ -319,11 +355,19 @@ export default function ProductInformationAddNew(props) {
                       }
                     );
                     productVarietySelection.jancode_vertical.map((vertical) => {
-                      if (vertical.horizontal && vertical.vertical && !vertical.is_hidden) {
+                      if (
+                        vertical.horizontal &&
+                        vertical.vertical &&
+                        !vertical.is_hidden
+                      ) {
                         let horizontalId = getId(vertical.horizontal);
                         let verticalId = getId(vertical.vertical);
-                        if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                          tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
+                        if (
+                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                        ) {
+                          tmpItems["mappingValue"][
+                            rawMapping[horizontalId]
+                          ] = {};
                         }
                         tmpItems["mappingValue"][rawMapping[horizontalId]][
                           rawMapping[verticalId]
@@ -340,10 +384,14 @@ export default function ProductInformationAddNew(props) {
               );
               secondProductVariety.productVarietySelections.map(
                 (productVarietySelection) => {
-                  if(!productVarietySelection.is_hidden){
+                  if (!productVarietySelection.is_hidden) {
                     productVarietySelection.jancode_horizontal.map(
                       (horizontal) => {
-                        if (horizontal.horizontal && horizontal.vertical && !horizontal.is_hidden) {
+                        if (
+                          horizontal.horizontal &&
+                          horizontal.vertical &&
+                          !horizontal.is_hidden
+                        ) {
                           let horizontalId = getId(horizontal.horizontal);
                           let verticalId = getId(horizontal.vertical);
                           if (
@@ -365,11 +413,19 @@ export default function ProductInformationAddNew(props) {
                       }
                     );
                     productVarietySelection.jancode_vertical.map((vertical) => {
-                      if (vertical.horizontal && vertical.vertical && !vertical.is_hidden) {
+                      if (
+                        vertical.horizontal &&
+                        vertical.vertical &&
+                        !vertical.is_hidden
+                      ) {
                         let horizontalId = getId(vertical.horizontal);
                         let verticalId = getId(vertical.vertical);
-                        if (!tmpItems["mappingValue"][rawMapping[horizontalId]]) {
-                          tmpItems["mappingValue"][rawMapping[horizontalId]] = {};
+                        if (
+                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                        ) {
+                          tmpItems["mappingValue"][
+                            rawMapping[horizontalId]
+                          ] = {};
                         }
                         tmpItems["mappingValue"][rawMapping[horizontalId]][
                           rawMapping[verticalId]
@@ -426,7 +482,9 @@ export default function ProductInformationAddNew(props) {
           price: price,
           storePrice: storePrice,
           shipping: shipping,
-          productPageDisplayMethod: productPageDisplayMethod ? productPageDisplayMethod : "none",
+          productPageDisplayMethod: productPageDisplayMethod
+            ? productPageDisplayMethod
+            : "none",
           productImages: productImages,
           productDescription: productDescription,
           targetUser: targetUser,
@@ -436,7 +494,7 @@ export default function ProductInformationAddNew(props) {
         .then((response) => {
           onSpinnerChanged(false);
           response = response.data;
-          console.log(response)
+          console.log(response);
           if (response.success) {
             // props.navigation.goBack();
           } else {
@@ -447,8 +505,8 @@ export default function ProductInformationAddNew(props) {
                   Object.keys(response.errors)[0] +
                   ")"
               );
-            } else if(response.errors.length > 0){
-              alert.warning(response.errors[0])
+            } else if (response.errors.length > 0) {
+              alert.warning(response.errors[0]);
             } else if (response.error) {
               alert.warning(response.error);
             }
@@ -496,7 +554,9 @@ export default function ProductInformationAddNew(props) {
           price: price,
           storePrice: storePrice,
           shipping: shipping,
-          productPageDisplayMethod: productPageDisplayMethod ? productPageDisplayMethod : "none",
+          productPageDisplayMethod: productPageDisplayMethod
+            ? productPageDisplayMethod
+            : "none",
           productImages: productImages,
           productDescription: productDescription,
           targetUser: targetUser,
@@ -550,7 +610,7 @@ export default function ProductInformationAddNew(props) {
     onShippingChanged(value.replace(/[^0-9]/g, ""));
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <Spinner
         visible={spinner}
         textContent={"Loading..."}
@@ -565,9 +625,13 @@ export default function ProductInformationAddNew(props) {
         }}
       />
       <CustomSecondaryHeader name={user.nickname} accountType={""} />
-      <View style={{ height: height - heightPercentageToDP("20%") }}>
-        <KeyboardAvoidingView>
-          <ScrollView>
+      <View style={{ flex: 1 }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.select({ ios: 135, android: 80 })}
+        >
+          <ScrollView ref={scrollViewReference}>
             <View style={styles.formContainer}>
               <Text style={styles.text}>{Translate.t("productName")}</Text>
               <TextInput
@@ -741,7 +805,7 @@ export default function ProductInformationAddNew(props) {
                 {/* {publishDate ? (
                 <Text style={fontSize}>{publishDate}</Text>
               ) : ( */}
-                <DatePicker
+                {/* <DatePicker
                   // title="Select Published Date"
                   format="YYYY-MM-DD"
                   placeholder="Select Published Date"
@@ -764,18 +828,24 @@ export default function ProductInformationAddNew(props) {
                   onChange={(date) => {
                     onPublishDateChanged(date);
                   }}
+                /> */}
+
+                <DateTimePicker
+                  androidMode={true}
+                  style={{
+                    marginLeft: widthPercentageToDP("1%"),
+                    width: widthPercentageToDP("40%"),
+                    // borderColor: "transparent",
+                  }}
+                  date={publishDate}
+                  display="default"
+                  // onChange
+                  onDateChange={(date) => {
+                    if (date) {
+                      onPublishDateChanged(date);
+                    }
+                  }}
                 />
-                {/* )} */}
-                {/* <DatePicker
-                style={{
-                  marginLeft: widthPercentageToDP("1%"),
-                  width: widthPercentageToDP("40%"),
-                }}
-                // value={publishDate}
-                onDateChange={(date) => {
-                  onPublishDateChanged(date);
-                }}
-              /> */}
                 {/* <TextInput
                 style={styles.releaseDateTextInput}
                 value={publishDate}
@@ -1026,22 +1096,26 @@ export default function ProductInformationAddNew(props) {
                       });
                     }}
                   >
-                    <Image
-                      style={{
-                        width: win.width / 10,
-                        height: 28 * ratioProductAddIcon,
-                        position: "absolute",
-                      }}
-                      source={require("../assets/Images/productAddIcon.png")}
-                    />
-                    <Text
-                      style={{
-                        marginTop: heightPercentageToDP("15%"),
-                        fontSize: RFValue(12),
-                      }}
+                    <View
+                      style={{ alignItems: "center", justifyContent: "center" }}
                     >
-                      {Translate.t("uploadAPhoto")}
-                    </Text>
+                      <Image
+                        style={{
+                          width: win.width / 10,
+                          height: 28 * ratioProductAddIcon,
+                          position: "absolute",
+                        }}
+                        source={require("../assets/Images/productAddIcon.png")}
+                      />
+                      <Text
+                        style={{
+                          marginTop: heightPercentageToDP("15%"),
+                          fontSize: RFValue(12),
+                        }}
+                      >
+                        {Translate.t("uploadAPhoto")}
+                      </Text>
+                    </View>
                   </TouchableWithoutFeedback>
                 ) : null}
               </View>
@@ -1108,7 +1182,7 @@ export default function ProductInformationAddNew(props) {
                     is_hidden: 1,
                   })
                   .then((response) => {
-                    props.navigation.goBack();
+                    props.navigation.navigate("SettingStore");
                   })
                   .catch((error) => {
                     console.log(error);
@@ -1125,7 +1199,7 @@ export default function ProductInformationAddNew(props) {
                   justifyContent: "center",
                   height: heightPercentageToDP("6%"),
                   padding: widthPercentageToDP("1.4%"),
-                  marginBottom: heightPercentageToDP("3%"),
+                  marginBottom: heightPercentageToDP("10%"),
                 }}
               >
                 <Text style={styles.buttonText}>{Translate.t("delete")}</Text>

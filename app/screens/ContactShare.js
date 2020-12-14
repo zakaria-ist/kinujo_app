@@ -69,49 +69,8 @@ export default function ContactShare(props) {
         seconds,
       message: "Contact",
     };
-
-    db.collection("chat")
-      .doc(groupID)
-      .collection("messages")
-      .add(contactObj)
-      .then(function () {
-        db.collection("chat")
-          .doc(groupID)
-          .set(
-            {
-              message: "Contact",
-              lastMessageTime:
-                year +
-                ":" +
-                month +
-                ":" +
-                day +
-                ":" +
-                hour +
-                ":" +
-                minute +
-                ":" +
-                seconds,
-            },
-            {
-              merge: true,
-            }
-          );
-        db.collection("chat")
-          .doc(groupID)
-          .get()
-          .then(function (doc) {
-            totalMessageCount = doc.data().totalMessage;
-          })
-          .then(function () {
-            db.collection("chat")
-              .doc(groupID)
-              .update({
-                totalMessage: totalMessageCount + 1,
-              });
-          });
-        props.navigation.goBack();
-      });
+    props.navigation.goBack();
+    db.collection("chat").doc(groupID).collection("messages").add(contactObj);
   }
   function processUserHtml(props, users) {
     let tmpUserHtml = [];
@@ -124,14 +83,6 @@ export default function ContactShare(props) {
           }}
         >
           <View style={styles.contactTabContainer}>
-            {/* <Image
-              style={{
-                width: win.width / 13,
-                height: ratioProfile * 25,
-                marginLeft: widthPercentageToDP("1%"),
-              }}
-              source={require("../assets/Images/profileEditingIcon.png")}
-            /> */}
             {user.image != null ? (
               <Image
                 style={{

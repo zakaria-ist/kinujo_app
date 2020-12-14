@@ -249,12 +249,12 @@ export default function ChatScreen(props) {
                       ? (isSelf = "true")
                       : (isSelf = "")
                   }
-                  seen={
-                    totalMessage - index >= totalMessage - totalMessageRead &&
-                    chat.data.userID == userId
-                      ? (seen = "true")
-                      : (seen = "")
-                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
                   contactID={chat.data.contactID}
                   contactName={chat.data.contactName}
                   image={imageMap[chat.data.userID]}
@@ -268,12 +268,12 @@ export default function ChatScreen(props) {
                       ? (isSelf = "true")
                       : (isSelf = "")
                   }
-                  seen={
-                    totalMessage - index >= totalMessage - totalMessageRead &&
-                    chat.data.userID == userId
-                      ? (seen = "true")
-                      : (seen = "")
-                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
                   text={
                     chat.data.contactID == null && chat.data.image == null
                       ? chat.data.message
@@ -325,12 +325,12 @@ export default function ChatScreen(props) {
                       ? (isSelf = "true")
                       : (isSelf = "")
                   }
-                  seen={
-                    totalMessage - index >= totalMessage - totalMessageRead &&
-                    chat.data.userID == userId
-                      ? (seen = "true")
-                      : (seen = "")
-                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
                   contactID={chat.data.contactID}
                   contactName={chat.data.contactName}
                   image={imageMap[chat.data.userID]}
@@ -344,12 +344,12 @@ export default function ChatScreen(props) {
                       ? (isSelf = "true")
                       : (isSelf = "")
                   }
-                  seen={
-                    totalMessage - index >= totalMessage - totalMessageRead &&
-                    chat.data.userID == userId
-                      ? (seen = "true")
-                      : (seen = "")
-                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
                   text={
                     chat.data.contactID == null && chat.data.image == null
                       ? chat.data.message
@@ -402,12 +402,12 @@ export default function ChatScreen(props) {
                       ? (isSelf = "true")
                       : (isSelf = "")
                   }
-                  seen={
-                    totalMessage - index >= totalMessage - totalMessageRead &&
-                    chat.data.userID == userId
-                      ? (seen = "true")
-                      : (seen = "")
-                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
                   contactID={chat.data.contactID}
                   contactName={chat.data.contactName}
                   image={imageMap[chat.data.userID]}
@@ -421,12 +421,12 @@ export default function ChatScreen(props) {
                       ? (isSelf = "true")
                       : (isSelf = "")
                   }
-                  seen={
-                    totalMessage - index >= totalMessage - totalMessageRead &&
-                    chat.data.userID == userId
-                      ? (seen = "true")
-                      : (seen = "")
-                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
                   text={
                     chat.data.contactID == null && chat.data.image == null
                       ? chat.data.message

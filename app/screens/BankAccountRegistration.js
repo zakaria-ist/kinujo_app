@@ -27,6 +27,7 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import { useIsFocused } from "@react-navigation/native";
 var zenginCode = require("zengin-code");
 const request = new Request();
 const alert = new CustomAlert();
@@ -45,6 +46,7 @@ export default function BankAccountRegistration(props) {
   const [branchCode, onBranckCodeChanged] = React.useState("");
   const [loaded, onLoaded] = React.useState("");
   const [user, onUserChanged] = React.useState({});
+  const isFocused = useIsFocused();
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
@@ -109,7 +111,7 @@ export default function BankAccountRegistration(props) {
           });
       }
     });
-  });
+  }, [isFocused]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
