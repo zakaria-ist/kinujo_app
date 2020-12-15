@@ -27,8 +27,6 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
-import DropDownPicker from "react-native-dropdown-picker";
-import DatePicker from "react-native-datepicker";
 import Moment from "moment";
 const format = new Format();
 var kanjidate = require("kanjidate");
@@ -146,7 +144,7 @@ export default function SalesManagement(props) {
   const [commissions, onCommissionsChanged] = React.useState({});
   const [date, onDateChange] = React.useState(new Date());
   const [placeholderDate, onPlaceHolderDate] = React.useState(
-    year + "/" + month
+    year + "年" + month + "月"
   );
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
@@ -250,7 +248,9 @@ export default function SalesManagement(props) {
       onDateChange(date);
       console.log(date);
       tmpDate = date;
-      onPlaceHolderDate(tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1));
+      onPlaceHolderDate(
+        tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
+      );
     }
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
@@ -336,20 +336,30 @@ export default function SalesManagement(props) {
             // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
+              zIndex: 999,
+              color: "transparent",
               alignItems: "center",
               width: widthPercentageToDP("23%"),
               height: heightPercentageToDP("4%"),
-              // marginLeft: widthPercentageToDP("3%"),
-              // paddingVertical: widthPercentageToDP("2%"),
-              // paddingHorizontal: widthPercentageToDP("3%"),
               borderRadius: 5,
               textAlign: "center",
               fontSize: RFValue(12),
-              // backgroundColor: Colors.D7CCA6,
-              // borderColor: Colors.CECECE,
             }}
           />
-
+          <Text
+            style={{
+              color: "black",
+              alignItems: "center",
+              // width: widthPercentageToDP("23%"),
+              height: heightPercentageToDP("4%"),
+              borderRadius: 5,
+              textAlign: "center",
+              fontSize: RFValue(12),
+              position: "absolute",
+            }}
+          >
+            {placeholderDate}
+          </Text>
           <View
             style={{
               borderWidth: 2,

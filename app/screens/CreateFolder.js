@@ -46,93 +46,94 @@ export default function CreateFolder(props) {
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [folderName, setFolderName] = React.useState("");
   const [loaded, onLoaded] = React.useState(false);
-  if (!isFocused) {
-    AsyncStorage.removeItem("ids").then(function () {
-      memberCount = 0;
-      tmpUserHtml = [];
-      onUserHtmlChanged([]);
-      friendNames = [];
-      friendIds = null;
-    });
-  }
-  AsyncStorage.getItem("user").then((url) => {
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-      return url;
-    });
-    userId = urls[urls.length - 1];
-  });
   React.useEffect(() => {
     let routes = props.navigation.dangerouslyGetState().routes;
-    AsyncStorage.getItem("ids")
-      .then((val) => {
+    AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+
+      AsyncStorage.getItem("ids").then((val) => {
         friendIds = JSON.parse(val);
         dbFriendIds = JSON.parse(val);
         if (friendIds != null) {
           memberCount = friendIds.length;
+        } else {
+          friendIds = []
         }
-      })
-      .then(function () {
+
         request
           .get("user/byIds/", {
             ids: friendIds,
           })
           .then(function (response) {
+            let tmpUserHtml2 = [];
             response.data.users.map((user) => {
-              let found =
-                tmpUserHtml.filter((html) => {
-                  return html.key == user.id;
-                }).length > 0;
-              if (!found) {
-                friendNames.push(user.nickname);
-                tmpUserHtml.push(
-                  <TouchableWithoutFeedback key={user.id}>
-                    <View style={styles.memberTabsContainer}>
-                      {user && user.image && user.image.image ? (
-                        <Image
-                          style={{
-                            width: RFValue(38),
-                            height: RFValue(38),
-                            borderRadius: win.width / 2,
-                            backgroundColor: Colors.DCDCDC,
-                          }}
-                          source={{ uri: user.image.image }}
-                        />
-                      ) : (
-                        // <Image
-                        //   style={{
-                        //     width: RFValue(38),
-                        //     height: RFValue(38),
-                        //     borderRadius: win.width / 2,
-                        //     // backgroundColor: Colors.DCDCDC,
-                        //   }}
-                        //   source={require("../assets/Images/profileEditingIcon.png")}
-                        // />
-                        <Person
-                          style={{
-                            width: RFValue(38),
-                            height: RFValue(38),
-                            borderRadius: win.width / 2,
-                            // backgroundColor: Colors.DCDCDC,
-                          }}
-                        />
-                      )}
+              friendNames = [];
 
-                      <Text style={styles.folderText}>{user.nickname}</Text>
-                    </View>
-                  </TouchableWithoutFeedback>
-                );
-              }
+              friendNames.push(user.nickname);
+              tmpUserHtml2.push(
+                <TouchableWithoutFeedback key={String(user.id)} userId={user.id}>
+                  <View style={styles.memberTabsContainer}>
+                    {user && user.image && user.image.image ? (
+                      <Image
+                        style={{
+                          width: RFValue(38),
+                          height: RFValue(38),
+                          borderRadius: win.width / 2,
+                          backgroundColor: Colors.DCDCDC,
+                        }}
+                        source={{ uri: user.image.image }}
+                      />
+                    ) : (
+                      // <Image
+                      //   style={{
+                      //     width: RFValue(38),
+                      //     height: RFValue(38),
+                      //     borderRadius: win.width / 2,
+                      //     // backgroundColor: Colors.DCDCDC,
+                      //   }}
+                      //   source={require("../assets/Images/profileEditingIcon.png")}
+                      // />
+                      <Person
+                        style={{
+                          width: RFValue(38),
+                          height: RFValue(38),
+                          borderRadius: win.width / 2,
+                          // backgroundColor: Colors.DCDCDC,
+                        }}
+                      />
+                    )}
+
+                    <Text style={styles.folderText}>{user.nickname}</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
             });
+            tmpUserHtml = tmpUserHtml2;
             onUserHtmlChanged(tmpUserHtml);
           });
         onLoaded(true);
       });
+    });
+
+    // return ()=> {
+    //   AsyncStorage.removeItem("ids").then(function () {
+    //     memberCount = 0;
+    //     tmpUserHtml = [];
+    //     onUserHtmlChanged([]);
+    //     friendNames = [];
+    //     friendIds = null;
+    //   });
+    // }
   }, [isFocused]);
+
   function folderCreate() {
     if (friendIds.length != 0) {
       if (folderName != "") {
-        AsyncStorage.removeItem("tmpIds");
+        // AsyncStorage.removeItem("tmpIds");
         if (friendIds) {
           db.collection("users")
             .doc(userId)
@@ -172,8 +173,9 @@ export default function CreateFolder(props) {
     }
   }
   function addMemberHandler() {
-    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds));
-    props.navigation.navigate("FolderMemberSelection");
+    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(()=>{
+      props.navigation.navigate("FolderMemberSelection");
+    })
   }
   return (
     <SafeAreaView>

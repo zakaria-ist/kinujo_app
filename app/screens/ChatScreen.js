@@ -715,20 +715,30 @@ export default function ChatScreen(props) {
                   </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      db.collection("users")
-                        .doc(userId)
-                        .collection("FavoriteChat")
-                        .doc(longPressObj.id)
-                        .set({
-                          createdAt: longPressObj.data.createdAt,
-                          favoriteMessage: longPressObj.message,
-                          groupID: groupID,
-                          groupName: groupName,
-                          timeStamp: longPressObj.data.timeStamp,
-                        })
-                        .then(function () {
+                      let update = {};
+                      update["favourite_" + userId] = true;
+                      db.collection("chat")
+                        .doc(groupID)
+                        .set(update, {
+                          merge: true,
+                        }).then(()=>{
                           onShowPopUpChanged(false);
-                        });
+                          alert.warning(Translate.t("chat_favourite_added"))
+                        })
+
+                      // db.collection("users")
+                      //   .doc(userId)
+                      //   .collection("FavoriteChat")
+                      //   .doc(longPressObj.id)
+                      //   .set({
+                      //     createdAt: longPressObj.data.createdAt,
+                      //     favoriteMessage: longPressObj.message,
+                      //     groupID: groupID,
+                      //     groupName: groupName,
+                      //     timeStamp: longPressObj.data.timeStamp,
+                      //   })
+                      //   .then(function () {
+                      //   });
                     }}
                   >
                     <Text style={styles.popUpText}>

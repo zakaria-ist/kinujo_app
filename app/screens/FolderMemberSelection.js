@@ -109,9 +109,22 @@ export default function FolderMemberSelection(props) {
                   }
                 }
               }
-              tmpFriend = items;
               //item to indicate checkbox status and id
             });
+
+            tmpFriendIds.map((id) => {
+              if(items.filter((item) => {
+                return item.id == id;
+              }).length == 0){
+                items.push({
+                  id: id,
+                  checkStatus: true,
+                });
+              }
+            })
+
+            tmpFriend = items;
+
             request
               .get("user/byIds/", {
                 ids: ids,
@@ -119,7 +132,7 @@ export default function FolderMemberSelection(props) {
                 type: "contact",
               })
               .then(function (response) {
-                // console.log(response.data.users.length);
+                console.log(response.data.users.length);
                 //response = get use details from url
                 onUserHtmlChanged(
                   processUserHtml(props, response.data.users, tmpFriend)
@@ -144,12 +157,18 @@ export default function FolderMemberSelection(props) {
               });
           });
         onLoaded(true);
+
+        tmpFriendIds.map((id) => {
+
+        })
       });
     });
   }, [isFocused]);
   function onValueChange(friendID) {
+    let found = false;
     tmpFriend = tmpFriend.map((friend) => {
       if (friendID == friend.id) {
+        found = true;
         if (friend.checkStatus == true) {
           friend.checkStatus = false;
         } else {
@@ -158,6 +177,14 @@ export default function FolderMemberSelection(props) {
       }
       return friend;
     });
+
+    if(!found){
+      tmpFriend.push({
+        "id" : friendID,
+        "checkStatus" : true
+      })
+      console.log(tmpFriend);
+    }
     onUpdate(ids, tmpFriend);
   }
   function onUpdate(ids, items) {
@@ -193,9 +220,6 @@ export default function FolderMemberSelection(props) {
     users.map((user) => {
       let item = friendMaps.filter((tmp) => {
         return tmp.id == user.id && tmp.id != userId;
-        // console.log(tmp.id);
-        // console.log("mine" + userId);
-        // console.log("user" + user.id);
       });
       if (item.length > 0) {
         item = item[0];
@@ -265,13 +289,15 @@ export default function FolderMemberSelection(props) {
   }
   function finishSelect() {
     let selectedId = [];
+    console.log(tmpFriend)
     tmpFriend.map((friend) => {
       if (friend.checkStatus == true) {
-        selectedId.push(friend.id);
+        selectedId.push(String(friend.id));
       }
     });
-    AsyncStorage.setItem("ids", JSON.stringify(selectedId));
-    props.navigation.goBack();
+    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(()=>{
+      props.navigation.goBack();
+    })
   }
   return (
     <SafeAreaView>
