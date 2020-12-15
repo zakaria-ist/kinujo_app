@@ -25,7 +25,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
-var pkg = require("../../../kinujo_frontend/package.json");
+var pkg = require("../../../kinujo_app/package.json");
 
 const request = new Request();
 const alert = new CustomAlert();
