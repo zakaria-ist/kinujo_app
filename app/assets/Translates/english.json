@@ -292,6 +292,7 @@
   "(zip1)": "The postal code can't be empty.",
   "(address1)": "The address can't be empty.",
   "(tel)": "The phone number can't be empty.",
+  "chat_favourite_added" : "The contact has been added to your favourite list",
   "normal": "Normal",
   "current": "Current",
   "savings": "Savings",

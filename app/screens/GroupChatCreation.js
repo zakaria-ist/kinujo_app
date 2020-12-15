@@ -53,43 +53,44 @@ export default function GroupChatCreation(props) {
   const [showGroupPhoto, onShowGroupPhotoChanged] = React.useState(false);
   const [loaded, onLoaded] = React.useState(false);
   if (!isFocused) {
-    AsyncStorage.removeItem("ids").then(function () {
-      tmpUserHtml = [];
-      onUserHtmlChanged([]);
-      friendNames = [];
-      friendIds = null;
-      memberCount = 0;
-    });
+    // AsyncStorage.removeItem("ids").then(function () {
+    //   tmpUserHtml = [];
+    //   onUserHtmlChanged([]);
+    //   friendNames = [];
+    //   friendIds = null;
+    //   memberCount = 0;
+    // });
   }
 
-  AsyncStorage.getItem("user").then((url) => {
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-      return url;
-    });
-    userId = urls[urls.length - 1];
-  });
   React.useEffect(() => {
-    AsyncStorage.getItem("ids")
+
+    AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+      
+      AsyncStorage.getItem("ids")
       .then((val) => {
         friendIds = JSON.parse(val);
-        memberCount = friendIds.length;
-      })
-      .then(function () {
+        dbFriendIds = JSON.parse(val);
+        if (friendIds != null) {
+          memberCount = friendIds.length;
+        } else {
+          friendIds = []
+        }
+
         request
           .get("user/byIds/", {
             ids: friendIds,
           })
           .then(function (response) {
+            let tmpUserHtml2 = [];
             response.data.users.map((user) => {
-              let found =
-                tmpUserHtml.filter((html) => {
-                  return html.key == user.id;
-                }).length > 0;
-              if (!found) {
-                friendNames.push(user.nickname);
-                tmpUserHtml.push(
-                  <TouchableWithoutFeedback key={user.id}>
+              friendNames.push(user.nickname);
+              tmpUserHtml2.push(
+                  <TouchableWithoutFeedback key={String(user.id)}>
                     <View style={styles.memberTabsContainer}>
                       {user && user.image && user.image.image ? (
                         <Image
@@ -124,12 +125,12 @@ export default function GroupChatCreation(props) {
                     </View>
                   </TouchableWithoutFeedback>
                 );
-              }
             });
+            tmpUserHtml = tmpUserHtml2;
             onUserHtmlChanged(tmpUserHtml);
           });
-        onLoaded(!loaded);
       });
+    });
   }, [isFocused]);
   // console.log(friendIds);
   function groupCreate() {
@@ -198,8 +199,10 @@ export default function GroupChatCreation(props) {
     }
   }
   function addMemberHandler() {
-    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds));
-    props.navigation.navigate("GroupChatMember");
+    // console.log(friendIds)
+    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(()=>{
+      props.navigation.navigate("GroupChatMember")
+    })
   }
   return (
     <SafeAreaView>

@@ -27,8 +27,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
-import DropDownPicker from "react-native-dropdown-picker";
-import DatePicker from "react-native-datepicker";
+import Moment from "moment";
 const format = new Format();
 var kanjidate = require("kanjidate");
 const request = new Request();
@@ -144,6 +143,9 @@ export default function SalesManagement(props) {
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
   const [date, onDateChange] = React.useState(new Date());
+  const [placeholderDate, onPlaceHolderDate] = React.useState(
+    year + "年" + month + "月"
+  );
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
   );
@@ -213,6 +215,7 @@ export default function SalesManagement(props) {
       request
         .get("saleProducts/" + userId + "/")
         .then(function (response) {
+          // salesProducts = [];
           if (response.data.saleProducts) {
             salesProducts = response.data.saleProducts;
           } else {
@@ -243,9 +246,12 @@ export default function SalesManagement(props) {
     let tmpDate = new Date();
     if (date) {
       onDateChange(date);
+      console.log(date);
       tmpDate = date;
+      onPlaceHolderDate(
+        tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
+      );
     }
-    // console.log(commissionProducts);
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
         let periods = commissionProduct["order_product"]["order"][
@@ -256,14 +262,6 @@ export default function SalesManagement(props) {
         return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
       }
     );
-    // console.log(salesProducts);
-    let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-      // console.log(saleProduct.order_product);
-      let periods = saleProduct.created.split("-");
-      let year = periods[0];
-      let month = periods[1];
-      return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
-    });
     onCommissionsChanged(tmpCommissionProducts);
     onComissionHtmlChanged(
       processCommissionHtml(tmpCommissionProducts, status)
@@ -273,7 +271,13 @@ export default function SalesManagement(props) {
       commissionTotal += commission.amount;
     });
     onTotalCommissionChanged(commissionTotal);
-
+    let tmpSaleProducts = salesProducts.filter((saleProduct) => {
+      // console.log(saleProduct.order_product);
+      let periods = saleProduct.created.split("-");
+      let year = periods[0];
+      let month = periods[1];
+      return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+    });
     onSalesChanged(tmpSaleProducts);
     onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
     let saleTotal = 0;
@@ -282,11 +286,9 @@ export default function SalesManagement(props) {
     });
     onTotalSaleChanged(saleTotal);
 
-    // onTotalChanged(
-    //   format.separator(
-    //     parseFloat(commissionTotal) + parseFloat(saleTotal)
-    //   )
-    // );
+    onTotalChanged(
+      format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
+    );
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -329,25 +331,35 @@ export default function SalesManagement(props) {
           }}
         >
           <MonthPicker
-            // title="Pick a month"
             initialValue={new Date()}
             value={date}
+            // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
-              // borderWidth: 1,
+              zIndex: 999,
+              color: "transparent",
               alignItems: "center",
               width: widthPercentageToDP("23%"),
               height: heightPercentageToDP("4%"),
-              // marginLeft: widthPercentageToDP("3%"),
-              // paddingVertical: widthPercentageToDP("2%"),
-              // paddingHorizontal: widthPercentageToDP("3%"),
               borderRadius: 5,
               textAlign: "center",
               fontSize: RFValue(12),
-              // backgroundColor: Colors.D7CCA6,
-              // borderColor: Colors.CECECE,
             }}
           />
+          <Text
+            style={{
+              color: "black",
+              alignItems: "center",
+              // width: widthPercentageToDP("23%"),
+              height: heightPercentageToDP("4%"),
+              borderRadius: 5,
+              textAlign: "center",
+              fontSize: RFValue(12),
+              position: "absolute",
+            }}
+          >
+            {placeholderDate}
+          </Text>
           <View
             style={{
               borderWidth: 2,

@@ -88,8 +88,20 @@ export default function FolderMemberSelection(props) {
                 }
               }
             }
-            tmpFriend = items;
           });
+
+          tmpFriendIds.map((id) => {
+            if(items.filter((item) => {
+              return item.id == id;
+            }).length == 0){
+              items.push({
+                id: id,
+                checkStatus: true,
+              });
+            }
+          })
+
+          tmpFriend = items;
           request
             .get("user/byIds/", {
               ids: ids,
@@ -122,8 +134,10 @@ export default function FolderMemberSelection(props) {
     });
   }, []);
   function onValueChange(friendID) {
+    let found = false;
     tmpFriend = tmpFriend.map((friend) => {
       if (friendID == friend.id) {
+        found = true;
         if (friend.checkStatus == true) {
           friend.checkStatus = false;
         } else {
@@ -132,12 +146,22 @@ export default function FolderMemberSelection(props) {
       }
       return friend;
     });
+
+    if(!found){
+      tmpFriend.push({
+        "id" : friendID,
+        "checkStatus" : true
+      })
+      console.log(tmpFriend);
+    }
     onUpdate(ids, tmpFriend);
   }
   function onUpdate(ids, items) {
     request
       .get("user/byIds/", {
         ids: ids,
+        userId: userId,
+        type: "contact",
       })
       .then(function (response) {
         onUserHtmlChanged(
@@ -219,8 +243,9 @@ export default function FolderMemberSelection(props) {
         }
       }
     });
-    AsyncStorage.setItem("ids", JSON.stringify(selectedId));
-    props.navigation.goBack();
+    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(()=>{
+      props.navigation.goBack();
+    })
   }
   return (
     <SafeAreaView>

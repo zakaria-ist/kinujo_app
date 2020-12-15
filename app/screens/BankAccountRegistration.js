@@ -39,7 +39,7 @@ export default function BankAccountRegistration(props) {
   });
   const [financialName, onFinancialNameChanged] = React.useState("");
   const [branchName, onBranchNameChanged] = React.useState("");
-  const [accountType, onAccountTypeChanged] = React.useState("");
+  const [accountType, onAccountTypeChanged] = React.useState("1");
   const [accountNumber, onAccountNumberChanged] = React.useState("");
   const [accountHolder, onAccountHolderChanged] = React.useState("");
   const [bankCode, onBankCodeChanged] = React.useState("");
@@ -84,6 +84,8 @@ export default function BankAccountRegistration(props) {
           .then(function (response) {
             onLoaded(true);
             onFinancialAccountChanged(response.data.financialAccount);
+            onBranckCodeChanged(response.data.financialAccount.branch_code);
+            onBankCodeChanged(response.data.financialAccount.financial_code);
             onFinancialNameChanged(
               response.data.financialAccount.financial_name
             );
@@ -183,6 +185,7 @@ export default function BankAccountRegistration(props) {
               onChangeText={(text) => onBranchNameChanged(text)}
               value={branchName}
             ></TextInput>
+            {/* {alert.warning(accountType)} */}
             <DropDownPicker
               // controller={(instance) => (controller = instance)}
               style={styles.textInput}
@@ -200,7 +203,9 @@ export default function BankAccountRegistration(props) {
                   value: "3",
                 },
               ]}
-              defaultValue={"1"}
+              defaultValue={
+                accountType.toString() ? accountType.toString() : "1"
+              }
               containerStyle={{ height: heightPercentageToDP("8%") }}
               labelStyle={{
                 fontSize: RFValue(11),
@@ -212,11 +217,9 @@ export default function BankAccountRegistration(props) {
               selectedtLabelStyle={{
                 color: "black",
               }}
-              placeholder={Translate.t("prefecture")}
               dropDownStyle={{ backgroundColor: "white" }}
               onChangeItem={(item) => {
                 if (item) {
-                  console.log(item.value);
                   onAccountTypeChanged(item.value);
                 }
               }}
@@ -243,8 +246,11 @@ export default function BankAccountRegistration(props) {
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
             <TouchableWithoutFeedback
               onPress={() => {
+                alert.warning("###" + accountType);
                 if (accountNumber.length == 7) {
-                  if (
+                  if (!accountType) {
+                    onAccountTypeChanged("1");
+                  } else if (
                     financialName &&
                     branchName &&
                     accountType &&
@@ -266,11 +272,11 @@ export default function BankAccountRegistration(props) {
                           user: url.replace("testserver", "127.0.0.1:8000"),
                           financial_name: financialName,
                           account_type: accountType,
-                          branch_code: "000",
+                          branch_code: branchCode,
                           branch_name: branchName,
                           account_number: accountNumber,
                           account_name: accountHolder,
-                          financial_code: "0000",
+                          financial_code: bankCode,
                         })
                         .then(function (response) {
                           onAccountHolderChanged("");
