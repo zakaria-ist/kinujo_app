@@ -25,11 +25,13 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
+var pkg = require("../../../kinujo_frontend/package.json");
+
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioNext = win.width / 38 / 8;
-
+// console.log("App Version", appVersion);
 function updateUser(user, field, value) {
   if (!value) return;
   let obj = {};
@@ -104,7 +106,7 @@ export default function Setting(props) {
     let url = await AsyncStorage.getItem("user");
     let updateData = await AsyncStorage.getItem("update-data");
     let verified = await AsyncStorage.getItem("verified");
-    if(updateData){
+    if (updateData) {
       updateData = JSON.parse(updateData);
     }
     let response = await request.get(url);
@@ -202,7 +204,7 @@ export default function Setting(props) {
                   onPress={() => {
                     onEditPasswordChanged(false);
                     let tmpPassword = password;
-                    onPasswordChanged("********")
+                    onPasswordChanged("********");
                     promptUpdate(props, user, "password", tmpPassword);
                   }}
                 />
@@ -710,9 +712,11 @@ export default function Setting(props) {
             <Text style={styles.textInContainerLeft}>
               {Translate.t("versionInformation")}
             </Text>
-            <Text style={styles.textInContainerRight}>version 1.09.08</Text>
+            <Text style={styles.textInContainerRight}>
+              version {pkg.version}
+            </Text>
           </View>
-          <View style={styles.tabContainer}>
+          {/* <View style={styles.tabContainer}>
             <Text style={styles.textInContainerLeft}>
               {Translate.t("help")}
             </Text>
@@ -720,7 +724,7 @@ export default function Setting(props) {
               style={styles.nextIcon}
               source={require("../assets/Images/next.png")}
             />
-          </View>
+          </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -8,7 +8,8 @@ import {
   Button,
   TouchableOpacity,
   SafeAreaView,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
@@ -166,19 +167,19 @@ export default function ProductTwoVariations({
     onLoaded(true);
   }
   function deleteChoice(index, choiceIndex) {
-    console.log("ADD " + choiceIndex)
+    console.log("ADD " + choiceIndex);
     items.map((product) => {
       if (index == product.index) {
         product.choices = product.choices.filter((choice) => {
           return choice.choiceItem != choiceIndex;
         });
 
-        let choices = []
+        let choices = [];
 
         product.choices.map((choice) => {
-          choice['choiceIndex'] = choices.length + 1;
+          choice["choiceIndex"] = choices.length + 1;
           choices.push(choice);
-        })
+        });
 
         product.choices = choices;
       }
@@ -243,27 +244,23 @@ export default function ProductTwoVariations({
                   onValueChanged(value, "choice", index, choice.choiceIndex)
                 }
               ></TextInput>
-              
             </View>
           </View>
           <View>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  deleteChoice(index, choice.choiceItem)
-                }}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                deleteChoice(index, choice.choiceItem);
+              }}
+            >
+              <View
+                style={[
+                  styles.variantContainer,
+                  { paddingBottom: heightPercentageToDP("1.5%") },
+                ]}
               >
-                <View
-                  style={[
-                    styles.variantContainer,
-                    { paddingBottom: heightPercentageToDP("1.5%") },
-                  ]}
-                >
-                  <DustBinIcon
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                </View>
-              </TouchableWithoutFeedback>
+                <DustBinIcon style={styles.widget_icon} resizeMode="contain" />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
         </View>
       );
@@ -519,8 +516,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   widget_icon: {
-    height: RFValue(14),
-    width: RFValue(14),
+    height: RFValue(16),
+    width: RFValue(16),
     marginTop: heightPercentageToDP("1%"),
     marginHorizontal: 10,
   },
@@ -588,7 +585,9 @@ const styles = StyleSheet.create({
   variantInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
+    height: heightPercentageToDP("5%"),
+    alignSelf: "center",
     width: widthPercentageToDP("60%"),
     // height: heightPercentageToDP("6%"),
     // backgroundColor: "orange",
@@ -599,10 +598,11 @@ const styles = StyleSheet.create({
   },
   variantStockInput: {
     borderWidth: 0,
+    alignSelf: "center",
     backgroundColor: "white",
-    fontSize: RFValue(14),
+    fontSize: RFValue(10),
     width: widthPercentageToDP("30%"),
-    height: heightPercentageToDP("6%"),
+    height: heightPercentageToDP("5%"),
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),

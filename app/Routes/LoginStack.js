@@ -64,6 +64,8 @@ import FavoriteChat from "../Screens/FavoriteChat";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
+import CustomAlert from "../lib/alert";
+const alert = new CustomAlert();
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import CustomerInformationDetails from "../Screens/CustomerInformationDetails";
 const Tab = createBottomTabNavigator();
@@ -78,9 +80,20 @@ import MoneyLogo from "../assets/icons/money.svg";
 
 function BottomNavigationGeneral(props) {
   let isShow = false;
+
   if (props && props.route && props.route.state) {
     isShow =
       props.route.state.routeNames[props.route.state.index] == "Chat" ||
+      props.route.state.routeNames[props.route.state.index] == "ChatScreen" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "GroupChatMember" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "GroupChatCreation" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "FolderMemberSelection" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "GroupFolderCreateCompletion" ||
+      props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
       props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
   }
   if (isShow) {
@@ -183,8 +196,8 @@ function BottomNavigationGeneral(props) {
               <CustomTabButton show={false} {...props} />
             ),
           }}
-          name="ProfileEditingGeneral"
-          component={ProfileEditingGeneral}
+          name="HomeStoreList"
+          component={HomeStoreList}
         />
         <Tab.Screen
           options={{
@@ -276,15 +289,7 @@ function BottomNavigationGeneral(props) {
           name="StoreInformation"
           component={StoreInformation}
         />
-        <Tab.Screen
-          options={{
-            tabBarButton: (props) => (
-              <CustomTabButton show={false} {...props} />
-            ),
-          }}
-          name="SalesManagement"
-          component={SalesManagement}
-        />
+
         <Tab.Screen
           options={{
             tabBarButton: (props) => (
@@ -561,6 +566,15 @@ function BottomNavigationGeneral(props) {
           }}
         />
         <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeStoreList"
+          component={HomeStoreList}
+        />
+        <Tab.Screen
           name="Chat"
           component={ChatList}
           options={{
@@ -578,15 +592,7 @@ function BottomNavigationGeneral(props) {
           name="GroupChatCreation"
           component={GroupChatCreation}
         />
-        <Tab.Screen
-          name="SalesManagementBottom"
-          component={SalesManagementBottom}
-          options={{
-            tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
-            tabBarLabel: "SalesManagementBottom",
-            tabBarIcon: () => <MoneyLogo width={25} height={25} />,
-          }}
-        />
+
         <Tab.Screen
           name="QRCode"
           component={QRCode}
@@ -740,15 +746,7 @@ function BottomNavigationGeneral(props) {
           name="StoreInformation"
           component={StoreInformation}
         />
-        <Tab.Screen
-          options={{
-            tabBarButton: (props) => (
-              <CustomTabButton show={false} {...props} />
-            ),
-          }}
-          name="SalesManagement"
-          component={SalesManagement}
-        />
+
         <Tab.Screen
           options={{
             tabBarButton: (props) => (
@@ -999,7 +997,7 @@ class CustomTabButton extends React.Component {
       ...props
     } = this.props;
 
-    if(!show) return null;
+    if (!show) return null;
 
     return (
       <TouchableWithoutFeedback
@@ -1017,8 +1015,19 @@ class CustomTabButton extends React.Component {
 function BottomNavigationStore(props) {
   let isShow = false;
   if (props && props.route && props.route.state) {
+    // alert.warning(props.route.state.routeNames[props.route.state.index]);
     isShow =
       props.route.state.routeNames[props.route.state.index] == "Chat" ||
+      props.route.state.routeNames[props.route.state.index] == "ChatScreen" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "GroupChatMember" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "GroupChatCreation" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "FolderMemberSelection" ||
+      props.route.state.routeNames[props.route.state.index] ==
+        "GroupFolderCreateCompletion" ||
+      props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
       props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
   }
   if (isShow) {
@@ -1054,6 +1063,15 @@ function BottomNavigationStore(props) {
             tabBarLabel: "Chat",
             tabBarIcon: () => <ChatLogo width={25} height={25} />,
           }}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeStoreList"
+          component={HomeStoreList}
         />
         <Tab.Screen
           name="FavoriteChat"
@@ -1542,6 +1560,15 @@ function BottomNavigationStore(props) {
             tabBarLabel: "Setting",
             tabBarIcon: () => <SettingLogo width={25} height={25} />,
           }}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="HomeStoreList"
+          component={HomeStoreList}
         />
         <Tab.Screen
           name="ShippingList"
@@ -1966,7 +1993,15 @@ export default function LoginStack() {
         />
         <Stack.Screen name="HomeGeneral" component={BottomNavigationGeneral} />
         <Stack.Screen name="HomeStore" component={BottomNavigationStore} />
-        <Stack.Screen name="HomeStoreList" component={HomeStoreList} />
+        <Stack.Screen
+          name="ProductInformationAddNew"
+          component={ProductInformationAddNew}
+        />
+        <Stack.Screen
+          name="ExhibitedProductList"
+          component={ExhibitedProductList}
+        />
+        {/* <Stack.Screen name="HomeStoreList" component={HomeStoreList} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -60,6 +60,8 @@ export default function FolderContactList(props) {
   const [user, onUserChanged] = React.useState({});
   const [searchTerm, onSearchTermChanged] = React.useState([]);
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
+  // const [longPressObj, onLongPressObjChanged] = React.useState({});
+  // const [show, onShowChanged] = React.useState(false);
   function redirectToChat(friendID, friendName) {
     let groupID;
     let groupName;
@@ -122,10 +124,10 @@ export default function FolderContactList(props) {
     users.map((user) => {
       tmpUserHtml.push(
         <TouchableWithoutFeedback
-          onLongPress={() => {
-            onLongPressObjChanged(user);
-            onShowChanged(true);
-          }}
+          // onLongPress={() => {
+          //   onLongPressObjChanged(user);
+          //   onShowChanged(true);
+          // }}
           key={user.id}
           onPress={() => {
             redirectToChat(user.id, user.nickname);
@@ -264,6 +266,7 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,
+    height: heightPercentageToDP("6%"),
   },
   searchIcon: {
     width: win.width / 19,

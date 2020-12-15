@@ -29,6 +29,7 @@ import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 import DropDownPicker from "react-native-dropdown-picker";
 import DatePicker from "react-native-datepicker";
+import Moment from "moment";
 const format = new Format();
 var kanjidate = require("kanjidate");
 const request = new Request();
@@ -144,6 +145,9 @@ export default function SalesManagement(props) {
   const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
   const [commissions, onCommissionsChanged] = React.useState({});
   const [date, onDateChange] = React.useState(new Date());
+  const [placeholderDate, onPlaceHolderDate] = React.useState(
+    year + "/" + month
+  );
   const [commissionHtml, onComissionHtmlChanged] = React.useState(
     <View></View>
   );
@@ -244,7 +248,9 @@ export default function SalesManagement(props) {
     let tmpDate = new Date();
     if (date) {
       onDateChange(date);
+      console.log(date);
       tmpDate = date;
+      onPlaceHolderDate(tmpDate.getFullYear() + "/" + (tmpDate.getMonth() + 1));
     }
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
@@ -325,21 +331,25 @@ export default function SalesManagement(props) {
           }}
         >
           <MonthPicker
-            title="Pick a month"
+            initialValue={new Date()}
             value={date}
+            // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
-              borderWidth: 1,
               alignItems: "center",
-              width: widthPercentageToDP("28%"),
-              height: heightPercentageToDP("5%"),
-              paddingVertical: widthPercentageToDP("2%"),
-              paddingHorizontal: widthPercentageToDP("3%"),
+              width: widthPercentageToDP("23%"),
+              height: heightPercentageToDP("4%"),
+              // marginLeft: widthPercentageToDP("3%"),
+              // paddingVertical: widthPercentageToDP("2%"),
+              // paddingHorizontal: widthPercentageToDP("3%"),
               borderRadius: 5,
-              backgroundColor: Colors.D7CCA6,
-              borderColor: Colors.CECECE,
+              textAlign: "center",
+              fontSize: RFValue(12),
+              // backgroundColor: Colors.D7CCA6,
+              // borderColor: Colors.CECECE,
             }}
           />
+
           <View
             style={{
               borderWidth: 2,

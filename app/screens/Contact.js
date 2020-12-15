@@ -938,36 +938,36 @@ export default function Contact(props) {
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
                   onPress={() => {
+                    // alert.warning("1" + longPressObj.data.data["notify"]);
                     if (longPressObj.type == "user") {
                       db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
+                        .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
-                          if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(String(user.id))
-                                .collection("friends")
-                                .doc(documentSnapshot.id)
-                                .set(
-                                  {
-                                    notify:
-                                      longPressObj["notify"] == "" ||
-                                      longPressObj["notify"]
-                                        ? false
-                                        : true,
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                )
-                                .then(() => {
-                                  populateUser();
-                                });
-                            });
-                          }
+                          querySnapshot.forEach((snapShot) => {
+                            let notification = snapShot.data().notify;
+                            // alert.warning(snapShot.id);
+                            db.collection("users")
+                              .doc(String(user.id))
+                              .collection("friends")
+                              .doc(snapShot.id)
+                              .set(
+                                {
+                                  notify:
+                                    notification == "" || notification
+                                      ? false
+                                      : true,
+                                },
+                                {
+                                  merge: true,
+                                }
+                              )
+                              .then(() => {
+                                populateUser();
+                              });
+                          });
                         });
                     } else if (longPressObj.type == "folder") {
                       let update = {};

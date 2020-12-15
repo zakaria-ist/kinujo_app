@@ -1,30 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   Image,
   View,
   Dimensions,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
+  Modal,
   ScrollView,
 } from "react-native";
+import CheckBox from "@react-native-community/checkbox";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import Person from "../assets/icons/default_avatar.svg";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
-import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
+import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import _ from "lodash";
 import { useIsFocused } from "@react-navigation/native";
 import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
+import { block } from "react-native-reanimated";
 import CustomAlert from "../lib/alert";
 import Request from "../lib/request";
-import CheckBox from "@react-native-community/checkbox";
+import Clipboard from "@react-native-community/clipboard";
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -34,22 +40,24 @@ const chatRef = db.collection("chat");
 const win = Dimensions.get("window");
 let groupID = [];
 let today = new Date().getDate();
+let chats = [];
+let lastReadDateField;
+let unseenMessageCountField;
 let ownUserID;
-let tmpChatHtml = [];
-let chatCheckBoxList = [];
+let totalUnseenMessage = 0;
+let unseenObj = [];
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
 let hour = new Date().getHours();
 let minute = ("0" + new Date().getMinutes()).slice(-2);
 let seconds = new Date().getSeconds();
-let tmpChats = [];
-let unsubscribe;
-let messageToForward;
 const request = new Request();
+let tmpChats;
+
 let tmpCreatedAt =
   year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds;
-
+let otherUsersID = [];
 function getDate(string) {
   let items = string.split(":");
   return new Date(
@@ -62,267 +70,92 @@ function getDate(string) {
   );
 }
 
-async function getName(ownId, data) {
+async function getDetail(ownId, data) {
   if (data.type && data.type == "group") {
-    return data.groupName;
+    return {
+      name: data.groupName,
+      image: "",
+    };
   }
-  if (data.users.length > 2) return data.groupName;
+  if (data.users.length > 2) {
+    return {
+      name: data.groupName,
+      image: "",
+    };
+  }
 
   let users = data.users.filter((user) => {
     return user != ownId;
   });
+  let snapShot = await db
+    .collection("users")
+    .doc(ownId)
+    .collection("customers")
+    .get();
+
+  firebaseName = "";
+  snapShot.forEach((docRef) => {
+    if (docRef.data().displayName && docRef.id == users) {
+      firebaseName = docRef.data().displayName;
+    }
+  });
+
   if (users.length > 0) {
     let user = users[0];
     user = await request.get("profiles/" + user);
     user = user.data;
-    return user.real_name ? user.real_name : user.nickname;
+    djangoName = user.nickname;
+    return {
+      name: firebaseName ? firebaseName : djangoName,
+      image: user.image ? user.image.image : "",
+    };
   }
-  return "";
+  return {
+    name: "",
+    image: "",
+  };
 }
-function onValueChange(chatRoomID) {}
+
 export default function ChatList(props) {
-  messageToForward = props.route.params.message;
+  let messageToForward = props.route.params.message;
+  const isFocused = useIsFocused();
+  const [show, onShowChanged] = React.useState(false);
+  const [totalUnread, setTotalUnread] = React.useState(false);
+  const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
-  const [forwardChatHtml, onForwardChatHtmlChanged] = React.useState([]);
-  const [loaded, onLoaded] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-
-  async function firstLoad() {
-    let url = await AsyncStorage.getItem("user");
-    let urls = url.split("/");
-    urls = urls.filter((url) => {
-      return url;
-    });
-    ownUserID = urls[urls.length - 1];
-    unsubscribe = chatRef
-      .where("users", "array-contains", String(ownUserID))
-      .onSnapshot((querySnapShot) => {
-        querySnapShot.forEach((snapShot) => {
-          if (snapShot && snapShot.exists) {
-            let tmpGroupID = groupID.filter((item) => {
-              return item == snapShot.id;
-            });
-            if (tmpGroupID.length >= 1) {
-              for (var i = 0; i < tmpChatHtml.length; i++) {
-                if (tmpChatHtml[i].key == snapShot.id) {
-                  tmpChatHtml.splice(i, 1); //find poisition delete
-                }
-              }
-              tmpChatHtml = _.without(tmpChatHtml, snapShot.id);
-            }
-            let date = snapShot.data().lastMessageTime
-              ? snapShot.data().lastMessageTime.split(":")
-              : tmpCreatedAt.split(":");
-            let tmpDay = date[2]; //message created at
-            chatCheckBoxList.push({
-              groupID: snapShot.id,
-              checkBoxStatus: false,
-            });
-            getName(ownUserID, snapShot.data()).then(function (name) {
-              if (tmpDay == today) {
-                tmpChats.unshift({
-                  checkBoxStatus: false,
-                  groupID: snapShot.id,
-                  groupName: name,
-                  message: snapShot.data().message,
-                  deleted: snapShot.data()["delete_" + ownUserID],
-                });
-                tmpChatHtml.unshift(
-                  <TouchableWithoutFeedback
-                    key={snapShot.id}
-                    date={
-                      snapShot.data().lastMessageTime
-                        ? snapShot.data().lastMessageTime
-                        : tmpCreatedAt
-                    }
-                    pinned={
-                      snapShot.data()["pinned_" + ownUserID] ? true : false
-                    }
-                    hide={snapShot.data()["hide_" + ownUserID] ? true : false}
-                    delete={
-                      snapShot.data()["delete_" + ownUserID] ? true : false
-                    }
-                  >
-                    <View style={styles.tabContainer}>
-                      <Image style={styles.tabImage} />
-                      <View style={styles.descriptionContainer}>
-                        <Text style={styles.tabText}>{name}</Text>
-                        <Text style={styles.tabText}>
-                          {snapShot.data().message}
-                        </Text>
-                      </View>
-                      <View style={styles.tabRightContainer}>
-                        <CheckBox
-                          color={Colors.E6DADE}
-                          uncheckedColor={Colors.E6DADE}
-                          disabled={false}
-                          onValueChange={() => onValueChange(snapShot.id)}
-                        />
-                      </View>
-                    </View>
-                  </TouchableWithoutFeedback>
-                );
-              } else if (tmpDay == today - 1) {
-                tmpChats.unshift({
-                  checkBoxStatus: false,
-                  groupID: snapShot.id,
-                  groupName: name,
-                  message: snapShot.data().message,
-                  deleted: snapShot.data()["delete_" + ownUserID],
-                });
-                tmpChatHtml.unshift(
-                  <TouchableWithoutFeedback
-                    key={snapShot.id}
-                    date={
-                      snapShot.data().lastMessageTime
-                        ? snapShot.data().lastMessageTime
-                        : tmpCreatedAt
-                    }
-                    pinned={
-                      snapShot.data()["pinned_" + ownUserID] ? true : false
-                    }
-                    hide={snapShot.data()["hide_" + ownUserID] ? true : false}
-                    delete={
-                      snapShot.data()["delete_" + ownUserID] ? true : false
-                    }
-                  >
-                    <View style={styles.tabContainer}>
-                      <Image style={styles.tabImage} />
-                      <View style={styles.descriptionContainer}>
-                        <Text style={styles.tabText}>{name}</Text>
-                        <Text style={styles.tabText}>
-                          {snapShot.data().message}
-                        </Text>
-                      </View>
-                      <View style={styles.tabRightContainer}>
-                        <CheckBox
-                          color={Colors.E6DADE}
-                          uncheckedColor={Colors.E6DADE}
-                          disabled={false}
-                          onValueChange={() => onValueChange(snapShot.id)}
-                        />
-                      </View>
-                    </View>
-                  </TouchableWithoutFeedback>
-                );
-              } else {
-                tmpChats.unshift({
-                  checkBoxStatus: false,
-                  groupID: snapShot.id,
-                  groupName: name,
-                  message: snapShot.data().message,
-                  deleted: snapShot.data()["delete_" + ownUserID],
-                });
-                tmpChatHtml.unshift(
-                  <TouchableWithoutFeedback
-                    key={snapShot.id}
-                    date={
-                      snapShot.data().lastMessageTime
-                        ? snapShot.data().lastMessageTime
-                        : tmpCreatedAt
-                    }
-                    pinned={
-                      snapShot.data()["pinned_" + ownUserID] ? true : false
-                    }
-                    hide={snapShot.data()["hide_" + ownUserID] ? true : false}
-                    delete={
-                      snapShot.data()["delete_" + ownUserID] ? true : false
-                    }
-                  >
-                    <View style={styles.tabContainer}>
-                      <Image style={styles.tabImage} />
-                      <View style={styles.descriptionContainer}>
-                        <Text style={styles.tabText}>{name}</Text>
-                        <Text style={styles.tabText}>
-                          {snapShot.data().message}
-                        </Text>
-                      </View>
-                      <View style={styles.tabRightContainer}>
-                        <CheckBox
-                          color={Colors.E6DADE}
-                          uncheckedColor={Colors.E6DADE}
-                          disabled={false}
-                          onValueChange={() => onValueChange(snapShot.id)}
-                        />
-                      </View>
-                    </View>
-                  </TouchableWithoutFeedback>
-                );
-              }
-              groupID.push(snapShot.id);
-
-              tmpChatHtml.sort((html1, html2) => {
-                if (html1.props["pinned"] && !html2.props["pinned"]) {
-                  return 1;
-                }
-
-                if (!html1.props["pinned"] && html2.props["pinned"]) {
-                  return -1;
-                }
-
-                if (html1.props["pinned"] && html2.props["pinned"]) {
-                  let date1 = getDate(html1.props["date"]);
-                  let date2 = getDate(html2.props["date"]);
-
-                  if (date1 > date2) {
-                    return -1;
-                  }
-                  if (date1 < date2) {
-                    return 1;
-                  }
-                }
-
-                if (!html1.props["pinned"] && !html2.props["pinned"]) {
-                  let date1 = getDate(html1.props["date"]);
-                  let date2 = getDate(html2.props["date"]);
-
-                  if (date1 > date2) {
-                    return -1;
-                  }
-                  if (date1 < date2) {
-                    return 1;
-                  }
-                }
-              });
-              const resultChatHtml = tmpChatHtml.filter((html) => {
-                return !html.props["hide"] && !html.props["delete"];
-              });
-              onChatHtmlChanged(resultChatHtml);
-              onForwardChatHtmlChanged(processForwardChatHtml(tmpChats));
-            });
-          }
+  const [longPressObj, onLongPressObjChanged] = React.useState({});
+  // if (!isFocused) {
+  //   onShowChanged(false);
+  // }
+  React.useEffect(() => {
+    onShowChanged(false);
+  }, [!isFocused]);
+  function getUnseenMessageCount(groupID, userID) {
+    let userTotalMessageReadField = "totalMessageRead_" + userID;
+    let userTotalMessageReadCount;
+    let totalMessageCount;
+    chatRef
+      .doc(groupID)
+      .get()
+      .then(function (doc) {
+        if (doc.exists) {
+          userTotalMessageReadCount = doc.data()[userTotalMessageReadField];
+          totalMessageCount = doc.data().totalMessage;
+        }
+      })
+      .then(function () {
+        chatRef.doc(groupID).update({
+          [unseenMessageCountField]:
+            totalMessageCount - userTotalMessageReadCount,
         });
       });
   }
-  function processForwardChatHtml(items) {
-    let tmpForwardChatHtml = [];
-    items.map((chat) => {
-      // if (chat.deleted == false) {
-      tmpForwardChatHtml.push(
-        <View style={styles.tabContainer} key={chat.groupID}>
-          <Image style={styles.tabImage} />
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.tabText}>{chat.groupName}</Text>
-            <Text style={styles.tabText}>{chat.message}</Text>
-          </View>
-          <View style={styles.tabRightContainer}>
-            <CheckBox
-              color={Colors.E6DADE}
-              uncheckedColor={Colors.E6DADE}
-              disabled={false}
-              value={chat.checkBoxStatus}
-              onValueChange={() => onValueChange(chat.groupID)}
-            />
-          </View>
-        </View>
-      );
-      // }
-    });
-    return tmpForwardChatHtml;
-  }
-  function onValueChange(groupID) {
+  function onValueChange(tmpChats, groupID) {
+    console.log(groupID);
     tmpChats = tmpChats.map((chat) => {
-      if (chat.groupID == groupID) {
+      console.log(chat.checkBoxStatus);
+      if (chat.id == groupID) {
+        // console.log(chat.checkBoxStatus);
         if (chat.checkBoxStatus == true) {
           chat.checkBoxStatus = false;
         } else {
@@ -331,9 +164,10 @@ export default function ChatList(props) {
       }
       return chat;
     });
-    onForwardChatHtmlChanged(processForwardChatHtml(tmpChats));
+    processChat(tmpChats, ownUserID);
   }
   function forwardMessage() {
+    // console.log("1");
     tmpChats.map((chat) => {
       if (chat.checkBoxStatus == true) {
         let createdAt =
@@ -349,7 +183,7 @@ export default function ChatList(props) {
           ":" +
           seconds;
         db.collection("chat")
-          .doc(chat.groupID)
+          .doc(chat.id)
           .collection("messages")
           .add({
             timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -363,68 +197,457 @@ export default function ChatList(props) {
       }
     });
   }
+  function processChat(tmpChats, ownUserID) {
+    let tmpChatHtml = [];
+    lastReadDateField = "lastReadDate_" + ownUserID;
+    unseenMessageCountField = "unseenMessageCount_" + ownUserID;
+    let unreadMessage = 0;
+
+    tmpChats = tmpChats.filter((chat) => {
+      return !chat["delete_" + ownUserID] && !chat["hide_" + ownUserID];
+    });
+    tmpChats.map((chat) => {
+      if (
+        chat.data["totalMessageRead_" + ownUserID] < chat.data["totalMessage"]
+      ) {
+        unreadMessage++;
+      }
+
+      totalUnseenMessage = 0;
+      totalUnseenMessage =
+        chat.data[unseenMessageCountField] + totalUnseenMessage;
+      unseenObj[chat.id] = totalUnseenMessage;
+      let tmpGroupID = groupID.filter((item) => {
+        return item == chat.id;
+      });
+      if (tmpGroupID.length >= 1) {
+        for (var i = 0; i < tmpChatHtml.length; i++) {
+          if (tmpChatHtml[i].key == chat.id) {
+            tmpChatHtml.splice(i, 1); //find poisition delete
+          }
+        }
+        tmpChatHtml = _.without(tmpChatHtml, chat.id);
+      }
+      getUnseenMessageCount(chat.id, ownUserID);
+      let date = chat.data.lastMessageTime
+        ? chat.data.lastMessageTime.split(":")
+        : tmpCreatedAt.split(":");
+      let tmpMonth = date[1];
+      let tmpDay = date[2]; //message created at
+      let tmpHours = date[3];
+      let tmpMinutes = date[4];
+      lastReadDate = chat.data[lastReadDateField];
+
+      name = chat.name;
+      image = chat.image;
+      if (tmpDay == today && chat.data.totalMessage > 0) {
+        tmpChatHtml.unshift(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            date={
+              chat.data.lastMessageTime
+                ? chat.data.lastMessageTime
+                : tmpCreatedAt
+            }
+            pinned={chat.data["pinned_" + ownUserID] ? true : false}
+            hide={chat.data["hide_" + ownUserID] ? true : false}
+            delete={chat.data["delete_" + ownUserID] ? true : false}
+          >
+            <View style={styles.tabContainer}>
+              {console.log(chat.image)}
+              {image ? (
+                <Image source={{ uri: image }} style={styles.tabImage} />
+              ) : (
+                <Person style={styles.tabImage} />
+              )}
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.tabText}>{name}</Text>
+                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+              </View>
+              <View style={styles.tabRightContainer}>
+                <CheckBox
+                  color={Colors.E6DADE}
+                  uncheckedColor={Colors.E6DADE}
+                  disabled={false}
+                  onValueChange={() => onValueChange(tmpChats, chat.id)}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      } else if (tmpDay == today - 1 && chat.data.totalMessage > 0) {
+        tmpChatHtml.unshift(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            date={
+              chat.data.lastMessageTime
+                ? chat.data.lastMessageTime
+                : tmpCreatedAt
+            }
+            pinned={chat.data["pinned_" + ownUserID] ? true : false}
+            hide={chat.data["hide_" + ownUserID] ? true : false}
+            delete={chat.data["delete_" + ownUserID] ? true : false}
+          >
+            <View style={styles.tabContainer}>
+              {image ? (
+                <Image source={{ uri: image }} style={styles.tabImage} />
+              ) : (
+                <Person style={styles.tabImage} />
+              )}
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.tabText}>{name}</Text>
+                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+              </View>
+              <View style={styles.tabRightContainer}>
+                <CheckBox
+                  color={Colors.E6DADE}
+                  uncheckedColor={Colors.E6DADE}
+                  disabled={false}
+                  onValueChange={() => onValueChange(tmpChats, chat.id)}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      } else if (chat.data.totalMessage > 0) {
+        tmpChatHtml.unshift(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            date={
+              chat.data.lastMessageTime
+                ? chat.data.lastMessageTime
+                : tmpCreatedAt
+            }
+            pinned={chat.data["pinned_" + ownUserID] ? true : false}
+            hide={chat.data["hide_" + ownUserID] ? true : false}
+            delete={chat.data["delete_" + ownUserID] ? true : false}
+          >
+            <View style={styles.tabContainer}>
+              {/*console.log(chat)*/}
+              {image ? (
+                <Image source={{ uri: image }} style={styles.tabImage} />
+              ) : (
+                <Person style={styles.tabImage} />
+              )}
+              <View style={styles.descriptionContainer}>
+                <Text style={styles.tabText}>{name}</Text>
+                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+              </View>
+              <View style={styles.tabRightContainer}>
+                <CheckBox
+                  color={Colors.E6DADE}
+                  uncheckedColor={Colors.E6DADE}
+                  disabled={false}
+                  onValueChange={() => onValueChange(tmpChats, chat.id)}
+                />
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        );
+      }
+      groupID.push(chat.id);
+      totalUnseenMessage = 0;
+      for (var i in unseenObj) {
+        totalUnseenMessage += unseenObj[i];
+      }
+      tmpChatHtml.sort((html1, html2) => {
+        if (html1.props["pinned"] && !html2.props["pinned"]) {
+          return 1;
+        }
+
+        if (!html1.props["pinned"] && html2.props["pinned"]) {
+          return -1;
+        }
+
+        if (html1.props["pinned"] && html2.props["pinned"]) {
+          let date1 = getDate(html1.props["date"]);
+          let date2 = getDate(html2.props["date"]);
+
+          if (date1 > date2) {
+            return -1;
+          }
+          if (date1 < date2) {
+            return 1;
+          }
+        }
+
+        if (!html1.props["pinned"] && !html2.props["pinned"]) {
+          let date1 = getDate(html1.props["date"]);
+          let date2 = getDate(html2.props["date"]);
+
+          if (date1 > date2) {
+            return -1;
+          }
+          if (date1 < date2) {
+            return 1;
+          }
+        }
+        return 0;
+      });
+      const resultChatHtml = tmpChatHtml.filter((html) => {
+        return !html.props["hide"] && !html.props["delete"];
+      });
+      onChatHtmlChanged(resultChatHtml);
+    });
+    setTotalUnread(unreadMessage);
+  }
+  async function firstLoad() {
+    let url = await AsyncStorage.getItem("user");
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    // onChatHtmlChanged([]);
+    ownUserID = urls[urls.length - 1];
+    const unsubscribe = chatRef
+      .where("users", "array-contains", String(ownUserID))
+      .onSnapshot((querySnapShot) => {
+        querySnapShot.forEach((snapShot) => {
+          if (snapShot && snapShot.exists) {
+            tmpChats = chats.filter((chat) => {
+              return chat.id == snapShot.id;
+            });
+            if (tmpChats.length == 0) {
+              getDetail(ownUserID, snapShot.data()).then(function (detail) {
+                chats.push({
+                  id: snapShot.id,
+                  data: snapShot.data(),
+                  name: detail.name,
+                  image: detail.image,
+                  checkBoxStatus: false,
+                });
+                processChat(chats, ownUserID);
+              });
+            } else {
+              chats = chats.map((chat) => {
+                if (chat.id == snapShot.id) {
+                  chat.data = snapShot.data();
+                }
+                return chat;
+              });
+              processChat(chats, ownUserID);
+            }
+          }
+        });
+      });
+    return unsubscribe;
+  }
+
   React.useEffect(() => {
-    firstLoad();
+    AsyncStorage.getItem("chat").then((item) => {
+      if (item) {
+        AsyncStorage.removeItem("chat");
+        item = JSON.parse(item);
+        props.navigation.push("ChatScreen", item);
+      }
+    });
+
+    let unsubscribe;
+    chats = [];
+    firstLoad().then((unsub) => {
+      unsubscribe = unsub;
+    });
+
     return function () {
+      chats = [];
+      onChatHtmlChanged([]);
       if (unsubscribe) {
         unsubscribe();
-        onChatHtmlChanged([]);
-        onForwardChatHtmlChanged([]);
-        tmpChatHtml = [];
-        tmpChats = [];
       }
     };
-  }, []);
-
+  }, [isFocused]);
   return (
-    <ScrollView>
-      <CustomHeader
-        text={Translate.t("chat")}
-        onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.goBack()}
-        onFavoriteChanged="noFavorite"
-      />
-      <ScrollView>
-        <View
-          style={{
-            marginHorizontal: widthPercentageToDP("4%"),
-          }}
-        >
-          <TouchableWithoutFeedback onPress={() => forwardMessage()}>
-            <Text
-              style={{
-                fontSize: RFValue(12),
-                right: 0,
-                position: "absolute",
-                marginTop: heightPercentageToDP("2%"),
-                marginRight: widthPercentageToDP("5%"),
-              }}
-            >
-              {Translate.t("forward")}
-            </Text>
-          </TouchableWithoutFeedback>
+    <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <CustomHeader
+          text={Translate.t("chat")}
+          onPress={() => props.navigation.navigate("Cart")}
+          onBack={() => props.navigation.goBack()}
+          onFavoriteChanged="noFavorite"
+        />
+        <ScrollView>
           <View
             style={{
-              width: widthPercentageToDP("30%"),
-              flexDirection: "row",
-              alignItems: "center",
-              paddingBottom: heightPercentageToDP("3%"),
-              marginTop: heightPercentageToDP("3%"),
+              marginHorizontal: widthPercentageToDP("4%"),
             }}
           >
-            <Text
+            <View
               style={{
-                fontSize: RFValue(14),
-                paddingRight: widthPercentageToDP("2%"),
+                flexDirection: "row",
+                alignItems: "flex-start",
+                // backgroundColor: "orange",
+                paddingBottom: heightPercentageToDP("3%"),
+                marginTop: heightPercentageToDP("3%"),
+                height: heightPercentageToDP("5%"),
               }}
             >
-              {Translate.t("chat")}
-            </Text>
+              <TouchableWithoutFeedback onPress={() => forwardMessage()}>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    right: 0,
+                    position: "absolute",
+                  }}
+                >
+                  {Translate.t("forward")}
+                </Text>
+              </TouchableWithoutFeedback>
+            </View>
+            {chatHtml}
           </View>
-          {forwardChatHtml}
+        </ScrollView>
+        <View style={show == true ? styles.popUp : styles.none}>
+          <View
+            style={{
+              zIndex: 1,
+              borderWidth: 1,
+              backgroundColor: "white",
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("30%"),
+              borderColor: Colors.D7CCA6,
+              alignItems: "flex-start",
+              paddingLeft: widthPercentageToDP("5%"),
+              paddingRight: widthPercentageToDP("25%"),
+            }}
+          >
+            <View
+              style={{
+                marginTop: heightPercentageToDP("3%"),
+              }}
+            >
+              <Text style={{ fontSize: RFValue(14) }}>
+                {longPressObj ? longPressObj.name : ""}
+              </Text>
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("2%"),
+                  justifyContent: "space-evenly",
+                  height: heightPercentageToDP("35%"),
+                }}
+              >
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["pinned_" + ownUserID] =
+                      longPressObj.data["pinned_" + ownUserID] == "" ||
+                      longPressObj.data["pinned_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("upperFixed")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["notify_" + ownUserID] =
+                      longPressObj.data["notify_" + ownUserID] == "" ||
+                      longPressObj.data["notify_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("notification")} OFF
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["hide_" + ownUserID] =
+                      longPressObj.data["hide_" + ownUserID] == "" ||
+                      longPressObj.data["hide_" + ownUserID]
+                        ? false
+                        : true;
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("nonRepresent")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["delete_" + ownUserID] =
+                      longPressObj.data["delete_" + ownUserID] == "" ||
+                      longPressObj.data["delete_" + ownUserID] == false;
+                    longPressObj.data["delete_" + ownUserID] ? false : true;
+                    db.collection("chat").doc(longPressObj.id).set(update, {
+                      merge: true,
+                    });
+                    onShowChanged(false);
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("remove")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  // onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    onShowChanged(false);
+                    let tmpUsers = longPressObj.data.users.filter((user) => {
+                      return user != ownUserID;
+                    });
+                    AsyncStorage.setItem("ids", JSON.stringify(tmpUsers)).then(
+                      () => {
+                        AsyncStorage.setItem(
+                          "tmpIds",
+                          JSON.stringify(tmpUsers)
+                        ).then(() => {
+                          props.navigation.navigate("GroupChatCreation");
+                        });
+                      }
+                    );
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("groupChatCreate")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  // onPressIn={() => onShowChanged(false)}
+                  onPress={() => {
+                    onShowChanged(false);
+                    let tmpUsers = longPressObj.data.users.filter((user) => {
+                      return user != ownUserID;
+                    });
+                    AsyncStorage.setItem("ids", JSON.stringify(tmpUsers)).then(
+                      () => {
+                        AsyncStorage.setItem(
+                          "tmpIds",
+                          JSON.stringify(tmpUsers)
+                        ).then(() => {
+                          props.navigation.navigate("CreateFolder");
+                        });
+                      }
+                    );
+                  }}
+                >
+                  <Text style={styles.longPressText}>
+                    {Translate.t("createFolder")}
+                  </Text>
+                </TouchableWithoutFeedback>
+              </View>
+            </View>
+          </View>
         </View>
-      </ScrollView>
-    </ScrollView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 
