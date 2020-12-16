@@ -674,9 +674,7 @@ export default function ChatScreen(props) {
                   <TouchableWithoutFeedback
                     onPress={() => {
                       let update = {};
-                      update["delete_" + userId] = longPressObj.data[
-                        "delete_" + userId
-                      ]
+                      update["delete"] = longPressObj.data["delete"]
                         ? false
                         : true;
                       db.collection("chat")
@@ -696,7 +694,9 @@ export default function ChatScreen(props) {
                   <TouchableWithoutFeedback
                     onPress={() => {
                       let update = {};
-                      update["delete"] = longPressObj.data["delete"]
+                      update["delete_" + userId] = longPressObj.data[
+                        "delete_" + userId
+                      ]
                         ? false
                         : true;
                       db.collection("chat")
