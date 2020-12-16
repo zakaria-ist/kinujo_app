@@ -1,4 +1,4 @@
-package com.example.kinujo.generated;
+package net.c2sg.kinujo.generated;
 
 import java.util.Arrays;
 import java.util.List;

@@ -131,11 +131,11 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.example.kinujo'
+        applicationId 'net.c2sg.kinujo'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName '1.0.16-release'
+        versionName '1.0.17-release'
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {

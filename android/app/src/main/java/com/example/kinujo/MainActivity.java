@@ -1,4 +1,4 @@
-package com.example.kinujo;
+package net.c2sg.kinujo;
 
 import android.os.Bundle;
 

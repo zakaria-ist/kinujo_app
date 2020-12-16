@@ -59,11 +59,11 @@ async function buildLink(userId, is_store) {
       // domainUriPrefix is created in your Firebase console
       domainUriPrefix: "https://kinujo.page.link",
       android: {
-        packageName: "com.example.kinujo",
+        packageName: "net.c2sg.kinujo",
       },
       ios: {
         appStoreId: "123123123",
-        bundleId: "com.example.kinujo",
+        bundleId: "net.c2sg.kinujo",
       },
     },
     dynamicLinks.ShortLinkType.UNGUESSABLE
