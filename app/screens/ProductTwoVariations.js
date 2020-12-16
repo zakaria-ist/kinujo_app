@@ -66,6 +66,7 @@ export default function ProductTwoVariations({
   const [stock, onStockChanged] = React.useState("");
   const [itemName, onItemNameChanged] = React.useState("");
   const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
+  const [horizontalName, onHorizontalNameChanged] = React.useState();
   const [loaded, onLoaded] = React.useState(false);
   const [variationDetailsHtml, onProcessVariationDetailsHtml] = React.useState(
     <View></View>
@@ -167,7 +168,6 @@ export default function ProductTwoVariations({
     onLoaded(true);
   }
   function deleteChoice(index, choiceIndex) {
-    console.log("ADD " + choiceIndex);
     items.map((product) => {
       if (index == product.index) {
         product.choices = product.choices.filter((choice) => {
@@ -182,6 +182,14 @@ export default function ProductTwoVariations({
         });
 
         product.choices = choices;
+        if(product.choices.length == 0){
+          product.choices.push({
+            choiceIndex: 1,
+            choiceItem: "",
+            janCode: "",
+            stock: "",
+          })
+        }
       }
       return product;
     });
@@ -268,6 +276,7 @@ export default function ProductTwoVariations({
     return tmpChoiceHtml;
   }
   function processVariationHtml(items) {
+    onHorizontalNameChanged(items[0].horizontalItem)
     let tmpVariationHtml = [];
     items.map((product) => {
       tmpVariationHtml.push(
@@ -470,7 +479,7 @@ export default function ProductTwoVariations({
 
       <View style={styles.variantTitle}>
         <Text style={{ color: "#FFF", fontSize: RFValue(14) }}>
-          {Translate.t("size")}
+          {horizontalName}
         </Text>
       </View>
 

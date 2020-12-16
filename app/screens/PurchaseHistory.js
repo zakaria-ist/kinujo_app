@@ -34,6 +34,7 @@ import Shop from "../assets/icons/shop.svg";
 const db = firebase.firestore();
 var kanjidate = require("kanjidate");
 import Format from "../lib/format";
+import { search } from "react-native-country-picker-modal/lib/CountryService";
 const format = new Format();
 const request = new Request();
 const alert = new CustomAlert();
@@ -50,9 +51,20 @@ export default function PurchaseHistory(props) {
   const [loaded, onLoaded] = React.useState(false);
   const [yearHtml, onYearHtmlChanged] = React.useState(<View></View>);
   const [years, onYearChanged] = React.useState(<View></View>);
+  const [searchText, onSearchTextChanged] = React.useState("");
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
 
   function processOrderHtml(props, orders, status = "") {
+    if(searchText){
+      orders = orders.filter((order)=>{
+        if(order.product_jan_code.horizontal){
+          return order.product_jan_code.horizontal.product_variety.product.name.indexOf(searchText) >= 0
+        } else if(order.product_jan_code.vertical){
+          return order.product_jan_code.vertical.product_variety.product.name.indexOf(searchText) >= 0
+        }
+        return false;
+      })
+    }
     let tmpOrderHtml = [];
     for (var i = 0; i < orders.length; i++) {
       let order = orders[i];
@@ -443,6 +455,12 @@ export default function PurchaseHistory(props) {
                   borderRadius: 5,
                   borderColor: "transparent",
                 }}
+                value={searchText}
+                onChangeText={(value) => {
+                  onSearchTextChanged(value);
+                  onOrderHtmlChanged(processOrderHtml(props, orders, ""));
+                }}
+
               />
               <Image
                 style={{

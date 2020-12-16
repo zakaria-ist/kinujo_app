@@ -386,7 +386,18 @@ export default function CustomerInformation(props) {
           </Text>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
-          onPress={() => props.navigation.navigate("CreateFolder")}
+          onPress={() => {
+            AsyncStorage.setItem("ids", JSON.stringify([String(user.id)])).then(
+              () => {
+                AsyncStorage.setItem(
+                  "tmpIds",
+                  JSON.stringify([String(user.id)])
+                ).then(() => {
+                  props.navigation.navigate("CreateFolder");
+                });
+              }
+            );
+          }}
         >
           <View style={styles.firstTabContainer}>
             <Text style={styles.textInContainer}>
