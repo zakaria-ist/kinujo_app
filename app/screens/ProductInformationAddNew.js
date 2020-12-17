@@ -1175,7 +1175,7 @@ export default function ProductInformationAddNew(props) {
                 </View>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               onPress={() => {
                 request
                   .patch(props.route.params.url, {
@@ -1204,7 +1204,7 @@ export default function ProductInformationAddNew(props) {
               >
                 <Text style={styles.buttonText}>{Translate.t("delete")}</Text>
               </View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           </ScrollView>
         </KeyboardAvoidingView>
       </View>

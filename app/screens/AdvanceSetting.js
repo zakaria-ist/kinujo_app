@@ -77,10 +77,12 @@ export default function AdvanceSetting(props) {
               if (!firstLoaded) {
                 onBlockModeChanged(tmpUser.blockMode);
                 onSecretModeChanged(tmpUser.secretMode);
-                if (tmpUser.displayName) {
+                if (!tmpUser.displayName) {
                   onDisplayNameChanged(
                     response.data.nickname ? response.data.nickname : ""
                   );
+                } else {
+                  onDisplayNameChanged(tmpUser.displayName)
                 }
               }
               onFirstLoadedChanged(true);

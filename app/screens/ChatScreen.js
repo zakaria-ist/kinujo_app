@@ -153,10 +153,12 @@ export default function ChatScreen(props) {
 
     tmpName = "";
     snapShot.forEach((docRef) => {
-      if (docRef.data().displayName && docRef.id == ownId) {
+      console.log(docRef.id);
+      if (docRef.data().displayName && docRef.id == users[0]) {
         tmpName = docRef.data().displayName;
       }
     });
+    if (tmpName) return tmpName;
     if (users.length > 0) {
       let user = users[0];
       onUserUrlChanged("profiles/" + user);
@@ -165,7 +167,6 @@ export default function ChatScreen(props) {
 
       return user.nickname;
     }
-    if (tmpName) return tmpName;
     return "";
   }
 
@@ -462,6 +463,7 @@ export default function ChatScreen(props) {
     });
     userId = urls[urls.length - 1];
 
+    console.log(groupID)
     getName(userId, data).then((name) => {
       onNameChanged(name);
     });
