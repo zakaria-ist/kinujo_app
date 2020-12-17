@@ -94,7 +94,7 @@ async function getDetail(ownId, data) {
 
   firebaseName = "";
   snapShot.forEach((docRef) => {
-    if (docRef.data().displayName && docRef.id == users) {
+    if (docRef.data().displayName && docRef.id == JSON.parse(users)) {
       firebaseName = docRef.data().displayName;
     }
   });

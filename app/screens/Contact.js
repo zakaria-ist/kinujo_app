@@ -77,9 +77,11 @@ export default function Contact(props) {
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == friendID) {
-              groupID = snapShot.doc.id;
+          if(snapShot.doc.data().type != 'group'){
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == friendID) {
+                groupID = snapShot.doc.id;
+              }
             }
           }
         });
