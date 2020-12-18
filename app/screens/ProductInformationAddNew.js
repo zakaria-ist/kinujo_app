@@ -443,6 +443,9 @@ export default function ProductInformationAddNew(props) {
               onTwoVariationItemsChanged(tmpItems);
             }
           });
+        } else {
+          let d = new Date()
+          onPublishDateChanged(d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate())
         }
       })
       .catch((error) => {
@@ -492,28 +495,33 @@ export default function ProductInformationAddNew(props) {
           draft: draft,
         })
         .then((response) => {
-          onSpinnerChanged(false);
           response = response.data;
           console.log(response);
           if (response.success) {
-            // props.navigation.goBack();
+            onSpinnerChanged(false);
+            props.navigation.goBack();
           } else {
-            if (response.errors && Object.keys(response.errors).length > 0) {
+            if (response.errors && Object.keys(response.errors).length > 0 && Object.keys(response.errors)[0] != "0") {
               alert.warning(
                 response.errors[Object.keys(response.errors)[0]][0] +
                   "(" +
                   Object.keys(response.errors)[0] +
-                  ")"
+                  ")", ()=>{
+                    onSpinnerChanged(false);
+                  }
               );
             } else if (response.errors.length > 0) {
-              alert.warning(response.errors[0]);
+              alert.warning(response.errors[0], ()=>{
+                onSpinnerChanged(false);
+              });
             } else if (response.error) {
-              alert.warning(response.error);
+              alert.warning(response.error, ()=>{
+                onSpinnerChanged(false);
+              });
             }
           }
         })
         .catch((error) => {
-          onSpinnerChanged(false);
           if (
             error &&
             error.response &&
@@ -521,7 +529,9 @@ export default function ProductInformationAddNew(props) {
             Object.keys(error.response.data).length > 0
           ) {
             alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0]
+              error.response.data[Object.keys(error.response.data)[0]][0], ()=>{
+                onSpinnerChanged(false);
+              }
             );
           }
         });
@@ -842,6 +852,7 @@ export default function ProductInformationAddNew(props) {
                   // onChange
                   onDateChange={(date) => {
                     if (date) {
+                      console.log(date);
                       onPublishDateChanged(date);
                     }
                   }}
