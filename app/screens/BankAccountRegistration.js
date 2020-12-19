@@ -82,6 +82,7 @@ export default function BankAccountRegistration(props) {
       request
       .get("financial-account/" + userId + "/")
       .then(function (response) {
+        console.log(response.data.financialAccount)
         setUrl(response.data.financialAccount.url);
         onFinancialAccountChanged(response.data.financialAccount);
         onBranckCodeChanged(response.data.financialAccount.branch_code);
@@ -90,7 +91,7 @@ export default function BankAccountRegistration(props) {
           String(response.data.financialAccount.financial_name)
         );
         onBranchNameChanged(String(response.data.financialAccount.branch_name));
-        onAccountTypeChanged(response.data.financialAccount.account_type);
+        onAccountTypeChanged(response.data.financialAccount.account_type ? response.data.financialAccount.account_type : "1");
         console.log(response.data.financialAccount.account_number)
         onAccountNumberChanged(
           String(response.data.financialAccount.account_number)
