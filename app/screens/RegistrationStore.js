@@ -24,6 +24,7 @@ import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 import { ScrollView } from "react-native-gesture-handler";
 import CountryPicker from "react-native-country-picker-modal";
+import DropDownPicker from "react-native-dropdown-picker";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -37,10 +38,24 @@ export default function RegistrationStore(props) {
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
   const [phone, onPhoneChanged] = React.useState("");
   const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [flag, onFlagChanged] = React.useState("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
+  const [loaded, onLoaded] = React.useState(false);
+  if (!loaded) {
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        return {
+          label: country.tel_code,
+          value: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
+    onLoaded(true);
+  }
   function processCountryCode(val) {
-    onCallingCodeChanged(val.callingCode);
-    onFlagChanged(val.flag);
+    let tmpItem = val.split("+");
+    // alert.warning(tmpItem[1]);
+    onCallingCodeChanged(tmpItem[1]);
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -126,24 +141,28 @@ export default function RegistrationStore(props) {
                 alignItems: "center",
               }}
             >
-              <CountryPicker
-                theme={{
-                  fontSize: RFValue(14),
+              <DropDownPicker
+                // controller={(instance) => (controller = instance)}
+                style={styles.textInput}
+                items={countryCodeHtml ? countryCodeHtml : []}
+                // defaultValue={countryCodeHtml ? countryCodeHtml : ""}
+                containerStyle={{ height: heightPercentageToDP("5.5%") }}
+                labelStyle={{
+                  fontSize: RFValue(10),
+                  color: Colors.D7CCA6,
                 }}
-                withCallingCode
-                withFilter
-                withFlag
-                placeholder={callingCode ? " + " + callingCode : "+"}
-                onSelect={(val) => processCountryCode(val)}
-                containerButtonStyle={{
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: "black",
-                  paddingVertical: heightPercentageToDP("1%"),
-                  alignItems: "flex-start",
-                  paddingLeft: widthPercentageToDP("3%"),
-                  alignSelf: "center",
-                  width: widthPercentageToDP("20%"),
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.D7CCA6,
+                }}
+                placeholder={"+"}
+                dropDownStyle={{ backgroundColor: "#000000" }}
+                onChangeItem={(item) => {
+                  if (item) {
+                    processCountryCode(item.value);
+                  }
                 }}
               />
               <TextInput
@@ -317,5 +336,16 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: RFValue(12),
     textAlign: "center",
+  },
+  textInput: {
+    borderWidth: 1,
+    backgroundColor: "transparent",
+    // borderColor: "black",
+    borderRadius: 0,
+    fontSize: RFValue(10),
+    // height: heightPercentageToDP("5.8%"),
+    // paddingLeft: widthPercentageToDP("2%"),
+    width: widthPercentageToDP("25%"),
+    // marginVertical: heightPercentageToDP("1%"),
   },
 });

@@ -115,6 +115,7 @@ function getTime() {
 }
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = React.useState(false);
+  const [secretMode, setSecretMode] = React.useState(false);
   const [showPopUp, onShowPopUpChanged] = React.useState(false);
   const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
@@ -153,9 +154,12 @@ export default function ChatScreen(props) {
 
     tmpName = "";
     snapShot.forEach((docRef) => {
-      console.log(docRef.id);
       if (docRef.data().displayName && docRef.id == users[0]) {
         tmpName = docRef.data().displayName;
+
+        if(docRef.data().secretMode){
+          setSecretMode(true);
+        }
       }
     });
     if (tmpName) return tmpName;
@@ -242,6 +246,16 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
+                  longPress = {
+                    ()=>{
+                      onLongPressObjChanged({
+                        id: chat.id,
+                        message: chat.data.message,
+                        data: chat.data,
+                      });
+                      onShowPopUpChanged(true);
+                    }
+                  }
                   showCheckBox={showCheckBox}
                   props={props}
                   date={tmpHours + ":" + tmpMinutes}
@@ -444,12 +458,12 @@ export default function ChatScreen(props) {
 
         previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
       }
-      const resultChatHtml = tmpChatHtml.filter((html) => {
-        return !html.props["delete"];
-      });
-      onChatHtmlChanged(resultChatHtml);
-      index++;
     });
+    const resultChatHtml = tmpChatHtml.filter((html) => {
+      return !html.props["delete"];
+    });
+    onChatHtmlChanged(resultChatHtml)
+    index++;
   }
 
   async function firstLoad(data) {
@@ -463,7 +477,6 @@ export default function ChatScreen(props) {
     });
     userId = urls[urls.length - 1];
 
-    console.log(groupID)
     getName(userId, data).then((name) => {
       onNameChanged(name);
     });
@@ -525,7 +538,9 @@ export default function ChatScreen(props) {
         .doc(groupID)
         .collection("messages")
         .orderBy("timeStamp", "asc")
-        .onSnapshot((querySnapShot) => {
+        .onSnapshot({
+          includeMetadataChanges: false
+        }, (querySnapShot) => {
           querySnapShot.forEach((snapShot) => {
             if (snapShot && snapShot.exists) {
               let tmpChats = chats.filter((chat) => {
@@ -550,6 +565,10 @@ export default function ChatScreen(props) {
         });
     }
   }
+
+  React.useEffect(()=>{
+    scrollViewReference.current.scrollToEnd({ animated: true })
+  }, [chatHtml])
 
   React.useEffect(() => {
     if (!isFocused) {
@@ -627,8 +646,7 @@ export default function ChatScreen(props) {
                   : styles.scrollViewStyleWithoutEmoji
               }
             >
-              {/*console.log(showEmoji)*/}
-              {chatHtml}
+              {secretMode ? null : chatHtml}
             </ScrollView>
           </LinearGradient>
           <View style={showPopUp == true ? styles.popUpView : styles.none}>
@@ -852,7 +870,8 @@ export default function ChatScreen(props) {
                         timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                         message: tmpMessage,
                       })
-                      .then(() => {});
+                      .then((item) => {
+                      });
                   }
                 }}
               >

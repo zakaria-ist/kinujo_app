@@ -410,7 +410,11 @@ export default function CustomerInformation(props) {
           </View>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
-          onPress={() => props.navigation.navigate("Contact")}
+          onPress={() => {
+            props.navigation.navigate("ContactStore", {
+              user_id: user.id
+            })
+          }}
         >
           <View style={styles.tabContainer}>
             <Text style={styles.textInContainer}>
@@ -424,14 +428,14 @@ export default function CustomerInformation(props) {
                 alignItems: "center",
               }}
             >
-              <Text
+              {/* <Text
                 style={{
                   marginRight: widthPercentageToDP("10%"),
                   fontSize: RFValue(12),
                 }}
               >
                 QQ
-              </Text>
+              </Text> */}
               <Next
                 style={styles.nextIcon}
                 // source={require("../assets/Images/next.png")}

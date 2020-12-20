@@ -21,6 +21,7 @@ import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import CountryPicker from "react-native-country-picker-modal";
+import DropDownPicker from "react-native-dropdown-picker";
 
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -57,7 +58,7 @@ function findParams(data, param) {
   return "";
 }
 
-async function saveProduct(props, link){
+async function saveProduct(props, link) {
   let product_id = findParams(link, "product_id");
   await AsyncStorage.setItem("product", product_id);
 }
@@ -78,7 +79,7 @@ async function init(props, foreground) {
   if (url) {
     let link = await dynamicLinks().getInitialLink();
     if (link) {
-      await saveProduct(props, link.url)
+      await saveProduct(props, link.url);
     }
     request
       .get(url)
@@ -113,7 +114,7 @@ async function init(props, foreground) {
   } else {
     let link = await dynamicLinks().getInitialLink();
     if (link) {
-      await saveProduct(props, link.url)
+      await saveProduct(props, link.url);
       await performUrl(props, link.url);
     } else {
       if (foreground) {
@@ -127,7 +128,28 @@ export default function LoginScreen(props) {
   const [password, onPasswordChanged] = React.useState("");
   const [phone, onPhoneChanged] = React.useState("");
   const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [flag, onFlagChanged] = React.useState("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
+  const [loaded, onLoaded] = React.useState(false);
+  if (!loaded) {
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        return {
+          label: country.tel_code,
+          value: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
+    onLoaded(true);
+  }
+  // let tmpPrefectures = response.data.map((prefecture) => {
+  //   return {
+  //     label: prefecture.name,
+  //     value: prefecture.url,
+  //   };
+  // });
+  // onPrefecturesChanged(tmpPrefectures);
+  // onPrefectureLoadedChanged(true);
   React.useEffect(() => {
     let unsubscribe;
     init(props, () => {
@@ -143,9 +165,9 @@ export default function LoginScreen(props) {
     };
   }, []);
   function processCountryCode(val) {
-    onCallingCodeChanged(val.callingCode);
-    console.log(callingCode);
-    onFlagChanged(val.flag);
+    let tmpItem = val.split("+");
+    // alert.warning(tmpItem[1]);
+    onCallingCodeChanged(tmpItem[1]);
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -185,7 +207,31 @@ export default function LoginScreen(props) {
               alignItems: "center",
             }}
           >
-            <CountryPicker
+            <DropDownPicker
+              // controller={(instance) => (controller = instance)}
+              style={styles.textInput}
+              items={countryCodeHtml ? countryCodeHtml : []}
+              // defaultValue={countryCodeHtml ? countryCodeHtml : ""}
+              containerStyle={{ height: heightPercentageToDP("5.5%") }}
+              labelStyle={{
+                fontSize: RFValue(10),
+                color: Colors.D7CCA6,
+              }}
+              itemStyle={{
+                justifyContent: "flex-start",
+              }}
+              selectedtLabelStyle={{
+                color: Colors.D7CCA6,
+              }}
+              placeholder={"+"}
+              dropDownStyle={{ backgroundColor: "#000000" }}
+              onChangeItem={(item) => {
+                if (item) {
+                  processCountryCode(item.value);
+                }
+              }}
+            />
+            {/* <CountryPicker
               theme={{
                 fontSize: RFValue(12),
               }}
@@ -204,7 +250,7 @@ export default function LoginScreen(props) {
                 alignSelf: "center",
                 width: widthPercentageToDP("20%"),
               }}
-            />
+            /> */}
             <TextInput
               onChangeText={(text) => onPhoneChanged(text)}
               value={phone}
@@ -237,6 +283,7 @@ export default function LoginScreen(props) {
                     onPasswordChanged("");
                     onPhoneChanged("");
                     response = response.data;
+                    console.log(response);
                     if (response.success) {
                       let user = response.data.user;
                       if (user.payload) {
@@ -409,5 +456,16 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: RFValue(14),
     textAlign: "center",
+  },
+  textInput: {
+    borderWidth: 1,
+    backgroundColor: "white",
+    // borderColor: "black",
+    borderRadius: 0,
+    fontSize: RFValue(10),
+    // height: heightPercentageToDP("5.8%"),
+    // paddingLeft: widthPercentageToDP("2%"),
+    width: widthPercentageToDP("25%"),
+    // marginVertical: heightPercentageToDP("1%"),
   },
 });

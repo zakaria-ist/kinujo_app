@@ -182,13 +182,13 @@ export default function ProductTwoVariations({
         });
 
         product.choices = choices;
-        if(product.choices.length == 0){
+        if (product.choices.length == 0) {
           product.choices.push({
             choiceIndex: 1,
             choiceItem: "",
             janCode: "",
             stock: "",
-          })
+          });
         }
       }
       return product;
@@ -276,7 +276,7 @@ export default function ProductTwoVariations({
     return tmpChoiceHtml;
   }
   function processVariationHtml(items) {
-    onHorizontalNameChanged(items[0].horizontalItem)
+    onHorizontalNameChanged(items[0].horizontalItem);
     let tmpVariationHtml = [];
     items.map((product) => {
       tmpVariationHtml.push(
@@ -368,7 +368,7 @@ export default function ProductTwoVariations({
       let isDelete =
         globalMappingValue[choice1Item][choice.choiceItem]["delete"];
       tmpChoiceDetailsHtml.push(
-        <View style={{}}>
+        <View>
           <View style={styles.subline} />
           <View
             style={{
@@ -587,8 +587,9 @@ const styles = StyleSheet.create({
   },
   colorText: {
     position: "absolute",
-    left: 300,
-    fontSize: RFValue(9),
+    left: 0,
+    marginLeft: widthPercentageToDP("80%"),
+    fontSize: RFValue(12),
     marginTop: heightPercentageToDP("1%"),
   },
   variantInput: {

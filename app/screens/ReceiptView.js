@@ -113,8 +113,9 @@ export default function ReceiptView(props) {
         />
         <View style={styles.receiptEditingContainer}>
           <Text style={{ fontSize: RFValue(16) }}>
-            {Translate.t("invoice")}
-            {lastOrderReceipt.is_copy ? Translate.t("reissue") : ""}
+            {lastOrderReceipt.is_copy
+              ? Translate.t("reissue")
+              : Translate.t("invoice")}
           </Text>
           <View style={styles.invoiceInputContainer}>
             <Text style={{ fontSize: RFValue(24) }}>{issueName}</Text>
@@ -147,7 +148,13 @@ export default function ReceiptView(props) {
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
                 {kanjidate.format(
-                  "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+"",
+                  "{Y:4}" +
+                    Translate.t("年") +
+                    "{M:2}" +
+                    Translate.t("月") +
+                    "{D:2}" +
+                    Translate.t("日") +
+                    "",
                   new Date(order.created)
                 )}
               </Text>
@@ -158,7 +165,13 @@ export default function ReceiptView(props) {
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
                 {kanjidate.format(
-                  "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+"",
+                  "{Y:4}" +
+                    Translate.t("年") +
+                    "{M:2}" +
+                    Translate.t("月") +
+                    "{D:2}" +
+                    Translate.t("日") +
+                    "",
                   new Date(order.created)
                 )}
               </Text>

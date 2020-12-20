@@ -52,6 +52,8 @@ export default function HomeProducts({
   addFavourite,
   removeFavourite,
   productAuthorityID,
+  onSellerNamePress,
+  onProductNamePress,
 }) {
   const isFocused = useIsFocused();
   const [favourite, setFavourite] = React.useState(false);
@@ -93,10 +95,8 @@ export default function HomeProducts({
         // backgroundColor: "orange",
       }}
     >
-      <TouchableWithoutFeedback onPress={onPress}>
-        <View
-          style={idx % 2 == 0 ? styles.products_left : styles.products_right}
-        >
+      <View style={idx % 2 == 0 ? styles.products_left : styles.products_right}>
+        <TouchableWithoutFeedback onPress={onPress}>
           <ImageBackground
             style={styles.product_image}
             source={{
@@ -161,21 +161,26 @@ export default function HomeProducts({
               />
             </TouchableWithoutFeedback>
           </ImageBackground>
-          <Text style={styles.product_office}>{office}</Text>
+        </TouchableWithoutFeedback>
+        <Text style={styles.product_office}>{office}</Text>
+        <TouchableWithoutFeedback onPress={onProductNamePress}>
           <Text style={styles.product_name}>{name}</Text>
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback onPress={onSellerNamePress}>
           <Text style={styles.product_seller}>
             {Translate.t("seller")} : {seller}
           </Text>
-          <Text style={styles.product_price}>
-            {price}
-            {Translate.t("taxNotIncluded")}
-          </Text>
-          <Text numberOfLines={2} style={styles.product_category}>
-            {category}
-          </Text>
-          <Text style={styles.product_shipping}>{shipping}</Text>
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+        <Text style={styles.product_price}>
+          {price}
+          {Translate.t("taxNotIncluded")}
+        </Text>
+        <Text numberOfLines={2} style={styles.product_category}>
+          {category}
+        </Text>
+        <Text style={styles.product_shipping}>{shipping}</Text>
+      </View>
+      {/* </TouchableWithoutFeedback> */}
     </SafeAreaView>
   );
 }

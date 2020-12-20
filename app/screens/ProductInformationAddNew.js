@@ -444,8 +444,10 @@ export default function ProductInformationAddNew(props) {
             }
           });
         } else {
-          let d = new Date()
-          onPublishDateChanged(d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate())
+          let d = new Date();
+          onPublishDateChanged(
+            d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()
+          );
         }
       })
       .catch((error) => {
@@ -501,21 +503,26 @@ export default function ProductInformationAddNew(props) {
             onSpinnerChanged(false);
             props.navigation.goBack();
           } else {
-            if (response.errors && Object.keys(response.errors).length > 0 && Object.keys(response.errors)[0] != "0") {
+            if (
+              response.errors &&
+              Object.keys(response.errors).length > 0 &&
+              Object.keys(response.errors)[0] != "0"
+            ) {
               alert.warning(
                 response.errors[Object.keys(response.errors)[0]][0] +
                   "(" +
                   Object.keys(response.errors)[0] +
-                  ")", ()=>{
-                    onSpinnerChanged(false);
-                  }
+                  ")",
+                () => {
+                  onSpinnerChanged(false);
+                }
               );
             } else if (response.errors.length > 0) {
-              alert.warning(response.errors[0], ()=>{
+              alert.warning(response.errors[0], () => {
                 onSpinnerChanged(false);
               });
             } else if (response.error) {
-              alert.warning(response.error, ()=>{
+              alert.warning(response.error, () => {
                 onSpinnerChanged(false);
               });
             }
@@ -529,7 +536,8 @@ export default function ProductInformationAddNew(props) {
             Object.keys(error.response.data).length > 0
           ) {
             alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0], ()=>{
+              error.response.data[Object.keys(error.response.data)[0]][0],
+              () => {
                 onSpinnerChanged(false);
               }
             );
@@ -841,14 +849,14 @@ export default function ProductInformationAddNew(props) {
                 /> */}
 
                 <DateTimePicker
-                  androidMode={true}
+                  // androidMode={true}
                   style={{
                     marginLeft: widthPercentageToDP("1%"),
                     width: widthPercentageToDP("40%"),
                     // borderColor: "transparent",
                   }}
                   date={publishDate}
-                  display="default"
+                  display="spinner"
                   // onChange
                   onDateChange={(date) => {
                     if (date) {

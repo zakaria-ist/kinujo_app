@@ -8,6 +8,9 @@ import {
   View,
   Dimensions,
   Image,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -43,8 +46,9 @@ export default function SMSAuthentication(props) {
 
   async function signInWithPhoneNumber(phoneNumber) {
     // console.log(phoneNumber);
-    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+    const confirmation = await auth().verifyPhoneNumber(phoneNumber);
 
+    console.log(confirmation)
     setConfirm(confirmation);
   }
 
@@ -66,163 +70,163 @@ export default function SMSAuthentication(props) {
       end={[1, 0.6]}
       style={{ flex: 1 }}
     >
-      <SafeAreaView style={{ flex: 1 }}>
-        <Image
-          style={{
-            width: win.width / 1.6,
-            height: 44 * ratioKinujo,
-            alignSelf: "center",
-            marginTop: heightPercentageToDP("6%"),
-          }}
-          source={require("../assets/Images/kinujo.png")}
-        />
-        <Text style={styles.SMS認証}>{Translate.t("smsVerification")}</Text>
-        <Text
-          style={{
-            color: "white",
-            fontSize: RFValue(12),
-            alignSelf: "center",
-            marginTop: heightPercentageToDP("3%"),
-            textAlign: "center",
-          }}
-        >
-          {i18n.locale == "ja"
-            ? phone + Translate.t("sentVerificationCode")
-            : Translate.t("sentVerificationCode") + phone}
-        </Text>
-        <TextInput
-          style={styles.verificationCode}
-          placeholder={Translate.t("enterVerificationCode")}
-          placeholderTextColor="white"
-          onChangeText={(text) => onCodeChanged(text)}
-          value={code}
-        ></TextInput>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            if (!code) return;
-            if (!confirm) return;
-            if (!props.route.params.type) {
-              confirm
-                .confirm(code)
-                .then(() => {
-                  auth()
-                    .signOut()
-                    .then(() => {
-                      request
-                        .post("user/register", props.route.params)
-                        .then(function (response) {
-                          console.log(response);
-                          response = response.data;
-                          if (response.success) {
-                            AsyncStorage.setItem(
-                              "user",
-                              response.data.user.url
-                            ).then(function (response) {
-                              if (props.route.params.authority == "general") {
-                                props.navigation.navigate(
-                                  "RegisterCompletion",
-                                  {
-                                    authority: props.route.params.authority,
-                                  }
-                                );
-                              } else if (
-                                props.route.params.authority == "store"
-                              ) {
-                                props.navigation.navigate(
-                                  "StoreAccountSelection",
-                                  {
-                                    authority: props.route.params.authority,
-                                  }
-                                );
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView style={{ flex: 1 }}>
+          <Image
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("6%"),
+            }}
+            source={require("../assets/Images/kinujo.png")}
+          />
+          <Text style={styles.SMS認証}>{Translate.t("smsVerification")}</Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: RFValue(12),
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("3%"),
+              textAlign: "center",
+            }}
+          >
+            {i18n.locale == "ja"
+              ? phone + Translate.t("sentVerificationCode")
+              : Translate.t("sentVerificationCode") + phone}
+          </Text>
+          <TextInput
+            style={styles.verificationCode}
+            placeholder={Translate.t("enterVerificationCode")}
+            placeholderTextColor="white"
+            onChangeText={(text) => onCodeChanged(text)}
+            value={code}
+          ></TextInput>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if (!code) return;
+              if (!confirm) return;
+              if (!props.route.params.type) {
+                const credential = auth.PhoneAuthProvider.credential(
+                  confirm.verificationId,
+                  code,
+                );
+                let userData = auth().currentUser.signInWithCredential(credential).then(()=>{
+                  request
+                    .post("user/register", props.route.params)
+                    .then(function (response) {
+                      console.log(response);
+                      response = response.data;
+                      if (response.success) {
+                        AsyncStorage.setItem(
+                          "user",
+                          response.data.user.url
+                        ).then(function (response) {
+                          if (props.route.params.authority == "general") {
+                            props.navigation.navigate(
+                              "RegisterCompletion",
+                              {
+                                authority: props.route.params.authority,
                               }
-                            });
-                          } else {
-                            if (
-                              response.errors &&
-                              Object.keys(response.errors).length > 0
-                            ) {
-                              alert.warning(
-                                response.errors[
-                                  Object.keys(response.errors)[0]
-                                ][0] +
-                                  "(" +
-                                  Object.keys(response.errors)[0] +
-                                  ")"
-                              );
-                            }
-                          }
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                          if (
-                            error &&
-                            error.response &&
-                            error.response.data &&
-                            Object.keys(error.response.data).length > 0
+                            );
+                          } else if (
+                            props.route.params.authority == "store"
                           ) {
-                            alert.warning(
-                              error.response.data[
-                                Object.keys(error.response.data)[0]
-                              ][0] +
-                                "(" +
-                                Object.keys(error.response.data)[0] +
-                                ")"
+                            props.navigation.navigate(
+                              "StoreAccountSelection",
+                              {
+                                authority: props.route.params.authority,
+                              }
                             );
                           }
                         });
+                      } else {
+                        if (
+                          response.errors &&
+                          Object.keys(response.errors).length > 0
+                        ) {
+                          alert.warning(
+                            response.errors[
+                              Object.keys(response.errors)[0]
+                            ][0] +
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")"
+                          );
+                        }
+                      }
                     })
-                    .catch(function (error) {
-                      // An error happened.
+                    .catch((error) => {
                       console.log(error);
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0] +
+                            "(" +
+                            Object.keys(error.response.data)[0] +
+                            ")"
+                        );
+                      }
                     });
-                })
-                .catch((error) => {
+                }).catch((error)=>{
                   alert.warning(error.code);
-                  // alert.warning("Invalid code");
-                });
-            } else {
-              confirm
-                .confirm(code)
-                .then(() => {
+                })
+              } else {
+
+                const credential = auth.PhoneAuthProvider.credential(
+                  confirm.verificationId,
+                  code,
+                );
+                let userData = auth().signInWithCredential(credential).then(()=>{
                   AsyncStorage.setItem("verified", "1").then(() => {
                     props.navigation.goBack();
                   });
+                }).catch((error)=>{
+                  alert.warning(error.code, function(){
+                    AsyncStorage.setItem("verified", "0").then(() => {
+                      props.navigation.goBack();
+                    });
+                  })
                 })
-                .catch((error) => {
-                  console.log(error);
-                  AsyncStorage.setItem("verified", "0").then(() => {
-                    props.navigation.goBack();
-                  });
-                });
-            }
-          }}
-        >
-          <View
-            style={
-              code
-                ? styles.smsAuthenticateButton
-                : styles.smsDisabledAuthenticateButton
-            }
+              }
+            }}
           >
-            <Text style={styles.smsAuthenticateButtonText}>
-              {Translate.t("authenticate")}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            AsyncStorage.setItem("verified", "0").then(() => {
-              props.navigation.pop();
-            });
-          }}
-        >
-          <View style={styles.smsCancelButton}>
-            <Text style={styles.smsAuthenticateButtonText}>
-              {Translate.t("cancel")}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </SafeAreaView>
+            <View
+              style={
+                code
+                  ? styles.smsAuthenticateButton
+                  : styles.smsDisabledAuthenticateButton
+              }
+            >
+              <Text style={styles.smsAuthenticateButtonText}>
+                {Translate.t("authenticate")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              AsyncStorage.setItem("verified", "0").then(() => {
+                props.navigation.pop();
+              });
+            }}
+          >
+            <View style={styles.smsCancelButton}>
+              <Text style={styles.smsAuthenticateButtonText}>
+                {Translate.t("cancel")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }

@@ -246,7 +246,6 @@ export default function SalesManagement(props) {
     let tmpDate = new Date();
     if (date) {
       onDateChange(date);
-      console.log(date);
       tmpDate = date;
       onPlaceHolderDate(
         tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
@@ -259,7 +258,7 @@ export default function SalesManagement(props) {
         ].split("-");
         let year = periods[0];
         let month = periods[1];
-        return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+        return year == tmpDate.getFullYear() && month == (tmpDate.getMonth() + 1);
       }
     );
     onCommissionsChanged(tmpCommissionProducts);
@@ -272,8 +271,10 @@ export default function SalesManagement(props) {
     });
     onTotalCommissionChanged(commissionTotal);
     let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-      // console.log(saleProduct.order_product);
-      let periods = saleProduct.created.split("-");
+      let periods = saleProduct["order"][
+        "created"
+      ].split("-");
+      console.log(periods)
       let year = periods[0];
       let month = periods[1];
       return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;

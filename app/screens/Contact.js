@@ -44,7 +44,7 @@ let globalFolders = [];
 let globalUsers = [];
 let globalGroups = [];
 let contactPinned = {};
-
+let selectedUserId
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -158,6 +158,12 @@ export default function Contact(props) {
   }
 
   async function processUserHtml(props, users) {
+    if(selectedUserId){
+      users = users.filter((user) => {
+        return user.id == selectedUserId
+      })
+    }
+
     setFriendCount(users.length);
     let tmpUserHtml = [];
     for (let i = 0; i < users.length; i++) {
@@ -225,6 +231,12 @@ export default function Contact(props) {
   }
   function processGroupHtml(props, groups, userId) {
     let tmpGroupHtml = [];
+    if(selectedUserId){
+      groups = groups.filter((group) => {
+        return group.users.includes(selectedUserId)
+      })
+    }
+
     groups = groups.filter((group) => {
       return !group.data["delete_" + userId] && !group.data["hide_" + userId];
     });
@@ -271,6 +283,14 @@ export default function Contact(props) {
     return tmpGroupHtml;
   }
   function processFolderHtml(props, folders) {
+    if(selectedUserId){
+      folders = folders.filter((folder) => {
+        if(folder.users){
+          return folder.users.includes(selectedUserId)
+        }
+        return false;
+      })
+    }
     folders = folders.filter((folder) => {
       return !folder.data["delete"] && !folder.data["hide"];
     });
@@ -500,14 +520,12 @@ export default function Contact(props) {
   }
 
   React.useEffect(() => {
+    selectedUserId = props.route.params ? props.route.params.user_id : ""
     populateFolder();
-  }, [isFocused]);
-  React.useEffect(() => {
     populateGroup();
-  }, [isFocused]);
-  React.useEffect(() => {
     onShowFriendsChanged(true);
     populateUser();
+    props.navigation.setParams({user_id: ""})
   }, [isFocused]);
 
   return (

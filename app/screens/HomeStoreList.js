@@ -24,6 +24,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import FastImage from "react-native-fast-image";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
+import { useIsFocused } from "@react-navigation/native";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 import {
   widthPercentageToDP,
@@ -83,6 +84,7 @@ export default function HomeStoreList(props) {
     .current;
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
+  const isFocused = useIsFocused();
 
   async function share(productId) {
     let url = await AsyncStorage.getItem("user");
@@ -196,6 +198,7 @@ export default function HomeStoreList(props) {
   }
 
   React.useEffect(() => {
+
     for (var i = 1; i < 10; i++) {
       if (
         cartItems.filter((item) => {
@@ -225,6 +228,22 @@ export default function HomeStoreList(props) {
             .get(props.route.params.url)
             .then(function (response) {
               onProductChanged(response.data);
+              
+              db.collection("products")
+              .doc(String(response.data.id))
+              .get()
+              .then(function (doc) {
+                if (doc.exists) {
+                  db.collection("products").doc(String(response.data.id)).update({
+                    "view" : firebase.firestore.FieldValue.increment(1)
+                  })
+                } else {
+                  db.collection("products").doc(String(response.data.id)).set({
+                    "view" : 1
+                  })
+                }
+              });
+              
               db.collection("users")
                 .doc(userId)
                 .collection("favourite")
@@ -390,7 +409,7 @@ export default function HomeStoreList(props) {
           }
         });
     });
-  }, []);
+  }, [isFocused]);
   const { width } = Dimensions.get("window");
   const { height } = Dimensions.get("window");
   const [favoriteText, showFavoriteText] = React.useState(false);
