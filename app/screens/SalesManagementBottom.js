@@ -272,8 +272,9 @@ export default function SalesManagement(props) {
     });
     onTotalCommissionChanged(commissionTotal);
     let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-      // console.log(saleProduct.order_product);
-      let periods = saleProduct.created.split("-");
+      let periods = saleProduct["order"][
+        "created"
+      ].split("-");
       let year = periods[0];
       let month = periods[1];
       return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;

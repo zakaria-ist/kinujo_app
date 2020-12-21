@@ -78,41 +78,49 @@ export default function BankAccountRegistration(props) {
             }
           });
       }
-      
+
       request
-      .get("financial-account/" + userId + "/")
-      .then(function (response) {
-        console.log(response.data.financialAccount)
-        setUrl(response.data.financialAccount.url);
-        onFinancialAccountChanged(response.data.financialAccount);
-        onBranckCodeChanged(response.data.financialAccount.branch_code);
-        onBankCodeChanged(response.data.financialAccount.financial_code);
-        onFinancialNameChanged(
-          String(response.data.financialAccount.financial_name)
-        );
-        onBranchNameChanged(String(response.data.financialAccount.branch_name));
-        onAccountTypeChanged(response.data.financialAccount.account_type ? response.data.financialAccount.account_type : "1");
-        console.log(response.data.financialAccount.account_number)
-        onAccountNumberChanged(
-          String(response.data.financialAccount.account_number)
-        );
-        onAccountHolderChanged(String(response.data.financialAccount.account_name));
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
+        .get("financial-account/" + userId + "/")
+        .then(function (response) {
+          console.log(response.data.financialAccount);
+          setUrl(response.data.financialAccount.url);
+          onFinancialAccountChanged(response.data.financialAccount);
+          onBranckCodeChanged(response.data.financialAccount.branch_code);
+          onBankCodeChanged(response.data.financialAccount.financial_code);
+          onFinancialNameChanged(
+            String(response.data.financialAccount.financial_name)
           );
-        }
-      });
+          onBranchNameChanged(
+            String(response.data.financialAccount.branch_name)
+          );
+          onAccountTypeChanged(
+            response.data.financialAccount.account_type
+              ? response.data.financialAccount.account_type
+              : "1"
+          );
+          console.log(response.data.financialAccount.account_number);
+          onAccountNumberChanged(
+            String(response.data.financialAccount.account_number)
+          );
+          onAccountHolderChanged(
+            String(response.data.financialAccount.account_name)
+          );
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
     });
   }, [isFocused]);
 
@@ -149,6 +157,8 @@ export default function BankAccountRegistration(props) {
                 onBankCodeChanged(text);
                 if (zenginCode[text]) {
                   onFinancialNameChanged(zenginCode[text]["name"]);
+                } else {
+                  onFinancialNameChanged("");
                 }
               }}
               value={bankCode}
@@ -173,6 +183,8 @@ export default function BankAccountRegistration(props) {
                     onBranchNameChanged(
                       zenginCode[bankCode]["branches"][text]["name"]
                     );
+                  } else {
+                    onBranchNameChanged("");
                   }
                 }
               }}
@@ -204,9 +216,7 @@ export default function BankAccountRegistration(props) {
                   value: "3",
                 },
               ]}
-              defaultValue={
-                String(accountType) ? String(accountType) : "1"
-              }
+              defaultValue={String(accountType) ? String(accountType) : "1"}
               containerStyle={{ height: heightPercentageToDP("8%") }}
               labelStyle={{
                 fontSize: RFValue(11),
@@ -267,34 +277,35 @@ export default function BankAccountRegistration(props) {
                         return url;
                       });
 
-                      if(financialUrl){
-                        console.log(financialUrl)
-                        request.patch(financialUrl, {
-                          financial_name: financialName,
-                          account_type: accountType,
-                          branch_code: branchCode,
-                          branch_name: branchName,
-                          account_number: accountNumber,
-                          account_name: accountHolder,
-                          financial_code: bankCode,
-                        })
-                        .then(function (response) {
-                          console.log(response)
-                          onAccountHolderChanged("");
-                          onAccountNumberChanged("");
-                          onBranchNameChanged("");
-                          onFinancialNameChanged("");
-                          onAccountTypeChanged("");
-                          props.navigation.goBack();
-                        })
-                        .catch(function (error) {
-                          alert.warning(
-                            error.response.data[
-                              Object.keys(error.response.data)[0]
-                            ][0]
-                          );
-                          onLoaded(true);
-                        });
+                      if (financialUrl) {
+                        console.log(financialUrl);
+                        request
+                          .patch(financialUrl, {
+                            financial_name: financialName,
+                            account_type: accountType,
+                            branch_code: branchCode,
+                            branch_name: branchName,
+                            account_number: accountNumber,
+                            account_name: accountHolder,
+                            financial_code: bankCode,
+                          })
+                          .then(function (response) {
+                            console.log(response);
+                            onAccountHolderChanged("");
+                            onAccountNumberChanged("");
+                            onBranchNameChanged("");
+                            onFinancialNameChanged("");
+                            onAccountTypeChanged("");
+                            props.navigation.goBack();
+                          })
+                          .catch(function (error) {
+                            alert.warning(
+                              error.response.data[
+                                Object.keys(error.response.data)[0]
+                              ][0]
+                            );
+                            onLoaded(true);
+                          });
                       } else {
                         // request
                         // .post("financial_account/", {

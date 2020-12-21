@@ -47,6 +47,7 @@ export default function ChatContact({
   props,
   showCheckBox,
   image,
+  longPress
 }) {
   const [contactImage, setContactImage] = React.useState("");
   function redirectToChat(contactID, contactName) {
@@ -139,6 +140,13 @@ export default function ChatContact({
   }, [contactID]);
   return (
     <TouchableWithoutFeedback
+      onLongPress={
+        ()=>{
+          if(longPress){
+            longPress();
+          }
+        }
+      }
       onPress={() => redirectToChat(contactID, contactName)}
     >
       <SafeAreaView style={{ marginTop: heightPercentageToDP("1%") }}>

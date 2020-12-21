@@ -10,7 +10,7 @@ import {
   Image,
   ScrollView,
 } from "react-native";
-
+import DropDownPicker from "react-native-dropdown-picker";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -45,6 +45,20 @@ export default function PasswordReset(props) {
   const [timer, setTimer] = React.useState(30);
   const [showResend, onResendShow] = React.useState(false);
   const [resend, triggerResend] = React.useState(false);
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
+  const [loaded, onLoaded] = React.useState(false);
+  if (!loaded) {
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        return {
+          label: country.tel_code,
+          value: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
+    onLoaded(true);
+  }
   React.useEffect(() => {
     if (triggerTimer == true && timer > 0) {
       setTimeout(() => setTimer(timer - 1), 1000);
@@ -55,13 +69,14 @@ export default function PasswordReset(props) {
   });
 
   async function signInWithPhoneNumber(phoneNumber) {
-    const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
-    console.log(confirmation);
+    const confirmation = await auth().verifyPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
+
   function processCountryCode(val) {
-    onCallingCodeChanged(val.callingCode);
-    onFlagChanged(val.flag);
+    let tmpItem = val.split("+");
+    // alert.warning(tmpItem[1]);
+    onCallingCodeChanged(tmpItem[1]);
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -88,24 +103,28 @@ export default function PasswordReset(props) {
                 marginTop: heightPercentageToDP("2%"),
               }}
             >
-              <CountryPicker
-                theme={{
-                  fontSize: RFValue(12),
+              <DropDownPicker
+                // controller={(instance) => (controller = instance)}
+                style={styles.textInput}
+                items={countryCodeHtml ? countryCodeHtml : []}
+                // defaultValue={countryCodeHtml ? countryCodeHtml : ""}
+                containerStyle={{ height: heightPercentageToDP("5.5%") }}
+                labelStyle={{
+                  fontSize: RFValue(10),
+                  color: Colors.D7CCA6,
                 }}
-                withCallingCode
-                withFilter
-                withFlag
-                placeholder={callingCode ? " + " + callingCode : "+"}
-                onSelect={(val) => processCountryCode(val)}
-                containerButtonStyle={{
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: "black",
-                  paddingVertical: heightPercentageToDP("1%"),
-                  alignItems: "flex-start",
-                  paddingLeft: widthPercentageToDP("3%"),
-                  alignSelf: "center",
-                  width: widthPercentageToDP("20%"),
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: Colors.D7CCA6,
+                }}
+                placeholder={"+"}
+                dropDownStyle={{ backgroundColor: "#000000" }}
+                onChangeItem={(item) => {
+                  if (item) {
+                    processCountryCode(item.value);
+                  }
                 }}
               />
               <TextInput
@@ -123,11 +142,11 @@ export default function PasswordReset(props) {
               if (phone != "") {
                 onVerficaitonButtonClicked(true);
                 console.log(callingCode + phone);
-                signInWithPhoneNumber("+" + callingCode + phone).then(()=>{
-
-                }).catch((error)=>{
-                  alert.warning(error.code);
-                })
+                signInWithPhoneNumber("+" + callingCode + phone)
+                  .then(() => {})
+                  .catch((error) => {
+                    alert.warning(error.code);
+                  });
                 onTriggerTimer(true);
               } else {
                 alert.warning(Translate.t("fieldNotFilled"));
@@ -223,66 +242,62 @@ export default function PasswordReset(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 if (confirm) {
-                  confirm
-                    .confirm(code)
-                    .then(() => {
-                      auth()
-                        .signOut()
-                        .then(() => {
-                          if (password && confirm_password) {
-                            if (password == confirm_password) {
-                              request
-                                .post("password/reset", {
-                                  tel: phone,
-                                  password: password,
-                                  confirm_password: confirm_password,
-                                })
-                                .then(function (response) {
-                                  response = response.data;
 
-                                  if (response.success) {
-                                    onCodeChanged("");
-                                    onConfirmPasswordChanged("");
-                                    onPasswordChanged("");
-                                    onPhoneChanged("");
-                                    props.navigation.navigate(
-                                      "PasswordResetCompletion"
-                                    );
-                                  } else {
-                                    alert.warning(response.error);
-                                  }
-                                })
-                                .catch(function (error) {
-                                  if (
-                                    error &&
-                                    error.response &&
-                                    error.response.data &&
-                                    Object.keys(error.response.data).length > 0
-                                  ) {
-                                    alert.warning(
-                                      error.response.data[
-                                        Object.keys(error.response.data)[0]
-                                      ][0] +
-                                        "(" +
-                                        Object.keys(error.response.data)[0] +
-                                        ")"
-                                    );
-                                  }
-                                });
+                  const credential = auth.PhoneAuthProvider.credential(
+                    confirm.verificationId,
+                    code,
+                  );
+                  let userData = auth().currentUser.signInWithCredential(credential).then(()=>{
+                    if (password && confirm_password) {
+                      if (password == confirm_password) {
+                        request
+                          .post("password/reset", {
+                            tel: phone,
+                            password: password,
+                            confirm_password: confirm_password,
+                          })
+                          .then(function (response) {
+                            response = response.data;
+                            if (response.success) {
+                              alert.warning(Translate.t("pass_reset_success"), function(){
+                                onCodeChanged("");
+                                onConfirmPasswordChanged("");
+                                onPasswordChanged("");
+                                onPhoneChanged("");
+                                props.navigation.navigate(
+                                  "PasswordResetCompletion"
+                                );
+                              })
                             } else {
-                              alert.warning("Password and confirm password mismatch.");
+                              alert.warning(response.error);
                             }
-                          } else {
-                            alert.warning("Please fill in the password and confirm password");
-                          }
-                        })
-                        .catch((error) => {
-                          alert.warning("Invalid code");
-                        });
-                    })
-                    .catch((error) => {
-                      alert.warning("Invalid code");
-                    });
+                          })
+                          .catch(function (error) {
+                            if (
+                              error &&
+                              error.response &&
+                              error.response.data &&
+                              Object.keys(error.response.data).length > 0
+                            ) {
+                              alert.warning(
+                                error.response.data[
+                                  Object.keys(error.response.data)[0]
+                                ][0] +
+                                  "(" +
+                                  Object.keys(error.response.data)[0] +
+                                  ")"
+                              );
+                            }
+                          });
+                      } else {
+                        alert.warning("Password and confirm password mismatch.");
+                      }
+                    } else {
+                      alert.warning("Please fill in the password and confirm password");
+                    }
+                  }).catch((error)=>{
+                    alert.warning(error.code);
+                  })
                 }
               }}
             >
@@ -350,5 +365,16 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: RFValue(12),
     textAlign: "center",
+  },
+  textInput: {
+    borderWidth: 1,
+    backgroundColor: "transparent",
+    // borderColor: "black",
+    borderRadius: 0,
+    fontSize: RFValue(10),
+    // height: heightPercentageToDP("5.8%"),
+    // paddingLeft: widthPercentageToDP("2%"),
+    width: widthPercentageToDP("25%"),
+    // marginVertical: heightPercentageToDP("1%"),
   },
 });

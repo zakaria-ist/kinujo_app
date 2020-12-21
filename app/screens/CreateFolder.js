@@ -61,7 +61,7 @@ export default function CreateFolder(props) {
         if (friendIds != null) {
           memberCount = friendIds.length;
         } else {
-          friendIds = []
+          friendIds = [];
         }
 
         request
@@ -75,7 +75,10 @@ export default function CreateFolder(props) {
 
               friendNames.push(user.nickname);
               tmpUserHtml2.push(
-                <TouchableWithoutFeedback key={String(user.id)} userId={user.id}>
+                <TouchableWithoutFeedback
+                  key={String(user.id)}
+                  userId={user.id}
+                >
                   <View style={styles.memberTabsContainer}>
                     {user && user.image && user.image.image ? (
                       <Image
@@ -173,9 +176,9 @@ export default function CreateFolder(props) {
     }
   }
   function addMemberHandler() {
-    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(()=>{
+    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(() => {
       props.navigation.navigate("FolderMemberSelection");
-    })
+    });
   }
   return (
     <SafeAreaView>
@@ -193,6 +196,7 @@ export default function CreateFolder(props) {
             fontSize: RFValue(14),
             right: widthPercentageToDP("4%"),
             alignSelf: "flex-end",
+            // backgroundColor: "orange",
             // position: "absolute",
             marginTop: heightPercentageToDP("3%"),
             // marginRight: widthPercentageToDP("8%"),

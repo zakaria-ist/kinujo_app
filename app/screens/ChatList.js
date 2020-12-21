@@ -93,9 +93,13 @@ async function getDetail(ownId, data) {
     .get();
 
   firebaseName = "";
+  let isBlock = false;
+  let isHide = false
   snapShot.forEach((docRef) => {
     if (docRef.data().displayName && docRef.id == JSON.parse(users)) {
       firebaseName = docRef.data().displayName;
+      isBlock = docRef.data().blockMode ? true : false
+      isHide = docRef.data().secretMode ? true : false
     }
   });
 
@@ -107,6 +111,8 @@ async function getDetail(ownId, data) {
     return {
       name: firebaseName ? firebaseName : djangoName,
       image: user.image ? user.image.image : "",
+      block: isBlock,
+      hide: isHide
     };
   }
   return {
@@ -156,7 +162,7 @@ export default function ChatList(props) {
     let unreadMessage = 0;
 
     tmpChats = tmpChats.filter((chat) => {
-      return !chat["delete_" + ownUserID] && !chat["hide_" + ownUserID];
+      return !chat.data["delete_" + ownUserID] && !chat.data["hide_" + ownUserID] && !chat['hide'];
     });
     tmpChats.map((chat) => {
       if (
@@ -229,7 +235,7 @@ export default function ChatList(props) {
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+                <Text style={styles.tabText}>{chat.secret ? "" :chat.data.lastMessage}</Text>
               </View>
               <View style={styles.tabRightContainer}>
                 {tmpDay == today ? (
@@ -289,7 +295,7 @@ export default function ChatList(props) {
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+                <Text style={styles.tabText}>{chat.secret ? "" : chat.data.lastMessage}</Text>
               </View>
               <View style={styles.tabRightContainer}>
                 {tmpDay == today - 1 ? (
@@ -348,7 +354,7 @@ export default function ChatList(props) {
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.data.lastMessage}</Text>
+                <Text style={styles.tabText}>{chat.secret ? "" :chat.data.lastMessage}</Text>
               </View>
               <View style={styles.tabRightContainer}>
                 <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
@@ -436,6 +442,8 @@ export default function ChatList(props) {
                   data: snapShot.data(),
                   name: detail.name,
                   image: detail.image,
+                  block: detail.block,
+                  hide: detail.hide
                 });
                 processChat(chats, ownUserID);
               });

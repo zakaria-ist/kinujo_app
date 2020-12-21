@@ -24,6 +24,7 @@ import QRCode from "../Screens/QRCode";
 import SettingGeneral from "../Screens/SettingGeneral";
 import SettingStore from "../Screens/SettingStore";
 import Setting from "../Screens/Setting";
+import SellerProductList from "../Screens/SellerProductList";
 import ProfileEditingGeneral from "../Screens/ProfileEditingGeneral";
 import ProfileEditingStore from "../Screens/ProfileEditingStore";
 import ExhibitedProductList from "../Screens/ExhibitedProductList";
@@ -61,6 +62,7 @@ import ContactShare from "../Screens/ContactShare";
 import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
 import ChatContact from "../Screens/ChatContact";
 import FavoriteChat from "../Screens/FavoriteChat";
+import ProductList from "../Screens/ProductList";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
@@ -155,6 +157,15 @@ function BottomNavigationGeneral(props) {
           }}
         />
         <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SellerProductList"
+          component={SellerProductList}
+        />
+        <Tab.Screen
           name="ShippingList"
           component={ShippingList}
           options={{
@@ -162,6 +173,15 @@ function BottomNavigationGeneral(props) {
               <CustomTabButton show={false} {...props} />
             ),
           }}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductList"
+          component={ProductList}
         />
         <Tab.Screen
           options={{
@@ -575,6 +595,15 @@ function BottomNavigationGeneral(props) {
           component={HomeStoreList}
         />
         <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SellerProductList"
+          component={SellerProductList}
+        />
+        <Tab.Screen
           name="Chat"
           component={ChatList}
           options={{
@@ -592,7 +621,15 @@ function BottomNavigationGeneral(props) {
           name="GroupChatCreation"
           component={GroupChatCreation}
         />
-
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductList"
+          component={ProductList}
+        />
         <Tab.Screen
           name="QRCode"
           component={QRCode}
@@ -1056,6 +1093,7 @@ function BottomNavigationStore(props) {
             tabBarIcon: () => <PersonLogo width={25} height={25} />,
           }}
         />
+
         <Tab.Screen
           name="Chat"
           component={ChatList}
@@ -1195,6 +1233,24 @@ function BottomNavigationStore(props) {
           }}
           name="BankAccountRegistration"
           component={BankAccountRegistration}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SellerProductList"
+          component={SellerProductList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductList"
+          component={ProductList}
         />
         <Tab.Screen
           options={{
@@ -1569,6 +1625,24 @@ function BottomNavigationStore(props) {
           }}
           name="HomeStoreList"
           component={HomeStoreList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="SellerProductList"
+          component={SellerProductList}
+        />
+        <Tab.Screen
+          options={{
+            tabBarButton: (props) => (
+              <CustomTabButton show={false} {...props} />
+            ),
+          }}
+          name="ProductList"
+          component={ProductList}
         />
         <Tab.Screen
           name="ShippingList"

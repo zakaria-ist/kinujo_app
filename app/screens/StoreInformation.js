@@ -6,7 +6,7 @@ import {
   View,
   Dimensions,
   TextInput,
-  SafeAreaView
+  SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -24,26 +24,38 @@ import CustomAlert from "../lib/alert";
 const request = new Request();
 const alert = new CustomAlert();
 
-
-function updateUser(user, field, value){
-  if(!value) return;
+function updateUser(user, field, value) {
+  if (!value) return;
   let obj = {};
   obj[field] = value;
   request
-  .patch(user.url, obj)
-  .then(function (response) {})
-  .catch(function (error) {
-    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
-    }
-  });
+    .patch(user.url, obj)
+    .then(function (response) {})
+    .catch(function (error) {
+      if (
+        error &&
+        error.response &&
+        error.response.data &&
+        Object.keys(error.response.data).length > 0
+      ) {
+        alert.warning(
+          error.response.data[Object.keys(error.response.data)[0]][0] +
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
+        );
+      }
+    });
 }
 
 export default function StoreInformation(props) {
   const [password, onPasswordChanged] = React.useState("XXXXXXXXXXX STORE");
   const [editPassword, onEditPasswordChanged] = React.useState(false);
   const [editCorporateName, onEditCorporateNameChanged] = React.useState(false);
-  const [editRepresentativeName, onEditRepresentativeNameChanged] = React.useState(false);
+  const [
+    editRepresentativeName,
+    onEditRepresentativeNameChanged,
+  ] = React.useState(false);
   const [editPostalCode, onEditPostalCodeChanged] = React.useState(false);
   const [editPrefecture, onEditPrefectureChanged] = React.useState(false);
   const [editAddress1, onEditAddress1Changed] = React.useState(false);
@@ -62,16 +74,26 @@ export default function StoreInformation(props) {
         .get(url)
         .then(function (response) {
           onUserChanged(response.data);
-          onCorporateNameChanged(response.data.corporate_name)
-          onRepresentativeNameChanged(response.data.representative_name)
-          onPostalCodeChanged(response.data.zipcode)
-          onPrefectureChanged(response.data.prefecture_id)
-          onAddress1Changed(response.data.address1)
-          onAddress2Changed(response.data.address2)
+          onCorporateNameChanged(response.data.corporate_name);
+          onRepresentativeNameChanged(response.data.representative_name);
+          onPostalCodeChanged(response.data.zipcode);
+          onPrefectureChanged(response.data.prefecture_id);
+          onAddress1Changed(response.data.address1);
+          onAddress2Changed(response.data.address2);
         })
         .catch(function (error) {
-          if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
-            alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
     });
@@ -107,6 +129,7 @@ export default function StoreInformation(props) {
                 alignItems: "center",
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
+                // paddingBottom: heightPercentageToDP("2%"),
               }}
             >
               <Icon
@@ -118,8 +141,8 @@ export default function StoreInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditCorporateNameChanged(false)
-                  updateUser(user, 'corporate_name', corporateName)
+                  onEditCorporateNameChanged(false);
+                  updateUser(user, "corporate_name", corporateName);
                 }}
               />
               <TextInput
@@ -137,6 +160,7 @@ export default function StoreInformation(props) {
                 alignItems: "center",
                 justifyContent: "flex-start",
                 marginRight: widthPercentageToDP("-3%"),
+                // paddingBottom: heightPercentageToDP("2%"),
               }}
             >
               <Icon
@@ -177,8 +201,8 @@ export default function StoreInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditRepresentativeNameChanged(false)
-                  updateUser(user, 'representative_name', representativeName)
+                  onEditRepresentativeNameChanged(false);
+                  updateUser(user, "representative_name", representativeName);
                 }}
               />
               <TextInput
@@ -208,7 +232,9 @@ export default function StoreInformation(props) {
                 reverseColor="black"
                 onPress={() => onEditRepresentativeNameChanged(true)}
               />
-              <Text style={{ fontSize: RFValue(12) }}>{representativeName}</Text>
+              <Text style={{ fontSize: RFValue(12) }}>
+                {representativeName}
+              </Text>
             </View>
           )}
         </View>
@@ -236,8 +262,8 @@ export default function StoreInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditPostalCodeChanged(false)
-                  updateUser(user, 'zipcode', postalCode)
+                  onEditPostalCodeChanged(false);
+                  updateUser(user, "zipcode", postalCode);
                 }}
               />
               <TextInput
@@ -295,8 +321,8 @@ export default function StoreInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditPrefectureChanged(false)
-                  updateUser(user, 'prefecture_id', prefecture)
+                  onEditPrefectureChanged(false);
+                  updateUser(user, "prefecture_id", prefecture);
                 }}
               />
               <TextInput
@@ -354,8 +380,8 @@ export default function StoreInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditAddress1Changed(false)
-                  updateUser(user, 'address1', address1)
+                  onEditAddress1Changed(false);
+                  updateUser(user, "address1", address1);
                 }}
               />
               <TextInput
@@ -413,8 +439,8 @@ export default function StoreInformation(props) {
                 color="transparent"
                 reverseColor="black"
                 onPress={() => {
-                  onEditAddress2Changed(false)
-                  updateUser(user, 'address2', address2)
+                  onEditAddress2Changed(false);
+                  updateUser(user, "address2", address2);
                 }}
               />
               <TextInput
@@ -460,7 +486,8 @@ const styles = StyleSheet.create({
     marginHorizontal: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
-    paddingBottom: heightPercentageToDP("2%"),
+    paddingVertical: heightPercentageToDP("2%"),
+    // backgroundColor: "orange",
   },
   productInformationTitle: {
     fontSize: RFValue(12),
@@ -471,11 +498,11 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
   },
   textInput: {
-    fontSize: RFValue(8),
+    fontSize: RFValue(11),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("4%"),
+    height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("50%"),
-    borderRadius: 7
+    borderRadius: 7,
   },
 });
