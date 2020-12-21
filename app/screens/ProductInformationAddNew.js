@@ -714,50 +714,44 @@ export default function ProductInformationAddNew(props) {
               />
 
               <Text style={styles.text}>{Translate.t("variation")}</Text>
-              <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
-                  style={{ alignItems: "flex-start" }}
-                  onValueChange={(variant) => {
-                    if (!props.route.params.url) {
-                      onValueChanged(variant);
-                    }
-                  }}
-                  value={productVariation}
-                >
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="one"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {"1 "}
-                      {Translate.t("item")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="two"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {"2 "}
-                      {Translate.t("item")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="none"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("none")}
-                    </Text>
-                  </View>
-                </RadioButton.Group>
-              </View>
+              <RadioButton.Group
+                style={{ backgroundColor: "green", flex: 1 }}
+                onValueChange={(variant) => {
+                  if (!props.route.params.url) {
+                    onValueChanged(variant);
+                  }
+                }}
+                value={productVariation}
+              >
+                <View style={styles.radioGroupContainer}>
+                  <RadioButton.Android
+                    value="one"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {"1 "}
+                    {Translate.t("item")}
+                  </Text>
+                  <RadioButton.Android
+                    value="two"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {"2 "}
+                    {Translate.t("item")}
+                  </Text>
+                  <RadioButton.Android
+                    value="none"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("none")}
+                  </Text>
+                </View>
+              </RadioButton.Group>
 
               <View style={styles.line} />
 
@@ -793,11 +787,11 @@ export default function ProductInformationAddNew(props) {
               </View>
 
               <Text style={styles.text}>{Translate.t("publishState")}</Text>
-              <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
-                  onValueChange={(newValue) => onPublishStateChanged(newValue)}
-                  value={publishState}
-                >
+              <RadioButton.Group
+                onValueChange={(newValue) => onPublishStateChanged(newValue)}
+                value={publishState}
+              >
+                <View style={styles.radioGroupContainer}>
                   <RadioButton.Android
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -814,8 +808,8 @@ export default function ProductInformationAddNew(props) {
                   <Text style={styles.radioButtonText}>
                     {Translate.t("nonPublished")}
                   </Text>
-                </RadioButton.Group>
-              </View>
+                </View>
+              </RadioButton.Group>
               <View style={styles.releaseDateContainer}>
                 <Text style={styles.radioButtonText}>
                   {Translate.t("publishedDate")} :
@@ -875,11 +869,11 @@ export default function ProductInformationAddNew(props) {
                 {Translate.t("publishWarning")}
               </Text>
               <Text style={styles.text}>{Translate.t("productStatus")}</Text>
-              <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
-                  onValueChange={(newValue) => onProductStatusChanged(newValue)}
-                  value={productStatus}
-                >
+              <RadioButton.Group
+                onValueChange={(newValue) => onProductStatusChanged(newValue)}
+                value={productStatus}
+              >
+                <View style={styles.radioGroupContainer}>
                   <RadioButton.Android
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -896,14 +890,14 @@ export default function ProductInformationAddNew(props) {
                   <Text style={styles.radioButtonText}>
                     {Translate.t("secondHand")}
                   </Text>
-                </RadioButton.Group>
-              </View>
+                </View>
+              </RadioButton.Group>
               <Text style={styles.text}>{Translate.t("targetUser")}</Text>
-              <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
-                  onValueChange={(newValue) => onTargetUserChanged(newValue)}
-                  value={targetUser}
-                >
+              <RadioButton.Group
+                onValueChange={(newValue) => onTargetUserChanged(newValue)}
+                value={targetUser}
+              >
+                <View style={styles.radioGroupContainer}>
                   <RadioButton.Android
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -928,8 +922,8 @@ export default function ProductInformationAddNew(props) {
                   <Text style={styles.radioButtonText}>
                     {Translate.t("storeUser")}
                   </Text>
-                </RadioButton.Group>
-              </View>
+                </View>
+              </RadioButton.Group>
               <Text style={styles.releaseDateWarningText}>
                 {Translate.t("notVisibleToUser")}
               </Text>
