@@ -29,7 +29,7 @@ import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import AsyncStorage from "@react-native-community/async-storage";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
-
+import { Alert } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import { RNCamera } from "react-native-camera";
 import ImagePicker from "react-native-image-picker";
@@ -120,10 +120,20 @@ export default function QRCode(props) {
   const onSuccess = (e) => {
     const code = findParams(e.data, "kinujoId");
     if (code) {
-      alert.warning(userId.toString());
+      // alert.warning(userId.toString());
 
       request.addFriend(userId, code).then(() => {
-        alert.warning(Translate.t("friendAdded"));
+        Alert.alert(
+          Translate.t("information"),
+          Translate.t("friendAdded"),
+          [
+            {
+              text: "OK",
+              onPress: () => {},
+            },
+          ],
+          { cancelable: false }
+        );
       });
     } else {
       alert.warning(Translate.t("invalidQRcode"));
@@ -236,7 +246,17 @@ export default function QRCode(props) {
                         const code = findParams(values[0], "kinujoId");
                         if (code) {
                           request.addFriend(userId, code).then(() => {
-                            alert.warning(Translate.t("friendAdded"));
+                            Alert.alert(
+                              Translate.t("information"),
+                              Translate.t("friendAdded"),
+                              [
+                                {
+                                  text: "OK",
+                                  onPress: () => {},
+                                },
+                              ],
+                              { cancelable: false }
+                            );
                           });
                         } else {
                           alert.warning(Translate.t("invalidQRcode"));
@@ -402,7 +422,11 @@ export default function QRCode(props) {
             >
               <View style={[styles.qr_image]}>
                 <QRCodeIcon
-                  size={widthPercentageToDP(60) > 500 ? 500 : widthPercentageToDP(60)}
+                  size={
+                    widthPercentageToDP(60) > 500
+                      ? 500
+                      : widthPercentageToDP(60)
+                  }
                   value={
                     store
                       ? storeLink
@@ -525,6 +549,6 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP(60),
     height: height / 2,
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
   },
 });

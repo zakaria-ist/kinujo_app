@@ -212,9 +212,7 @@ export default function SellerProductList(props) {
         });
 
         featuredProducts = products.filter((product) => {
-          if (product.user.shop_name == shopName) {
-            return product.user.authority.id != 1;
-          }
+          return product.user.shop_name == sellerName;
         });
         onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
       });
@@ -288,10 +286,7 @@ export default function SellerProductList(props) {
         });
 
         featuredProducts = products.filter((product) => {
-          return (
-            product.user.authority.id != 1 &&
-            product.user.shop_name == sellerName
-          );
+          return product.user.shop_name == sellerName;
         });
         onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
       })
@@ -357,6 +352,7 @@ export default function SellerProductList(props) {
           onPress={() => {
             props.navigation.navigate("Cart");
           }}
+          onBack={() => props.navigation.goBack()}
         />
 
         <CustomSecondaryHeader

@@ -28,6 +28,7 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioKinujo = win.width / 1.6 / 151;
+import SearchableDropdown from "react-native-searchable-dropdown";
 import BlackBackArrow from "../assets/CustomComponents/CustomBlackBackArrow";
 import { call } from "react-native-reanimated";
 export default function PasswordReset(props) {
@@ -51,8 +52,8 @@ export default function PasswordReset(props) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
         return {
-          label: country.tel_code,
-          value: country.tel_code,
+          id: country.tel_code,
+          name: country.tel_code,
         };
       });
       onCountryCodeHtmlChanged(tmpCountry);
@@ -80,7 +81,7 @@ export default function PasswordReset(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
         <View>
           <BlackBackArrow onPress={() => props.navigation.goBack()} />
           <Image
@@ -103,7 +104,37 @@ export default function PasswordReset(props) {
                 marginTop: heightPercentageToDP("2%"),
               }}
             >
-              <DropDownPicker
+              <SearchableDropdown
+                onItemSelect={(item) => {
+                  processCountryCode(item.id);
+                }}
+                containerStyle={{ padding: 5 }}
+                itemStyle={{
+                  padding: 10,
+                  marginTop: 2,
+                  borderColor: "#bbb",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                }}
+                itemTextStyle={{ color: "black" }}
+                itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
+                items={countryCodeHtml ? countryCodeHtml : []}
+                textInputProps={{
+                  placeholder: "+",
+                  style: {
+                    borderWidth: 1,
+                    // backgroundColor: "white",
+                    borderRadius: 5,
+                    fontSize: RFValue(10),
+                    width: widthPercentageToDP("23%"),
+                    paddingLeft: widthPercentageToDP("3%"),
+                  },
+                }}
+                listProps={{
+                  nestedScrollEnabled: true,
+                }}
+              />
+              {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
                 items={countryCodeHtml ? countryCodeHtml : []}
@@ -126,7 +157,7 @@ export default function PasswordReset(props) {
                     processCountryCode(item.value);
                   }
                 }}
-              />
+              /> */}
               <TextInput
                 style={styles.registeredPhoneNumber}
                 placeholder={Translate.t("phoneNumberForPasswordReset")}
@@ -242,62 +273,71 @@ export default function PasswordReset(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 if (confirm) {
-
                   const credential = auth.PhoneAuthProvider.credential(
                     confirm.verificationId,
-                    code,
+                    code
                   );
-                  let userData = auth().currentUser.signInWithCredential(credential).then(()=>{
-                    if (password && confirm_password) {
-                      if (password == confirm_password) {
-                        request
-                          .post("password/reset", {
-                            tel: phone,
-                            password: password,
-                            confirm_password: confirm_password,
-                          })
-                          .then(function (response) {
-                            response = response.data;
-                            if (response.success) {
-                              alert.warning(Translate.t("pass_reset_success"), function(){
-                                onCodeChanged("");
-                                onConfirmPasswordChanged("");
-                                onPasswordChanged("");
-                                onPhoneChanged("");
-                                props.navigation.navigate(
-                                  "PasswordResetCompletion"
+                  let userData = auth()
+                    .currentUser.signInWithCredential(credential)
+                    .then(() => {
+                      if (password && confirm_password) {
+                        if (password == confirm_password) {
+                          request
+                            .post("password/reset", {
+                              tel: phone,
+                              password: password,
+                              confirm_password: confirm_password,
+                            })
+                            .then(function (response) {
+                              response = response.data;
+                              if (response.success) {
+                                alert.warning(
+                                  Translate.t("pass_reset_success"),
+                                  function () {
+                                    onCodeChanged("");
+                                    onConfirmPasswordChanged("");
+                                    onPasswordChanged("");
+                                    onPhoneChanged("");
+                                    props.navigation.navigate(
+                                      "PasswordResetCompletion"
+                                    );
+                                  }
                                 );
-                              })
-                            } else {
-                              alert.warning(response.error);
-                            }
-                          })
-                          .catch(function (error) {
-                            if (
-                              error &&
-                              error.response &&
-                              error.response.data &&
-                              Object.keys(error.response.data).length > 0
-                            ) {
-                              alert.warning(
-                                error.response.data[
-                                  Object.keys(error.response.data)[0]
-                                ][0] +
-                                  "(" +
-                                  Object.keys(error.response.data)[0] +
-                                  ")"
-                              );
-                            }
-                          });
+                              } else {
+                                alert.warning(response.error);
+                              }
+                            })
+                            .catch(function (error) {
+                              if (
+                                error &&
+                                error.response &&
+                                error.response.data &&
+                                Object.keys(error.response.data).length > 0
+                              ) {
+                                alert.warning(
+                                  error.response.data[
+                                    Object.keys(error.response.data)[0]
+                                  ][0] +
+                                    "(" +
+                                    Object.keys(error.response.data)[0] +
+                                    ")"
+                                );
+                              }
+                            });
+                        } else {
+                          alert.warning(
+                            "Password and confirm password mismatch."
+                          );
+                        }
                       } else {
-                        alert.warning("Password and confirm password mismatch.");
+                        alert.warning(
+                          "Please fill in the password and confirm password"
+                        );
                       }
-                    } else {
-                      alert.warning("Please fill in the password and confirm password");
-                    }
-                  }).catch((error)=>{
-                    alert.warning(error.code);
-                  })
+                    })
+                    .catch((error) => {
+                      alert.warning(error.code);
+                    });
                 }
               }}
             >

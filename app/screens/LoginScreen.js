@@ -22,7 +22,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import CountryPicker from "react-native-country-picker-modal";
 import DropDownPicker from "react-native-dropdown-picker";
-
+import SearchableDropdown from "react-native-searchable-dropdown";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -133,9 +133,10 @@ export default function LoginScreen(props) {
   if (!loaded) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
+        // console.log(country);
         return {
-          label: country.tel_code,
-          value: country.tel_code,
+          id: country.tel_code,
+          name: country.tel_code,
         };
       });
       onCountryCodeHtmlChanged(tmpCountry);
@@ -171,7 +172,10 @@ export default function LoginScreen(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1, backgroundColor: Colors.white }}>
+      <ScrollView
+        keyboardShouldPersistTaps="always"
+        style={{ flex: 1, backgroundColor: Colors.white }}
+      >
         <ImageBackground
           style={styles.backgroundImageContainer}
           source={require("../assets/Images/LoginPageLogo.png")}
@@ -207,7 +211,42 @@ export default function LoginScreen(props) {
               alignItems: "center",
             }}
           >
-            <DropDownPicker
+            <SearchableDropdown
+              onItemSelect={(item) => {
+                processCountryCode(item.id);
+              }}
+              containerStyle={{
+                padding: 5,
+                // elevation: 10,
+                // backgroundColor: "orange",
+                // borderBottomWidth: 1,
+              }}
+              itemStyle={{
+                padding: 10,
+                marginTop: 2,
+                borderColor: "#bbb",
+                borderWidth: 1,
+                borderRadius: 5,
+              }}
+              itemTextStyle={{ color: "black" }}
+              itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
+              items={countryCodeHtml ? countryCodeHtml : []}
+              textInputProps={{
+                placeholder: "+",
+                style: {
+                  borderWidth: 1,
+                  backgroundColor: "white",
+                  borderRadius: 5,
+                  fontSize: RFValue(10),
+                  width: widthPercentageToDP("23%"),
+                  paddingLeft: widthPercentageToDP("3%"),
+                },
+              }}
+              listProps={{
+                nestedScrollEnabled: true,
+              }}
+            />
+            {/* <DropDownPicker
               // controller={(instance) => (controller = instance)}
               style={styles.textInput}
               items={countryCodeHtml ? countryCodeHtml : []}
@@ -230,7 +269,7 @@ export default function LoginScreen(props) {
                   processCountryCode(item.value);
                 }
               }}
-            />
+            /> */}
             {/* <CountryPicker
               theme={{
                 fontSize: RFValue(12),
@@ -395,6 +434,7 @@ export default function LoginScreen(props) {
               // props.navigation.navigate("AdvanceSetting");
               // props.navigation.navigate("ProductInformationAddNew");
               props.navigation.navigate("TermsOfCondition");
+              // props.navigation.navigate("QRCode");
             }}
           >
             <View style={styles.registerButton}>

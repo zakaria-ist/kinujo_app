@@ -214,16 +214,16 @@ export default function ContactShare(props) {
           />
         </View>
 
-        <View>
-          <View
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.F0EEE9,
-              justifyContent: "center",
-            }}
-          >
-            {userHtml}
-          </View>
+        <View
+          style={{
+            borderBottomWidth: 1,
+            borderBottomColor: Colors.F0EEE9,
+            justifyContent: "center",
+            // backgroundColor: "orange",
+            marginBottom: heightPercentageToDP("30%"),
+          }}
+        >
+          {userHtml}
         </View>
       </ScrollView>
     </SafeAreaView>

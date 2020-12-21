@@ -126,7 +126,9 @@ export default function Cart(props) {
               marginLeft: widthPercentageToDP("4%"),
             }}
           >
-            <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
+            <Text style={{ fontSize: RFValue(12) }}>
+              {Translate.t("destination")}
+            </Text>
             <TouchableWithoutFeedback
               onPress={() =>
                 props.navigation.navigate("ShippingList", {
@@ -136,7 +138,7 @@ export default function Cart(props) {
             >
               <View style={styles.buttonContainer}>
                 <Text style={{ fontSize: RFValue(11), color: "white" }}>
-                  Change
+                  {Translate.t("change")}
                 </Text>
               </View>
             </TouchableWithoutFeedback>
@@ -286,11 +288,14 @@ export default function Cart(props) {
                         .doc(userId.toString())
                         .collection("carts")
                         .doc(item.id.toString())
-                        .set({
-                          quantity: ci.value
-                        }, {
-                          merge: true
-                        });
+                        .set(
+                          {
+                            quantity: ci.value,
+                          },
+                          {
+                            merge: true,
+                          }
+                        );
                       onValueChanged(item.id, ci.value, is_store);
                     }
                   }}
@@ -325,8 +330,8 @@ export default function Cart(props) {
                             onPress: () => {
                               firebaseProducts = firebaseProducts.filter(
                                 (firebaseProduct) => {
-                                  console.log(firebaseProduct)
-                                  console.log(item)
+                                  console.log(firebaseProduct);
+                                  console.log(item);
                                   return firebaseProduct.id != item.id;
                                 }
                               );
@@ -477,7 +482,9 @@ export default function Cart(props) {
                         marginLeft: widthPercentageToDP("4%"),
                       }}
                     >
-                      <Text style={{ fontSize: RFValue(12) }}>Destination</Text>
+                      <Text style={{ fontSize: RFValue(12) }}>
+                        {Translate.t("destination")}
+                      </Text>
                       <TouchableWithoutFeedback
                         onPress={() =>
                           props.navigation.navigate("ShippingList", {
@@ -489,7 +496,7 @@ export default function Cart(props) {
                           <Text
                             style={{ fontSize: RFValue(11), color: "white" }}
                           >
-                            Change
+                            {Translate.t("change")}
                           </Text>
                         </View>
                       </TouchableWithoutFeedback>
@@ -736,7 +743,7 @@ export default function Cart(props) {
                       marginLeft: widthPercentageToDP("3%"),
                     }}
                   >
-                    Delivery address
+                    {Translate.t("deliveryAddressCart")}
                   </Text>
 
                   {/* <UpArrowLogo

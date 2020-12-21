@@ -1196,16 +1196,21 @@ export default function ProductInformationAddNew(props) {
             </View>
             <TouchableWithoutFeedback
               onPress={() => {
-                request
-                  .patch(props.route.params.url, {
-                    is_hidden: 1,
-                  })
-                  .then((response) => {
-                    props.navigation.navigate("SettingStore");
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
+                // alert.warning("Z");
+                if (props.route.params.url) {
+                  request
+                    .patch(props.route.params.url, {
+                      is_hidden: 1,
+                    })
+                    .then((response) => {
+                      props.navigation.navigate("SettingStore");
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+                } else {
+                  props.navigation.navigate("SettingStore");
+                }
               }}
             >
               <View

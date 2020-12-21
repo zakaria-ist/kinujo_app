@@ -144,6 +144,7 @@
   "issueDate": "Issue Date",
   "seller": "Seller",
   "deliveryAddress": "Delivery Address",
+  "deliveryAddressCart":"Delivery address / payment method",
   "paymentMethod": "Payment Method",
   "partOfTheCardNumber": "Part of the Card Number",
   "invoiceWarningText": "It can only be issued once. From the second time onward, \"Reissue\" will be printed",
@@ -216,7 +217,7 @@
   "qrDescription": "You can use functions such as adding friends.",
   "generalUserInvite": "General user invitation",
   "storeAccInvite": "Store Account invitation",
-  "friendAdded": "Friend have been added",
+  "friendAdded": "Friend has been added",
   "invalidQRcode": "Invalid QR Code",
   "breakdown": "Breakdown",
   "salesManagement": "Sales Management",
@@ -316,5 +317,6 @@
   "土曜": "Sat",
   "年": "-",
   "月": "-",
-  "日": ""
+  "日": "",
+  "destination":"Destination"
 }
