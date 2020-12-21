@@ -47,6 +47,7 @@ export default function CustomerList(props) {
     }
     for (var i = 0; i < tmpCustomers.length; i++) {
       let customer = tmpCustomers[i];
+      console.log(customer.image);
       tmpCustomerHtml.push(
         <TouchableWithoutFeedback
           key={i}
@@ -57,8 +58,7 @@ export default function CustomerList(props) {
           }}
         >
           <View style={styles.customerListTableftContainer}>
-            {console.log(user.image.image)}
-            {user && user.image.image != null ? (
+            {customer && customer.image != null ? (
               <Image
                 style={{
                   width: RFValue(40),
@@ -66,13 +66,14 @@ export default function CustomerList(props) {
                   borderRadius: win.width / 2,
                   backgroundColor: Colors.DCDCDC,
                 }}
-                source={{ uri: user.image.image }}
+                source={{ uri: customer.image }}
               />
             ) : (
               <Person
                 style={{
                   width: RFValue(40),
                   height: RFValue(40),
+                  borderRadius: win.width / 2,
                 }}
               />
             )}

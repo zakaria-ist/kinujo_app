@@ -30,6 +30,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import ImagePicker from "react-native-image-picker";
 import { Icon } from "react-native-elements";
+import { Keyboard } from "react-native";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -56,7 +57,6 @@ function promptUpdate(props, user, field, value) {
     });
   });
 }
-
 export default function ProfileEditingGeneral(props) {
   const [password, onPasswordChanged] = React.useState("********");
   const [word, setWord] = React.useState("");
@@ -71,6 +71,7 @@ export default function ProfileEditingGeneral(props) {
   const [editNickName, onEditNickNameChanged] = React.useState(false);
   const [show, onShowChanged] = React.useState(false);
   const [addingFriendsByID, onAddingFriendsByIDChanged] = React.useState(false);
+  const inputRef = React.createRef();
   const [
     allowAddingFriendsByPhoneNumber,
     onAllowAddingFriendsByPhoneNumber,
@@ -235,7 +236,7 @@ export default function ProfileEditingGeneral(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
         {show == true ? (
           <Modal
             visible={true}
@@ -315,12 +316,16 @@ export default function ProfileEditingGeneral(props) {
                 }}
               >
                 <TextInput
-                  autoFocus={true}
+                  // ref={(ref) => {
+                  //   this.inputRef = ref;
+                  // }}
                   placeholder="入力してください"
+                  showSoftInputOnFocus={true}
                   placeholderTextColor="white"
                   maxLength={255}
                   multiline={true}
                   autoFocus={true}
+                  // onFocus={inputRef.current.focus()}
                   style={{
                     textAlign: "center",
                     width: "100%",

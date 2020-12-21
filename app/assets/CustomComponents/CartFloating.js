@@ -35,7 +35,7 @@ export default function CustomBlackBackArrow({ onPress, icon }) {
           backgroundColor: "#FFF",
           position: "absolute",
           // bottom: heightPercentageToDP("10%"),
-          bottom: insets.bottom + insets.top + 100,
+          bottom: insets.bottom + insets.top + 135,
           right: 20,
           shadowColor: "#000",
           shadowOffset: {

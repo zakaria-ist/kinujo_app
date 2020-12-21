@@ -128,7 +128,8 @@ export default function GroupFolderCreateCompletion(props) {
   if (!loaded) {
     console.log("" + friendIds.length);
     let tmpUserListHtml = [];
-    for (var i = 0; i < friendIds.length - 1; i++) {
+    for (var i = 0; i < friendIds.length; i++) {
+      // console.log(i);
       tmpUserListHtml.push(
         <View
           key={friendIds[i]}
@@ -231,7 +232,7 @@ export default function GroupFolderCreateCompletion(props) {
               }}
             >
               <Text style={styles.text}>{Translate.t("member")} - </Text>
-              <Text style={styles.text}>( {friendIds.length - 1} )</Text>
+              <Text style={styles.text}>( {friendIds.length} )</Text>
             </View>
           </View>
         </View>

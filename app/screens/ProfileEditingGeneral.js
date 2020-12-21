@@ -308,11 +308,12 @@ export default function ProfileEditingGeneral(props) {
               >
                 <TextInput
                   autoFocus={true}
+                  showSoftInputOnFocus={true}
+                  focusable={true}
                   placeholder="入力してください"
                   placeholderTextColor="white"
                   maxLength={255}
                   multiline={true}
-                  autoFocus={true}
                   style={{
                     textAlign: "center",
                     width: "100%",

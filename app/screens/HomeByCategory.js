@@ -36,6 +36,8 @@ import Format from "../lib/format";
 import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
+import { keys } from "lodash";
+import { cos } from "react-native-reanimated";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -53,7 +55,7 @@ let filteredKinujoProducts;
 let filteredFeaturedProducts;
 let categoryDetails;
 let sellers = [];
-
+let productsView = {};
 export default function HomeByCategory(props) {
   const [favoriteText, showFavoriteText] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
@@ -67,6 +69,8 @@ export default function HomeByCategory(props) {
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
+  const [productID, onProductIDChanged] = React.useState([]);
+  const [productView, onProductView] = React.useState(0);
   const [officialProductCount, onOfficialProductCount] = React.useState(0);
   const [featuredProductCount, onFeaturedProductCount] = React.useState(0);
   const [sellCount, setSellerCount] = React.useState(0);
@@ -155,7 +159,8 @@ export default function HomeByCategory(props) {
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
-          name={product.name}
+          // name={product.name}
+          name={product.id}
           seller={product.user.shop_name}
           price={
             (user.is_seller
@@ -177,6 +182,16 @@ export default function HomeByCategory(props) {
     });
     setSellerCount(sellers.length);
     return tmpKinujoHtml;
+  }
+  async function getDetails(productID, products) {
+    let snapShot = await db.collection("products").doc(String(productID)).get();
+    if (snapShot.data() && snapShot.data().view && snapShot.id == productID) {
+      products.view = snapShot.data().view;
+    } else {
+      products.view = 0;
+    }
+    // console.log(products);
+    return products;
   }
   function filterProductsBySorting(type) {
     let tmpKinujoProducts = filteredKinujoProducts;
@@ -247,6 +262,21 @@ export default function HomeByCategory(props) {
       });
       onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
       onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
+    }
+    if (type == "Popular") {
+      onSelected("Popular");
+      tmpKinujoProducts = tmpKinujoProducts.map((product) => {
+        console.log(product);
+        getDetails(product.id, tmpKinujoProducts).then((view) => {
+          // console.log(view.view);
+          // console.log(view);
+          view.sort((a, b) => {
+            // console.log(a);
+          });
+          // onKinujoHtmlChanged(processKinujoProductHtml(tmpView));
+        });
+      });
+      // onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
     }
     if (type == "reset") {
       onSelected("");
@@ -351,6 +381,9 @@ export default function HomeByCategory(props) {
       .get("products/")
       .then(function (response) {
         let products = response.data;
+        products.push({
+          view: 0,
+        });
         products = products.sort((p1, p2) => {
           if (p1.created > p2.created) {
             return -1;
@@ -649,6 +682,21 @@ export default function HomeByCategory(props) {
               <Text>Price High to Low</Text>
             </View>
           </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("Popular")}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+                backgroundColor: selected == "Popular" ? "orange" : "white",
+              }}
+            >
+              <Text>Popular</Text>
+            </View>
+          </TouchableWithoutFeedback>
           <View
             style={{
               flexDirection: "row",
@@ -656,7 +704,7 @@ export default function HomeByCategory(props) {
               justifyContent: "space-evenly",
               // bottom: heightPercentageToDP("8%"),
               // marginTop: heightPercentageToDP("10%"),
-              bottom: 0,
+              bottom: heightPercentageToDP("3%"),
               right: 0,
               marginTop: heightPercentageToDP("60%"),
               // right: widthPercentageToDP("3%"),
@@ -839,7 +887,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    // marginBottom: heightPercentageToDP("25%"),
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

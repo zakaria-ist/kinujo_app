@@ -8,6 +8,7 @@ import {
   View,
   TouchableWithoutFeedback,
   Dimensions,
+  ScrollView,
 } from "react-native";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -22,9 +23,9 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
-import { ScrollView } from "react-native-gesture-handler";
 import CountryPicker from "react-native-country-picker-modal";
 import DropDownPicker from "react-native-dropdown-picker";
+import SearchableDropdown from "react-native-searchable-dropdown";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -44,8 +45,8 @@ export default function RegistrationStore(props) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
         return {
-          label: country.tel_code,
-          value: country.tel_code,
+          id: country.tel_code,
+          name: country.tel_code,
         };
       });
       onCountryCodeHtmlChanged(tmpCountry);
@@ -65,7 +66,7 @@ export default function RegistrationStore(props) {
         end={[1, 0.6]}
         style={{ flex: 1 }}
       >
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
           <WhiteBackArrow onPress={() => props.navigation.goBack()} />
           <View
             style={{
@@ -141,7 +142,37 @@ export default function RegistrationStore(props) {
                 alignItems: "center",
               }}
             >
-              <DropDownPicker
+              <SearchableDropdown
+                onItemSelect={(item) => {
+                  processCountryCode(item.id);
+                }}
+                containerStyle={{ padding: 5 }}
+                itemStyle={{
+                  padding: 10,
+                  marginTop: 2,
+                  borderColor: "#bbb",
+                  borderWidth: 1,
+                  borderRadius: 5,
+                }}
+                itemTextStyle={{ color: "black" }}
+                itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
+                items={countryCodeHtml ? countryCodeHtml : []}
+                textInputProps={{
+                  placeholder: "+",
+                  style: {
+                    borderWidth: 1,
+                    // backgroundColor: "white",
+                    borderRadius: 5,
+                    fontSize: RFValue(10),
+                    width: widthPercentageToDP("23%"),
+                    paddingLeft: widthPercentageToDP("3%"),
+                  },
+                }}
+                listProps={{
+                  nestedScrollEnabled: true,
+                }}
+              />
+              {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
                 items={countryCodeHtml ? countryCodeHtml : []}
@@ -164,7 +195,7 @@ export default function RegistrationStore(props) {
                     processCountryCode(item.value);
                   }
                 }}
-              />
+              /> */}
               <TextInput
                 style={styles.携帯電話番号}
                 placeholderTextColor={Colors.white}

@@ -77,12 +77,6 @@ export default function Payment(props) {
 
               if (card && card.valid) {
                 onSpinnerChanged(true);
-                console.log({
-                  card: card.values,
-                  products: props.route.params.products,
-                  address: props.route.params.address,
-                  tax: props.route.params.tax,
-                });
                 request
                   .post("pay/" + userId + "/", {
                     card: card.values,
@@ -91,7 +85,6 @@ export default function Payment(props) {
                     tax: props.route.params.tax,
                   })
                   .then(function (response) {
-                    console.log(response)
                     onSpinnerChanged(false);
                     response = response.data;
                     if (response.success) {

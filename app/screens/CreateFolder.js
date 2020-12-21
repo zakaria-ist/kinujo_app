@@ -91,15 +91,6 @@ export default function CreateFolder(props) {
                         source={{ uri: user.image.image }}
                       />
                     ) : (
-                      // <Image
-                      //   style={{
-                      //     width: RFValue(38),
-                      //     height: RFValue(38),
-                      //     borderRadius: win.width / 2,
-                      //     // backgroundColor: Colors.DCDCDC,
-                      //   }}
-                      //   source={require("../assets/Images/profileEditingIcon.png")}
-                      // />
                       <Person
                         style={{
                           width: RFValue(38),
@@ -246,7 +237,11 @@ export default function CreateFolder(props) {
                 style={{
                   width: RFValue(38),
                   height: RFValue(38),
-                  borderRadius: win.width / 2,
+                  borderRadius:
+                    Math.round(
+                      Dimensions.get("window").width +
+                        Dimensions.get("window").height
+                    ) / 2,
                   backgroundColor: Colors.E6DADE,
                 }}
                 // source={require("../assets/Images/addMemberIcon.png")}

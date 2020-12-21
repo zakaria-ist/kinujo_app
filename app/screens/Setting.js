@@ -26,7 +26,8 @@ import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
 var pkg = require("../../../kinujo_app/package.json");
-
+// var test = require("../../android/app/build.gradle");
+// console.log(test);
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
