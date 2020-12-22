@@ -326,7 +326,7 @@ export default function Cart(props) {
                         Translate.t("deleteItem"),
                         [
                           {
-                            text: "YES",
+                            text: Translate.t("dialogYes"),
                             onPress: () => {
                               firebaseProducts = firebaseProducts.filter(
                                 (firebaseProduct) => {
@@ -348,7 +348,7 @@ export default function Cart(props) {
                             },
                           },
                           {
-                            text: "NO",
+                            text: Translate.t("dialogNo"),
                             onPress: () => {},
                           },
                         ],

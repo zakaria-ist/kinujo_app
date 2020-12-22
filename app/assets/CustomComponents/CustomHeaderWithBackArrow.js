@@ -26,6 +26,8 @@ import { firebaseConfig } from "../../../firebaseConfig.js";
 import { Colors } from "../Colors";
 import KinujoWord from "../icons/kinujo.svg";
 import BackArrow from "../icons/arrow_back.svg";
+import CustomAlert from "../../lib/alert";
+const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -64,9 +66,10 @@ export default function CustomKinujoWord({
           .get()
           .then((querySnapShot) => {
             onCartChanged(0);
-            onCartCount(querySnapShot.docs.length);
             onCartChanged(querySnapShot.docs.length);
-            console.log(overrideCartCount);
+            if (onCartCount) {
+              onCartCount(querySnapShot.docs.length);
+            }
           });
       });
     });

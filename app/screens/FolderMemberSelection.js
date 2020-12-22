@@ -113,15 +113,17 @@ export default function FolderMemberSelection(props) {
             });
 
             tmpFriendIds.map((id) => {
-              if(items.filter((item) => {
-                return item.id == id;
-              }).length == 0){
+              if (
+                items.filter((item) => {
+                  return item.id == id;
+                }).length == 0
+              ) {
                 items.push({
                   id: id,
                   checkStatus: true,
                 });
               }
-            })
+            });
 
             tmpFriend = items;
 
@@ -158,9 +160,7 @@ export default function FolderMemberSelection(props) {
           });
         onLoaded(true);
 
-        tmpFriendIds.map((id) => {
-
-        })
+        tmpFriendIds.map((id) => {});
       });
     });
   }, [isFocused]);
@@ -178,11 +178,11 @@ export default function FolderMemberSelection(props) {
       return friend;
     });
 
-    if(!found){
+    if (!found) {
       tmpFriend.push({
-        "id" : friendID,
-        "checkStatus" : true
-      })
+        id: friendID,
+        checkStatus: true,
+      });
       console.log(tmpFriend);
     }
     onUpdate(ids, tmpFriend);
@@ -218,7 +218,9 @@ export default function FolderMemberSelection(props) {
   function processUserHtml(props, users, friendMaps) {
     let tmpUserHtml = [];
     users.map((user) => {
+      console.log("###" + userId);
       let item = friendMaps.filter((tmp) => {
+        console.log("$$$" + tmp.id);
         return tmp.id == user.id && tmp.id != userId;
       });
       if (item.length > 0) {
@@ -289,15 +291,15 @@ export default function FolderMemberSelection(props) {
   }
   function finishSelect() {
     let selectedId = [];
-    console.log(tmpFriend)
+    console.log(tmpFriend);
     tmpFriend.map((friend) => {
       if (friend.checkStatus == true) {
         selectedId.push(String(friend.id));
       }
     });
-    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(()=>{
+    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(() => {
       props.navigation.goBack();
-    })
+    });
   }
   return (
     <SafeAreaView>
@@ -544,7 +546,16 @@ export default function FolderMemberSelection(props) {
             )}
           </View>
         </TouchableWithoutFeedback>
-        <ScrollView>{userHtml}</ScrollView>
+        <ScrollView
+          style={{
+            height: "100%",
+          }}
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
+          <View style={{ marginBottom: heightPercentageToDP("50%") }}>
+            {userHtml}
+          </View>
+        </ScrollView>
         {/* <Animated.View
           style={{
             marginTop: heightPercentageToDP(".5%"),

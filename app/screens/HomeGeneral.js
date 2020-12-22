@@ -148,21 +148,25 @@ export default function Home(props) {
           onProductNamePress={() => {
             let janCodes = [];
             product.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map((productVarietySelection) => {
-                productVarietySelection.jancode_horizontal.map((horizontal) => {
-                  console.log(horizontal)
-                  if(horizontal.jan_code){
-                    janCodes.push(horizontal.jan_code);
-                  }
-                })
-                productVarietySelection.jancode_vertical.map((vertical) => {
-                  console.log(vertical)
-                  if(vertical.jan_code){
-                    janCodes.push(vertical.jan_code);
-                  }
-                })
-              })
-            })
+              productVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map(
+                    (horizontal) => {
+                      console.log(horizontal);
+                      if (horizontal.jan_code) {
+                        janCodes.push(horizontal.jan_code);
+                      }
+                    }
+                  );
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    console.log(vertical);
+                    if (vertical.jan_code) {
+                      janCodes.push(vertical.jan_code);
+                    }
+                  });
+                }
+              );
+            });
             props.navigation.navigate("ProductList", {
               janCodes: janCodes,
               productName: product.name,
@@ -191,7 +195,10 @@ export default function Home(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                format.separator(product.shipping_fee) +
+                "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -229,21 +236,25 @@ export default function Home(props) {
           onProductNamePress={() => {
             let janCodes = [];
             product.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map((productVarietySelection) => {
-                productVarietySelection.jancode_horizontal.map((horizontal) => {
-                  console.log(horizontal)
-                  if(horizontal.jan_code){
-                    janCodes.push(horizontal.jan_code);
-                  }
-                })
-                productVarietySelection.jancode_vertical.map((vertical) => {
-                  console.log(vertical)
-                  if(vertical.jan_code){
-                    janCodes.push(vertical.jan_code);
-                  }
-                })
-              })
-            })
+              productVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map(
+                    (horizontal) => {
+                      console.log(horizontal);
+                      if (horizontal.jan_code) {
+                        janCodes.push(horizontal.jan_code);
+                      }
+                    }
+                  );
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    console.log(vertical);
+                    if (vertical.jan_code) {
+                      janCodes.push(vertical.jan_code);
+                    }
+                  });
+                }
+              );
+            });
             props.navigation.navigate("ProductList", {
               janCodes: janCodes,
               productName: product.name,
@@ -267,7 +278,10 @@ export default function Home(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                +format.separator(product.shipping_fee) +
+                "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -419,7 +433,7 @@ export default function Home(props) {
     <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
       <SafeAreaView>
         <CustomHeader
-          text="Home"
+          text={Translate.t("home")}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => {
             props.navigation.navigate("Cart");

@@ -130,7 +130,10 @@ export default function SellerProductList(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                +format.separator(product.shipping_fee) +
+                "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);

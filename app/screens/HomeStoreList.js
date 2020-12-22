@@ -198,7 +198,6 @@ export default function HomeStoreList(props) {
   }
 
   React.useEffect(() => {
-
     for (var i = 1; i < 10; i++) {
       if (
         cartItems.filter((item) => {
@@ -228,22 +227,26 @@ export default function HomeStoreList(props) {
             .get(props.route.params.url)
             .then(function (response) {
               onProductChanged(response.data);
-              
+
               db.collection("products")
-              .doc(String(response.data.id))
-              .get()
-              .then(function (doc) {
-                if (doc.exists) {
-                  db.collection("products").doc(String(response.data.id)).update({
-                    "view" : firebase.firestore.FieldValue.increment(1)
-                  })
-                } else {
-                  db.collection("products").doc(String(response.data.id)).set({
-                    "view" : 1
-                  })
-                }
-              });
-              
+                .doc(String(response.data.id))
+                .get()
+                .then(function (doc) {
+                  if (doc.exists) {
+                    db.collection("products")
+                      .doc(String(response.data.id))
+                      .update({
+                        view: firebase.firestore.FieldValue.increment(1),
+                      });
+                  } else {
+                    db.collection("products")
+                      .doc(String(response.data.id))
+                      .set({
+                        view: 1,
+                      });
+                  }
+                });
+
               db.collection("users")
                 .doc(userId)
                 .collection("favourite")
@@ -851,8 +854,7 @@ export default function HomeStoreList(props) {
                           .then((querySnapShot) => {
                             // console.log(querySnapShot);
                             console.log("444" + querySnapShot.size);
-                            onCartCountChanged(querySnapShot.size);
-                            // console.log("333" + querySnapShot.docs.length);
+                            onCartCountChanged(querySnapShot.size + 1);
                           });
                       } else {
                         alert.warning(

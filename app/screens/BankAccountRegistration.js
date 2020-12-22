@@ -307,33 +307,33 @@ export default function BankAccountRegistration(props) {
                             onLoaded(true);
                           });
                       } else {
-                        // request
-                        // .post("financial_account/", {
-                        //   user: url.replace("testserver", "127.0.0.1:8000"),
-                        //   financial_name: financialName,
-                        //   account_type: accountType,
-                        //   branch_code: branchCode,
-                        //   branch_name: branchName,
-                        //   account_number: accountNumber,
-                        //   account_name: accountHolder,
-                        //   financial_code: bankCode,
-                        // })
-                        // .then(function (response) {
-                        //   onAccountHolderChanged("");
-                        //   onAccountNumberChanged("");
-                        //   onBranchNameChanged("");
-                        //   onFinancialNameChanged("");
-                        //   onAccountTypeChanged("");
-                        //   props.navigation.goBack();
-                        // })
-                        // .catch(function (error) {
-                        //   alert.warning(
-                        //     error.response.data[
-                        //       Object.keys(error.response.data)[0]
-                        //     ][0]
-                        //   );
-                        //   onLoaded(true);
-                        // });
+                        request
+                        .post("financial_account/", {
+                          user: url.replace("testserver", "127.0.0.1:8000"),
+                          financial_name: financialName,
+                          account_type: accountType,
+                          branch_code: branchCode,
+                          branch_name: branchName,
+                          account_number: accountNumber,
+                          account_name: accountHolder,
+                          financial_code: bankCode,
+                        })
+                        .then(function (response) {
+                          onAccountHolderChanged("");
+                          onAccountNumberChanged("");
+                          onBranchNameChanged("");
+                          onFinancialNameChanged("");
+                          onAccountTypeChanged("");
+                          props.navigation.goBack();
+                        })
+                        .catch(function (error) {
+                          alert.warning(
+                            error.response.data[
+                              Object.keys(error.response.data)[0]
+                            ][0]
+                          );
+                          onLoaded(true);
+                        });
                       }
                     });
                   } else {

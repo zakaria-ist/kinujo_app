@@ -318,5 +318,8 @@
   "年": "-",
   "月": "-",
   "日": "",
-  "destination":"Destination"
+  "destination":"Destination",
+  "home":"Home",
+  "dialogYes":"Yes",
+  "dialogNo":"No"
 }

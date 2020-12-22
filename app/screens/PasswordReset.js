@@ -15,6 +15,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors";
+import Kinujo from "../assets/icons/kinujo.svg";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -84,7 +85,7 @@ export default function PasswordReset(props) {
       <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
         <View>
           <BlackBackArrow onPress={() => props.navigation.goBack()} />
-          <Image
+          {/* <Image
             style={{
               width: win.width / 1.6,
               height: 44 * ratioKinujo,
@@ -92,6 +93,14 @@ export default function PasswordReset(props) {
               marginTop: heightPercentageToDP("6%"),
             }}
             source={require("../assets/Images/kinujo.png")}
+          /> */}
+          <Kinujo
+            style={{
+              width: win.width / 1.6,
+              height: 44 * ratioKinujo,
+              alignSelf: "center",
+              marginTop: heightPercentageToDP("6%"),
+            }}
           />
           <Text style={styles.passwordResetText}>
             {Translate.t("passwordReset")}

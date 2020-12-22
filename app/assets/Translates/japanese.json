@@ -148,7 +148,7 @@
   "paymentMethod": "支払方法",
   "partOfTheCardNumber": "カード番号の一部",
   "invoiceWarningText": "発行は1回のみ可能です。2回目以降は「再発行」と印字されます。",
-  "issue": "Issue",
+  "issue": "発行",
   "emailAddress": "メールアドレス",
   "versionInformation": "バージョン情報",
   "otherNotifications": "その他の通知",
@@ -314,5 +314,8 @@
   "年": "年",
   "月": "月",
   "日": "日",
-  "destination":"送付先"
+  "destination":"送付先",
+  "home":"ホーム",
+  "dialogYes":"はい",
+  "dialogNo":"いいえ"
 }
