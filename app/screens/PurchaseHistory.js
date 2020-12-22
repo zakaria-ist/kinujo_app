@@ -58,12 +58,12 @@ export default function PurchaseHistory(props) {
     if(searchText){
       orders = orders.filter((order)=>{
         if(order.product_jan_code.horizontal){
-          return order.product_jan_code.horizontal.product_variety.product.name.indexOf(searchText) >= 0
+          return order.product_jan_code.horizontal.product_variety.product.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0
         } else if(order.product_jan_code.vertical){
-          return order.product_jan_code.vertical.product_variety.product.name.indexOf(searchText) >= 0
+          return order.product_jan_code.vertical.product_variety.product.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0
         }
         return false;
-      })
+      });
     }
     let tmpOrderHtml = [];
     for (var i = 0; i < orders.length; i++) {
@@ -79,19 +79,20 @@ export default function PurchaseHistory(props) {
               }}
             >
               {kanjidate.format(
-                "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+" ",
+                "{Y:4}" +
+                  Translate.t("年") +
+                  "{M:2}" +
+                  Translate.t("月") +
+                  "{D:2}" +
+                  Translate.t("日") +
+                  " ",
                 new Date(order.order.created)
-              )}({
-                Translate.t(kanjidate.format(
-                  "{W:2}",
-                  new Date(order.order.created)
-                ))
-              }){
-                kanjidate.format(
-                  " {h:2}:{M:2}",
-                  new Date(order.order.created)
-                )
-              }
+              )}
+              (
+              {Translate.t(
+                kanjidate.format("{W:2}", new Date(order.order.created))
+              )}
+              ){kanjidate.format(" {h:2}:{M:2}", new Date(order.order.created))}
             </Text>
             <View style={styles.purchaseHistoryProductContainer}>
               <View style={styles.productInformationContainer}>
@@ -267,10 +268,12 @@ export default function PurchaseHistory(props) {
             tmpYears.push(year);
           }
         });
-        let tmpOrderProducts = response.data.orderProducts.reverse().filter((order) => {
-          let year = kanjidate.format("{Y:4}", new Date(order.created));
-          return year == type || type == "all";
-        });
+        let tmpOrderProducts = response.data.orderProducts
+          .reverse()
+          .filter((order) => {
+            let year = kanjidate.format("{Y:4}", new Date(order.created));
+            return year == type || type == "all";
+          });
         onOrdersChanged(tmpOrderProducts);
         onYearHtmlChanged(processYearHtml(tmpYears));
         onOrderHtmlChanged(processOrderHtml(props, tmpOrderProducts, ""));
@@ -460,7 +463,6 @@ export default function PurchaseHistory(props) {
                   onSearchTextChanged(value);
                   onOrderHtmlChanged(processOrderHtml(props, orders, ""));
                 }}
-
               />
               <Image
                 style={{
@@ -551,7 +553,7 @@ export default function PurchaseHistory(props) {
                 bottom: 0,
                 position: "absolute",
                 marginHorizontal: widthPercentageToDP("1%"),
-                marginBottom: heightPercentageToDP("5%"),
+                marginBottom: heightPercentageToDP("8%"),
                 justifyContent: "space-evenly",
                 // backgroundColor: "orange",
                 width: "100%",
@@ -569,15 +571,22 @@ export default function PurchaseHistory(props) {
                 }}
                 source={require("../assets/Images/cancelIcon.png")}
               />
-              <Text
-                style={{
-                  fontSize: RFValue(14),
-                  marginLeft: widthPercentageToDP("3%"),
-                  marginBottom: heightPercentageToDP(".3%"),
-                }}
-              >
-                Cancel all conditions
-              </Text>
+              <TouchableWithoutFeedback onPress={
+                ()=>{
+                  onSearchTextChanged("");
+                  onOrderHtmlChanged(processOrderHtml(props, orders, ""));
+                }
+              }>
+                <Text
+                  style={{
+                    fontSize: RFValue(14),
+                    marginLeft: widthPercentageToDP("3%"),
+                    marginBottom: heightPercentageToDP(".3%"),
+                  }}
+                >
+                  Cancel all conditions
+                </Text>
+              </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
                 onPress={() =>
                   Animated.timing(right, {

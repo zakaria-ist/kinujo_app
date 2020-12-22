@@ -100,7 +100,9 @@ export default function PurchaseHistoryDetails(props) {
                 merge: true,
               }
             );
-          props.navigation.push("ChatScreen", {
+          console.log(orderName);
+          console.log(groupID);
+          props.navigation.navigate("ChatScreen", {
             groupID: groupID,
             groupName: orderName,
           });
@@ -120,7 +122,7 @@ export default function PurchaseHistoryDetails(props) {
               [friendTotalMessageReadField]: 0,
             })
             .then(function (docRef) {
-              props.navigation.push("ChatScreen", {
+              props.navigation.navigate("ChatScreen", {
                 groupID: docRef.id,
                 groupName: orderName,
               });
@@ -200,11 +202,17 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("orderDate")}
           </Text>
           <Text style={styles.productSourceText}>
-            {order && order.order ?
-              kanjidate.format(
-                "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+" {h:2}:{M:2}",
-                new Date(order.order.created)
-              )
+            {order && order.order
+              ? kanjidate.format(
+                  "{Y:4}" +
+                    Translate.t("年") +
+                    "{M:2}" +
+                    Translate.t("月") +
+                    "{D:2}" +
+                    Translate.t("日") +
+                    " {h:2}:{M:2}",
+                  new Date(order.order.created)
+                )
               : ""}
           </Text>
         </View>
@@ -217,7 +225,14 @@ export default function PurchaseHistoryDetails(props) {
           </Text>
         </View>
         <TouchableWithoutFeedback
-          onPress={() => redirectToChat(order.id, order.order.seller.shop_name)}
+          onPress={() =>
+            redirectToChat(
+              order.id,
+              order.order.seller.store_name
+                ? order.order.seller.store_name
+                : order.order.seller.nickname
+            )
+          }
         >
           <View style={styles.productInformationContainer}>
             <Text style={styles.productInformationText}>

@@ -91,15 +91,17 @@ export default function FolderMemberSelection(props) {
           });
 
           tmpFriendIds.map((id) => {
-            if(items.filter((item) => {
-              return item.id == id;
-            }).length == 0){
+            if (
+              items.filter((item) => {
+                return item.id == id;
+              }).length == 0
+            ) {
               items.push({
                 id: id,
                 checkStatus: true,
               });
             }
-          })
+          });
 
           tmpFriend = items;
           request
@@ -147,11 +149,11 @@ export default function FolderMemberSelection(props) {
       return friend;
     });
 
-    if(!found){
+    if (!found) {
       tmpFriend.push({
-        "id" : friendID,
-        "checkStatus" : true
-      })
+        id: friendID,
+        checkStatus: true,
+      });
       console.log(tmpFriend);
     }
     onUpdate(ids, tmpFriend);
@@ -243,9 +245,9 @@ export default function FolderMemberSelection(props) {
         }
       }
     });
-    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(()=>{
+    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(() => {
       props.navigation.goBack();
-    })
+    });
   }
   return (
     <SafeAreaView>
@@ -308,10 +310,14 @@ export default function FolderMemberSelection(props) {
         </View>
         <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
           <ScrollView
-            style={{ height: "100%" }}
+            style={{
+              height: "100%",
+            }}
             contentContainerStyle={{ flexGrow: 1 }}
           >
-            {userHtml}
+            <View style={{ marginBottom: heightPercentageToDP("50%") }}>
+              {userHtml}
+            </View>
           </ScrollView>
         </View>
       </View>

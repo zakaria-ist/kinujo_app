@@ -54,8 +54,10 @@ export default function AccountExamination(props) {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            AsyncStorage.setItem("user", "");
-            props.navigation.navigate("LoginScreen");
+            props.navigation.reset({
+              index: 0,
+              routes: [{name: "HomeGeneral"}],
+            });
           }}
         >
           <View style={styles.okButton}>

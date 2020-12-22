@@ -143,7 +143,10 @@ export default function ProductList(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                +format.separator(product.shipping_fee) +
+                "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -287,41 +290,45 @@ export default function ProductList(props) {
           );
         });
         //filter janCode
-        console.log(janCodes)
+        console.log(janCodes);
         kinujoProducts = products.filter((product) => {
           let found = false;
           product.productVarieties.map((productVariety) => {
-            productVariety.productVarietySelections.map((productVarietySelection) => {
-              productVarietySelection.jancode_horizontal.map((horizontal) => {
-                if(janCodes.includes(horizontal.jan_code)){
-                  found = true;
-                }
-              })
-              productVarietySelection.jancode_vertical.map((vertical) => {
-                if(janCodes.includes(vertical.jan_code)){
-                  found = true;
-                }
-              })
-            })
-          })
+            productVariety.productVarietySelections.map(
+              (productVarietySelection) => {
+                productVarietySelection.jancode_horizontal.map((horizontal) => {
+                  if (janCodes.includes(horizontal.jan_code)) {
+                    found = true;
+                  }
+                });
+                productVarietySelection.jancode_vertical.map((vertical) => {
+                  if (janCodes.includes(vertical.jan_code)) {
+                    found = true;
+                  }
+                });
+              }
+            );
+          });
           return found;
         });
         featuredProducts = products.filter((product) => {
           let found = false;
           product.productVarieties.map((productVariety) => {
-            productVariety.productVarietySelections.map((productVarietySelection) => {
-              productVarietySelection.jancode_horizontal.map((horizontal) => {
-                if(janCodes.includes(horizontal.jancode)){
-                  found = true;
-                }
-              })
-              productVarietySelection.jancode_vertical.map((vertical) => {
-                if(janCodes.includes(vertical.jancode)){
-                  found = true;
-                }
-              })
-            })
-          })
+            productVariety.productVarietySelections.map(
+              (productVarietySelection) => {
+                productVarietySelection.jancode_horizontal.map((horizontal) => {
+                  if (janCodes.includes(horizontal.jancode)) {
+                    found = true;
+                  }
+                });
+                productVarietySelection.jancode_vertical.map((vertical) => {
+                  if (janCodes.includes(vertical.jancode)) {
+                    found = true;
+                  }
+                });
+              }
+            );
+          });
           return found;
         });
         onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
@@ -562,126 +569,7 @@ export default function ProductList(props) {
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>
-        {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
-        {/* <Animated.View
-          style={{
-            paddingTop:
-              Platform.OS == "ios"
-                ? getStatusBarHeight() + heightPercentageToDP("3%")
-                : 0,
-            zIndex: 1,
-            height: heightPercentageToDP("150%"),
-            alignSelf: "center",
-            width: widthPercentageToDP("80%"),
-            position: "absolute",
-            right: rightSorting,
-            backgroundColor: "white",
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "white",
-              borderBottomWidth: 1,
-              borderBottomColor: Colors.D7CCA6,
-            }}
-          >
-            <Text style={styles.categoryTitle}>{Translate.t("sorting")}</Text>
-          </View>
-          <TouchableWithoutFeedback
-            onPress={() => filterProductsBySorting("latestFirst")}
-          >
-            <View
-              style={{
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.D7CCA6,
-                paddingVertical: heightPercentageToDP("1.5%"),
-                backgroundColor: selected == "latestFirst" ? "orange" : "white",
-              }}
-            >
-              <Text>Latest First</Text>
-            </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() => filterProductsBySorting("LowToHigh")}
-          >
-            <View
-              style={{
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.D7CCA6,
-                paddingVertical: heightPercentageToDP("1.5%"),
-                backgroundColor: selected == "LowToHigh" ? "orange" : "white",
-              }}
-            >
-              <Text>Price Low to High</Text>
-            </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
-            onPress={() => filterProductsBySorting("HighToLow")}
-          >
-            <View
-              style={{
-                alignItems: "center",
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.D7CCA6,
-                paddingVertical: heightPercentageToDP("1.5%"),
-                backgroundColor: selected == "HighToLow" ? "orange" : "white",
-              }}
-            >
-              <Text>Price High to Low</Text>
-            </View>
-          </TouchableWithoutFeedback>
-          <View
-            style={{
-              flexDirection: "row",
-              // position: "absolute",
-              justifyContent: "space-evenly",
-              // bottom: heightPercentageToDP("8%"),
-              // marginTop: heightPercentageToDP("10%"),
-              bottom: 0,
-              right: 0,
-              marginTop: heightPercentageToDP("60%"),
-              // right: widthPercentageToDP("3%"),
-              // backgroundColor: "orange",
-            }}
-          >
-            <TouchableWithoutFeedback
-              onPress={() => filterProductsBySorting("reset")}
-            >
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  backgroundColor: "white",
-                  alignItems: "center",
-                  paddingVertical: heightPercentageToDP(".7%"),
-                  paddingHorizontal: widthPercentageToDP("2%"),
-                }}
-              >
-                <Text style={{ fontSize: RFValue(12) }}>{"Reset"}</Text>
-              </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
-              <View
-                style={{
-                  // position: "absolute",
-                  // bottom: heightPercentageToDP("8%"),
-                  // right: widthPercentageToDP("3%"),
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  backgroundColor: "white",
-                  alignItems: "center",
-                  paddingVertical: heightPercentageToDP(".7%"),
-                  paddingHorizontal: widthPercentageToDP("2%"),
-                }}
-              >
-                <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </Animated.View> */}
-        {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
+
         <ScrollView style={styles.home_product_view}>
           <View style={styles.section_header}>
             <Text style={styles.section_header_text}>

@@ -33,6 +33,7 @@ const win = Dimensions.get("window");
 var uuid = require("react-native-uuid");
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
+import AddMember from "../assets/icons/addMember.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -63,22 +64,20 @@ export default function GroupChatCreation(props) {
   }
 
   React.useEffect(() => {
-
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
       urls = urls.filter((url) => {
         return url;
       });
       userId = urls[urls.length - 1];
-      
-      AsyncStorage.getItem("ids")
-      .then((val) => {
+
+      AsyncStorage.getItem("ids").then((val) => {
         friendIds = JSON.parse(val);
         dbFriendIds = JSON.parse(val);
         if (friendIds != null) {
           memberCount = friendIds.length;
         } else {
-          friendIds = []
+          friendIds = [];
         }
 
         request
@@ -90,41 +89,41 @@ export default function GroupChatCreation(props) {
             response.data.users.map((user) => {
               friendNames.push(user.nickname);
               tmpUserHtml2.push(
-                  <TouchableWithoutFeedback key={String(user.id)}>
-                    <View style={styles.memberTabsContainer}>
-                      {user && user.image && user.image.image ? (
-                        <Image
-                          style={{
-                            width: RFValue(38),
-                            height: RFValue(38),
-                            borderRadius: win.width / 2,
-                            backgroundColor: Colors.DCDCDC,
-                          }}
-                          source={{ uri: user.image.image }}
-                        />
-                      ) : (
-                        <Person
-                          style={{
-                            width: RFValue(38),
-                            height: RFValue(38),
-                            borderRadius: win.width / 2,
-                            // backgroundColor: Colors.DCDCDC,
-                          }}
-                        />
-                        // <Image
-                        //   style={{
-                        //     width: RFValue(38),
-                        //     height: RFValue(38),
-                        //     borderRadius: win.width / 2,
-                        //     backgroundColor: Colors.DCDCDC,
-                        //   }}
-                        // />
-                      )}
+                <TouchableWithoutFeedback key={String(user.id)}>
+                  <View style={styles.memberTabsContainer}>
+                    {user && user.image && user.image.image ? (
+                      <Image
+                        style={{
+                          width: RFValue(38),
+                          height: RFValue(38),
+                          borderRadius: win.width / 2,
+                          backgroundColor: Colors.DCDCDC,
+                        }}
+                        source={{ uri: user.image.image }}
+                      />
+                    ) : (
+                      <Person
+                        style={{
+                          width: RFValue(38),
+                          height: RFValue(38),
+                          borderRadius: win.width / 2,
+                          // backgroundColor: Colors.DCDCDC,
+                        }}
+                      />
+                      // <Image
+                      //   style={{
+                      //     width: RFValue(38),
+                      //     height: RFValue(38),
+                      //     borderRadius: win.width / 2,
+                      //     backgroundColor: Colors.DCDCDC,
+                      //   }}
+                      // />
+                    )}
 
-                      <Text style={styles.folderText}>{user.nickname}</Text>
-                    </View>
-                  </TouchableWithoutFeedback>
-                );
+                    <Text style={styles.folderText}>{user.nickname}</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              );
             });
             tmpUserHtml = tmpUserHtml2;
             onUserHtmlChanged(tmpUserHtml);
@@ -200,9 +199,9 @@ export default function GroupChatCreation(props) {
   }
   function addMemberHandler() {
     // console.log(friendIds)
-    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(()=>{
-      props.navigation.navigate("GroupChatMember")
-    })
+    AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(() => {
+      props.navigation.navigate("GroupChatMember");
+    });
   }
   return (
     <SafeAreaView>
@@ -337,14 +336,18 @@ export default function GroupChatCreation(props) {
           </View>
           <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
             <View style={styles.memberListContainer}>
-              <Image
+              <AddMember
                 style={{
                   width: RFValue(38),
                   height: RFValue(38),
-                  borderRadius: win.width / 2,
+                  borderRadius:
+                    Math.round(
+                      Dimensions.get("window").width +
+                        Dimensions.get("window").height
+                    ) / 2,
                   backgroundColor: Colors.E6DADE,
                 }}
-                source={require("../assets/Images/addMemberIcon.png")}
+                // source={require("../assets/Images/addMemberIcon.png")}
               />
               <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>

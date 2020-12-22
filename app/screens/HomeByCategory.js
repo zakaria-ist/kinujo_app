@@ -120,7 +120,10 @@ export default function HomeByCategory(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                +format.separator(product.shipping_fee) +
+                "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -159,8 +162,8 @@ export default function HomeByCategory(props) {
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
-          // name={product.name}
-          name={product.id}
+          name={product.name}
+          // name={product.id}
           seller={product.user.shop_name}
           price={
             (user.is_seller
@@ -171,7 +174,10 @@ export default function HomeByCategory(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                +format.separator(product.shipping_fee) +
+                "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);

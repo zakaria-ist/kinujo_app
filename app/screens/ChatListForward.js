@@ -151,11 +151,8 @@ export default function ChatList(props) {
       });
   }
   function onValueChange(tmpChats, groupID) {
-    console.log(groupID);
     tmpChats = tmpChats.map((chat) => {
-      console.log(chat.checkBoxStatus);
       if (chat.id == groupID) {
-        // console.log(chat.checkBoxStatus);
         if (chat.checkBoxStatus == true) {
           chat.checkBoxStatus = false;
         } else {
@@ -164,11 +161,11 @@ export default function ChatList(props) {
       }
       return chat;
     });
+    chats = tmpChats
     processChat(tmpChats, ownUserID);
   }
   function forwardMessage() {
-    // console.log("1");
-    tmpChats.map((chat) => {
+    chats.map((chat) => {
       if (chat.checkBoxStatus == true) {
         let createdAt =
           year +

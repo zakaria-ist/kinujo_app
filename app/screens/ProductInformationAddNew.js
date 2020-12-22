@@ -40,11 +40,14 @@ import storage from "@react-native-firebase/storage";
 import RNFetchBlob from "rn-fetch-blob";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import AddBlack from "../assets/icons/addBlack.svg";
+import Format from "../lib/format";
 import { firebaseConfig } from "../../firebaseConfig.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 var uuid = require("react-native-uuid");
+const format = new Format();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const request = new Request();
@@ -617,11 +620,11 @@ export default function ProductInformationAddNew(props) {
   }
 
   function handleGeneralPrice(value) {
-    onPriceChanged(value.replace(/[^0-9]/g, ""));
+    onPriceChanged(value.replace(",", "").replace(/[^0-9]/g, ""));
     if (user.is_master) {
-      onStorePriceChanged(value * 0.7 + "");
+      onStorePriceChanged(value.replace(",", "") * 0.7 + "");
     } else if (user.is_seller) {
-      onStorePriceChanged(value * 0.8 + "");
+      onStorePriceChanged(value.replace(",", "") * 0.8 + "");
     }
   }
   function handleShippingPrice(value) {
@@ -947,7 +950,7 @@ export default function ProductInformationAddNew(props) {
                   <TextInput
                     keyboardType={"numeric"}
                     style={styles.productPricingTextInput}
-                    value={price}
+                    value={format.separator(price)}
                     onChangeText={(value) => {
                       handleGeneralPrice(value);
                     }}
@@ -962,7 +965,7 @@ export default function ProductInformationAddNew(props) {
                     editable={false}
                     keyboardType={"numeric"}
                     style={styles.storePriceInput}
-                    value={storePrice}
+                    value={format.separator(storePrice)}
                     onChangeText={(value) => onStorePriceChanged(value)}
                   ></TextInput>
                   <View style={{ alignItems: "flex-end" }}>
@@ -979,7 +982,7 @@ export default function ProductInformationAddNew(props) {
                   <TextInput
                     keyboardType={"numeric"}
                     style={styles.productPricingTextInput}
-                    value={shipping}
+                    value={format.separator(shipping)}
                     onChangeText={(value) => handleShippingPrice(value)}
                   ></TextInput>
                   <Text style={styles.productPricingText}>
@@ -1118,13 +1121,20 @@ export default function ProductInformationAddNew(props) {
                     <View
                       style={{ alignItems: "center", justifyContent: "center" }}
                     >
-                      <Image
+                      {/* <Image
                         style={{
                           width: win.width / 10,
                           height: 28 * ratioProductAddIcon,
                           position: "absolute",
                         }}
                         source={require("../assets/Images/productAddIcon.png")}
+                      /> */}
+                      <AddBlack
+                        style={{
+                          width: win.width / 10,
+                          height: 28 * ratioProductAddIcon,
+                          position: "absolute",
+                        }}
                       />
                       <Text
                         style={{
