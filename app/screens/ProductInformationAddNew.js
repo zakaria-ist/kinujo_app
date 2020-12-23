@@ -456,7 +456,7 @@ export default function ProductInformationAddNew(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [isFocused]);
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
     if (variant == "none") {

@@ -47,7 +47,12 @@ export default function PasswordResetCompletion(props) {
           {Translate.t("pleaseLoginFromLoginScreen")}
         </Text>
 
-        <TouchableOpacity onPress={() => props.navigation.popToTop()}>
+        <TouchableOpacity onPress={() => {
+            props.navigation.reset({
+              index: 0,
+              routes: [{ name: "LoginScreen" }],
+            });
+        }}>
           <View style={styles.okButton}>
             <Text style={styles.okButtonText}>OK</Text>
           </View>

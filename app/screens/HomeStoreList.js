@@ -59,7 +59,7 @@ let janCodes = {};
 let janCodeNames = {};
 
 export default function HomeStoreList(props) {
-  const [name, setName] = React.useState(false);
+  const [name, setName] = React.useState("");
   const [favourite, setFavourite] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
@@ -198,6 +198,7 @@ export default function HomeStoreList(props) {
   }
 
   React.useEffect(() => {
+    onSelectedJanCodeChanged("")
     for (var i = 1; i < 10; i++) {
       if (
         cartItems.filter((item) => {
@@ -858,7 +859,7 @@ export default function HomeStoreList(props) {
                           });
                       } else {
                         alert.warning(
-                          "Please select an item and set a quantity"
+                          Translate.t("no_select_jancode")
                         );
                       }
                     }}

@@ -237,6 +237,7 @@ export default function RegistrationGeneral(props) {
                               password: password,
                               authority: "general",
                               introducer: item,
+                              callingCode: callingCode
                             });
                           });
                         } else {

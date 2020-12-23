@@ -66,7 +66,7 @@ export default function CustomerList(props) {
                   borderRadius: win.width / 2,
                   backgroundColor: Colors.DCDCDC,
                 }}
-                source={{ uri: customer.image }}
+                source={{ uri: customer.image.image }}
               />
             ) : (
               <Person

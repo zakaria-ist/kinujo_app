@@ -281,6 +281,7 @@
   "removeAddress": "このアドレスを削除しますか？",
   "deleteItem": "このアイテムを削除しますか？",
   "pass_reset_success" : "パスワードが正常にリセットされました",
+  "no_select_jancode": "オプションを選んでください。",
   "information": "情報",
   "cartUpdated": "カートが更新されました",
   "fieldEmpty": "フィールドを空にすることはできません",

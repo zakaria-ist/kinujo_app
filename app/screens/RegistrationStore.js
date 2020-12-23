@@ -233,6 +233,7 @@ export default function RegistrationStore(props) {
                                 password: password,
                                 authority: "store",
                                 introducer: item,
+                                callingCode: callingCode
                               });
                             })
                             .catch(function (error) {

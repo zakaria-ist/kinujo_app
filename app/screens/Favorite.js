@@ -354,7 +354,7 @@ export default function Favorite(props) {
           }
         });
     });
-  }, []);
+  }, [isFocused]);
   return (
     <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
       <SafeAreaView style={{ flex: 1 }}>

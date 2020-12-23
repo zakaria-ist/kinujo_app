@@ -34,6 +34,7 @@
   "accountReviewingText": "The store account you currently registred We are reviewing. You can use it with lmited functions until the examination is completed. Regarding the examination status, Please contact us by in-app message.",
   "registrationComplete": "Registration is complete.",
   "enjoyText": "Enjoy the KINUJO app.",
+  "no_select_jancode": "Please select an option.",
   "passwordReset": "Password Reset",
   "phoneNumberForPasswordReset": "Please enter the registered mobile phone number.",
   "sendVerificatioCode": "Send Verification Code",
