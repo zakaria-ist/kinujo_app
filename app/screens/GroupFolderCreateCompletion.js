@@ -128,13 +128,16 @@ export default function GroupFolderCreateCompletion(props) {
   if (!loaded) {
     console.log("" + friendIds.length);
     let tmpUserListHtml = [];
-    for (var i = 0; i < friendIds.length; i++) {
+    for (var i = 0; i < friendIds.length - 1; i++) {
       // console.log(i);
+      console.log(friendNames[i]);
       tmpUserListHtml.push(
         <View
           key={friendIds[i]}
           style={{
             alignItems: "center",
+            // backgroundColor: "orange",
+            height: heightPercentageToDP("13%"),
             width: widthPercentageToDP("25%"),
           }}
         >
@@ -160,19 +163,20 @@ export default function GroupFolderCreateCompletion(props) {
     onLoaded(true);
   }
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       <CustomHeader onPress={() => props.navigation.navigate("Cart")} />
-      <ScrollView
+      <View
         style={{
           // backgroundColor: "orange",
           flex: 1,
-          marginVertical: heightPercentageToDP("5%"),
+          marginVertical: heightPercentageToDP("10%"),
           marginHorizontal: widthPercentageToDP("3%"),
           borderWidth: 2,
           marginTop: heightPercentageToDP("3%"),
-          height: heightPercentageToDP("70%"),
+          // height: heightPercentageToDP("70%"),
           borderColor: Colors.D7CCA6,
           backgroundColor: Colors.F6F6F6,
+          // paddingBottom: heightPercentageToDP("35%"),
         }}
       >
         <TouchableWithoutFeedback onPress={() => cancelHanlder()}>
@@ -252,6 +256,7 @@ export default function GroupFolderCreateCompletion(props) {
               <View
                 style={{
                   alignItems: "center",
+                  width: widthPercentageToDP("25%"),
                 }}
               >
                 <AddMember
@@ -297,8 +302,8 @@ export default function GroupFolderCreateCompletion(props) {
             <View></View>
           )}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 }
 

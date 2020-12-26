@@ -31,6 +31,8 @@ export default function CustomKinujoWord({
 }) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
+  // const [userAuthorityId, onUserAuthorityIdChanged] = React.useState("");
+  const [userAccountType, onUserAccountTypeChanged] = React.useState("");
   const win = Dimensions.get("window");
   const ratioNext = win.width / 38 / 8;
   React.useEffect(() => {
@@ -43,12 +45,22 @@ export default function CustomKinujoWord({
     } else {
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url).then((response) => {
-          onUserChanged(response.data);
+          console.log(response.data.authority.id);
+          if (response.data.authority.id == 1) {
+            onUserAccountTypeChanged(Translate.t("masterAccount"));
+          } else if (response.data.authority.id == 2) {
+            onUserAccountTypeChanged(Translate.t("specialAccount"));
+          } else if (response.data.authority.id == 3) {
+            onUserAccountTypeChanged(Translate.t("ambassadorAccount"));
+          } else if (response.data.authority.id == 4) {
+            onUserAccountTypeChanged(Translate.t("storeAccount"));
+          } else if (response.data.authority.id == 5) {
+            onUserAccountTypeChanged(Translate.t("generalAccount"));
+          }
         });
       });
     }
   }, [isFocused, userUrl]);
-
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <SafeAreaView
@@ -103,9 +115,7 @@ export default function CustomKinujoWord({
               fontSize: RFValue(12),
             }}
           >
-            {user.is_seller && !user.is_master
-              ? Translate.t("storeAccount")
-              : ""}
+            {userAccountType}
           </Text>
 
           {editProfile == "editProfile" ? (

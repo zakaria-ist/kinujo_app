@@ -57,6 +57,7 @@ function promptUpdate(props, user, field, value) {
 }
 
 export default function ProfileEditingGeneral(props) {
+  const textInput = React.createRef();
   const [password, onPasswordChanged] = React.useState("********");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   const [word, setWord] = React.useState("");
@@ -228,109 +229,108 @@ export default function ProfileEditingGeneral(props) {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }}>
-        {show == true ? (
-          <Modal
-            visible={true}
-            transparent={true}
-            presentationStyle="overFullScreen"
+        <Modal
+          onShow={() => {
+            this.textInput.focus();
+          }}
+          visible={show}
+          transparent={true}
+          presentationStyle="overFullScreen"
+        >
+          <SafeAreaView
+            style={{
+              flex: 1,
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 1,
+              backgroundColor: "#7d7d7d",
+              borderColor: "white",
+              margin: widthPercentageToDP("2%"),
+              backgroundColor: "#7d7d7d",
+              flex: 1,
+            }}
           >
-            <SafeAreaView
+            <View
               style={{
-                flex: 1,
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1,
-                backgroundColor: "#7d7d7d",
-                borderColor: "white",
-                margin: widthPercentageToDP("2%"),
-                backgroundColor: "#7d7d7d",
-                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                marginHorizontal: widthPercentageToDP("5%"),
+                marginTop: heightPercentageToDP("3%"),
+                height: heightPercentageToDP("5%"),
               }}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  marginHorizontal: widthPercentageToDP("5%"),
-                  marginTop: heightPercentageToDP("3%"),
-                  height: heightPercentageToDP("5%"),
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  onShowChanged(false);
+                  setWord(user.word);
                 }}
               >
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    onShowChanged(false);
-                    setWord(user.word);
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: win.width / 20,
-                      height: 15 * ratioCancelIcon,
-                    }}
-                    source={require("../assets/Images/cancelIcon.png")}
-                  />
-                </TouchableWithoutFeedback>
-                <Text
+                <Image
                   style={{
-                    fontSize: RFValue(14),
-                    color: "white",
+                    width: win.width / 20,
+                    height: 15 * ratioCancelIcon,
                   }}
-                >
-                  {word.length}/500
+                  source={require("../assets/Images/cancelIcon.png")}
+                />
+              </TouchableWithoutFeedback>
+              <Text
+                style={{
+                  fontSize: RFValue(14),
+                  color: "white",
+                }}
+              >
+                {word.length}/500
+              </Text>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  onShowChanged(false);
+                  let tmpUser = user;
+                  tmpUser.word = word;
+                  onUserChanged(tmpUser);
+                  updateUser(user, "word", word);
+                }}
+              >
+                <Text style={{ fontSize: RFValue(14), color: "white" }}>
+                  {Translate.t("save")}
                 </Text>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    onShowChanged(false);
-                    let tmpUser = user;
-                    tmpUser.word = word;
-                    onUserChanged(tmpUser);
-
-                    updateUser(user, "word", word);
-                  }}
-                >
-                  <Text style={{ fontSize: RFValue(14), color: "white" }}>
-                    {Translate.t("save")}
-                  </Text>
-                </TouchableWithoutFeedback>
-              </View>
-              <View
-                style={{
-                  alignItems: "center",
-                  width: "100%",
-                  height: "100%",
-                  marginTop: heightPercentageToDP("15%"),
-                  paddingHorizontal: widthPercentageToDP("5%"),
+              </TouchableWithoutFeedback>
+            </View>
+            <View
+              style={{
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+                marginTop: heightPercentageToDP("15%"),
+                paddingHorizontal: widthPercentageToDP("5%"),
+              }}
+            >
+              <TextInput
+                ref={(input) => {
+                  this.textInput = input;
                 }}
-              >
-                <TextInput
-                  autoFocus={true}
-                  showSoftInputOnFocus={true}
-                  focusable={true}
-                  placeholder="入力してください"
-                  placeholderTextColor="white"
-                  maxLength={255}
-                  multiline={true}
-                  style={{
-                    textAlign: "center",
-                    width: "100%",
-                    fontSize: RFValue(14),
-                    color: "white",
-                  }}
-                  value={word}
-                  onChangeText={(value) => {
-                    setWord(value);
-                  }}
-                ></TextInput>
-              </View>
-            </SafeAreaView>
-          </Modal>
-        ) : (
-          []
-        )}
+                placeholder="入力してください"
+                placeholderTextColor="white"
+                maxLength={255}
+                multiline={true}
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                  fontSize: RFValue(14),
+                  color: "white",
+                }}
+                value={word}
+                onChangeText={(value) => {
+                  setWord(value);
+                }}
+              ></TextInput>
+            </View>
+          </SafeAreaView>
+        </Modal>
+
         <CustomHeader
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onBack={() => {

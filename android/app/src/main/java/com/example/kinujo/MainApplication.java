@@ -6,6 +6,8 @@ import android.net.Uri;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import net.zubricky.AndroidKeyboardAdjust.AndroidKeyboardAdjustPackage;
+import cx.evermeet.versioninfo.RNVersionInfoPackage;
 import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
 import org.reactnative.camera.RNCameraPackage;
 import com.horcrux.svg.SvgPackage;
@@ -50,6 +52,8 @@ public class MainApplication extends Application implements ReactApplication {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       // packages.add(new MainReactPackage(),
+            new AndroidKeyboardAdjustPackage();
+            new RNVersionInfoPackage();
       //      new RNPermissionsPackage(),
       //      new RNCameraPackage(),
       //      new ImagePickerPackage());

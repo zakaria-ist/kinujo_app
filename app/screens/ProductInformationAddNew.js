@@ -13,6 +13,7 @@ import {
   ScrollView,
   TextInput,
   TouchableWithoutFeedback,
+  Platform
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
@@ -31,7 +32,8 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import ProductNoneVariations from "./ProductNoneVariations";
 import ProductOneVariations from "./ProductOneVariations";
 import ProductTwoVariations from "./ProductTwoVariations";
-import DateTimePicker from "react-native-datepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Moment from "moment";
 import { DatePicker } from "react-native-propel-kit";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -88,6 +90,12 @@ export default function ProductInformationAddNew(props) {
   const [spinner, onSpinnerChanged] = React.useState(false);
   const [product, onProductChanged] = React.useState(false);
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
+  const [show, setShow] = React.useState(false);
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    onPublishDateChanged(Moment(currentDate).format("YYYY-MM-DD"));
+    setShow(false);
+  };
   let type = props.route.params.type;
   function getId(url) {
     let urls = url.split("/");
@@ -850,29 +858,52 @@ export default function ProductInformationAddNew(props) {
                     onPublishDateChanged(date);
                   }}
                 /> */}
-
-                <DateTimePicker
-                  // androidMode={true}
-                  style={{
-                    marginLeft: widthPercentageToDP("1%"),
-                    width: widthPercentageToDP("40%"),
-                    // borderColor: "transparent",
-                  }}
-                  date={publishDate}
-                  display="spinner"
-                  // onChange
-                  onDateChange={(date) => {
-                    if (date) {
-                      console.log(date);
-                      onPublishDateChanged(date);
-                    }
-                  }}
-                />
-                {/* <TextInput
-                style={styles.releaseDateTextInput}
-                value={publishDate}
-                onChangeText={(value) => onPublishDateChanged(value)}
-              ></TextInput> */}
+                {/* {console.log(new Date(publishDate))} */}
+                {Platform.OS == "android" ? (
+                  show == true ? (
+                    <DateTimePicker
+                      value={publishDate ? new Date(publishDate) : new Date()}
+                      mode={"date"}
+                      display="default"
+                      style={{
+                        marginLeft: widthPercentageToDP("1%"),
+                        width: widthPercentageToDP("40%"),
+                      }}
+                      onChange={onChange}
+                    />
+                  ) : (
+                    <View></View>
+                  )
+                ) : (
+                  <DateTimePicker
+                    value={publishDate ? new Date(publishDate) : new Date()}
+                    mode={"date"}
+                    display="default"
+                    style={{
+                      // display:"none",
+                      marginLeft: widthPercentageToDP("1%"),
+                      width: widthPercentageToDP("40%"),
+                    }}
+                    onChange={onChange}
+                  />
+                )}
+                {Platform.OS == "android" ? (
+                  <TouchableWithoutFeedback onPress={() => setShow(true)}>
+                    <Text
+                      style={{
+                        fontSize: RFValue(12),
+                        marginLeft: widthPercentageToDP("3%"),
+                        borderWidth: 1,
+                        paddingHorizontal: widthPercentageToDP("4%"),
+                        paddingVertical: heightPercentageToDP("1%"),
+                      }}
+                    >
+                      {publishDate}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                ) : (
+                  <View></View>
+                )}
               </View>
               <Text style={styles.releaseDateWarningText}>
                 {Translate.t("publishWarning")}

@@ -87,6 +87,7 @@ export default function GroupChatCreation(props) {
           .then(function (response) {
             let tmpUserHtml2 = [];
             response.data.users.map((user) => {
+              // console.log(user.nickname);
               friendNames.push(user.nickname);
               tmpUserHtml2.push(
                 <TouchableWithoutFeedback key={String(user.id)}>
@@ -143,6 +144,7 @@ export default function GroupChatCreation(props) {
           });
 
           friendIds.push(String(userId));
+
           let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
           let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
           db.collection("chat")
@@ -169,6 +171,8 @@ export default function GroupChatCreation(props) {
                     [friendMessageUnseenField]: 0,
                   });
               }
+              console.log(friendNames);
+
               props.navigation.navigate("GroupFolderCreateCompletion", {
                 groupDocumentID: documentID,
                 type: "group",
@@ -197,10 +201,27 @@ export default function GroupChatCreation(props) {
       );
     }
   }
+  function bankHandler() {
+    AsyncStorage.removeItem("ids").then(function () {
+      tmpUserHtml = [];
+      onUserHtmlChanged([]);
+      friendNames = [];
+      friendIds = null;
+      memberCount = 0;
+    });
+    props.navigation.goBack();
+  }
   function addMemberHandler() {
     // console.log(friendIds)
     AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(() => {
       props.navigation.navigate("GroupChatMember");
+      AsyncStorage.removeItem("ids").then(function () {
+        tmpUserHtml = [];
+        onUserHtmlChanged([]);
+        friendNames = [];
+        friendIds = null;
+        memberCount = 0;
+      });
     });
   }
   return (
@@ -209,7 +230,7 @@ export default function GroupChatCreation(props) {
         text={Translate.t("groupChatCreate")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
-        onBack={() => props.navigation.goBack()}
+        onBack={() => bankHandler()}
       />
       <TouchableWithoutFeedback onPress={() => groupCreate()}>
         <Text
@@ -353,7 +374,11 @@ export default function GroupChatCreation(props) {
             </View>
           </TouchableWithoutFeedback>
 
-          <ScrollView>{userHtml}</ScrollView>
+          <ScrollView>
+            <View style={{ marginBottom: heightPercentageToDP("30%") }}>
+              {userHtml}
+            </View>
+          </ScrollView>
         </View>
       </View>
     </SafeAreaView>

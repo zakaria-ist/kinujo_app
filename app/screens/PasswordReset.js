@@ -137,6 +137,7 @@ export default function PasswordReset(props) {
                     fontSize: RFValue(10),
                     width: widthPercentageToDP("23%"),
                     paddingLeft: widthPercentageToDP("3%"),
+                    height: heightPercentageToDP("5%"),
                   },
                 }}
                 listProps={{
@@ -286,7 +287,8 @@ export default function PasswordReset(props) {
                     confirm.verificationId,
                     code
                   );
-                  let userData = auth().signInWithCredential(credential)
+                  let userData = auth()
+                    .signInWithCredential(credential)
                     .then(() => {
                       if (password && confirm_password) {
                         if (password == confirm_password) {
@@ -295,7 +297,7 @@ export default function PasswordReset(props) {
                             password: password,
                             confirm_password: confirm_password,
                             confirm_password: confirm_password,
-                          })
+                          });
                           request
                             .post("password/reset", {
                               tel: phone,
