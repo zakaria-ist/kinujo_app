@@ -60,7 +60,9 @@ var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-AndroidKeyboardAdjust.setAdjustResize();
+if(Platform.OS === "android"){
+  AndroidKeyboardAdjust.setAdjustResize();
+}
 const db = firebase.firestore();
 const chatsRef = db.collection("chat");
 const request = new Request();

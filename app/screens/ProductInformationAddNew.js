@@ -137,6 +137,8 @@ export default function ProductInformationAddNew(props) {
     onTwoVariationItemsChanged("");
     onOneVariationItemsChanged("");
     onNoneVariationItemsChanged("");
+
+    props.navigation.setParams({url: ""})
   }, [!isFocused]);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
@@ -729,9 +731,7 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Group
                   style={{ alignItems: "flex-start" }}
                   onValueChange={(variant) => {
-                    if (!props.route.params.url) {
                       onValueChanged(variant);
-                    }
                   }}
                   value={productVariation}
                 >
