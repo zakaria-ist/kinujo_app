@@ -33,6 +33,7 @@ const request = new Request();
 const alert = new CustomAlert();
 
 const win = Dimensions.get("window");
+let controller;
 export default function BankAccountRegistration(props) {
   const [financialAccount, onFinancialAccountChanged] = React.useState({
     financial_name: "test",
@@ -125,233 +126,245 @@ export default function BankAccountRegistration(props) {
   }, [isFocused]);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <CustomHeader
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onBack={() => {
-          props.navigation.goBack();
-        }}
-        onPress={() => {
-          props.navigation.navigate("Cart");
-        }}
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        text={Translate.t("bankAccount")}
-      />
-      <CustomSecondaryHeader
-        name={user.nickname}
-        accountType={
-          props.route.params.is_store ? Translate.t("storeAccount") : ""
-        }
-      />
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
-        <ScrollView>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              placeholder={Translate.t("bankCode")}
-              placeholderTextColor={Colors.deepGrey}
-              style={styles.textInput}
-              onChangeText={(text) => {
-                onBankCodeChanged(text);
-                if (zenginCode[text]) {
-                  onFinancialNameChanged(zenginCode[text]["name"]);
-                } else {
-                  onFinancialNameChanged("");
-                }
-              }}
-              value={bankCode}
-            ></TextInput>
-
-            <TextInput
-              placeholder={Translate.t("financialInstitutionName")}
-              placeholderTextColor={Colors.deepGrey}
-              editable={false}
-              style={styles.textInput}
-              onChangeText={(text) => onFinancialNameChanged(text)}
-              value={financialName}
-            ></TextInput>
-            <TextInput
-              placeholder={Translate.t("branchCode")}
-              placeholderTextColor={Colors.deepGrey}
-              style={styles.textInput}
-              onChangeText={(text) => {
-                onBranckCodeChanged(text);
-                if (zenginCode[bankCode]) {
-                  if (zenginCode[bankCode]["branches"][text]) {
-                    onBranchNameChanged(
-                      zenginCode[bankCode]["branches"][text]["name"]
-                    );
+    <TouchableWithoutFeedback onPress={() => controller.close()}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <CustomHeader
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onBack={() => {
+            props.navigation.goBack();
+          }}
+          onPress={() => {
+            props.navigation.navigate("Cart");
+          }}
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          text={Translate.t("bankAccount")}
+        />
+        <CustomSecondaryHeader
+          name={user.nickname}
+          accountType={
+            props.route.params.is_store ? Translate.t("storeAccount") : ""
+          }
+        />
+        <KeyboardAvoidingView
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <ScrollView>
+            <View style={styles.textInputContainer}>
+              <TextInput
+                onFocus={() => controller.close()}
+                placeholder={Translate.t("bankCode")}
+                placeholderTextColor={Colors.deepGrey}
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  onBankCodeChanged(text);
+                  if (zenginCode[text]) {
+                    onFinancialNameChanged(zenginCode[text]["name"]);
                   } else {
-                    onBranchNameChanged("");
+                    onFinancialNameChanged("");
                   }
-                }
-              }}
-              value={branchCode}
-            ></TextInput>
-            <TextInput
-              placeholder={Translate.t("branchName")}
-              placeholderTextColor={Colors.deepGrey}
-              style={styles.textInput}
-              editable={false}
-              onChangeText={(text) => onBranchNameChanged(text)}
-              value={branchName}
-            ></TextInput>
-            {/* {alert.warning(accountType)} */}
-            <DropDownPicker
-              // controller={(instance) => (controller = instance)}
-              style={styles.textInput}
-              items={[
-                {
-                  label: Translate.t("normal"),
-                  value: "1",
-                },
-                {
-                  label: Translate.t("current"),
-                  value: "2",
-                },
-                {
-                  label: Translate.t("savings"),
-                  value: "3",
-                },
-              ]}
-              defaultValue={String(accountType) ? String(accountType) : "1"}
-              containerStyle={{ height: heightPercentageToDP("8%") }}
-              labelStyle={{
-                fontSize: RFValue(11),
-                color: "black",
-              }}
-              itemStyle={{
-                justifyContent: "flex-start",
-              }}
-              selectedtLabelStyle={{
-                color: "black",
-              }}
-              dropDownStyle={{ backgroundColor: "white" }}
-              onChangeItem={(item) => {
-                if (item) {
-                  onAccountTypeChanged(item.value);
-                }
-              }}
-            />
-            <TextInput
-              maxLength={7}
-              placeholder={Translate.t("accountNumber")}
-              placeholderTextColor={Colors.deepGrey}
-              style={styles.textInput}
-              onChangeText={(text) => onAccountNumberChanged(text)}
-              value={accountNumber}
-            ></TextInput>
-            <TextInput
-              placeholder={Translate.t("accountHolder")}
-              placeholderTextColor={Colors.deepGrey}
-              style={styles.textInput}
-              onChangeText={(text) => onAccountHolderChanged(text)}
-              value={accountHolder}
-            ></TextInput>
-          </View>
-          <Text style={styles.warningText}>
-            {Translate.t("bankRegistrationWarning")}
-          </Text>
-          <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                if (accountNumber.length == 7) {
-                  if (!accountType) {
-                    onAccountTypeChanged("1");
-                  } else if (
-                    financialName &&
-                    branchName &&
-                    accountType &&
-                    accountNumber &&
-                    accountHolder
-                  ) {
-                    AsyncStorage.getItem("user").then(function (url) {
-                      url = url.replace(
-                        "http://testserver",
-                        "http://127.0.0.1:8000"
+                }}
+                value={bankCode}
+              ></TextInput>
+
+              <TextInput
+                onFocus={() => controller.close()}
+                placeholder={Translate.t("financialInstitutionName")}
+                placeholderTextColor={Colors.deepGrey}
+                editable={false}
+                style={styles.textInput}
+                onChangeText={(text) => onFinancialNameChanged(text)}
+                value={financialName}
+              ></TextInput>
+              <TextInput
+                onFocus={() => controller.close()}
+                placeholder={Translate.t("branchCode")}
+                placeholderTextColor={Colors.deepGrey}
+                style={styles.textInput}
+                onChangeText={(text) => {
+                  onBranckCodeChanged(text);
+                  if (zenginCode[bankCode]) {
+                    if (zenginCode[bankCode]["branches"][text]) {
+                      onBranchNameChanged(
+                        zenginCode[bankCode]["branches"][text]["name"]
                       );
-                      let urls = url.split("/");
-                      urls = urls.filter((url) => {
-                        return url;
-                      });
-
-                      if (financialUrl) {
-                        console.log(financialUrl);
-                        request
-                          .patch(financialUrl, {
-                            financial_name: financialName,
-                            account_type: accountType,
-                            branch_code: branchCode,
-                            branch_name: branchName,
-                            account_number: accountNumber,
-                            account_name: accountHolder,
-                            financial_code: bankCode,
-                          })
-                          .then(function (response) {
-                            console.log(response);
-                            onAccountHolderChanged("");
-                            onAccountNumberChanged("");
-                            onBranchNameChanged("");
-                            onFinancialNameChanged("");
-                            onAccountTypeChanged("");
-                            props.navigation.goBack();
-                          })
-                          .catch(function (error) {
-                            alert.warning(
-                              error.response.data[
-                                Object.keys(error.response.data)[0]
-                              ][0]
-                            );
-                            onLoaded(true);
-                          });
-                      } else {
-                        request
-                        .post("financial_account/", {
-                          user: url.replace("testserver", "127.0.0.1:8000"),
-                          financial_name: financialName,
-                          account_type: accountType,
-                          branch_code: branchCode,
-                          branch_name: branchName,
-                          account_number: accountNumber,
-                          account_name: accountHolder,
-                          financial_code: bankCode,
-                        })
-                        .then(function (response) {
-                          onAccountHolderChanged("");
-                          onAccountNumberChanged("");
-                          onBranchNameChanged("");
-                          onFinancialNameChanged("");
-                          onAccountTypeChanged("");
-                          props.navigation.goBack();
-                        })
-                        .catch(function (error) {
-                          alert.warning(
-                            error.response.data[
-                              Object.keys(error.response.data)[0]
-                            ][0]
-                          );
-                          onLoaded(true);
-                        });
-                      }
-                    });
-                  } else {
-                    alert.warning(Translate.t("fieldNotFilled"));
+                    } else {
+                      onBranchNameChanged("");
+                    }
                   }
-                } else {
-                  alert.warning("Invalid Account Number");
-                }
-              }}
-            >
-              <View style={styles.saveButtonContainer}>
-                <Text style={styles.saveButtonText}>{Translate.t("save")}</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+                }}
+                value={branchCode}
+              ></TextInput>
+              <TextInput
+                onFocus={() => controller.close()}
+                placeholder={Translate.t("branchName")}
+                placeholderTextColor={Colors.deepGrey}
+                style={styles.textInput}
+                editable={false}
+                onChangeText={(text) => onBranchNameChanged(text)}
+                value={branchName}
+              ></TextInput>
+              {/* {alert.warning(accountType)} */}
+              <DropDownPicker
+                controller={(instance) => {
+                  controller = instance;
+                }}
+                style={styles.textInput}
+                items={[
+                  {
+                    label: Translate.t("normal"),
+                    value: "1",
+                  },
+                  {
+                    label: Translate.t("current"),
+                    value: "2",
+                  },
+                  {
+                    label: Translate.t("savings"),
+                    value: "3",
+                  },
+                ]}
+                defaultValue={String(accountType) ? String(accountType) : "1"}
+                containerStyle={{ height: heightPercentageToDP("8%") }}
+                labelStyle={{
+                  fontSize: RFValue(11),
+                  color: "black",
+                }}
+                itemStyle={{
+                  justifyContent: "flex-start",
+                }}
+                selectedtLabelStyle={{
+                  color: "black",
+                }}
+                dropDownStyle={{ backgroundColor: "white" }}
+                onChangeItem={(item) => {
+                  if (item) {
+                    onAccountTypeChanged(item.value);
+                  }
+                }}
+              />
+              <TextInput
+                onFocus={() => controller.close()}
+                maxLength={7}
+                placeholder={Translate.t("accountNumber")}
+                placeholderTextColor={Colors.deepGrey}
+                style={styles.textInput}
+                onChangeText={(text) => onAccountNumberChanged(text)}
+                value={accountNumber}
+              ></TextInput>
+              <TextInput
+                onFocus={() => controller.close()}
+                placeholder={Translate.t("accountHolder")}
+                placeholderTextColor={Colors.deepGrey}
+                style={styles.textInput}
+                onChangeText={(text) => onAccountHolderChanged(text)}
+                value={accountHolder}
+              ></TextInput>
+            </View>
+            <Text style={styles.warningText}>
+              {Translate.t("bankRegistrationWarning")}
+            </Text>
+            <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  if (accountNumber.length == 7) {
+                    if (!accountType) {
+                      onAccountTypeChanged("1");
+                    } else if (
+                      financialName &&
+                      branchName &&
+                      accountType &&
+                      accountNumber &&
+                      accountHolder
+                    ) {
+                      AsyncStorage.getItem("user").then(function (url) {
+                        url = url.replace(
+                          "http://testserver",
+                          "http://127.0.0.1:8000"
+                        );
+                        let urls = url.split("/");
+                        urls = urls.filter((url) => {
+                          return url;
+                        });
+
+                        if (financialUrl) {
+                          console.log(financialUrl);
+                          request
+                            .patch(financialUrl, {
+                              financial_name: financialName,
+                              account_type: accountType,
+                              branch_code: branchCode,
+                              branch_name: branchName,
+                              account_number: accountNumber,
+                              account_name: accountHolder,
+                              financial_code: bankCode,
+                            })
+                            .then(function (response) {
+                              console.log(response);
+                              onAccountHolderChanged("");
+                              onAccountNumberChanged("");
+                              onBranchNameChanged("");
+                              onFinancialNameChanged("");
+                              onAccountTypeChanged("");
+                              props.navigation.goBack();
+                            })
+                            .catch(function (error) {
+                              alert.warning(
+                                error.response.data[
+                                  Object.keys(error.response.data)[0]
+                                ][0]
+                              );
+                              onLoaded(true);
+                            });
+                        } else {
+                          request
+                            .post("financial_account/", {
+                              user: url.replace("testserver", "127.0.0.1:8000"),
+                              financial_name: financialName,
+                              account_type: accountType,
+                              branch_code: branchCode,
+                              branch_name: branchName,
+                              account_number: accountNumber,
+                              account_name: accountHolder,
+                              financial_code: bankCode,
+                            })
+                            .then(function (response) {
+                              onAccountHolderChanged("");
+                              onAccountNumberChanged("");
+                              onBranchNameChanged("");
+                              onFinancialNameChanged("");
+                              onAccountTypeChanged("");
+                              props.navigation.goBack();
+                            })
+                            .catch(function (error) {
+                              alert.warning(
+                                error.response.data[
+                                  Object.keys(error.response.data)[0]
+                                ][0]
+                              );
+                              onLoaded(true);
+                            });
+                        }
+                      });
+                    } else {
+                      alert.warning(Translate.t("fieldNotFilled"));
+                    }
+                  } else {
+                    alert.warning("Invalid Account Number");
+                  }
+                }}
+              >
+                <View style={styles.saveButtonContainer}>
+                  <Text style={styles.saveButtonText}>
+                    {Translate.t("save")}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 const styles = StyleSheet.create({

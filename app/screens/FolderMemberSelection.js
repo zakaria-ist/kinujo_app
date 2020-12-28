@@ -553,13 +553,8 @@ export default function FolderMemberSelection(props) {
             )}
           </View>
         </TouchableWithoutFeedback>
-        <ScrollView
-          style={{
-            height: "100%",
-          }}
-          contentContainerStyle={{ flexGrow: 1 }}
-        >
-          <View style={{ marginBottom: heightPercentageToDP("50%") }}>
+        <ScrollView>
+          <View style={{ marginBottom: heightPercentageToDP("70%") }}>
             {userHtml}
           </View>
         </ScrollView>

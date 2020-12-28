@@ -47,6 +47,64 @@ export default function FriendSearch(props) {
     });
     ownUserID = urls[urls.length - 1];
   });
+  function redirectToChat(friendID, friendName) {
+    let groupID = null;
+    let groupName;
+    let deleted = "delete_" + ownUserID;
+    db.collection("chat")
+      .where("users", "array-contains", ownUserID.toString())
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          if(snapShot.doc.data().type != 'group'){
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == friendID) {
+                groupID = snapShot.doc.id;
+              }
+            }
+          }
+        });
+        if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
+          props.navigation.navigate("ChatScreen", {
+            groupID: groupID,
+            groupName: friendName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
+          let friendMessageUnseenField = "unseenMessageCount_" + friendID;
+          let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
+          let friendTotalMessageReadField = "totalMessageRead_" + friendID;
+          db.collection("chat")
+            .add({
+              groupName: friendName,
+              users: [ownUserID, String(friendID)],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function (docRef) {
+              props.navigation.navigate("ChatScreen", {
+                groupID: docRef.id,
+                groupName: friendName,
+              });
+            });
+        }
+      });
+  }
+
   function sendMessageHandler(friendID, friendName) {
     request.addFriend(ownUserID, friendID).then(()=>{
       let groupID;
@@ -102,7 +160,7 @@ export default function FriendSearch(props) {
         <TouchableWithoutFeedback
           key={friend.id}
           onPress={() => {
-            sendMessageHandler(friend.id, friend.real_name);
+            redirectToChat(friend.id, friend.real_name);
             onSearchTextChanged("");
           }}
         >

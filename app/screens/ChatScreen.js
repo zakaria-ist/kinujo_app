@@ -60,7 +60,7 @@ var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-if(Platform.OS === "android"){
+if (Platform.OS === "android") {
   AndroidKeyboardAdjust.setAdjustResize();
 }
 const db = firebase.firestore();
@@ -132,7 +132,7 @@ export default function ChatScreen(props) {
   const [friendImage, onFriendImageChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
   // const [user, processUser] = useState("");
-  const [inputBarPosition, setInputBarPosition] = useState(-2);
+  const [inputBarPosition, setInputBarPosition] = useState(0);
   const scrollViewReference = useRef();
   const isFocused = useIsFocused();
   groupID = props.route.params.groupID;

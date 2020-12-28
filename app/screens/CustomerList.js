@@ -8,8 +8,10 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   SafeAreaView,
+  ScrollView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
+import { useIsFocused } from "@react-navigation/native";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -18,7 +20,6 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
-import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -36,7 +37,7 @@ export default function CustomerList(props) {
   const [search, onSearchChanged] = React.useState("");
   const [customerHtml, onCustomerHtmlChanged] = React.useState(<View></View>);
   const [user, onUserChanged] = React.useState({});
-
+  const isFocused = useIsFocused();
   function processCustomerHtml(props, customers, search = "") {
     let tmpCustomerHtml = [];
     let tmpCustomers = customers;
@@ -133,7 +134,8 @@ export default function CustomerList(props) {
   });
   // }
 
-  if (!loaded) {
+  // if (!loaded) {
+  React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -167,7 +169,8 @@ export default function CustomerList(props) {
           onLoaded(true);
         });
     });
-  }
+  }, [isFocused]);
+  // }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -210,7 +213,11 @@ export default function CustomerList(props) {
         <Search style={styles.searchIcon} />
       </View>
       <View>
-        <ScrollView>{customerHtml}</ScrollView>
+        <ScrollView>
+          <View style={{ marginBottom: heightPercentageToDP("50%") }}>
+            {customerHtml}
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

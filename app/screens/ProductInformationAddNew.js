@@ -13,7 +13,7 @@ import {
   ScrollView,
   TextInput,
   TouchableWithoutFeedback,
-  Platform
+  Platform,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
@@ -92,7 +92,7 @@ export default function ProductInformationAddNew(props) {
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
   const [show, setShow] = React.useState(false);
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
+    const currentDate = selectedDate;
     onPublishDateChanged(Moment(currentDate).format("YYYY-MM-DD"));
     setShow(false);
   };
@@ -138,7 +138,7 @@ export default function ProductInformationAddNew(props) {
     onOneVariationItemsChanged("");
     onNoneVariationItemsChanged("");
 
-    props.navigation.setParams({url: ""})
+    props.navigation.setParams({ url: "" });
   }, [!isFocused]);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
@@ -217,9 +217,11 @@ export default function ProductInformationAddNew(props) {
             onProductImagesChanged(oldImages);
             onProductPageDisplayMethodChanged("slidingType");
             let tmpImages = response.data.productImages;
+
             let html = [];
             tmpImages.map((image) => {
               image = image.image;
+              console.log(image.is_hidden);
               html.push(
                 <View
                   key={image.id}
@@ -236,14 +238,18 @@ export default function ProductInformationAddNew(props) {
                     alignItems: "center",
                   }}
                 >
-                  <Image
-                    style={{
-                      width: "100%",
-                      height: heightPercentageToDP("30%"),
-                      position: "absolute",
-                    }}
-                    source={{ uri: image.image }}
-                  />
+                  {image.is_hidden == 0 ? (
+                    <Image
+                      style={{
+                        width: "100%",
+                        height: heightPercentageToDP("30%"),
+                        position: "absolute",
+                      }}
+                      source={{ uri: image.image }}
+                    />
+                  ) : (
+                    <View></View>
+                  )}
                 </View>
               );
             });
@@ -464,7 +470,7 @@ export default function ProductInformationAddNew(props) {
         }
       })
       .catch((error) => {
-        console.log(error);
+        // console.log(error);
       });
   }, [isFocused]);
   function onValueChanged(variant) {
@@ -511,7 +517,7 @@ export default function ProductInformationAddNew(props) {
         })
         .then((response) => {
           response = response.data;
-          console.log(response);
+          // console.log(response);
           if (response.success) {
             onSpinnerChanged(false);
             props.navigation.goBack();
@@ -597,7 +603,7 @@ export default function ProductInformationAddNew(props) {
         .then((response) => {
           onSpinnerChanged(false);
           response = response.data;
-          console.log(response);
+          // console.log(response);
           if (response.success) {
             // props.navigation.goBack();
           } else {
@@ -731,7 +737,7 @@ export default function ProductInformationAddNew(props) {
                 <RadioButton.Group
                   style={{ alignItems: "flex-start" }}
                   onValueChange={(variant) => {
-                      onValueChanged(variant);
+                    onValueChanged(variant);
                   }}
                   value={productVariation}
                 >
@@ -1247,7 +1253,7 @@ export default function ProductInformationAddNew(props) {
                       props.navigation.navigate("SettingStore");
                     })
                     .catch((error) => {
-                      console.log(error);
+                      // console.log(error);
                     });
                 } else {
                   props.navigation.navigate("SettingStore");

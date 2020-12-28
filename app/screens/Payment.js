@@ -74,70 +74,76 @@ export default function Payment(props) {
                 return url;
               });
               userId = urls[urls.length - 1];
+              // console.log(card.valid);
+              if (card.valid) {
+                if (card) {
+                  onSpinnerChanged(true);
+                  request
+                    .post("pay/" + userId + "/", {
+                      card: card.values,
+                      products: props.route.params.products,
+                      address: props.route.params.address,
+                      tax: props.route.params.tax,
+                    })
+                    .then(function (response) {
+                      onSpinnerChanged(false);
+                      response = response.data;
+                      if (response.success) {
+                        db.collection("users")
+                          .doc(userId)
+                          .collection("carts")
+                          .get()
+                          .then((querySnapshot) => {
+                            querySnapshot.forEach((documentSnapshot) => {
+                              db.collection("users")
+                                .doc(userId)
+                                .collection("carts")
+                                .doc(documentSnapshot.id)
+                                .delete()
+                                .then(() => {});
+                            });
 
-              if (card && card.valid) {
-                onSpinnerChanged(true);
-                request
-                  .post("pay/" + userId + "/", {
-                    card: card.values,
-                    products: props.route.params.products,
-                    address: props.route.params.address,
-                    tax: props.route.params.tax,
-                  })
-                  .then(function (response) {
-                    onSpinnerChanged(false);
-                    response = response.data;
-                    if (response.success) {
-                      db.collection("users")
-                        .doc(userId)
-                        .collection("carts")
-                        .get()
-                        .then((querySnapshot) => {
-                          querySnapshot.forEach((documentSnapshot) => {
-                            db.collection("users")
-                              .doc(userId)
-                              .collection("carts")
-                              .doc(documentSnapshot.id)
-                              .delete()
-                              .then(() => {});
+                            props.navigation.navigate("PurchaseCompletion");
                           });
-
-                          props.navigation.navigate("PurchaseCompletion");
-                        });
-                    } else {
+                      } else {
+                        if (
+                          response.errors &&
+                          Object.keys(response.errors).length > 0
+                        ) {
+                          alert.warning(
+                            response.errors[
+                              Object.keys(response.errors)[0]
+                            ][0] +
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")"
+                          );
+                        } else if (response.error) {
+                          alert.warning(response.error);
+                        }
+                      }
+                    })
+                    .catch(function (error) {
+                      console.log(error);
+                      onSpinnerChanged(false);
                       if (
-                        response.errors &&
-                        Object.keys(response.errors).length > 0
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
                       ) {
                         alert.warning(
-                          response.errors[Object.keys(response.errors)[0]][0] +
-                            "(" +
-                            Object.keys(response.errors)[0] +
-                            ")"
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0]
                         );
-                      } else if (response.error) {
-                        alert.warning(response.error);
                       }
-                    }
-                  })
-                  .catch(function (error) {
-                    console.log(error);
-                    onSpinnerChanged(false);
-                    if (
-                      error &&
-                      error.response &&
-                      error.response.data &&
-                      Object.keys(error.response.data).length > 0
-                    ) {
-                      alert.warning(
-                        error.response.data[
-                          Object.keys(error.response.data)[0]
-                        ][0]
-                      );
-                    }
-                  });
+                    });
+                } else {
+                  alert.warning(Translate.t("cardNotComplete"));
+                }
               } else {
-                alert.warning(Translate.t("cardNotComplete"));
+                alert.warning("Invalid Card Number");
               }
             });
           }}
