@@ -98,7 +98,10 @@ export default function Favorite(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                format.separator(product.shipping_fee) +
+                "円"
           }
         />
       );
@@ -149,7 +152,10 @@ export default function Favorite(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : "Shipping: " + format.separator(product.shipping_fee) + "円"
+              : Translate.t("shipping") +
+                " : " +
+                +format.separator(product.shipping_fee) +
+                "円"
           }
         />
       );
@@ -354,7 +360,7 @@ export default function Favorite(props) {
           }
         });
     });
-  }, []);
+  }, [isFocused]);
   return (
     <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
       <SafeAreaView style={{ flex: 1 }}>

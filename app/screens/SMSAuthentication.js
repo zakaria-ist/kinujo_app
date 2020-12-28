@@ -114,7 +114,7 @@ export default function SMSAuthentication(props) {
                   confirm.verificationId,
                   code,
                 );
-                let userData = auth().currentUser.signInWithCredential(credential).then(()=>{
+                let userData = auth().signInWithCredential(credential).then(()=>{
                   request
                     .post("user/register", props.route.params)
                     .then(function (response) {
@@ -181,7 +181,6 @@ export default function SMSAuthentication(props) {
                   alert.warning(error.code);
                 })
               } else {
-
                 const credential = auth.PhoneAuthProvider.credential(
                   confirm.verificationId,
                   code,

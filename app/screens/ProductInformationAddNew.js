@@ -13,6 +13,7 @@ import {
   ScrollView,
   TextInput,
   TouchableWithoutFeedback,
+  Platform
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
@@ -31,7 +32,8 @@ import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHea
 import ProductNoneVariations from "./ProductNoneVariations";
 import ProductOneVariations from "./ProductOneVariations";
 import ProductTwoVariations from "./ProductTwoVariations";
-import DateTimePicker from "react-native-datepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Moment from "moment";
 import { DatePicker } from "react-native-propel-kit";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -88,6 +90,12 @@ export default function ProductInformationAddNew(props) {
   const [spinner, onSpinnerChanged] = React.useState(false);
   const [product, onProductChanged] = React.useState(false);
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
+  const [show, setShow] = React.useState(false);
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    onPublishDateChanged(Moment(currentDate).format("YYYY-MM-DD"));
+    setShow(false);
+  };
   let type = props.route.params.type;
   function getId(url) {
     let urls = url.split("/");
@@ -129,6 +137,8 @@ export default function ProductInformationAddNew(props) {
     onTwoVariationItemsChanged("");
     onOneVariationItemsChanged("");
     onNoneVariationItemsChanged("");
+
+    props.navigation.setParams({url: ""})
   }, [!isFocused]);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
@@ -456,7 +466,7 @@ export default function ProductInformationAddNew(props) {
       .catch((error) => {
         console.log(error);
       });
-  }, []);
+  }, [isFocused]);
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
     if (variant == "none") {
@@ -717,44 +727,48 @@ export default function ProductInformationAddNew(props) {
               />
 
               <Text style={styles.text}>{Translate.t("variation")}</Text>
-              <RadioButton.Group
-                style={{ backgroundColor: "green", flex: 1 }}
-                onValueChange={(variant) => {
-                  if (!props.route.params.url) {
-                    onValueChanged(variant);
-                  }
-                }}
-                value={productVariation}
-              >
-                <View style={styles.radioGroupContainer}>
-                  <RadioButton.Android
-                    value="one"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {"1 "}
-                    {Translate.t("item")}
-                  </Text>
-                  <RadioButton.Android
-                    value="two"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {"2 "}
-                    {Translate.t("item")}
-                  </Text>
-                  <RadioButton.Android
-                    value="none"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("none")}
-                  </Text>
-                </View>
-              </RadioButton.Group>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  style={{ alignItems: "flex-start" }}
+                  onValueChange={(variant) => {
+                      onValueChanged(variant);
+                  }}
+                  value={productVariation}
+                >
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="one"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {"1 "}
+                      {Translate.t("item")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="two"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {"2 "}
+                      {Translate.t("item")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="none"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("none")}
+                    </Text>
+                  </View>
+                </RadioButton.Group>
+              </View>
 
               <View style={styles.line} />
 
@@ -844,29 +858,52 @@ export default function ProductInformationAddNew(props) {
                     onPublishDateChanged(date);
                   }}
                 /> */}
-
-                <DateTimePicker
-                  // androidMode={true}
-                  style={{
-                    marginLeft: widthPercentageToDP("1%"),
-                    width: widthPercentageToDP("40%"),
-                    // borderColor: "transparent",
-                  }}
-                  date={publishDate}
-                  display="spinner"
-                  // onChange
-                  onDateChange={(date) => {
-                    if (date) {
-                      console.log(date);
-                      onPublishDateChanged(date);
-                    }
-                  }}
-                />
-                {/* <TextInput
-                style={styles.releaseDateTextInput}
-                value={publishDate}
-                onChangeText={(value) => onPublishDateChanged(value)}
-              ></TextInput> */}
+                {/* {console.log(new Date(publishDate))} */}
+                {Platform.OS == "android" ? (
+                  show == true ? (
+                    <DateTimePicker
+                      value={publishDate ? new Date(publishDate) : new Date()}
+                      mode={"date"}
+                      display="default"
+                      style={{
+                        marginLeft: widthPercentageToDP("1%"),
+                        width: widthPercentageToDP("40%"),
+                      }}
+                      onChange={onChange}
+                    />
+                  ) : (
+                    <View></View>
+                  )
+                ) : (
+                  <DateTimePicker
+                    value={publishDate ? new Date(publishDate) : new Date()}
+                    mode={"date"}
+                    display="default"
+                    style={{
+                      // display:"none",
+                      marginLeft: widthPercentageToDP("1%"),
+                      width: widthPercentageToDP("40%"),
+                    }}
+                    onChange={onChange}
+                  />
+                )}
+                {Platform.OS == "android" ? (
+                  <TouchableWithoutFeedback onPress={() => setShow(true)}>
+                    <Text
+                      style={{
+                        fontSize: RFValue(12),
+                        marginLeft: widthPercentageToDP("3%"),
+                        borderWidth: 1,
+                        paddingHorizontal: widthPercentageToDP("4%"),
+                        paddingVertical: heightPercentageToDP("1%"),
+                      }}
+                    >
+                      {publishDate}
+                    </Text>
+                  </TouchableWithoutFeedback>
+                ) : (
+                  <View></View>
+                )}
               </View>
               <Text style={styles.releaseDateWarningText}>
                 {Translate.t("publishWarning")}

@@ -16,6 +16,7 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import VersionInfo from "react-native-version-info";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -25,9 +26,6 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
-var pkg = require("../../../kinujo_app/package.json");
-// var test = require("../../android/app/build.gradle");
-// console.log(test);
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -714,7 +712,7 @@ export default function Setting(props) {
               {Translate.t("versionInformation")}
             </Text>
             <Text style={styles.textInContainerRight}>
-              version {pkg.version}
+              version {VersionInfo.appVersion}
             </Text>
           </View>
           {/* <View style={styles.tabContainer}>

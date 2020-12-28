@@ -405,33 +405,37 @@ export default function ProductList(props) {
             user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
           }
         />
-        <View style={styles.discription_header}>
-          <View>
-            <Text style={styles.disc_title_text}>
-              Product Name : {productName}
-            </Text>
-          </View>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingVertical: heightPercentageToDP("3%"),
+            marginTop: heightPercentageToDP("3%"),
+          }}
+        >
+          <Text
+            style={{
+              paddingLeft: 15,
+              fontSize: RFValue(12),
+              width: widthPercentageToDP("65%"),
+            }}
+          >
+            Product Name : {productName}
+          </Text>
           <View
             style={{
               position: "absolute",
               right: 0,
-              justifyContent: "center",
-              //   paddingTop: heightPercentageToDP("3%"),
-              // backgroundColor: "orange",
-              height: heightPercentageToDP("20%"),
-              width: widthPercentageToDP("35%"),
             }}
           >
             <TouchableWithoutFeedback onPress={() => showCategoryAnimation()}>
               <View
                 style={{
-                  // position: "absolute",
                   right: 0,
                   marginRight: widthPercentageToDP("3%"),
-                  // marginTop: heightPercentageToDP("3%"),
                   borderRadius: 5,
                   paddingVertical: heightPercentageToDP("1%"),
-                  paddingHorizontal: heightPercentageToDP("1%"),
+                  paddingHorizontal: heightPercentageToDP("2%"),
                   backgroundColor: Colors.E6DADE,
                 }}
               >
@@ -446,31 +450,6 @@ export default function ProductList(props) {
                 </Text>
               </View>
             </TouchableWithoutFeedback>
-            {/* <TouchableWithoutFeedback onPress={() => showSortingAnimation()}>
-              <View
-                style={{
-                  // position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("3%"),
-                  // marginTop: heightPercentageToDP("3%"),
-                  borderRadius: 5,
-                  paddingVertical: heightPercentageToDP("1%"),
-                  paddingHorizontal: heightPercentageToDP("1%"),
-                  marginTop: heightPercentageToDP("2%"),
-                  backgroundColor: Colors.E6DADE,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: RFValue(12),
-                    color: "white",
-                    textAlign: "center",
-                  }}
-                >
-                  {Translate.t("sorting")}
-                </Text>
-              </View>
-            </TouchableWithoutFeedback> */}
           </View>
         </View>
 

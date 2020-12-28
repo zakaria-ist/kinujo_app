@@ -202,9 +202,11 @@ export default function ExhibitedProductList(props) {
         }
       />
       <ScrollView
-        style={{
-          height: heightPercentageToDP("85%") - insets.bottom,
-        }}
+        style={
+          {
+            // height: heightPercentageToDP("85%") - insets.bottom,
+          }
+        }
       >
         <View
           style={{
@@ -213,7 +215,11 @@ export default function ExhibitedProductList(props) {
             paddingBottom: widthPercentageToDP("5%"),
           }}
         >
-          <View style={{ flexDirection: "row" }}>
+          <View
+            style={{
+              flexDirection: "row",
+            }}
+          >
             <Text
               onPress={() => {
                 onStatusChanged("published");
@@ -289,7 +295,7 @@ export default function ExhibitedProductList(props) {
         >
           <View
             style={{
-              marginBottom: heightPercentageToDP("10%"),
+              marginBottom: heightPercentageToDP("30%"),
               backgroundColor: Colors.D7CCA6,
               marginHorizontal: widthPercentageToDP("3%"),
               justifyContent: "center",

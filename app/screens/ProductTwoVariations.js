@@ -376,7 +376,6 @@ export default function ProductTwoVariations({
             }}
           >
             <View style={styles.variantContainer}>
-              <Text style={styles.colorText}>{choice.choiceItem}</Text>
               {/* onValueChanged(value, "choice", index, choice.choiceIndex) */}
               <TextInput
                 style={styles.variantStockInput}
@@ -400,6 +399,15 @@ export default function ProductTwoVariations({
                 }}
               ></TextInput>
               <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+              <Text
+                style={{
+                  marginRight: widthPercentageToDP("35%"),
+                  fontSize: RFValue(12),
+                  alignSelf: "center",
+                }}
+              >
+                {choice.choiceItem}
+              </Text>
             </View>
             <View style={styles.variantContainer}>
               <TextInput
@@ -580,26 +588,27 @@ const styles = StyleSheet.create({
   variantContainer: {
     flexDirection: "row-reverse",
     alignItems: "center",
+    // justifyContent: "space-between",
   },
   variantText: {
     fontSize: RFValue(9),
     marginTop: heightPercentageToDP("1%"),
   },
-  colorText: {
-    position: "absolute",
-    left: 0,
-    marginLeft: widthPercentageToDP("80%"),
-    fontSize: RFValue(12),
-    marginTop: heightPercentageToDP("1%"),
-  },
+  // colorText: {
+  //   position: "absolute",
+  //   left: 0,
+  //   marginLeft: widthPercentageToDP("80%"),
+  //   fontSize: RFValue(12),
+  //   marginTop: heightPercentageToDP("1%"),
+  // },
   variantInput: {
     borderWidth: 0,
     backgroundColor: "white",
-    fontSize: RFValue(10),
+    fontSize: RFValue(11),
     height: heightPercentageToDP("5%"),
     alignSelf: "center",
     width: widthPercentageToDP("60%"),
-    // height: heightPercentageToDP("6%"),
+    height: heightPercentageToDP("6%"),
     // backgroundColor: "orange",
     marginLeft: widthPercentageToDP("2%"),
     marginTop: heightPercentageToDP("1%"),

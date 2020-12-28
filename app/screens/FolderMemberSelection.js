@@ -67,10 +67,12 @@ export default function FolderMemberSelection(props) {
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
   React.useEffect(() => {
+    ids = [];
     AsyncStorage.getItem("tmpIds").then((friendIds) => {
       if (friendIds) {
         tmpFriendIds = JSON.parse(friendIds);
       }
+      console.log(tmpFriendIds);
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url);
         let urls = url.split("/");
@@ -125,6 +127,11 @@ export default function FolderMemberSelection(props) {
               }
             });
 
+            ids.filter((item) => {
+              console.log(item + " " + userId);
+              return item != userId;
+            });
+            console.log(ids);
             tmpFriend = items;
 
             request
@@ -134,7 +141,7 @@ export default function FolderMemberSelection(props) {
                 type: "contact",
               })
               .then(function (response) {
-                console.log(response.data.users.length);
+                // console.log(response.data.users.length);
                 //response = get use details from url
                 onUserHtmlChanged(
                   processUserHtml(props, response.data.users, tmpFriend)
@@ -183,7 +190,7 @@ export default function FolderMemberSelection(props) {
         id: friendID,
         checkStatus: true,
       });
-      console.log(tmpFriend);
+      // console.log(tmpFriend);
     }
     onUpdate(ids, tmpFriend);
   }
@@ -218,9 +225,9 @@ export default function FolderMemberSelection(props) {
   function processUserHtml(props, users, friendMaps) {
     let tmpUserHtml = [];
     users.map((user) => {
-      console.log("###" + userId);
+      // console.log("###" + userId);
       let item = friendMaps.filter((tmp) => {
-        console.log("$$$" + tmp.id);
+        // console.log("$$$" + tmp.id);
         return tmp.id == user.id && tmp.id != userId;
       });
       if (item.length > 0) {
@@ -291,7 +298,7 @@ export default function FolderMemberSelection(props) {
   }
   function finishSelect() {
     let selectedId = [];
-    console.log(tmpFriend);
+    // console.log(tmpFriend);
     tmpFriend.map((friend) => {
       if (friend.checkStatus == true) {
         selectedId.push(String(friend.id));

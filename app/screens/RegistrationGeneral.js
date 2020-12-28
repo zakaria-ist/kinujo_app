@@ -164,6 +164,7 @@ export default function RegistrationGeneral(props) {
                     fontSize: RFValue(10),
                     width: widthPercentageToDP("23%"),
                     paddingLeft: widthPercentageToDP("3%"),
+                    height: heightPercentageToDP("5%"),
                   },
                 }}
                 listProps={{
@@ -237,6 +238,7 @@ export default function RegistrationGeneral(props) {
                               password: password,
                               authority: "general",
                               introducer: item,
+                              callingCode: callingCode,
                             });
                           });
                         } else {

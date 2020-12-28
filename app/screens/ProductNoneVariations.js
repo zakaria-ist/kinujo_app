@@ -40,7 +40,7 @@ export default function ProductNoneVariations({
     if (pItems) {
       setJanCode(pItems.janCode);
       if (pItems.stock) {
-        setStock(pItems.stock.replace(/[^0-9]/g, ""));
+        setStock(String(pItems.stock).replace(/[^0-9]/g, ""));
       }
       // setStock(pItems.id);
     }

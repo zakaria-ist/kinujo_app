@@ -55,12 +55,20 @@ export default function PurchaseHistory(props) {
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
 
   function processOrderHtml(props, orders, status = "") {
-    if(searchText){
-      orders = orders.filter((order)=>{
-        if(order.product_jan_code.horizontal){
-          return order.product_jan_code.horizontal.product_variety.product.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0
-        } else if(order.product_jan_code.vertical){
-          return order.product_jan_code.vertical.product_variety.product.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0
+    if (searchText) {
+      orders = orders.filter((order) => {
+        if (order.product_jan_code.horizontal) {
+          return (
+            order.product_jan_code.horizontal.product_variety.product.name
+              .toLowerCase()
+              .indexOf(searchText.toLowerCase()) >= 0
+          );
+        } else if (order.product_jan_code.vertical) {
+          return (
+            order.product_jan_code.vertical.product_variety.product.name
+              .toLowerCase()
+              .indexOf(searchText.toLowerCase()) >= 0
+          );
         }
         return false;
       });
@@ -157,7 +165,12 @@ export default function PurchaseHistory(props) {
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
                 onPress={() =>
-                  redirectToChat(order.id, order.order.seller.shop_name)
+                  redirectToChat(
+                    order.id,
+                    order.order.seller.store_name
+                      ? order.order.seller.store_name
+                      : order.order.seller.nickname
+                  )
                 }
               >
                 <View style={styles.productInformationContainer}>
@@ -229,7 +242,7 @@ export default function PurchaseHistory(props) {
                 merge: true,
               }
             );
-          props.navigation.push("ChatScreen", {
+          props.navigation.navigate("ChatScreen", {
             groupID: groupID,
             groupName: orderName,
           });
@@ -249,7 +262,7 @@ export default function PurchaseHistory(props) {
               [friendTotalMessageReadField]: 0,
             })
             .then(function (docRef) {
-              props.navigation.push("ChatScreen", {
+              props.navigation.navigate("ChatScreen", {
                 groupID: docRef.id,
                 groupName: orderName,
               });
@@ -544,6 +557,7 @@ export default function PurchaseHistory(props) {
               2015 年 3月以前
             </Text> */}
             </View>
+
             <View
               style={{
                 flexDirection: "row",
@@ -553,7 +567,7 @@ export default function PurchaseHistory(props) {
                 bottom: 0,
                 position: "absolute",
                 marginHorizontal: widthPercentageToDP("1%"),
-                marginBottom: heightPercentageToDP("8%"),
+                marginBottom: heightPercentageToDP("15%"),
                 justifyContent: "space-evenly",
                 // backgroundColor: "orange",
                 width: "100%",
@@ -571,12 +585,12 @@ export default function PurchaseHistory(props) {
                 }}
                 source={require("../assets/Images/cancelIcon.png")}
               />
-              <TouchableWithoutFeedback onPress={
-                ()=>{
+              <TouchableWithoutFeedback
+                onPress={() => {
                   onSearchTextChanged("");
                   onOrderHtmlChanged(processOrderHtml(props, orders, ""));
-                }
-              }>
+                }}
+              >
                 <Text
                   style={{
                     fontSize: RFValue(14),

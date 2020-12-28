@@ -31,6 +31,7 @@ import {
 import Translate from "../assets/Translates/Translate";
 import ImagePicker from "react-native-image-picker";
 import { RFValue } from "react-native-responsive-fontsize";
+import AndroidKeyboardAdjust from "react-native-android-keyboard-adjust";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import ChatText from "./ChatText";
@@ -58,6 +59,9 @@ const { height } = Dimensions.get("window");
 var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
+}
+if(Platform.OS === "android"){
+  AndroidKeyboardAdjust.setAdjustResize();
 }
 const db = firebase.firestore();
 const chatsRef = db.collection("chat");
@@ -157,7 +161,7 @@ export default function ChatScreen(props) {
       if (docRef.data().displayName && docRef.id == users[0]) {
         tmpName = docRef.data().displayName;
 
-        if(docRef.data().secretMode){
+        if (docRef.data().secretMode) {
           setSecretMode(true);
         }
       }
@@ -246,16 +250,14 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
-                  longPress = {
-                    ()=>{
-                      onLongPressObjChanged({
-                        id: chat.id,
-                        message: chat.data.message,
-                        data: chat.data,
-                      });
-                      onShowPopUpChanged(true);
-                    }
-                  }
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                    });
+                    onShowPopUpChanged(true);
+                  }}
                   showCheckBox={showCheckBox}
                   props={props}
                   date={tmpHours + ":" + tmpMinutes}
@@ -462,7 +464,7 @@ export default function ChatScreen(props) {
     const resultChatHtml = tmpChatHtml.filter((html) => {
       return !html.props["delete"];
     });
-    onChatHtmlChanged(resultChatHtml)
+    onChatHtmlChanged(resultChatHtml);
     index++;
   }
 
@@ -538,37 +540,40 @@ export default function ChatScreen(props) {
         .doc(groupID)
         .collection("messages")
         .orderBy("timeStamp", "asc")
-        .onSnapshot({
-          includeMetadataChanges: false
-        }, (querySnapShot) => {
-          querySnapShot.forEach((snapShot) => {
-            if (snapShot && snapShot.exists) {
-              let tmpChats = chats.filter((chat) => {
-                return chat.id == snapShot.id;
-              });
-              if (tmpChats.length == 0) {
-                chats.push({
-                  id: snapShot.id,
-                  data: snapShot.data(),
+        .onSnapshot(
+          {
+            includeMetadataChanges: false,
+          },
+          (querySnapShot) => {
+            querySnapShot.forEach((snapShot) => {
+              if (snapShot && snapShot.exists) {
+                let tmpChats = chats.filter((chat) => {
+                  return chat.id == snapShot.id;
                 });
-              } else {
-                chats = chats.map((chat) => {
-                  if (chat.id == snapShot.id) {
-                    chat.data = snapShot.data();
-                  }
-                  return chat;
-                });
+                if (tmpChats.length == 0) {
+                  chats.push({
+                    id: snapShot.id,
+                    data: snapShot.data(),
+                  });
+                } else {
+                  chats = chats.map((chat) => {
+                    if (chat.id == snapShot.id) {
+                      chat.data = snapShot.data();
+                    }
+                    return chat;
+                  });
+                }
               }
-            }
-          });
-          processChat(chats);
-        });
+            });
+            processChat(chats);
+          }
+        );
     }
   }
 
-  React.useEffect(()=>{
-    scrollViewReference.current.scrollToEnd({ animated: true })
-  }, [chatHtml])
+  React.useEffect(() => {
+    scrollViewReference.current.scrollToEnd({ animated: true });
+  }, [chatHtml]);
 
   React.useEffect(() => {
     if (!isFocused) {
@@ -604,17 +609,18 @@ export default function ChatScreen(props) {
   }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <CustomHeader
+        text={Translate.t("chat")}
+        onBack={() => props.navigation.goBack()}
+        onFavoritePress={() => props.navigation.navigate("Favorite")}
+        onPress={() => props.navigation.navigate("Cart")}
+      />
+      <CustomSecondaryHeader name={name} userUrl={userUrl} />
       <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
         <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
+          behavior={Platform.OS == "ios" ? "padding" : null}
           style={{ flex: 1 }}
         >
-          <CustomHeader
-            text={Translate.t("chat")}
-            onBack={() => props.navigation.goBack()}
-            onFavoritePress={() => props.navigation.navigate("Favorite")}
-            onPress={() => props.navigation.navigate("Cart")}
-          />
           <EmojiBoard
             numCols={parseInt(heightPercentageToDP("30%") / 60)}
             showBoard={showEmoji}
@@ -628,7 +634,6 @@ export default function ChatScreen(props) {
             onClick={onClick}
             onRemove={onRemove}
           />
-          <CustomSecondaryHeader name={name} userUrl={userUrl} />
           <LinearGradient
             colors={[Colors.E4DBC0, Colors.C2A059]}
             start={[0, 0]}
@@ -741,10 +746,11 @@ export default function ChatScreen(props) {
                         .doc(groupID)
                         .set(update, {
                           merge: true,
-                        }).then(()=>{
-                          onShowPopUpChanged(false);
-                          alert.warning(Translate.t("chat_favourite_added"))
                         })
+                        .then(() => {
+                          onShowPopUpChanged(false);
+                          alert.warning(Translate.t("chat_favourite_added"));
+                        });
 
                       // db.collection("users")
                       //   .doc(userId)
@@ -870,8 +876,7 @@ export default function ChatScreen(props) {
                         timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                         message: tmpMessage,
                       })
-                      .then((item) => {
-                      });
+                      .then((item) => {});
                   }
                 }}
               >

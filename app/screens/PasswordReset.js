@@ -137,6 +137,7 @@ export default function PasswordReset(props) {
                     fontSize: RFValue(10),
                     width: widthPercentageToDP("23%"),
                     paddingLeft: widthPercentageToDP("3%"),
+                    height: heightPercentageToDP("5%"),
                   },
                 }}
                 listProps={{
@@ -287,14 +288,21 @@ export default function PasswordReset(props) {
                     code
                   );
                   let userData = auth()
-                    .currentUser.signInWithCredential(credential)
+                    .signInWithCredential(credential)
                     .then(() => {
                       if (password && confirm_password) {
                         if (password == confirm_password) {
+                          console.log({
+                            tel: phone,
+                            password: password,
+                            confirm_password: confirm_password,
+                            confirm_password: confirm_password,
+                          });
                           request
                             .post("password/reset", {
                               tel: phone,
                               password: password,
+                              confirm_password: confirm_password,
                               confirm_password: confirm_password,
                             })
                             .then(function (response) {
@@ -307,9 +315,10 @@ export default function PasswordReset(props) {
                                     onConfirmPasswordChanged("");
                                     onPasswordChanged("");
                                     onPhoneChanged("");
-                                    props.navigation.navigate(
-                                      "PasswordResetCompletion"
-                                    );
+                                    props.navigation.reset({
+                                      index: 0,
+                                      routes: [{ name: "LoginScreen" }],
+                                    });
                                   }
                                 );
                               } else {

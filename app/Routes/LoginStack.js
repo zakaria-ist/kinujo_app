@@ -127,6 +127,9 @@ function BottomNavigationGeneral(props) {
         <Tab.Screen
           name="Chat"
           component={ChatList}
+          tabBarOptions={{
+            keyboardHidesTabBar: true,
+          }}
           options={{
             tabBarLabel: "Chat",
             tabBarIcon: () => <ChatLogo width={25} height={25} />,
@@ -481,6 +484,9 @@ function BottomNavigationGeneral(props) {
           }}
           name="SearchProducts"
           component={SearchProducts}
+          tabBarOptions={{
+            keyboardHidesTabBar: true,
+          }}
         />
         <Tab.Screen
           options={{
@@ -946,6 +952,9 @@ function BottomNavigationGeneral(props) {
           }}
           name="SearchProducts"
           component={SearchProducts}
+          tabBarOptions={{
+            keyboardHidesTabBar: true,
+          }}
         />
         <Tab.Screen
           options={{
@@ -1468,6 +1477,9 @@ function BottomNavigationStore(props) {
           }}
           name="SearchProducts"
           component={SearchProducts}
+          tabBarOptions={{
+            keyboardHidesTabBar: true,
+          }}
         />
         <Tab.Screen
           options={{
@@ -1950,6 +1962,9 @@ function BottomNavigationStore(props) {
           }}
           name="SearchProducts"
           component={SearchProducts}
+          tabBarOptions={{
+            keyboardHidesTabBar: true,
+          }}
         />
         <Tab.Screen
           options={{

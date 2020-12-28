@@ -271,18 +271,19 @@ export default function HomeByCategory(props) {
     }
     if (type == "Popular") {
       onSelected("Popular");
-      tmpKinujoProducts = tmpKinujoProducts.map((product) => {
-        console.log(product);
-        getDetails(product.id, tmpKinujoProducts).then((view) => {
-          // console.log(view.view);
-          // console.log(view);
-          view.sort((a, b) => {
-            // console.log(a);
-          });
-          // onKinujoHtmlChanged(processKinujoProductHtml(tmpView));
-        });
+
+      tmpFeaturedProducts = tmpFeaturedProducts.sort((productA, productB) => {
+        let productA_count = productsView[productA.id] ? productsView[productA.id] : 0
+        let productB_count = productsView[productB.id] ? productsView[productB.id] : 0
+        return productA_count > productB_count;
       });
-      // onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+      tmpKinujoProducts = tmpKinujoProducts.sort((productA, productB) => {
+        let productA_count = productsView[productA.id] ? productsView[productA.id] : 0
+        let productB_count = productsView[productB.id] ? productsView[productB.id] : 0
+        return productA_count > productB_count;
+      });
+      onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
+      onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
     }
     if (type == "reset") {
       onSelected("");
@@ -357,6 +358,13 @@ export default function HomeByCategory(props) {
     onFeaturedHtmlChanged([]);
     onKinujoHtmlChanged([]);
     onCategoryName(props.route.params.categoryName);
+
+    db.collection("products").get().then((querySnapshot) => {
+      querySnapshot.forEach((documentSnapshot) => {
+        productsView[documentSnapshot.id] = documentSnapshot.data()['view']
+      });
+    });
+
     AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)

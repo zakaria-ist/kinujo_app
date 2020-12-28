@@ -166,6 +166,7 @@ export default function RegistrationStore(props) {
                     fontSize: RFValue(10),
                     width: widthPercentageToDP("23%"),
                     paddingLeft: widthPercentageToDP("3%"),
+                    height: heightPercentageToDP("5%"),
                   },
                 }}
                 listProps={{
@@ -233,6 +234,7 @@ export default function RegistrationStore(props) {
                                 password: password,
                                 authority: "store",
                                 introducer: item,
+                                callingCode: callingCode,
                               });
                             })
                             .catch(function (error) {
