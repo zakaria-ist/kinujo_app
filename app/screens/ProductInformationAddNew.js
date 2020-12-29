@@ -733,49 +733,42 @@ export default function ProductInformationAddNew(props) {
               />
 
               <Text style={styles.text}>{Translate.t("variation")}</Text>
-              <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
-                  style={{ alignItems: "flex-start" }}
-                  onValueChange={(variant) => {
-                    onValueChanged(variant);
-                  }}
-                  value={productVariation}
-                >
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="one"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {"1 "}
-                      {Translate.t("item")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="two"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {"2 "}
-                      {Translate.t("item")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="none"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("none")}
-                    </Text>
-                  </View>
-                </RadioButton.Group>
-              </View>
-
+              <RadioButton.Group
+                style={{ alignItems: "flex-start" }}
+                onValueChange={(variant) => {
+                  onValueChanged(variant);
+                }}
+                value={productVariation}
+              >
+                <View style={styles.radioGroupContainer}>
+                  <RadioButton.Android
+                    value="one"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {"1 "}
+                    {Translate.t("item")}
+                  </Text>
+                  <RadioButton.Android
+                    value="two"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {"2 "}
+                    {Translate.t("item")}
+                  </Text>
+                  <RadioButton.Android
+                    value="none"
+                    uncheckedColor="#FFF"
+                    color="#BD9848"
+                  />
+                  <Text style={styles.radioButtonText}>
+                    {Translate.t("none")}
+                  </Text>
+                </View>
+              </RadioButton.Group>
               <View style={styles.line} />
 
               {/*1 項目*/}
@@ -1325,14 +1318,6 @@ const styles = StyleSheet.create({
   radioGroupContainer: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  radionButtonLabel: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    paddingRight: 10,
-    flexBasis: "auto",
   },
   releaseDateTextInput: {
     borderWidth: 0,
