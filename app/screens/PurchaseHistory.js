@@ -53,7 +53,12 @@ export default function PurchaseHistory(props) {
   const [years, onYearChanged] = React.useState(<View></View>);
   const [searchText, onSearchTextChanged] = React.useState("");
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
-
+  function getProductImages(order) {
+    return order.product_jan_code.horizontal.product_variety.product
+      .productImages
+      ? order.product_jan_code.horizontal.product_variety.product.productImages
+      : order.product_jan_code.vertical.product_variety.product.productImages;
+  }
   function processOrderHtml(props, orders, status = "") {
     if (searchText) {
       orders = orders.filter((order) => {
@@ -73,10 +78,14 @@ export default function PurchaseHistory(props) {
         return false;
       });
     }
+
     let tmpOrderHtml = [];
     for (var i = 0; i < orders.length; i++) {
       let order = orders[i];
-      console.log(order);
+      // if (getProductImages(order).length > 0) {
+      //   console.log(getProductImages(order)[0].image.image);
+      // }
+
       tmpOrderHtml.push(
         <TouchableWithoutFeedback key={i}>
           <View>
@@ -104,13 +113,24 @@ export default function PurchaseHistory(props) {
             </Text>
             <View style={styles.purchaseHistoryProductContainer}>
               <View style={styles.productInformationContainer}>
-                <Image
-                  style={{
-                    height: RFValue(45),
-                    width: RFValue(45),
-                  }}
-                  source={require("../assets/Images/cover_img.jpg")}
-                />
+                {getProductImages(order).length > 0 ? (
+                  <Image
+                    style={{
+                      height: RFValue(45),
+                      width: RFValue(45),
+                    }}
+                    source={{ uri: getProductImages(order)[0].image.image }}
+                  />
+                ) : (
+                  <Image
+                    style={{
+                      height: RFValue(45),
+                      width: RFValue(45),
+                    }}
+                    source={require("../assets/Images/cover_img.jpg")}
+                  />
+                )}
+
                 <View
                   style={{
                     marginLeft: widthPercentageToDP("3%"),

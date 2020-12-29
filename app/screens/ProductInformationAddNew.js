@@ -221,37 +221,35 @@ export default function ProductInformationAddNew(props) {
             let html = [];
             tmpImages.map((image) => {
               image = image.image;
-              console.log(image.is_hidden);
-              html.push(
-                <View
-                  key={image.id}
-                  style={{
-                    marginTop: heightPercentageToDP("1%"),
-                    height: 1,
-                    width: "100%",
-                    height: heightPercentageToDP("30%"),
-                    borderRadius: 1,
-                    borderWidth: 1,
-                    borderColor: Colors.deepGrey,
-                    borderStyle: "dashed",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  {image.is_hidden == 0 ? (
-                    <Image
-                      style={{
-                        width: "100%",
-                        height: heightPercentageToDP("30%"),
-                        position: "absolute",
-                      }}
-                      source={{ uri: image.image }}
-                    />
-                  ) : (
-                    <View></View>
-                  )}
-                </View>
-              );
+
+              if(!image.is_hidden){
+                html.push(
+                  <View
+                    key={image.id}
+                    style={{
+                      marginTop: heightPercentageToDP("1%"),
+                      height: 1,
+                      width: "100%",
+                      height: heightPercentageToDP("30%"),
+                      borderRadius: 1,
+                      borderWidth: 1,
+                      borderColor: Colors.deepGrey,
+                      borderStyle: "dashed",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                      <Image
+                        style={{
+                          width: "100%",
+                          height: heightPercentageToDP("30%"),
+                          position: "absolute",
+                        }}
+                        source={{ uri: image.image }}
+                      />
+                  </View>
+                );
+              }
             });
             onProductImageHtmlChanged(html);
 
@@ -882,6 +880,7 @@ export default function ProductInformationAddNew(props) {
                       // display:"none",
                       marginLeft: widthPercentageToDP("1%"),
                       width: widthPercentageToDP("40%"),
+                      fontSize: RFValue(12),
                     }}
                     onChange={onChange}
                   />
@@ -1243,13 +1242,13 @@ export default function ProductInformationAddNew(props) {
                       is_hidden: 1,
                     })
                     .then((response) => {
-                      props.navigation.navigate("SettingStore");
+                      props.navigation.navigate("ExhibitedProductList");
                     })
                     .catch((error) => {
                       // console.log(error);
                     });
                 } else {
-                  props.navigation.navigate("SettingStore");
+                  props.navigation.navigate("ExhibitedProductList");
                 }
               }}
             >

@@ -126,7 +126,9 @@ export default function BankAccountRegistration(props) {
   }, [isFocused]);
 
   return (
-    <TouchableWithoutFeedback onPress={() => controller.close()}>
+    <TouchableWithoutFeedback onPress={() => {
+      controller.close()
+    }}>
       <SafeAreaView style={{ flex: 1 }}>
         <CustomHeader
           onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -249,7 +251,9 @@ export default function BankAccountRegistration(props) {
                 placeholder={Translate.t("accountNumber")}
                 placeholderTextColor={Colors.deepGrey}
                 style={styles.textInput}
-                onChangeText={(text) => onAccountNumberChanged(text)}
+                onChangeText={(text) => {
+                  onAccountNumberChanged(String(text).replace(/[^0-9]/g, ""))
+                }}
                 value={accountNumber}
               ></TextInput>
               <TextInput

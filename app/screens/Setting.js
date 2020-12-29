@@ -26,6 +26,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
+import SearchableDropdown from "react-native-searchable-dropdown";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -78,6 +79,8 @@ export default function Setting(props) {
   const [editPhoneNumber, onEditPhoneNumberChanged] = React.useState(false);
   const [editEmailAddress, onEditEmailAddressChanged] = React.useState(false);
   const [addingFriendsByID, onAddingFriendsByIDChanged] = React.useState(false);
+  const [callingCode, onCallingCodeChanged] = React.useState("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [
     messagedReceivedMobile,
     onMessagedReceivedMobileChanged,
@@ -151,11 +154,24 @@ export default function Setting(props) {
 
   React.useEffect(() => {
     load();
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        return {
+          id: country.tel_code,
+          name: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
   }, [isFocused]);
-
+  function processCountryCode(val) {
+    let tmpItem = val.split("+");
+    // alert.warning(tmpItem[1]);
+    onCallingCodeChanged(tmpItem[1]);
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
         <CustomHeader
           onFavoriteChanged="noFavorite"
           onBack={() => {
@@ -243,7 +259,20 @@ export default function Setting(props) {
             )}
             {/* <Text style={styles.textInContainerRightText> */}
           </View>
-          <View style={styles.tabContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              height:
+                editPhoneNumber == true
+                  ? heightPercentageToDP("29%")
+                  : heightPercentageToDP("8%"),
+              justifyContent: "flex-start",
+              alignItems: "center",
+              marginHorizontal: widthPercentageToDP("4%"),
+              borderBottomWidth: 1,
+              borderColor: Colors.F0EEE9,
+            }}
+          >
             <Text style={styles.textInContainerLeft}>
               {Translate.t("profileEditPhoneNumber")}
             </Text>
@@ -256,6 +285,7 @@ export default function Setting(props) {
                   alignItems: "center",
                   justifyContent: "flex-start",
                   marginRight: widthPercentageToDP("-3%"),
+                  width: widthPercentageToDP("40%"),
                 }}
               >
                 <Icon
@@ -268,13 +298,54 @@ export default function Setting(props) {
                   reverseColor="black"
                   onPress={() => {
                     onEditPhoneNumberChanged(false);
-                    promptUpdate(props, user, "tel", phoneNumber);
+                    promptUpdate(props, user, "tel", callingCode + phoneNumber);
                   }}
                 />
+
                 <TextInput
                   value={phoneNumber}
                   onChangeText={(value) => onPhoneNumberChanged(value)}
-                  style={styles.textInputEdit}
+                  style={{
+                    borderRadius: 10,
+                    fontSize: RFValue(11),
+                    borderWidth: 1,
+                    borderColor: "black",
+                    height: heightPercentageToDP("6%"),
+                  }}
+                />
+                <SearchableDropdown
+                  // onPress={() => onSelectingCountryCodeChaged(true)}
+                  onItemSelect={(item) => {
+                    processCountryCode(item.id);
+                  }}
+                  containerStyle={{ padding: 5 }}
+                  itemStyle={{
+                    padding: 10,
+                    marginTop: 2,
+                    borderColor: "#bbb",
+                    borderWidth: 1,
+                    borderRadius: 5,
+                  }}
+                  itemTextStyle={{ color: "black" }}
+                  itemsContainerStyle={{
+                    maxHeight: heightPercentageToDP("15%"),
+                    width: widthPercentageToDP("20%"),
+                  }}
+                  items={countryCodeHtml ? countryCodeHtml : []}
+                  textInputProps={{
+                    placeholder: "+",
+                    style: {
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      fontSize: RFValue(10),
+                      width: widthPercentageToDP("20%"),
+                      paddingLeft: widthPercentageToDP("3%"),
+                      height: heightPercentageToDP("6%"),
+                    },
+                  }}
+                  listProps={{
+                    nestedScrollEnabled: true,
+                  }}
                 />
               </View>
             ) : (
@@ -302,7 +373,19 @@ export default function Setting(props) {
               </View>
             )}
           </View>
-          <View style={styles.tabContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              height: heightPercentageToDP("8%"),
+              justifyContent: "flex-start",
+              alignItems: "center",
+              marginHorizontal: widthPercentageToDP("4%"),
+              borderBottomWidth: 1,
+              borderColor: Colors.F0EEE9,
+              // marginTop:
+              //   editPhoneNumber == true ? heightPercentageToDP("8%") : 0,
+            }}
+          >
             <Text style={styles.textInContainerLeft}>
               {Translate.t("emailAddress")}
             </Text>
