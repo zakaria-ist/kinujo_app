@@ -878,12 +878,16 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
+                      console.log(contactPinned[longPressObj.data.id])
                       contactPinned[longPressObj.data.id] = contactPinned[
                         longPressObj.data.id
                       ]
                         ? false
                         : true;
-                      populateUser();
+                        console.log(contactPinned[longPressObj.data.id])
+                        processUserHtml(props, globalUsers).then((html) => {
+                          onUserHtmlChanged(html);
+                        });
 
                       db.collection("users")
                         .doc(String(user.id))

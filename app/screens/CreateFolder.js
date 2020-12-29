@@ -46,7 +46,9 @@ export default function CreateFolder(props) {
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [folderName, setFolderName] = React.useState("");
   const [loaded, onLoaded] = React.useState(false);
+  const [friendName, onFriendNameChanged] = React.useState([]);
   React.useEffect(() => {
+    friendNames = [];
     let routes = props.navigation.dangerouslyGetState().routes;
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -71,9 +73,9 @@ export default function CreateFolder(props) {
           .then(function (response) {
             let tmpUserHtml2 = [];
             response.data.users.map((user) => {
-              friendNames = [];
-
+              // friendNames = [];
               friendNames.push(user.nickname);
+              // console.log(friendNames);
               tmpUserHtml2.push(
                 <TouchableWithoutFeedback
                   key={String(user.id)}
@@ -139,6 +141,9 @@ export default function CreateFolder(props) {
               usersName: friendNames,
             })
             .then((docRef) => {
+              setFolderName("");
+              console.log(friendIds);
+              console.log(friendNames);
               props.navigation.navigate("GroupFolderCreateCompletion", {
                 groupDocumentID: docRef.id,
                 type: "folder",
@@ -171,6 +176,11 @@ export default function CreateFolder(props) {
       props.navigation.navigate("FolderMemberSelection");
     });
   }
+
+  function backHandler() {
+    setFolderName("");
+    props.navigation.goBack();
+  }
   return (
     <SafeAreaView>
       <CustomHeader
@@ -178,7 +188,7 @@ export default function CreateFolder(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => {
-          props.navigation.goBack();
+          backHandler();
         }}
       />
       <TouchableWithoutFeedback onPress={() => folderCreate()}>

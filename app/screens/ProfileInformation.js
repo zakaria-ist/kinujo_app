@@ -763,10 +763,10 @@ const styles = StyleSheet.create({
     right: 0,
   },
   textInput: {
-    fontSize: RFValue(8),
+    fontSize: RFValue(12),
     borderWidth: 1,
     borderColor: "black",
-    height: heightPercentageToDP("4%"),
+    height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
     alignSelf: "center",

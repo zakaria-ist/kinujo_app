@@ -146,8 +146,7 @@ export default function CustomerInformation(props) {
           }
         });
     });
-  }, []);
-  if (!user.url) {
+
     request
       .get(props.route.params.url)
       .then(function (response) {
@@ -168,7 +167,7 @@ export default function CustomerInformation(props) {
           );
         }
       });
-  }
+  }, [isFocused]);
   const sendMessageHandler = () => {
     let groupID;
     let groupName;
@@ -226,6 +225,7 @@ export default function CustomerInformation(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
+          props.navigation.setParams({url: ""})
           props.navigation.goBack();
         }}
         onPress={() => {

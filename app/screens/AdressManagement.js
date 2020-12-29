@@ -24,8 +24,10 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
+import SearchableDropdown from "react-native-searchable-dropdown";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 import postal_code from "japan-postal-code-oasis";
@@ -42,11 +44,32 @@ export default function AddressManagement(props) {
   const [add, onAddChanged] = React.useState("");
   const [buildingName, onBuildingNameChanged] = React.useState("");
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
+  const [callingCode, onCallingCodeChanged] = React.useState("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   let controller;
+  const isFocused = useIsFocused();
   function handlePhone(value) {
     onPhoneNumberChanged(value.replace(/[^0-9]/g, ""));
   }
-  if (!prefectureLoaded) {
+
+  React.useEffect(() => {
+    postal_code.configure(
+      "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
+    );
+
+
+    if(!isFocused){
+      onNameChanged("");
+      onZipcodeChanged("");
+      onPrefectureChanged("");
+      onAddChanged("");
+      onBuildingNameChanged("");
+      onPhoneNumberChanged("");
+      onAddress2Changed("");
+      // onPrefecturesChanged([]);
+      onPrefectureLoadedChanged(false);
+    }
+
     request
       .get("prefectures/")
       .then(function (response) {
@@ -56,13 +79,16 @@ export default function AddressManagement(props) {
             value: prefecture.url,
           };
         });
+        tmpPrefectures.push({
+          label: "Prefecture",
+          value: ""
+        })
         onPrefecturesChanged(tmpPrefectures);
-        onPrefectureLoadedChanged(true);
-
-        if (props.route.params && props.route.params.url && !address.url) {
+        if (props.route.params && props.route.params.url) {
           request
             .get(props.route.params.url)
             .then(function (response) {
+              console.log(response.data);
               onAddressChanged(response.data);
               onNameChanged(response.data.name);
               onZipcodeChanged(response.data.zip1);
@@ -106,13 +132,7 @@ export default function AddressManagement(props) {
           );
         }
       });
-  }
-
-  React.useEffect(() => {
-    postal_code.configure(
-      "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
-    );
-  }, []);
+  }, [isFocused]);
 
   function handlePostalCode(value) {
     onZipcodeChanged(value.replace(/[^0-9]/g, ""));
@@ -129,20 +149,18 @@ export default function AddressManagement(props) {
       }
     });
   }
+  function processCountryCode(val) {
+    let tmpItem = val.split("+");
+
+    onCallingCodeChanged(tmpItem[1]);
+    console.log(tmpItem[1]);
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          // onNameChanged("");
-          // onZipcodeChanged("");
-          // onPrefectureChanged(null);
-          // onAddChanged("");
-          // onBuildingNameChanged("");
-          // onPhoneNumberChanged("");
-          // onPrefecturesChanged([]);
-          // onPrefectureLoadedChanged(false);
-          // controller.reset();
+          props.navigation.setParams({url: ""})
           props.navigation.goBack();
         }}
         onPress={() => {
@@ -150,7 +168,10 @@ export default function AddressManagement(props) {
         }}
         text={Translate.t("addressee")}
       />
-      <ScrollView style={{ paddingBottom: heightPercentageToDP("5%") }}>
+      <ScrollView
+        style={{ paddingBottom: heightPercentageToDP("5%") }}
+        keyboardShouldPersistTaps="always"
+      >
         <View style={styles.textInputContainer}>
           <TextInput
             placeholder={Translate.t("addressName")}
@@ -213,14 +234,49 @@ export default function AddressManagement(props) {
             value={address2}
             onChangeText={(text) => onAddress2Changed(text)}
           ></TextInput>
-          <TextInput
-            keyboardType={"numeric"}
-            placeholder={Translate.t("profileEditPhoneNumber")}
-            placeholderTextColor={Colors.D7CCA6}
-            style={styles.textInput}
-            value={phoneNumber}
-            onChangeText={(text) => handlePhone(text)}
-          ></TextInput>
+          <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
+            <SearchableDropdown
+              onItemSelect={(item) => {
+                processCountryCode(item.id);
+              }}
+              containerStyle={{
+                padding: 5,
+              }}
+              itemStyle={{
+                padding: 10,
+                marginTop: 2,
+                borderColor: "#bbb",
+                borderWidth: 1,
+                borderRadius: 5,
+              }}
+              itemTextStyle={{ color: "black" }}
+              itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
+              items={countryCodeHtml ? countryCodeHtml : []}
+              textInputProps={{
+                placeholder: "+",
+                style: {
+                  borderWidth: 1,
+                  backgroundColor: "white",
+                  borderRadius: 5,
+                  fontSize: RFValue(10),
+                  width: widthPercentageToDP("23%"),
+                  paddingLeft: widthPercentageToDP("3%"),
+                  height: heightPercentageToDP("6%"),
+                },
+              }}
+              listProps={{
+                nestedScrollEnabled: true,
+              }}
+            />
+            <TextInput
+              keyboardType={"numeric"}
+              placeholder={Translate.t("profileEditPhoneNumber")}
+              placeholderTextColor={Colors.D7CCA6}
+              style={styles.textInput}
+              value={phoneNumber}
+              onChangeText={(text) => handlePhone(text)}
+            ></TextInput>
+          </View>
         </View>
         <TouchableWithoutFeedback
           onPress={() => {
@@ -265,12 +321,13 @@ export default function AddressManagement(props) {
                 });
             } else {
               AsyncStorage.getItem("user").then(function (url) {
+                console.log(callingCode + phoneNumber);
                 data = {
                   address1: add,
                   address_name: buildingName,
                   name: name,
                   prefecture: prefecture,
-                  tel: phoneNumber,
+                  tel: callingCode + phoneNumber,
                   user: url,
                   zip1: zipcode,
                 };
@@ -286,7 +343,7 @@ export default function AddressManagement(props) {
                     // onPhoneNumberChanged("");
                     // onPrefecturesChanged([]);
                     // onPrefectureLoadedChanged(false);
-                    props.navigation.goBack();
+                    // props.navigation.goBack();
                   })
                   .catch(function (error) {
                     if (
@@ -325,6 +382,7 @@ export default function AddressManagement(props) {
 }
 const styles = StyleSheet.create({
   textInput: {
+    flex: 1,
     borderWidth: 1,
     backgroundColor: "white",
     borderColor: "transparent",

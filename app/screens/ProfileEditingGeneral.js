@@ -29,7 +29,7 @@ import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
-
+import SearchableDropdown from "react-native-searchable-dropdown";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -74,7 +74,8 @@ export default function ProfileEditingGeneral(props) {
   ] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const isFocused = useIsFocused();
-
+  const [callingCode, onCallingCodeChanged] = React.useState("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
     let verified = await AsyncStorage.getItem("verified");
@@ -132,6 +133,15 @@ export default function ProfileEditingGeneral(props) {
   }
   React.useEffect(() => {
     loadUser();
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        return {
+          id: country.tel_code,
+          name: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
   }, [isFocused]);
   React.useEffect(() => {
     onEditEmailChanged(false);
@@ -159,7 +169,7 @@ export default function ProfileEditingGeneral(props) {
       });
   }
   // updateUser(user, "gender", "Male");
-  handleChoosePhoto = (type) => {
+  handleChoosePhoto = (type, name = "") => {
     const options = {
       noData: true,
     };
@@ -172,7 +182,7 @@ export default function ProfileEditingGeneral(props) {
             Platform.OS == "android"
               ? response.uri
               : response.uri.replace("file://", ""),
-          name: "mobile-" + uuid.v4() + ".jpg",
+          name: name ? name : "mobile-" + uuid.v4() + ".jpg",
           type: "image/jpeg", // it may be necessary in Android.
         });
         request
@@ -220,15 +230,20 @@ export default function ProfileEditingGeneral(props) {
     });
   };
   function validateEmail(address) {
-    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,100})+$/;
     if (reg.test(address) === false) {
       return false;
     }
     return true;
   }
+  function processCountryCode(val) {
+    let tmpItem = val.split("+");
+    // alert.warning(tmpItem[1]);
+    onCallingCodeChanged(tmpItem[1]);
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="always">
         <Modal
           onShow={() => {
             this.textInput.focus();
@@ -423,7 +438,7 @@ export default function ProfileEditingGeneral(props) {
               >
                 <TouchableWithoutFeedback
                   onPress={() => {
-                    handleChoosePhoto("image");
+                    handleChoosePhoto("image", "user_" + user.id + ".jpg");
                   }}
                 >
                   <Image
@@ -445,7 +460,7 @@ export default function ProfileEditingGeneral(props) {
               >
                 <TouchableWithoutFeedback
                   onPress={() => {
-                    handleChoosePhoto("image");
+                    handleChoosePhoto("image", "user_" + user.id + ".jpg");
                   }}
                 >
                   <Image
@@ -519,7 +534,20 @@ export default function ProfileEditingGeneral(props) {
 
           {/* ALL TABS CONTAINER */}
           <View style={{ marginTop: heightPercentageToDP("3%") }}>
-            <View style={styles.tabContainer}>
+            <View
+              style={{
+                flexDirection: "row",
+                height:
+                  editPhoneNumber == true
+                    ? heightPercentageToDP("29%")
+                    : heightPercentageToDP("8%"),
+                justifyContent: "flex-start",
+                alignItems: "center",
+                marginHorizontal: widthPercentageToDP("4%"),
+                borderBottomWidth: 1,
+                borderColor: Colors.F0EEE9,
+              }}
+            >
               <Text style={styles.textInContainerLeft}>
                 {Translate.t("profileEditPhoneNumber")}
               </Text>
@@ -544,7 +572,12 @@ export default function ProfileEditingGeneral(props) {
                     onPress={() => {
                       if (phoneNumber) {
                         onEditPhoneNumberChanged(false);
-                        promptUpdate(props, user, "tel", phoneNumber);
+                        promptUpdate(
+                          props,
+                          user,
+                          "tel",
+                          callingCode + phoneNumber
+                        );
                       } else {
                         Alert.alert(
                           Translate.t("warning"),
@@ -560,10 +593,51 @@ export default function ProfileEditingGeneral(props) {
                       }
                     }}
                   />
+
                   <TextInput
                     value={phoneNumber}
                     onChangeText={(value) => onPhoneNumberChanged(value)}
-                    style={styles.textInputEdit}
+                    style={{
+                      borderRadius: 10,
+                      fontSize: RFValue(10),
+                      borderWidth: 1,
+                      borderColor: "black",
+                      height: heightPercentageToDP("6%"),
+                      width: widthPercentageToDP("27%"),
+                    }}
+                  />
+                  <SearchableDropdown
+                    onItemSelect={(item) => {
+                      processCountryCode(item.id);
+                    }}
+                    containerStyle={{ padding: 5 }}
+                    itemStyle={{
+                      padding: 10,
+                      marginTop: 2,
+                      borderColor: "#bbb",
+                      borderWidth: 1,
+                      borderRadius: 5,
+                    }}
+                    itemTextStyle={{ color: "black" }}
+                    itemsContainerStyle={{
+                      maxHeight: heightPercentageToDP("15%"),
+                    }}
+                    items={countryCodeHtml ? countryCodeHtml : []}
+                    textInputProps={{
+                      placeholder: "+",
+                      style: {
+                        borderWidth: 1,
+                        // backgroundColor: "white",
+                        borderRadius: 5,
+                        fontSize: RFValue(10),
+                        width: widthPercentageToDP("23%"),
+                        paddingLeft: widthPercentageToDP("3%"),
+                        height: heightPercentageToDP("6%"),
+                      },
+                    }}
+                    listProps={{
+                      nestedScrollEnabled: true,
+                    }}
                   />
                 </View>
               ) : (
@@ -886,7 +960,7 @@ const styles = StyleSheet.create({
   textInContainerRight: {
     position: "absolute",
     right: 0,
-    fontSize: RFValue(12),
+    fontSize: RFValue(11),
   },
   textInContainerLeft: {
     fontSize: RFValue(12),

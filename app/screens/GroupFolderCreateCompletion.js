@@ -125,19 +125,20 @@ export default function GroupFolderCreateCompletion(props) {
     props.navigation.navigate("ChatList");
     // props.navigation.navigate("Contact");
   }
-  if (!loaded) {
-    console.log("" + friendIds.length);
+  // if (!loaded) {
+  //   console.log("" + friendIds.length);
+  React.useEffect(() => {
     let tmpUserListHtml = [];
-    for (var i = 0; i < friendIds.length - 1; i++) {
-      // console.log(i);
+    for (var i = 0; i < friendIds.length; i++) {
       console.log(friendNames[i]);
       tmpUserListHtml.push(
         <View
           key={friendIds[i]}
           style={{
             alignItems: "center",
+            // justifyContent: "center",
             // backgroundColor: "orange",
-            height: heightPercentageToDP("13%"),
+            height: heightPercentageToDP("15%"),
             width: widthPercentageToDP("25%"),
           }}
         >
@@ -150,8 +151,10 @@ export default function GroupFolderCreateCompletion(props) {
           />
           <Text
             style={{
+              textAlign: "center",
               fontSize: RFValue(11),
               marginTop: heightPercentageToDP("1.5%"),
+              alignSelf: "center",
             }}
           >
             {friendNames[i]}
@@ -160,8 +163,10 @@ export default function GroupFolderCreateCompletion(props) {
       );
     }
     onUserListHtml(tmpUserListHtml);
-    onLoaded(true);
-  }
+  }, []);
+
+  //   onLoaded(true);
+  // }
   return (
     <ScrollView style={{ flex: 1 }}>
       <CustomHeader onPress={() => props.navigation.navigate("Cart")} />

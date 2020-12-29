@@ -327,6 +327,7 @@ export default function SalesManagement(props) {
         <View
           style={{
             marginTop: heightPercentageToDP("3%"),
+            zIndex: 999,
           }}
         >
           <MonthPicker
@@ -335,10 +336,10 @@ export default function SalesManagement(props) {
             // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
-              zIndex: 999,
+              // zIndex: 999,
               color: "transparent",
               alignItems: "center",
-              width: widthPercentageToDP("23%"),
+              // width: widthPercentageToDP("23%"),
               height: heightPercentageToDP("4%"),
               borderRadius: 5,
               textAlign: "center",
@@ -347,6 +348,7 @@ export default function SalesManagement(props) {
           />
           <Text
             style={{
+              zIndex: -999,
               color: "black",
               alignItems: "center",
               // width: widthPercentageToDP("23%"),
