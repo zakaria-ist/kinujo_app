@@ -49,6 +49,9 @@ function processProductHtml(props, products, status) {
 
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
+
+    console.log(product);
+
     tmpProductHtml.push(
       <View key={i} style={styles.productTabContainer}>
         <TouchableWithoutFeedback
@@ -75,13 +78,25 @@ function processProductHtml(props, products, status) {
                 left: 0,
               }}
             >
-              <Image
-                style={{
-                  width: RFValue(30),
-                  height: RFValue(30),
-                }}
-                source={require("../assets/Images/productListingIcon.png")}
-              />
+              {product.productImages.length > 0 &&
+              product.productImages[0].image.image &&
+              product.productImages[0].is_hidden == false ? (
+                <Image
+                  style={{
+                    width: RFValue(30),
+                    height: RFValue(30),
+                  }}
+                  source={{ uri: product.productImages[0].image.image }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    width: RFValue(30),
+                    height: RFValue(30),
+                  }}
+                  source={require("../assets/Images/productListingIcon.png")}
+                />
+              )}
               <Text style={styles.productNameText}>{product.name}</Text>
             </View>
             <View

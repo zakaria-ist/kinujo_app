@@ -50,6 +50,7 @@ const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 let featuredProducts;
+let productsView = {};
 export default function SellerProductList(props) {
   const sellerName = props.route.params.sellerName;
   const rightCategory = React.useRef(
@@ -193,6 +194,30 @@ export default function SellerProductList(props) {
         onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
       }
     }
+    if (type == "Popular") {
+      onSelected("Popular");
+
+      tmpFeaturedProducts = tmpFeaturedProducts.sort((productA, productB) => {
+        let productA_count = productsView[productA.id]
+          ? productsView[productA.id]
+          : 0;
+        let productB_count = productsView[productB.id]
+          ? productsView[productB.id]
+          : 0;
+        return productA_count > productB_count;
+      });
+      tmpKinujoProducts = tmpKinujoProducts.sort((productA, productB) => {
+        let productA_count = productsView[productA.id]
+          ? productsView[productA.id]
+          : 0;
+        let productB_count = productsView[productB.id]
+          ? productsView[productB.id]
+          : 0;
+        return productA_count > productB_count;
+      });
+      onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
+      onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
+    }
     if (type == "reset") {
       onSelected("");
       request.get("products/").then(function (response) {
@@ -240,6 +265,13 @@ export default function SellerProductList(props) {
 
   React.useEffect(() => {
     onFeaturedHtmlChanged([]);
+    db.collection("products")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((documentSnapshot) => {
+          productsView[documentSnapshot.id] = documentSnapshot.data()["view"];
+        });
+      });
     AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
@@ -594,6 +626,21 @@ export default function SellerProductList(props) {
               }}
             >
               <Text>Price High to Low</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("Popular")}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+                backgroundColor: selected == "Popular" ? "orange" : "white",
+              }}
+            >
+              <Text>Popular</Text>
             </View>
           </TouchableWithoutFeedback>
           <View

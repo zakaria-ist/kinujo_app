@@ -46,6 +46,7 @@ export default function CustomKinujoWord({
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url).then((response) => {
           console.log(response.data.authority.id);
+          onUserChanged(response.data);
           if (response.data.authority.id == 1) {
             onUserAccountTypeChanged(Translate.t("masterAccount"));
           } else if (response.data.authority.id == 2) {

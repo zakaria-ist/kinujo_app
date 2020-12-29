@@ -164,13 +164,17 @@ export default function QRCode(props) {
   }, []);
 
   return (
-    <ScrollView style={{ flex: 1 }}>
-      {/* <View> */}
+    <SafeAreaView style={{ flex: 1 }}>
       <QRCodeScanner
         onRead={onSuccess}
         showMarker={true}
         reactivate={true}
         reactivateTimeout={1500}
+        cameraStyle={
+          {
+            height: heightPercentageToDP("50%")
+          }
+        }
         customMarker={
           <View
             style={{
@@ -218,135 +222,9 @@ export default function QRCode(props) {
         topViewStyle={styles.none}
         bottomViewStyle={styles.none}
       />
-      <View style={styles.qrcode_button}>
-        <View style={inviteShow ? styles.none : null}>
-          <View style={styles.button_frame}>
-            <TouchableOpacity
-              style={[
-                styles.submit,
-                {
-                  backgroundColor: "#E6DADE",
-                },
-              ]}
-              onPress={() => setPopupQR(true)}
-            >
-              <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.button_frame}>
-            <TouchableOpacity
-              onPress={() => {
-                const options = {
-                  // noData: true,
-                  includeBase64: true,
-                };
-                ImagePicker.launchImageLibrary(options, (response) => {
-                  console.log(response);
-                  RNQRGenerator.detect({
-                    base64: response.data,
-                    // uri: Platform.OS === "android"
-                    // ? response.uri
-                    // : response.uri.replace("file://", ""), // local path of the image. Can be skipped if base64 is passed.
-                  })
-                    .then((response) => {
-                      const { values } = response; // Array of detected QR code values. Empty if nothing found.
-                      const code = findParams(values[0], "kinujoId");
-                      if (code) {
-                        request.addFriend(userId, code).then(() => {
-                          Alert.alert(
-                            Translate.t("information"),
-                            Translate.t("friendAdded"),
-                            [
-                              {
-                                text: "OK",
-                                onPress: () => {},
-                              },
-                            ],
-                            { cancelable: false }
-                          );
-                        });
-                      } else {
-                        alert.warning(Translate.t("invalidQRcode"));
-                      }
-                    })
-                    .catch((error) =>
-                      console.log("Cannot detect QR code in image", error)
-                    );
-                });
-              }}
-              style={[
-                styles.submit,
-                {
-                  backgroundColor: "#E6DADE",
-                },
-              ]}
-            >
-              <Text style={styles.submit_text}>
-                {Translate.t("readFromPhoto")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.button_frame}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate("FriendSearch")}
-              style={[
-                styles.submit,
-                {
-                  backgroundColor: "#E6DADE",
-                },
-              ]}
-            >
-              <Text style={styles.submit_text}>
-                {Translate.t("searchFriend")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.button_frame}>
-            <TouchableOpacity
-              style={[
-                styles.submit,
-                {
-                  backgroundColor: "#D8CDA7",
-                },
-              ]}
-              onPress={() => setInviteShow(true)}
-            >
-              <Text style={styles.submit_text}>
-                {Translate.t("appInviteQR")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              textAlign: "center",
-              alignItems: "center",
-              paddingTop: RFValue(10),
-            }}
-          >
-            <Text style={styles.notice_text}>{Translate.t("scanQR")}</Text>
-            <Text style={styles.notice_text}>
-              {Translate.t("qrDescription")}
-            </Text>
-          </View>
-        </View>
-
-        <View style={inviteShow ? null : styles.none}>
-          <View style={styles.button_frame}>
-            <TouchableOpacity
-              style={[
-                styles.submit,
-                {
-                  backgroundColor: "#E6DADE",
-                },
-              ]}
-              onPress={() => setPopupQR(true)}
-            >
-              <Text style={styles.submit_text}>
-                {Translate.t("generalUserInvite")}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {user.is_seller ? (
+        <ScrollView style={{top:heightPercentageToDP("26%")}}>
+          <View style={styles.qrcode_button}>
+          <View style={inviteShow ? styles.none : null}>
             <View style={styles.button_frame}>
               <TouchableOpacity
                 style={[
@@ -355,106 +233,233 @@ export default function QRCode(props) {
                     backgroundColor: "#E6DADE",
                   },
                 ]}
+                onPress={() => setPopupQR(true)}
+              >
+                <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.button_frame}>
+              <TouchableOpacity
                 onPress={() => {
-                  onStoreChanged(1);
-                  setPopupQR(true);
+                  const options = {
+                    // noData: true,
+                    includeBase64: true,
+                  };
+                  ImagePicker.launchImageLibrary(options, (response) => {
+                    console.log(response);
+                    RNQRGenerator.detect({
+                      base64: response.data,
+                      // uri: Platform.OS === "android"
+                      // ? response.uri
+                      // : response.uri.replace("file://", ""), // local path of the image. Can be skipped if base64 is passed.
+                    })
+                      .then((response) => {
+                        const { values } = response; // Array of detected QR code values. Empty if nothing found.
+                        const code = findParams(values[0], "kinujoId");
+                        if (code) {
+                          request.addFriend(userId, code).then(() => {
+                            Alert.alert(
+                              Translate.t("information"),
+                              Translate.t("friendAdded"),
+                              [
+                                {
+                                  text: "OK",
+                                  onPress: () => {},
+                                },
+                              ],
+                              { cancelable: false }
+                            );
+                          });
+                        } else {
+                          alert.warning(Translate.t("invalidQRcode"));
+                        }
+                      })
+                      .catch((error) =>
+                        console.log("Cannot detect QR code in image", error)
+                      );
+                  });
                 }}
+                style={[
+                  styles.submit,
+                  {
+                    backgroundColor: "#E6DADE",
+                  },
+                ]}
               >
                 <Text style={styles.submit_text}>
-                  {Translate.t("storeAccInvite")}
+                  {Translate.t("readFromPhoto")}
                 </Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View></View>
-          )}
-          <View style={styles.button_frame}>
-            <TouchableOpacity
-              style={[
-                styles.submit,
-                {
-                  backgroundColor: "#E6DADE",
-                },
-              ]}
-              onPress={() => setInviteShow(false)}
-            >
-              <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-
-      <View style={popupQR ? styles.popup_qr : styles.none}>
-        <View>
-          <View
-            style={{
-              flexDirection: "row",
-              position: "absolute",
-              left: 0,
-              alignItems: "center",
-              zIndex: 10,
-            }}
-          >
-            <TouchableWithoutFeedback
-              onPress={() => {
-                onStoreChanged(0);
-                setPopupQR(false);
+            <View style={styles.button_frame}>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate("FriendSearch")}
+                style={[
+                  styles.submit,
+                  {
+                    backgroundColor: "#E6DADE",
+                  },
+                ]}
+              >
+                <Text style={styles.submit_text}>
+                  {Translate.t("searchFriend")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.button_frame}>
+              <TouchableOpacity
+                style={[
+                  styles.submit,
+                  {
+                    backgroundColor: "#D8CDA7",
+                  },
+                ]}
+                onPress={() => setInviteShow(true)}
+              >
+                <Text style={styles.submit_text}>
+                  {Translate.t("appInviteQR")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                textAlign: "center",
+                alignItems: "center",
+                paddingTop: RFValue(10),
               }}
             >
-              <CloseBlackIcon
-                style={{
-                  width: width / 18,
-                  height: 20 * ratioBackArrow,
-                  marginLeft: widthPercentageToDP("5%"),
-                }}
-              />
-            </TouchableWithoutFeedback>
+              <Text style={styles.notice_text}>{Translate.t("scanQR")}</Text>
+              <Text style={styles.notice_text}>
+                {Translate.t("qrDescription")}
+              </Text>
+            </View>
           </View>
-          <Text
-            style={{
-              justifyContent: "center",
-              alignSelf: "center",
-              color: "#000",
-              fontSize: RFValue(15),
-            }}
-          >
-            {inviteShow ? "App invitation QR code" : "My QR Code"}
-          </Text>
-          <View
-            style={{
-              marginTop: heightPercentageToDP(10),
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <View style={[styles.qr_image]}>
-              <QRCodeIcon
-                size={
-                  widthPercentageToDP(60) > 500 ? 500 : widthPercentageToDP(60)
-                }
-                value={
-                  store
-                    ? storeLink
-                      ? storeLink
-                      : "waiting"
-                    : userLink
-                    ? userLink
-                    : "waiting"
-                }
-              />
-              {/* <Image
-                source={{
-                  uri:
-                    "https://boofcv.org/images/thumb/3/35/Example_rendered_qrcode.png/400px-Example_rendered_qrcode.png",
-                }}
-                resizeMode="contain"
-              /> */}
+
+          <View style={inviteShow ? null : styles.none}>
+            <View style={styles.button_frame}>
+              <TouchableOpacity
+                style={[
+                  styles.submit,
+                  {
+                    backgroundColor: "#E6DADE",
+                  },
+                ]}
+                onPress={() => setPopupQR(true)}
+              >
+                <Text style={styles.submit_text}>
+                  {Translate.t("generalUserInvite")}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {user.is_seller ? (
+              <View style={styles.button_frame}>
+                <TouchableOpacity
+                  style={[
+                    styles.submit,
+                    {
+                      backgroundColor: "#E6DADE",
+                    },
+                  ]}
+                  onPress={() => {
+                    onStoreChanged(1);
+                    setPopupQR(true);
+                  }}
+                >
+                  <Text style={styles.submit_text}>
+                    {Translate.t("storeAccInvite")}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View></View>
+            )}
+            <View style={styles.button_frame}>
+              <TouchableOpacity
+                style={[
+                  styles.submit,
+                  {
+                    backgroundColor: "#E6DADE",
+                  },
+                ]}
+                onPress={() => setInviteShow(false)}
+              >
+                <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
-      </View>
-      {/* </View> */}
-    </ScrollView>
+        </ScrollView>
+        <View style={popupQR ? styles.popup_qr : styles.none}>
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                position: "absolute",
+                left: 0,
+                alignItems: "center",
+                zIndex: 10,
+              }}
+            >
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  onStoreChanged(0);
+                  setPopupQR(false);
+                }}
+              >
+                <CloseBlackIcon
+                  style={{
+                    width: width / 18,
+                    height: 20 * ratioBackArrow,
+                    marginLeft: widthPercentageToDP("5%"),
+                  }}
+                />
+              </TouchableWithoutFeedback>
+            </View>
+            <Text
+              style={{
+                justifyContent: "center",
+                alignSelf: "center",
+                color: "#000",
+                fontSize: RFValue(15),
+              }}
+            >
+              {inviteShow ? "App invitation QR code" : "My QR Code"}
+            </Text>
+            <View
+              style={{
+                marginTop: heightPercentageToDP(10),
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View style={[styles.qr_image]}>
+                <QRCodeIcon
+                  size={
+                    widthPercentageToDP(60) > 500 ? 500 : widthPercentageToDP(60)
+                  }
+                  value={
+                    store
+                      ? storeLink
+                        ? storeLink
+                        : "waiting"
+                      : userLink
+                      ? userLink
+                      : "waiting"
+                  }
+                />
+                {/* <Image
+                  source={{
+                    uri:
+                      "https://boofcv.org/images/thumb/3/35/Example_rendered_qrcode.png/400px-Example_rendered_qrcode.png",
+                  }}
+                  resizeMode="contain"
+                /> */}
+              </View>
+            </View>
+          </View>
+        </View>
+        {/* </View> */}
+    </SafeAreaView>
   );
 }
 

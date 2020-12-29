@@ -240,7 +240,7 @@ export default function LoginScreen(props) {
                   fontSize: RFValue(10),
                   width: widthPercentageToDP("23%"),
                   paddingLeft: widthPercentageToDP("3%"),
-                  height: heightPercentageToDP("5%"),
+                  height: heightPercentageToDP("6%"),
                 },
               }}
               listProps={{
