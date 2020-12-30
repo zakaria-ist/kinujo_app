@@ -297,6 +297,7 @@
   "(address_name)": "The adress name can't be empty.",
   "(name)": "The real name can't be empty.",
   "(zip1)": "The postal code can't be empty.",
+  "please_add_friend": "Please add as a friend",
   "(address1)": "The address can't be empty.",
   "(tel)": "The phone number can't be empty.",
   "chat_favourite_added" : "The contact has been added to your favourite list",

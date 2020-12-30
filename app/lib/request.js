@@ -9,7 +9,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 const base = "kinujo-develop.c2sg.asia";
-// const base = "kinujo-demo.c2sg.asia";
+// const base = "kinujo-release.c2sg.asia";
 // const base = "http://192.168.0.107:8000";
 let api = "https://" + base + "/api/";
 let httpApi = "http://" + base + "/api/";
@@ -103,6 +103,23 @@ class Request {
   }
 
   async addFriend(userId, friendId) {
+    let customer = await db.collection('users').doc(String(userId)).collection("customers").doc(String(friendId)).get();
+    if(customer && customer.data()){
+      db.collection("users")
+      .doc(String(userId))
+      .collection("customers")
+      .doc(String(friendId))
+      .set(
+        {
+          blockMode: false,
+          secretMode: false
+        },
+        {
+          merge: true,
+        }
+      );
+    }
+
     db.collection("users")
       .doc(String(userId))
       .collection("friends")

@@ -159,7 +159,6 @@ export default function Home(props) {
                     }
                   );
                   productVarietySelection.jancode_vertical.map((vertical) => {
-                    console.log(vertical);
                     if (vertical.jan_code) {
                       janCodes.push(vertical.jan_code);
                     }
@@ -278,10 +277,10 @@ export default function Home(props) {
           shipping={
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
-              : Translate.t("shipping") +
-                " : " +
-                +format.separator(product.shipping_fee) +
-                "円"
+              : (Translate.t("shipping") +
+                " : "
+                + format.separator(product.shipping_fee) +
+                " 円")
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);

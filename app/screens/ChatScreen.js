@@ -486,6 +486,10 @@ export default function ChatScreen(props) {
     userTotalReadMessageField = "totalMessageRead_" + userId;
     let documentSnapshot = await chatsRef.doc(groupID).get();
     if (documentSnapshot && documentSnapshot.data()) {
+      if(documentSnapshot.data()["popup_addfriend_" + userId]){
+        alert.warning(Translate.t("please_add_friend"))
+      }
+
       let users = documentSnapshot.data().users;
       if (users.length == 2) {
         checkUpdateFriend(userId, users[0]);

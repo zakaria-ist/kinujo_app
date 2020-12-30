@@ -58,7 +58,19 @@ export default function AddressManagement(props) {
     );
 
 
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        // console.log(country);
+        return {
+          id: country.tel_code,
+          name: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
+    
     if(!isFocused){
+      props.navigation.setParams({url: ""})
       onNameChanged("");
       onZipcodeChanged("");
       onPrefectureChanged("");
@@ -283,13 +295,15 @@ export default function AddressManagement(props) {
             if (props.route.params && props.route.params.url) {
               data = {
                 address1: add,
+                address2: address2 ? address2 : '',
                 address_name: buildingName,
                 name: name,
                 prefecture: prefecture,
                 tel: phoneNumber,
                 zip1: zipcode,
+                tel_code: callingCode
               };
-              if (address2) data["address2"] = address2;
+              // if (address2) data["address2"] = address2;
               request
                 .patch(
                   props.route.params.url.replace(

@@ -106,41 +106,47 @@ export default function ProductInformationAddNew(props) {
     return userId;
   }
   React.useEffect(() => {
+  }, [isFocused]);
+  React.useEffect(() => {
     scrollViewReference.current.scrollTo({
       y: 0,
       animated: true,
     });
-  }, [isFocused]);
-  React.useEffect(() => {
-    onProductNameChanged("");
-    onNoneVariationItemsChanged([]);
-    onOneVariationItemsChanged([]);
-    onTwoVariationItemsChanged([]);
-    onBrandNameChanged("");
-    onPrChanged("");
-    onProductIdChanged("");
-    onProductCategoryChanged("");
-    onProductVariationChanged("none");
-    onPublishStateChanged("");
-    onPublishDateChanged("");
-    onProductStatusChanged("");
-    onTargetUserChanged("");
-    onPriceChanged("");
-    onStorePriceChanged("");
-    onShippingChanged("");
-    onProductPageDisplayMethodChanged(""), onProductImagesChanged([]);
-    onProductImageHtmlChanged([]);
-    onProductDescriptionChanged("");
-    onSpinnerChanged(false);
-    onProductChanged(false);
-    onProductCategoriesChanged([]);
-    onTwoVariationItemsChanged("");
-    onOneVariationItemsChanged("");
-    onNoneVariationItemsChanged("");
 
-    props.navigation.setParams({ url: "" });
-  }, [!isFocused]);
-  React.useEffect(() => {
+    if(!isFocused){
+      // setShow(false);
+    }
+
+    if(!isFocused){
+      onProductNameChanged("");
+      onNoneVariationItemsChanged([]);
+      onOneVariationItemsChanged([]);
+      onTwoVariationItemsChanged([]);
+      onBrandNameChanged("");
+      onPrChanged("");
+      onProductIdChanged("");
+      onProductCategoryChanged("");
+      onProductVariationChanged("none");
+      onPublishStateChanged("");
+      // onPublishDateChanged(new Date());
+      onProductStatusChanged("");
+      onTargetUserChanged("");
+      onPriceChanged("");
+      onStorePriceChanged("");
+      onShippingChanged("");
+      onProductPageDisplayMethodChanged(""), onProductImagesChanged([]);
+      onProductImageHtmlChanged([]);
+      onProductDescriptionChanged("");
+      onSpinnerChanged(false);
+      onProductChanged(false);
+      onProductCategoriesChanged([]);
+      onTwoVariationItemsChanged("");
+      onOneVariationItemsChanged("");
+      onNoneVariationItemsChanged("");
+
+      // props.navigation.setParams({ url: "" });
+    }
+
     AsyncStorage.getItem("user").then(function (url) {
       request
         .get(url)
@@ -461,10 +467,10 @@ export default function ProductInformationAddNew(props) {
             }
           });
         } else {
-          let d = new Date();
-          onPublishDateChanged(
-            d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()
-          );
+          // let d = new Date();
+          // onPublishDateChanged(
+          //   d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()
+          // );
         }
       })
       .catch((error) => {
@@ -518,6 +524,7 @@ export default function ProductInformationAddNew(props) {
           // console.log(response);
           if (response.success) {
             onSpinnerChanged(false);
+            props.navigation.setParams({ url: "" });
             props.navigation.goBack();
           } else {
             if (
@@ -654,7 +661,10 @@ export default function ProductInformationAddNew(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         text={Translate.t("productInformation")}
-        onBack={() => props.navigation.goBack()}
+        onBack={() => {
+          props.navigation.setParams({ url: "" });
+          props.navigation.goBack()
+        }}
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
@@ -731,42 +741,49 @@ export default function ProductInformationAddNew(props) {
               />
 
               <Text style={styles.text}>{Translate.t("variation")}</Text>
-              <RadioButton.Group
-                style={{ alignItems: "flex-start" }}
-                onValueChange={(variant) => {
-                  onValueChanged(variant);
-                }}
-                value={productVariation}
-              >
-                <View style={styles.radioGroupContainer}>
-                  <RadioButton.Android
-                    value="one"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {"1 "}
-                    {Translate.t("item")}
-                  </Text>
-                  <RadioButton.Android
-                    value="two"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {"2 "}
-                    {Translate.t("item")}
-                  </Text>
-                  <RadioButton.Android
-                    value="none"
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("none")}
-                  </Text>
-                </View>
-              </RadioButton.Group>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  style={{ alignItems: "flex-start" }}
+                  onValueChange={(variant) => {
+                    onValueChanged(variant);
+                  }}
+                  value={productVariation}
+                >
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="one"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {"1 "}
+                      {Translate.t("item")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="two"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {"2 "}
+                      {Translate.t("item")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      value="none"
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("none")}
+                    </Text>
+                  </View>
+                </RadioButton.Group>
+              </View>
+
               <View style={styles.line} />
 
               {/*1 項目*/}
@@ -855,8 +872,7 @@ export default function ProductInformationAddNew(props) {
                     onPublishDateChanged(date);
                   }}
                 /> */}
-                {/* {console.log(new Date(publishDate))} */}
-                {Platform.OS == "android" ? (
+                {Platform.OS === "android" ? (
                   show == true ? (
                     <DateTimePicker
                       value={publishDate ? new Date(publishDate) : new Date()}
@@ -879,8 +895,7 @@ export default function ProductInformationAddNew(props) {
                     style={{
                       // display:"none",
                       marginLeft: widthPercentageToDP("1%"),
-                      width: widthPercentageToDP("40%"),
-                      fontSize: RFValue(12),
+                      width: widthPercentageToDP("40%")
                     }}
                     onChange={onChange}
                   />
@@ -1317,6 +1332,14 @@ const styles = StyleSheet.create({
   radioGroupContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  radionButtonLabel: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    paddingRight: 10,
+    flexBasis: "auto",
   },
   releaseDateTextInput: {
     borderWidth: 0,
