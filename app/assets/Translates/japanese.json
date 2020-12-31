@@ -282,6 +282,7 @@
   "productQuantity": "量",
   "invalidUser": "無効なユーザー",
   "warning": "警告",
+  "please_add_friend": "友達申請してください",
   "removeAddress": "このアドレスを削除しますか？",
   "deleteItem": "このアイテムを削除しますか？",
   "pass_reset_success" : "パスワードが正常にリセットされました",

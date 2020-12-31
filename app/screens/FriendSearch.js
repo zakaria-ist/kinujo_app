@@ -160,6 +160,7 @@ export default function FriendSearch(props) {
         <TouchableWithoutFeedback
           key={friend.id}
           onPress={() => {
+            request.addFriend(ownUserID,friend.id)
             redirectToChat(friend.id, friend.real_name);
             onSearchTextChanged("");
           }}

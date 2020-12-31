@@ -211,6 +211,7 @@ export default function Contact(props) {
             ) : (
               <Image
                 style={{
+                  borderRadius: win.width / 2,
                   width: win.width / 13,
                   height: ratioProfile * 25,
                 }}
@@ -270,6 +271,7 @@ export default function Contact(props) {
           <View style={styles.contactTabContainer}>
             <Image
               style={{
+                borderRadius: win.width / 2,
                 width: win.width / 13,
                 height: ratioProfile * 25,
               }}
@@ -794,6 +796,7 @@ export default function Contact(props) {
                   <View style={styles.contactTabContainer}>
                     <Image
                       style={{
+                        borderRadius: win.width / 2,
                         width: win.width / 13,
                         height: ratioProfile * 25,
                       }}

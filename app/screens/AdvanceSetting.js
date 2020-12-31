@@ -34,6 +34,33 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 
+const updateDeleteUser = (ownUserID, chatPersonID) => {
+  let groupID;
+  let groupName;
+  chatRef
+    .where("users", "array-contains", ownUserID)
+    .get()
+    .then(function (querySnapshot) {
+      querySnapshot.docChanges().forEach((snapShot) => {
+        let users = snapShot.doc.data().users;
+        for (var i = 0; i < users.length; i++) {
+          if (users[i] == chatPersonID) {
+            groupID = snapShot.doc.id;
+            groupName = snapShot.doc.data().groupName;
+          }
+        }
+      });
+      update['delete_' + ownUserID] = true;
+      update['popup_addfriend_' + chatPersonID] = true;
+      if (groupID != null) {
+        db.collection("chat")
+          .doc(groupID)
+          .set(update, {
+            merge: true,
+          })
+      }
+    });
+};
 export default function AdvanceSetting(props) {
   const [userId, onUserIdChanged] = React.useState("");
   const [customerId, onCustomerIdChanged] = React.useState("");
@@ -248,6 +275,7 @@ export default function AdvanceSetting(props) {
                     .collection("customers")
                     .doc(customerId)
                     .delete();
+                  updateDeleteUser(userId, customerId);
                   request
                     .post("removeReferral/", {
                       userId: customerId,

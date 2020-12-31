@@ -103,6 +103,23 @@ class Request {
   }
 
   async addFriend(userId, friendId) {
+    let customer = await db.collection('users').doc(String(userId)).collection("customers").doc(String(friendId)).get();
+    if(customer && customer.data()){
+      db.collection("users")
+      .doc(String(userId))
+      .collection("customers")
+      .doc(String(friendId))
+      .set(
+        {
+          blockMode: false,
+          secretMode: false
+        },
+        {
+          merge: true,
+        }
+      );
+    }
+
     db.collection("users")
       .doc(String(userId))
       .collection("friends")

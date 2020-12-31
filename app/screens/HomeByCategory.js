@@ -121,7 +121,7 @@ export default function HomeByCategory(props) {
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
               : Translate.t("shipping") +
-                " : " +
+                " : "
                 +format.separator(product.shipping_fee) +
                 "円"
           }
@@ -175,7 +175,7 @@ export default function HomeByCategory(props) {
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
               : Translate.t("shipping") +
-                " : " +
+                " : "
                 +format.separator(product.shipping_fee) +
                 "円"
           }

@@ -50,8 +50,6 @@ function processProductHtml(props, products, status) {
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
 
-    console.log(product);
-
     tmpProductHtml.push(
       <View key={i} style={styles.productTabContainer}>
         <TouchableWithoutFeedback
