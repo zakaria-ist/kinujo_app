@@ -29,17 +29,14 @@ import { DatePicker } from "react-native-propel-kit";
 import { Picker } from "@react-native-picker/picker";
 import { fallbacks } from "i18n-js";
 import { useIsFocused } from "@react-navigation/native";
+
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 9;
 const ratioNext = win.width / 38 / 8;
 let controller;
-{
-  /* Moment.locale("en");
-  var dt = "2016-05-02T00:00:00";
-  console.log(Moment(dt).format("d MMM")); */
-}
+let controller2;
 let day = new Date().getDate();
 let month = new Date().getMonth() + 1;
 let year = new Date().getFullYear();
@@ -59,11 +56,27 @@ export default function ProfileInformation(props) {
   const [birthday, onBirthdayChanged] = React.useState("");
   const [postalCode, onPostalCodeChanged] = React.useState("");
   const [prefecture, onPrefectureChanged] = React.useState("");
+  const [prefectures, onPrefecturesChanged] = React.useState([]);
   const [address1, onAddress1Changed] = React.useState("");
   const [address2, onAddress2Changed] = React.useState("");
   const [date, setDate] = React.useState(day + "-" + month + "-" + year);
   const [pickerShow, onPickerShow] = React.useState(false);
   const isFocused = useIsFocused();
+  React.useEffect(() => {
+    request.get("prefectures/").then(function (response) {
+      let tmpPrefectures = response.data.map((prefecture) => {
+        return {
+          label: prefecture.name,
+          value: prefecture.url,
+        };
+      });
+      tmpPrefectures.push({
+        label: "Prefecture",
+        value: "",
+      });
+      onPrefecturesChanged(tmpPrefectures);
+    });
+  }, []);
   function updateUser(user, field, value) {
     if (!value) return;
     if (field == "birthday") {
@@ -519,11 +532,27 @@ export default function ProfileInformation(props) {
               </View>
             )}
           </View>
-          <View style={styles.productInformationContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              // marginTop: heightPercentageToDP("2%"),
+              marginHorizontal: widthPercentageToDP("3%"),
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.F0EEE9,
+              paddingVertical: heightPercentageToDP("2%"),
+              paddingBottom:
+                editPrefecture == true
+                  ? heightPercentageToDP("15%")
+                  : heightPercentageToDP("2%"),
+              justifyContent: "space-between",
+              zIndex: 999,
+            }}
+          >
             <Text style={styles.productInformationTitle}>
               {Translate.t("prefecture")}
             </Text>
-            {editPrefecture == true ? (
+            {/* {editPrefecture == true ? (
               <View
                 style={{
                   paddingVertical: heightPercentageToDP("3%"),
@@ -578,7 +607,47 @@ export default function ProfileInformation(props) {
                 />
                 <Text style={{ fontSize: RFValue(12) }}>{prefecture}</Text>
               </View>
-            )}
+            )} */}
+            <DropDownPicker
+              controller={(instance) => (controller2 = instance)}
+              onOpen={() => onEditPrefectureChanged(true)}
+              onClose={() => onEditPrefectureChanged(false)}
+              style={{
+                flex: 1,
+                borderWidth: 1,
+                backgroundColor: "white",
+                borderColor: "transparent",
+                borderRadius: 0,
+                fontSize: RFValue(10),
+                height: heightPercentageToDP("5.8%"),
+                paddingLeft: widthPercentageToDP("2%"),
+                marginVertical: heightPercentageToDP("1%"),
+                // zIndex: 999,
+              }}
+              items={prefectures ? prefectures : []}
+              defaultValue={prefecture ? prefecture : ""}
+              containerStyle={{
+                height: heightPercentageToDP("8%"),
+                width: widthPercentageToDP("40%"),
+              }}
+              labelStyle={{
+                fontSize: RFValue(10),
+                color: Colors.D7CCA6,
+              }}
+              itemStyle={{
+                justifyContent: "flex-start",
+              }}
+              selectedtLabelStyle={{
+                color: Colors.D7CCA6,
+              }}
+              placeholder={Translate.t("prefecture")}
+              dropDownStyle={{ backgroundColor: "#000000" }}
+              onChangeItem={(item) => {
+                if (item) {
+                  onPrefectureChanged(item.value);
+                }
+              }}
+            />
           </View>
           <View style={styles.productInformationContainer}>
             <Text style={styles.productInformationTitle}>

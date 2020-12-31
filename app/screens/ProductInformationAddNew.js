@@ -467,10 +467,8 @@ export default function ProductInformationAddNew(props) {
             }
           });
         } else {
-          // let d = new Date();
-          // onPublishDateChanged(
-          //   d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate()
-          // );
+          let d = new Date();
+          onPublishDateChanged(Moment().format("YYYY-MM-DD"));
         }
       })
       .catch((error) => {

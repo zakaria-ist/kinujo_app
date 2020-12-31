@@ -354,7 +354,7 @@ export default function PasswordReset(props) {
                       }
                     })
                     .catch((error) => {
-                      alert.warning(error.code);
+                      alert.warning(Translate.t("invalidValidationCode"));
                     });
                 }
               }}

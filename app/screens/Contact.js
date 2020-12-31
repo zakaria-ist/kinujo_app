@@ -30,6 +30,7 @@ import ArrowDownLogo from "../assets/icons/arrow_down.svg";
 import ArrowUpLogo from "../assets/icons/arrow_up.svg";
 import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
+import Person from "../assets/icons/personPink.svg";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -44,7 +45,7 @@ let globalFolders = [];
 let globalUsers = [];
 let globalGroups = [];
 let contactPinned = {};
-let selectedUserId
+let selectedUserId;
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -77,7 +78,7 @@ export default function Contact(props) {
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
-          if(snapShot.doc.data().type != 'group'){
+          if (snapShot.doc.data().type != "group") {
             for (var i = 0; i < users.length; i++) {
               if (users[i] == friendID) {
                 groupID = snapShot.doc.id;
@@ -158,10 +159,10 @@ export default function Contact(props) {
   }
 
   async function processUserHtml(props, users) {
-    if(selectedUserId){
+    if (selectedUserId) {
       users = users.filter((user) => {
-        return user.id == selectedUserId
-      })
+        return user.id == selectedUserId;
+      });
     }
 
     setFriendCount(users.length);
@@ -232,10 +233,10 @@ export default function Contact(props) {
   }
   function processGroupHtml(props, groups, userId) {
     let tmpGroupHtml = [];
-    if(selectedUserId){
+    if (selectedUserId) {
       groups = groups.filter((group) => {
-        return group.users.includes(selectedUserId)
-      })
+        return group.users.includes(selectedUserId);
+      });
     }
 
     groups = groups.filter((group) => {
@@ -285,13 +286,13 @@ export default function Contact(props) {
     return tmpGroupHtml;
   }
   function processFolderHtml(props, folders) {
-    if(selectedUserId){
+    if (selectedUserId) {
       folders = folders.filter((folder) => {
-        if(folder.users){
-          return folder.users.includes(selectedUserId)
+        if (folder.users) {
+          return folder.users.includes(selectedUserId);
         }
         return false;
-      })
+      });
     }
     folders = folders.filter((folder) => {
       return !folder.data["delete"] && !folder.data["hide"];
@@ -522,12 +523,12 @@ export default function Contact(props) {
   }
 
   React.useEffect(() => {
-    selectedUserId = props.route.params ? props.route.params.user_id : ""
+    selectedUserId = props.route.params ? props.route.params.user_id : "";
     populateFolder();
     populateGroup();
     onShowFriendsChanged(true);
     populateUser();
-    props.navigation.setParams({user_id: ""})
+    props.navigation.setParams({ user_id: "" });
   }, [isFocused]);
 
   return (
@@ -794,13 +795,13 @@ export default function Contact(props) {
                   }}
                 >
                   <View style={styles.contactTabContainer}>
-                    <Image
+                    <Person
                       style={{
                         borderRadius: win.width / 2,
                         width: win.width / 13,
                         height: ratioProfile * 25,
                       }}
-                      source={require("../assets/Images/profileEditingIcon.png")}
+                      // source={require("../assets/Images/profileEditingIcon.png")}
                     />
                     <Text style={styles.tabLeftText}>
                       {Translate.t("friend")}
@@ -881,16 +882,16 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
-                      console.log(contactPinned[longPressObj.data.id])
+                      console.log(contactPinned[longPressObj.data.id]);
                       contactPinned[longPressObj.data.id] = contactPinned[
                         longPressObj.data.id
                       ]
                         ? false
                         : true;
-                        console.log(contactPinned[longPressObj.data.id])
-                        processUserHtml(props, globalUsers).then((html) => {
-                          onUserHtmlChanged(html);
-                        });
+                      console.log(contactPinned[longPressObj.data.id]);
+                      processUserHtml(props, globalUsers).then((html) => {
+                        onUserHtmlChanged(html);
+                      });
 
                       db.collection("users")
                         .doc(String(user.id))
@@ -1112,6 +1113,13 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
+                      globalUsers = globalUsers.filter((user) => {
+                        return user.id != longPressObj.data.id;
+                      })
+                      processUserHtml(props, globalUsers).then((html) => {
+                        onUserHtmlChanged(html);
+                      });
+
                       db.collection("users")
                         .doc(String(user.id))
                         .collection("friends")
