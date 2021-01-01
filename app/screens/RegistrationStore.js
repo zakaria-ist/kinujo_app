@@ -245,13 +245,19 @@ export default function RegistrationStore(props) {
                             response.errors &&
                             Object.keys(response.errors).length > 0
                           ) {
-                            alert.warning(
+                            let tmpErrorMessage =
                               response.errors[
                                 Object.keys(response.errors)[0]
                               ][0] +
-                                "(" +
-                                Object.keys(response.errors)[0] +
-                                ")"
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")";
+                            // alert.warning(tmpErrorMessage);
+                            let errorMessage = String(
+                              tmpErrorMessage.split("(").pop()
+                            );
+                            alert.warning(
+                              Translate.t("register-(" + errorMessage)
                             );
                           }
                         }

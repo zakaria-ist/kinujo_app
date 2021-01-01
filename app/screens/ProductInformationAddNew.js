@@ -92,8 +92,10 @@ export default function ProductInformationAddNew(props) {
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
   const [show, setShow] = React.useState(false);
   const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    onPublishDateChanged(Moment(currentDate).format("YYYY-MM-DD"));
+    if(selectedDate){
+      const currentDate = selectedDate;
+      onPublishDateChanged(Moment(currentDate).format("YYYY-MM-DD"));
+    }
     setShow(false);
   };
   let type = props.route.params.type;
@@ -272,28 +274,33 @@ export default function ProductInformationAddNew(props) {
             }
             if (response.data.variety == 1) {
               let tmpItems = {};
-              let productVariety = response.data.productVarieties[0];
-              tmpItems["name"] = productVariety["name"];
-              tmpItems["id"] = productVariety["id"];
               tmpItems["items"] = [];
-              for (
-                var i = 0;
-                i < productVariety.productVarietySelections.length;
-                i++
-              ) {
-                let productVarietySelection =
-                  productVariety.productVarietySelections[i];
-                let vertical = productVarietySelection.jancode_horizontal[0];
-                tmpItems["items"].push({
-                  id: vertical.id,
-                  index: i,
-                  choice: productVarietySelection.selection,
-                  stock: vertical.stock + "",
-                  janCode: vertical.jan_code,
-                  hidden: vertical.is_hidden ? true : false,
-                  delete: vertical.is_hidden ? true : false,
-                });
-              }
+              // let productVariety = response.data.productVarieties[0];
+              response.data.productVarieties.map((productVariety) => {
+                if(!productVariety.is_hidden){
+                  tmpItems["name"] = productVariety["name"];
+                  tmpItems["id"] = productVariety["id"];
+                  for (
+                    var i = 0;
+                    i < productVariety.productVarietySelections.length;
+                    i++
+                  ) {
+                    let productVarietySelection =
+                      productVariety.productVarietySelections[i];
+                      console.log(productVariety.productVarietySelections)
+                    let vertical = productVarietySelection.jancode_horizontal[0];
+                    tmpItems["items"].push({
+                      id: vertical.id,
+                      index: tmpItems["items"].length,
+                      choice: productVarietySelection.selection,
+                      stock: vertical.stock + "",
+                      janCode: vertical.jan_code,
+                      hidden: vertical.is_hidden ? true : false,
+                      delete: vertical.is_hidden ? true : false,
+                    });
+                  }
+                }
+              });
               onOneVariationItemsChanged(tmpItems);
             }
             if (response.data.variety == 2) {

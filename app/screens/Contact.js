@@ -60,9 +60,6 @@ function getID(url) {
   tmpUserId = urls[urls.length - 1];
   return tmpUserId;
 }
-function addFriend(firstUserId, secondUserId) {
-  request.addFriend(firstUserId, secondUserId);
-}
 export default function Contact(props) {
   const isFocused = useIsFocused();
   React.useEffect(() => {
@@ -401,31 +398,6 @@ export default function Contact(props) {
   function populateUser() {
     AsyncStorage.getItem("user").then(function (url) {
       userId = getID(url);
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          if (response.data.introducer) {
-            let introducerId = getID(response.data.introducer);
-            addFriend(userId, introducerId);
-          }
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-
       db.collection("users")
         .doc(userId)
         .collection("friends")
@@ -433,14 +405,19 @@ export default function Contact(props) {
         .then((querySnapshot) => {
           let ids = [];
           let items = [];
+          let deleteIds = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
+            console.log(item);
             if (
-              (item.type == "user" && item.delete == null) ||
-              item.delete == false
+              (item.type == "user" && !item['delete'])
             ) {
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"];
+            }
+
+            if(item['delete']){
+              deleteIds.push(item.id);
             }
           });
           request
@@ -453,6 +430,9 @@ export default function Contact(props) {
               response = response.data;
               if (response.success) {
                 globalUsers = response.users;
+                globalUsers = globalUsers.filter((user) => {
+                  return !deleteIds.includes(user.id) && !deleteIds.includes(String(user.id));
+                });
                 globalUsers = globalUsers.filter((user) => {
                   return user.id != userId;
                 });
@@ -1119,17 +1099,20 @@ export default function Contact(props) {
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
                       });
-
+                      
+                      console.log(longPressObj.data.id)
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
+                          console.log("FOUDNDDD");
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
+                              console.log(documentSnapshot.id)
                               db.collection("users")
-                                .doc(String(user.id))
+                                .doc(String(userId))
                                 .collection("friends")
                                 .doc(documentSnapshot.id)
                                 .set(

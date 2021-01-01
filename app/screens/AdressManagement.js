@@ -24,7 +24,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
-import SearchableDropdown from "react-native-searchable-dropdown";
+import SearchableDropdown from "../assets/CustomComponents/SearchableDropDown";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
@@ -46,6 +46,7 @@ export default function AddressManagement(props) {
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
+  const [selectedValue, setSelectedValue] = React.useState([]);
   let controller;
   const isFocused = useIsFocused();
   function handlePhone(value) {
@@ -68,6 +69,7 @@ export default function AddressManagement(props) {
     onPhoneNumberChanged("");
     onAddress2Changed("");
     onCallingCodeChanged("");
+    setSelectedValue("");
     // onPrefecturesChanged([]);
     onPrefectureLoadedChanged(false);
 
@@ -130,6 +132,7 @@ export default function AddressManagement(props) {
               onAddress2Changed(response.data.address2);
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
+              setSelectedValue("+" + response.data.tel_code)
             })
             .catch(function (error) {
               if (
@@ -269,14 +272,18 @@ export default function AddressManagement(props) {
           ></TextInput>
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
             <SearchableDropdown
+              name={selectedValue}
+              onTextChange={(text)=>{
+                setSelectedValue(text);
+              }}
               onItemSelect={(item) => {
+                setSelectedValue(item.id);
                 processCountryCode(item.id);
               }}
               containerStyle={{
                 padding: 5,
               }}
               defaultIndex={2}
-              resetValue={true}
               itemStyle={{
                 padding: 10,
                 marginTop: 2,
