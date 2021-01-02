@@ -72,6 +72,7 @@ export default function AdvanceSetting(props) {
   const [displayName, onDisplayNameChanged] = React.useState("");
   const [firstLoaded, onFirstLoadedChanged] = React.useState(false);
   const [showDeletePopUp, onShowDeletePopUp] = React.useState(false);
+
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
@@ -109,7 +110,7 @@ export default function AdvanceSetting(props) {
                     response.data.nickname ? response.data.nickname : ""
                   );
                 } else {
-                  onDisplayNameChanged(tmpUser.displayName)
+                  onDisplayNameChanged(tmpUser.displayName);
                 }
               }
               onFirstLoadedChanged(true);
@@ -220,6 +221,7 @@ export default function AdvanceSetting(props) {
               right: 0,
             }}
             onValueChange={(value) => {
+              let deleted = "delete_" + userId;
               db.collection("users")
                 .doc(userId)
                 .collection("customers")
@@ -229,6 +231,34 @@ export default function AdvanceSetting(props) {
                   blockMode: blockMode,
                   displayName: displayName,
                   memo: firebaseUser.memo,
+                });
+              db.collection("chat")
+                .where("users", "array-contains", String(userId))
+                .get()
+                .then((querySnapshot) => {
+                  querySnapshot.docChanges().forEach((snapShot) => {
+                    let users = snapShot.doc.data().users;
+                    let chatRoomID;
+                    for (var i = 0; i < users.length; i++) {
+                      if (users[i] == customerId && users.length == 2) {
+                        chatRoomID = snapShot.doc.id;
+                        console.log(chatRoomID);
+                      }
+                    }
+                    if (chatRoomID) {
+                      console.log(value);
+                      db.collection("chat")
+                        .doc(chatRoomID)
+                        .set(
+                          {
+                            [deleted]: value,
+                          },
+                          {
+                            merge: true,
+                          }
+                        );
+                    }
+                  });
                 });
               onSecretModeChanged(value);
             }}

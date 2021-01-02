@@ -94,7 +94,6 @@ async function buildLink(userId, is_store) {
     },
     dynamicLinks.ShortLinkType.UNGUESSABLE
   );
-  console.log(link + "&kinujoId=" + userId);
   return link + "&kinujoId=" + userId;
 }
 
@@ -169,7 +168,7 @@ export default function QRCode(props) {
         onRead={onSuccess}
         showMarker={true}
         reactivate={true}
-        reactivateTimeout={1500}
+        reactivateTimeout={5000}
         cameraStyle={
           {
             height: heightPercentageToDP("50%")

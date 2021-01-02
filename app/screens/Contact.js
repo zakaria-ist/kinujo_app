@@ -30,6 +30,7 @@ import ArrowDownLogo from "../assets/icons/arrow_down.svg";
 import ArrowUpLogo from "../assets/icons/arrow_up.svg";
 import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
+import Person from "../assets/icons/personPink.svg";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -44,7 +45,7 @@ let globalFolders = [];
 let globalUsers = [];
 let globalGroups = [];
 let contactPinned = {};
-let selectedUserId
+let selectedUserId;
 let userId;
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -58,9 +59,6 @@ function getID(url) {
   });
   tmpUserId = urls[urls.length - 1];
   return tmpUserId;
-}
-function addFriend(firstUserId, secondUserId) {
-  request.addFriend(firstUserId, secondUserId);
 }
 export default function Contact(props) {
   const isFocused = useIsFocused();
@@ -77,7 +75,7 @@ export default function Contact(props) {
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
-          if(snapShot.doc.data().type != 'group'){
+          if (snapShot.doc.data().type != "group") {
             for (var i = 0; i < users.length; i++) {
               if (users[i] == friendID) {
                 groupID = snapShot.doc.id;
@@ -158,10 +156,10 @@ export default function Contact(props) {
   }
 
   async function processUserHtml(props, users) {
-    if(selectedUserId){
+    if (selectedUserId) {
       users = users.filter((user) => {
-        return user.id == selectedUserId
-      })
+        return user.id == selectedUserId;
+      });
     }
 
     setFriendCount(users.length);
@@ -232,10 +230,10 @@ export default function Contact(props) {
   }
   function processGroupHtml(props, groups, userId) {
     let tmpGroupHtml = [];
-    if(selectedUserId){
+    if (selectedUserId) {
       groups = groups.filter((group) => {
-        return group.users.includes(selectedUserId)
-      })
+        return group.users.includes(selectedUserId);
+      });
     }
 
     groups = groups.filter((group) => {
@@ -285,13 +283,13 @@ export default function Contact(props) {
     return tmpGroupHtml;
   }
   function processFolderHtml(props, folders) {
-    if(selectedUserId){
+    if (selectedUserId) {
       folders = folders.filter((folder) => {
-        if(folder.users){
-          return folder.users.includes(selectedUserId)
+        if (folder.users) {
+          return folder.users.includes(selectedUserId);
         }
         return false;
-      })
+      });
     }
     folders = folders.filter((folder) => {
       return !folder.data["delete"] && !folder.data["hide"];
@@ -400,31 +398,6 @@ export default function Contact(props) {
   function populateUser() {
     AsyncStorage.getItem("user").then(function (url) {
       userId = getID(url);
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          if (response.data.introducer) {
-            let introducerId = getID(response.data.introducer);
-            addFriend(userId, introducerId);
-          }
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-
       db.collection("users")
         .doc(userId)
         .collection("friends")
@@ -432,14 +405,19 @@ export default function Contact(props) {
         .then((querySnapshot) => {
           let ids = [];
           let items = [];
+          let deleteIds = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
+            console.log(item);
             if (
-              (item.type == "user" && item.delete == null) ||
-              item.delete == false
+              (item.type == "user" && !item['delete'])
             ) {
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"];
+            }
+
+            if(item['delete']){
+              deleteIds.push(item.id);
             }
           });
           request
@@ -452,6 +430,9 @@ export default function Contact(props) {
               response = response.data;
               if (response.success) {
                 globalUsers = response.users;
+                globalUsers = globalUsers.filter((user) => {
+                  return !deleteIds.includes(user.id) && !deleteIds.includes(String(user.id));
+                });
                 globalUsers = globalUsers.filter((user) => {
                   return user.id != userId;
                 });
@@ -522,12 +503,12 @@ export default function Contact(props) {
   }
 
   React.useEffect(() => {
-    selectedUserId = props.route.params ? props.route.params.user_id : ""
+    selectedUserId = props.route.params ? props.route.params.user_id : "";
     populateFolder();
     populateGroup();
     onShowFriendsChanged(true);
     populateUser();
-    props.navigation.setParams({user_id: ""})
+    props.navigation.setParams({ user_id: "" });
   }, [isFocused]);
 
   return (
@@ -794,13 +775,13 @@ export default function Contact(props) {
                   }}
                 >
                   <View style={styles.contactTabContainer}>
-                    <Image
+                    <Person
                       style={{
                         borderRadius: win.width / 2,
                         width: win.width / 13,
                         height: ratioProfile * 25,
                       }}
-                      source={require("../assets/Images/profileEditingIcon.png")}
+                      // source={require("../assets/Images/profileEditingIcon.png")}
                     />
                     <Text style={styles.tabLeftText}>
                       {Translate.t("friend")}
@@ -881,16 +862,16 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
-                      console.log(contactPinned[longPressObj.data.id])
+                      console.log(contactPinned[longPressObj.data.id]);
                       contactPinned[longPressObj.data.id] = contactPinned[
                         longPressObj.data.id
                       ]
                         ? false
                         : true;
-                        console.log(contactPinned[longPressObj.data.id])
-                        processUserHtml(props, globalUsers).then((html) => {
-                          onUserHtmlChanged(html);
-                        });
+                      console.log(contactPinned[longPressObj.data.id]);
+                      processUserHtml(props, globalUsers).then((html) => {
+                        onUserHtmlChanged(html);
+                      });
 
                       db.collection("users")
                         .doc(String(user.id))
@@ -1112,16 +1093,26 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
+                      globalUsers = globalUsers.filter((user) => {
+                        return user.id != longPressObj.data.id;
+                      })
+                      processUserHtml(props, globalUsers).then((html) => {
+                        onUserHtmlChanged(html);
+                      });
+                      
+                      console.log(longPressObj.data.id)
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
+                          console.log("FOUDNDDD");
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
+                              console.log(documentSnapshot.id)
                               db.collection("users")
-                                .doc(String(user.id))
+                                .doc(String(userId))
                                 .collection("friends")
                                 .doc(documentSnapshot.id)
                                 .set(

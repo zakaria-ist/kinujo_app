@@ -118,7 +118,7 @@ export default function ShippingList(props) {
       props.navigation.goBack();
     });
   }
-  type = props.route.params.type;
+  type = props.route && props.route.params ? props.route.params.type : "";
   function load() {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -281,7 +281,9 @@ export default function ShippingList(props) {
           {addressHtml}
           <TouchableWithoutFeedback
             onPress={() => {
-              props.navigation.navigate("AdressManagement");
+              props.navigation.navigate("AdressManagement", {
+                url: ""
+              });
             }}
           >
             <View

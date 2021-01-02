@@ -25,6 +25,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import Person from "../assets/icons/default_avatar.svg";
 import { firebaseConfig } from "../../firebaseConfig.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -57,7 +58,7 @@ export default function FriendSearch(props) {
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
           let users = snapShot.doc.data().users;
-          if(snapShot.doc.data().type != 'group'){
+          if (snapShot.doc.data().type != "group") {
             for (var i = 0; i < users.length; i++) {
               if (users[i] == friendID) {
                 groupID = snapShot.doc.id;
@@ -106,50 +107,50 @@ export default function FriendSearch(props) {
   }
 
   function sendMessageHandler(friendID, friendName) {
-    request.addFriend(ownUserID, friendID).then(()=>{
+    request.addFriend(ownUserID, friendID).then(() => {
       let groupID;
-    let groupName;
-    chatRef
-      .where("users", "array-contains", ownUserID)
-      .get()
-      .then(function (querySnapshot) {
-        querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == friendID) {
-              groupID = snapShot.doc.id;
-              groupName = snapShot.doc.data().groupName;
+      let groupName;
+      chatRef
+        .where("users", "array-contains", ownUserID)
+        .get()
+        .then(function (querySnapshot) {
+          querySnapshot.docChanges().forEach((snapShot) => {
+            let users = snapShot.doc.data().users;
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == friendID) {
+                groupID = snapShot.doc.id;
+                groupName = snapShot.doc.data().groupName;
+              }
             }
+          });
+          if (groupID != null) {
+            props.navigation.navigate("ChatScreen", {
+              groupID: groupID,
+              groupName: friendName,
+            });
+          } else {
+            let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
+            let friendMessageUnseenField = "unseenMessageCount_" + friendID;
+            let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
+            let friendTotalMessageReadField = "totalMessageRead_" + friendID;
+            chatRef
+              .add({
+                groupName: friendName,
+                users: [String(ownUserID), String(friendID)],
+                totalMessage: 0,
+                [ownMessageUnseenField]: 0,
+                [friendMessageUnseenField]: 0,
+                [ownTotalMessageReadField]: 0,
+                [friendTotalMessageReadField]: 0,
+              })
+              .then(function (docRef) {
+                props.navigation.navigate("ChatScreen", {
+                  groupID: docRef.id,
+                  groupName: friendName,
+                });
+              });
           }
         });
-        if (groupID != null) {
-          props.navigation.navigate("ChatScreen", {
-            groupID: groupID,
-            groupName: friendName,
-          });
-        } else {
-          let ownMessageUnseenField = "unseenMessageCount_" + ownUserID;
-          let friendMessageUnseenField = "unseenMessageCount_" + friendID;
-          let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
-          let friendTotalMessageReadField = "totalMessageRead_" + friendID;
-          chatRef
-            .add({
-              groupName: friendName,
-              users: [String(ownUserID), String(friendID)],
-              totalMessage: 0,
-              [ownMessageUnseenField]: 0,
-              [friendMessageUnseenField]: 0,
-              [ownTotalMessageReadField]: 0,
-              [friendTotalMessageReadField]: 0,
-            })
-            .then(function (docRef) {
-              props.navigation.navigate("ChatScreen", {
-                groupID: docRef.id,
-                groupName: friendName,
-              });
-            });
-        }
-      });
     });
   }
 
@@ -160,16 +161,17 @@ export default function FriendSearch(props) {
         <TouchableWithoutFeedback
           key={friend.id}
           onPress={() => {
-            request.addFriend(ownUserID,friend.id)
-            redirectToChat(friend.id, friend.real_name);
-            onSearchTextChanged("");
+            request.addFriend(ownUserID,friend.id).then(()=>{
+              redirectToChat(friend.id, friend.real_name);
+              onSearchTextChanged("");
+            })
           }}
         >
           <View style={styles.friendListContainer}>
             <View style={styles.friendTabCotainer}>
-              <Image
+              <Person
                 style={styles.friendListImage}
-                source={require("../assets/Images/profileEditingIcon.png")}
+                // source={require("../assets/Images/profileEditingIcon.png")}
               />
               <Text style={styles.friendListName}>{friend.nickname}</Text>
             </View>

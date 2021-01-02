@@ -24,7 +24,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
-import SearchableDropdown from "react-native-searchable-dropdown";
+import SearchableDropdown from "../assets/CustomComponents/SearchableDropDown";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
@@ -46,13 +46,33 @@ export default function AddressManagement(props) {
   const [phoneNumber, onPhoneNumberChanged] = React.useState("");
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
+  const [selectedValue, setSelectedValue] = React.useState([]);
   let controller;
   const isFocused = useIsFocused();
   function handlePhone(value) {
     onPhoneNumberChanged(value.replace(/[^0-9]/g, ""));
   }
 
+  function componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
   React.useEffect(() => {
+    onNameChanged("");
+    onZipcodeChanged("");
+    onPrefectureChanged("");
+    onAddChanged("");
+    onBuildingNameChanged("");
+    onPhoneNumberChanged("");
+    onAddress2Changed("");
+    onCallingCodeChanged("");
+    setSelectedValue("");
+    // onPrefecturesChanged([]);
+    onPrefectureLoadedChanged(false);
+
     postal_code.configure(
       "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
     );
@@ -66,22 +86,25 @@ export default function AddressManagement(props) {
           name: country.tel_code,
         };
       });
+      tmpCountry.push({
+        id: "",
+        name: ""
+      })
       onCountryCodeHtmlChanged(tmpCountry);
     });
     
     if(!isFocused){
-      props.navigation.setParams({url: ""})
-      onNameChanged("");
-      onZipcodeChanged("");
-      onPrefectureChanged("");
-      onAddChanged("");
-      onBuildingNameChanged("");
-      onPhoneNumberChanged("");
-      onAddress2Changed("");
-      // onPrefecturesChanged([]);
-      onPrefectureLoadedChanged(false);
     }
-
+    request.get("country_codes/").then(function (response) {
+      let tmpCountry = response.data.map((country) => {
+        // console.log(country);
+        return {
+          id: country.tel_code,
+          name: country.tel_code,
+        };
+      });
+      onCountryCodeHtmlChanged(tmpCountry);
+    });
     request
       .get("prefectures/")
       .then(function (response) {
@@ -93,8 +116,8 @@ export default function AddressManagement(props) {
         });
         tmpPrefectures.push({
           label: "Prefecture",
-          value: ""
-        })
+          value: "",
+        });
         onPrefecturesChanged(tmpPrefectures);
         if (props.route.params && props.route.params.url) {
           request
@@ -109,6 +132,7 @@ export default function AddressManagement(props) {
               onAddress2Changed(response.data.address2);
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
+              setSelectedValue("+" + response.data.tel_code)
             })
             .catch(function (error) {
               if (
@@ -172,7 +196,7 @@ export default function AddressManagement(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          props.navigation.setParams({url: ""})
+          // props.navigation.setParams({ url: "" });
           props.navigation.goBack();
         }}
         onPress={() => {
@@ -248,12 +272,18 @@ export default function AddressManagement(props) {
           ></TextInput>
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
             <SearchableDropdown
+              name={selectedValue}
+              onTextChange={(text)=>{
+                setSelectedValue(text);
+              }}
               onItemSelect={(item) => {
+                setSelectedValue(item.id);
                 processCountryCode(item.id);
               }}
               containerStyle={{
                 padding: 5,
               }}
+              defaultIndex={2}
               itemStyle={{
                 padding: 10,
                 marginTop: 2,
@@ -341,45 +371,53 @@ export default function AddressManagement(props) {
                   address_name: buildingName,
                   name: name,
                   prefecture: prefecture,
-                  tel: callingCode + phoneNumber,
+                  tel: phoneNumber,
                   user: url,
                   zip1: zipcode,
                 };
                 if (address2) data["address2"] = address2;
-                request
-                  .post("insertAddresses/", data)
-                  .then(function (response) {
-                    // onNameChanged("");
-                    // onZipcodeChanged("");
-                    // onPrefectureChanged(null);
-                    // onAddChanged("");
-                    // onBuildingNameChanged("");
-                    // onPhoneNumberChanged("");
-                    // onPrefecturesChanged([]);
-                    // onPrefectureLoadedChanged(false);
-                    // props.navigation.goBack();
-                  })
-                  .catch(function (error) {
-                    if (
-                      error &&
-                      error.response &&
-                      error.response.data &&
-                      Object.keys(error.response.data).length > 0
-                    ) {
-                      let tmpErrorMessage =
-                        error.response.data[
-                          Object.keys(error.response.data)[0]
-                        ][0] +
-                        "(" +
-                        Object.keys(error.response.data)[0] +
-                        ")";
-                      // alert.warning(tmpErrorMessage);
-                      let errorMessage = String(
-                        tmpErrorMessage.split("(").pop()
-                      );
-                      alert.warning(Translate.t("(" + errorMessage));
-                    }
-                  });
+                if (callingCode && phoneNumber) {
+                  request
+                    .post("insertAddresses/", data)
+                    .then(function (response) {
+                      // onNameChanged("");
+                      // onZipcodeChanged("");
+                      // onPrefectureChanged(null);
+                      // onAddChanged("");
+                      // onBuildingNameChanged("");
+                      // onPhoneNumberChanged("");
+                      // onPrefecturesChanged([]);
+                      // onPrefectureLoadedChanged(false);
+                      props.navigation.goBack();
+                    })
+                    .catch(function (error) {
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        let tmpErrorMessage =
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0] +
+                          "(" +
+                          Object.keys(error.response.data)[0] +
+                          ")";
+                        // alert.warning(tmpErrorMessage);
+                        let errorMessage = String(
+                          tmpErrorMessage.split("(").pop()
+                        );
+                        alert.warning(Translate.t("(" + errorMessage));
+                      } else if (callingCode == "") {
+                        alert.warning(Translate.t("callingCode"));
+                      }
+                    });
+                } else if (callingCode == "") {
+                  alert.warning(Translate.t("callingCode"));
+                } else if (phoneNumber == "") {
+                  alert.warning(Translate.t("(tel)"));
+                }
               });
             }
           }}

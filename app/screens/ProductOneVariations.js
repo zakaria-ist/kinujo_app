@@ -57,7 +57,7 @@ export default function ProductOneVariations({
     if (pItems && pItems.id) {
       onItemNameChanged(pItems.name);
     }
-
+    console.log(pItems)
     if (pItems && pItems.items) {
       items = pItems.items;
       onProcessVariationHtml(processVariationHtml(items));

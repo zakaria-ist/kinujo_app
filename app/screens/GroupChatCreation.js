@@ -172,6 +172,7 @@ export default function GroupChatCreation(props) {
                   });
               }
               console.log(friendNames);
+              setGroupName("");
 
               props.navigation.navigate("GroupFolderCreateCompletion", {
                 groupDocumentID: documentID,
@@ -183,7 +184,6 @@ export default function GroupChatCreation(props) {
               });
             });
         }
-        setGroupName("");
       } else {
         alert.warning("Please fill in the group name");
       }
@@ -209,6 +209,7 @@ export default function GroupChatCreation(props) {
       friendIds = null;
       memberCount = 0;
     });
+    setGroupName("");
     props.navigation.goBack();
   }
   function addMemberHandler() {
