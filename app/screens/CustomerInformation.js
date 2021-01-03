@@ -225,7 +225,7 @@ export default function CustomerInformation(props) {
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
-          props.navigation.setParams({url: ""})
+          props.navigation.setParams({ url: "" });
           props.navigation.goBack();
         }}
         onPress={() => {
@@ -412,8 +412,8 @@ export default function CustomerInformation(props) {
         <TouchableWithoutFeedback
           onPress={() => {
             props.navigation.navigate("ContactStore", {
-              user_id: user.id
-            })
+              user_id: user.id,
+            });
           }}
         >
           <View style={styles.tabContainer}>
@@ -465,7 +465,7 @@ export default function CustomerInformation(props) {
             flexDirection: "row",
             justifyContent: "space-evenly",
             alignItems: "center",
-            marginTop: heightPercentageToDP("10%"),
+            marginTop: heightPercentageToDP("6%"),
           }}
         >
           <TouchableWithoutFeedback onPress={sendMessageHandler}>

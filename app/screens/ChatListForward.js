@@ -118,6 +118,7 @@ async function getDetail(ownId, data) {
 
 export default function ChatList(props) {
   let messageToForward = props.route.params.message;
+  let messages = props.route.params.messages;
   const isFocused = useIsFocused();
   const [show, onShowChanged] = React.useState(false);
   const [totalUnread, setTotalUnread] = React.useState(false);
@@ -164,35 +165,52 @@ export default function ChatList(props) {
     chats = tmpChats
     processChat(tmpChats, ownUserID);
   }
-  function forwardMessage() {
-    chats.map((chat) => {
+  async function forwardMessage() {
+    for(j=0;j<chats.length; j++){
+      let chat = chats[j];
       if (chat.checkBoxStatus == true) {
-        let createdAt =
-          year +
-          ":" +
-          month +
-          ":" +
-          day +
-          ":" +
-          hour +
-          ":" +
-          minute +
-          ":" +
-          seconds;
-        db.collection("chat")
-          .doc(chat.id)
-          .collection("messages")
-          .add({
-            timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-            message: messageToForward,
-            userID: String(ownUserID),
-            createdAt: createdAt,
-          })
-          .then(function () {
-            props.navigation.goBack();
-          });
+        if(messageToForward){
+          let createdAt =
+            year +
+            ":" +
+            month +
+            ":" +
+            day +
+            ":" +
+            hour +
+            ":" +
+            minute +
+            ":" +
+            seconds;
+          db.collection("chat")
+            .doc(chat.id)
+            .collection("messages")
+            .add({
+              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+              message: messageToForward,
+              userID: String(ownUserID),
+              createdAt: createdAt,
+            })
+            .then(function () {
+              props.navigation.goBack();
+            });
+        } else if(messages){
+          for(i=0; i<messages.length; i++){
+            let message = messages[i];
+            await db.collection("chat")
+              .doc(chat.id)
+              .collection("messages")
+              .add({
+                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                message: message,
+                userID: String(ownUserID),
+                createdAt: createdAt,
+              })
+          }
+          props.navigation.goBack();
+        }
       }
-    });
+    }
   }
   function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];

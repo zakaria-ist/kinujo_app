@@ -51,6 +51,7 @@ const ratioNext = win.width / 38 / 8;
 export default function FolderMemberSelection(props) {
   const isFocused = useIsFocused();
   const [friendChatShow, onFriendChatShowChanged] = React.useState(true);
+  const [groupChatShow, onGroupChatShowChanged] = React.useState(true);
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
   const [searchText, onSearchTextChanged] = React.useState("");
@@ -335,7 +336,7 @@ export default function FolderMemberSelection(props) {
           </Text>
         </View>
       </TouchableWithoutFeedback>
-      {/* <ScrollView> */}
+      <ScrollView>
       <View
         style={{
           marginHorizontal: widthPercentageToDP("4%"),
@@ -361,7 +362,7 @@ export default function FolderMemberSelection(props) {
             />
           </View>
         </View>
-        {/* <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           onPress={() => {
             groupChatShow == true
               ? Animated.parallel([
@@ -408,26 +409,15 @@ export default function FolderMemberSelection(props) {
               source={require("../assets/Images/customerListIcon.png")}
             />
             <Text style={styles.tabText}> {Translate.t("groupChat")}</Text>
+
             {groupChatShow == true ? (
-              <Image
-                style={{
-                  width: win.width / 32,
-                  height: ratioDown * 8,
-                  position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("2%"),
-                }}
-                source={require("../assets/Images/downForMoreIcon.png")}
-              />
+              <ArrowDownLogo style={styles.nextIcon} />
             ) : (
-              <Image
-                style={styles.nextIcon}
-                source={require("../assets/Images/next.png")}
-              />
+              <NextArrow style={styles.nextIcon} />
             )}
           </View>
         </TouchableWithoutFeedback>
-
+{/*
         <Animated.View
           style={{
             marginTop: heightPercentageToDP(".5%"),
@@ -553,11 +543,11 @@ export default function FolderMemberSelection(props) {
             )}
           </View>
         </TouchableWithoutFeedback>
-        <ScrollView>
+        <View>
           <View style={{ marginBottom: heightPercentageToDP("70%") }}>
             {userHtml}
           </View>
-        </ScrollView>
+        </View>
         {/* <Animated.View
           style={{
             marginTop: heightPercentageToDP(".5%"),
@@ -586,7 +576,7 @@ export default function FolderMemberSelection(props) {
           </View>
         </Animated.View> */}
       </View>
-      {/* </ScrollView> */}
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -55,8 +55,8 @@ export default function AddressManagement(props) {
 
   function componentWillUnmount() {
     BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
+      "hardwareBackPress",
+      this.handleBackButtonClick
     );
   }
 
@@ -77,7 +77,6 @@ export default function AddressManagement(props) {
       "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
     );
 
-
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
         // console.log(country);
@@ -88,12 +87,12 @@ export default function AddressManagement(props) {
       });
       tmpCountry.push({
         id: "",
-        name: ""
-      })
+        name: "",
+      });
       onCountryCodeHtmlChanged(tmpCountry);
     });
-    
-    if(!isFocused){
+
+    if (!isFocused) {
     }
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
@@ -132,7 +131,7 @@ export default function AddressManagement(props) {
               onAddress2Changed(response.data.address2);
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
-              setSelectedValue("+" + response.data.tel_code)
+              setSelectedValue("+" + response.data.tel_code);
             })
             .catch(function (error) {
               if (
@@ -273,7 +272,7 @@ export default function AddressManagement(props) {
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
             <SearchableDropdown
               name={selectedValue}
-              onTextChange={(text)=>{
+              onTextChange={(text) => {
                 setSelectedValue(text);
               }}
               onItemSelect={(item) => {
@@ -325,13 +324,13 @@ export default function AddressManagement(props) {
             if (props.route.params && props.route.params.url) {
               data = {
                 address1: add,
-                address2: address2 ? address2 : '',
+                address2: address2 ? address2 : "",
                 address_name: buildingName,
                 name: name,
                 prefecture: prefecture,
                 tel: phoneNumber,
                 zip1: zipcode,
-                tel_code: callingCode
+                tel_code: callingCode,
               };
               // if (address2) data["address2"] = address2;
               request

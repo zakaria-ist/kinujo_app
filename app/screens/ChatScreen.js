@@ -34,6 +34,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import AndroidKeyboardAdjust from "react-native-android-keyboard-adjust";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
+import CustomSelectHeader from "../assets/CustomComponents/CustomSelectHeader";
 import ChatText from "./ChatText";
 import ChatContact from "./ChatContact";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -89,6 +90,7 @@ let totalMessageRead = 0;
 let totalMessage = 0;
 let allUsers = [];
 let imageMap = {};
+let selects = [];
 let day = new Date().getDate();
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
@@ -131,6 +133,7 @@ export default function ChatScreen(props) {
   const [userUrl, onUserUrlChanged] = React.useState("group");
   const [friendImage, onFriendImageChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
+  const [multiSelect, setMultiSelect] = useState(false);
   // const [user, processUser] = useState("");
   const [inputBarPosition, setInputBarPosition] = useState(0);
   const scrollViewReference = useRef();
@@ -211,6 +214,13 @@ export default function ChatScreen(props) {
     setInputBarPosition(-2);
   }
 
+  function selectedChat(chatId){
+    let tmpSelects = selects.filter((select) => {
+      return select.id == chatId;
+    })
+    return tmpSelects.length > 0;
+  }
+
   function processChat(tmpChats) {
     let tmpChatHtml = [];
     index = 1;
@@ -232,6 +242,21 @@ export default function ChatScreen(props) {
                 ? true
                 : false
             }
+            onPress={()=>{
+              if(multiSelect){
+                if(selectedChat(chat.id)){
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  })
+                } else {
+                  selects.push({
+                    "id" : chat.id,
+                    "message" : chat.data.message
+                  })
+                }
+                processChat(chats)
+              }
+            }}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -241,7 +266,7 @@ export default function ChatScreen(props) {
               onShowPopUpChanged(true);
             }}
           >
-            <View key={chat.id}>
+            <View style={selectedChat(chat.id) ? styles.selected : styles.non_selected} key={chat.id}>
               {previousMessageDateToday == null ? (
                 <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
               ) : (
@@ -314,6 +339,22 @@ export default function ChatScreen(props) {
                 ? true
                 : false
             }
+            onPress={()=>{
+              console.log("SELECTED");
+              if(multiSelect){
+                if(selectedChat(chat.id)){
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  })
+                } else {
+                  selects.push({
+                    "id" : chat.id,
+                    "message" : chat.data.message
+                  })
+                }
+                processChat(chats)
+              }
+            }}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -323,7 +364,7 @@ export default function ChatScreen(props) {
               onShowPopUpChanged(true);
             }}
           >
-            <View key={chat.id}>
+            <View style={selectedChat(chat.id) ? styles.selected : styles.non_selected} key={chat.id}>
               {previousMessageDateYesterday == null ? (
                 <Text style={[styles.chat_date]}>
                   {Translate.t("yesterday")}
@@ -390,6 +431,21 @@ export default function ChatScreen(props) {
                 ? true
                 : false
             }
+            onPress={()=>{
+              if(multiSelect){
+                if(selectedChat(chat.id)){
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  })
+                } else {
+                  selects.push({
+                    "id" : chat.id,
+                    "message" : chat.data.message
+                  })
+                }
+                processChat(chats)
+              }
+            }}
             onLongPress={() => {
               onLongPressObjChanged({
                 id: chat.id,
@@ -399,7 +455,7 @@ export default function ChatScreen(props) {
               onShowPopUpChanged(true);
             }}
           >
-            <View key={chat.id}>
+            <View style={selectedChat(chat.id) ? styles.selected : styles.non_selected} key={chat.id}>
               {previousMessageDateElse ==
               chat.data.timeStamp.toDate().toDateString() ? (
                 <Text style={[styles.chat_date]}>{""}</Text>
@@ -576,7 +632,9 @@ export default function ChatScreen(props) {
   }
 
   React.useEffect(() => {
-    scrollViewReference.current.scrollToEnd({ animated: true });
+    if(!multiSelect){
+      scrollViewReference.current.scrollToEnd({ animated: true });
+    }
   }, [chatHtml]);
 
   React.useEffect(() => {
@@ -619,7 +677,22 @@ export default function ChatScreen(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
-      <CustomSecondaryHeader name={name} userUrl={userUrl} />
+      {
+        !multiSelect ? (<CustomSecondaryHeader name={name} userUrl={userUrl} />) : (
+        <CustomSelectHeader onSend={()=>{
+          if(selects.length > 0){
+            props.navigation.navigate("ChatListForward", {
+              messages: selects,
+            })
+          }
+        }} onCancel={()=>{
+          setMultiSelect(false);
+          selects = []
+          processChat(chats)
+        }} name={name} userUrl={userUrl} />)
+      }
+      
+      
       <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : null}
@@ -775,7 +848,10 @@ export default function ChatScreen(props) {
                       {Translate.t("addToFav")}
                     </Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback onPress={()=>{
+                    setMultiSelect(true);
+                    onShowPopUpChanged(false);
+                  }}>
                     <Text style={styles.popUpText}>
                       {Translate.t("multiSelect")}
                     </Text>
@@ -1202,4 +1278,9 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     // showEmoji == true ? heightPercentageToDP("30%") : 0,
   },
+  selected:{
+    backgroundColor: "#BBD8B3"
+  },
+  non_selected:{
+  }
 });
