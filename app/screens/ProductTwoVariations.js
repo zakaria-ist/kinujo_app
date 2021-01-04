@@ -398,7 +398,12 @@ export default function ProductTwoVariations({
                   );
                 }}
               ></TextInput>
-              <Text style={styles.variantText}>{Translate.t("inStock")} :</Text>
+              <Text style={styles.variantText}>{Translate.t("inStock")} ({globalMappingValue[choice1Item] &&
+                  globalMappingValue[choice1Item][choice.choiceItem]
+                    ? globalMappingValue[choice1Item][choice.choiceItem][
+                        "stock"
+                      ]
+                    : ""}):</Text>
               <Text
                 style={{
                   marginRight: widthPercentageToDP("35%"),

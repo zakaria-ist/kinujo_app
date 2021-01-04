@@ -92,6 +92,7 @@ let allUsers = [];
 let imageMap = {};
 let selects = [];
 let day = new Date().getDate();
+let tmpMultiSelect = false;
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
     db.collection("users")
@@ -133,7 +134,7 @@ export default function ChatScreen(props) {
   const [userUrl, onUserUrlChanged] = React.useState("group");
   const [friendImage, onFriendImageChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
-  const [multiSelect, setMultiSelect] = useState(false);
+  const [multiSelect, setMultiSelect] = React.useState(false);
   // const [user, processUser] = useState("");
   const [inputBarPosition, setInputBarPosition] = useState(0);
   const scrollViewReference = useRef();
@@ -221,9 +222,26 @@ export default function ChatScreen(props) {
     return tmpSelects.length > 0;
   }
 
+  function getDate(dateString){
+    let date = dateString.split(":");
+    let tmpYear = date[0];
+    let tmpMonth = date[1];
+    let tmpDay = date[2]; //message created at
+    let tmpHours = date[3];
+    let tmpMinutes = date[4];
+    let tmpSeconds = date[5];
+
+    return new Date(tmpYear, tmpMonth, tmpDay, tmpHours, tmpMinutes, tmpSeconds)
+  }
   function processChat(tmpChats) {
     let tmpChatHtml = [];
     index = 1;
+    tmpChats = tmpChats.sort((a, b) => {
+      let date1 = getDate(a.data.createdAt);
+      let date2 = getDate(b.data.createdAt);
+
+      return date1 >= date2;
+    });
     tmpChats.map((chat) => {
       let date = chat.data.createdAt.split(":");
       let tmpMonth = date[1];
@@ -243,7 +261,7 @@ export default function ChatScreen(props) {
                 : false
             }
             onPress={()=>{
-              if(multiSelect){
+              if(tmpMultiSelect){
                 if(selectedChat(chat.id)){
                   selects = selects.filter((select) => {
                     return select.id != chat.id;
@@ -340,8 +358,7 @@ export default function ChatScreen(props) {
                 : false
             }
             onPress={()=>{
-              console.log("SELECTED");
-              if(multiSelect){
+              if(tmpMultiSelect){
                 if(selectedChat(chat.id)){
                   selects = selects.filter((select) => {
                     return select.id != chat.id;
@@ -375,6 +392,14 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                    });
+                    onShowPopUpChanged(true);
+                  }}
                   showCheckBox={showCheckBox}
                   props={props}
                   date={tmpHours + ":" + tmpMinutes}
@@ -432,7 +457,7 @@ export default function ChatScreen(props) {
                 : false
             }
             onPress={()=>{
-              if(multiSelect){
+              if(tmpMultiSelect){
                 if(selectedChat(chat.id)){
                   selects = selects.filter((select) => {
                     return select.id != chat.id;
@@ -467,6 +492,14 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                    });
+                    onShowPopUpChanged(true);
+                  }}
                   showCheckBox={showCheckBox}
                   props={props}
                   date={tmpHours + ":" + tmpMinutes}
@@ -687,6 +720,7 @@ export default function ChatScreen(props) {
           }
         }} onCancel={()=>{
           setMultiSelect(false);
+          tmpMultiSelect = false;
           selects = []
           processChat(chats)
         }} name={name} userUrl={userUrl} />)
@@ -850,6 +884,12 @@ export default function ChatScreen(props) {
                   </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback onPress={()=>{
                     setMultiSelect(true);
+                    tmpMultiSelect = true;
+                    selects.push({
+                      "id" : longPressObj.id,
+                      "message" : longPressObj.message
+                    })
+                    processChat(chats);
                     onShowPopUpChanged(false);
                   }}>
                     <Text style={styles.popUpText}>

@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Platform,
+  Linking,
   SafeAreaView,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
@@ -19,6 +20,7 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import Hyperlink from 'react-native-hyperlink'
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Request from "../lib/request";
@@ -79,7 +81,9 @@ export default function ChatText({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              <Text>{text}</Text>
+              <Hyperlink linkStyle={ { color: '#2980b9'} } onPress={ (url, text) => Linking.openURL(url) }>
+                <Text>{text}</Text>
+              </Hyperlink>
             </View>
           ) : (
             <View
@@ -88,7 +92,9 @@ export default function ChatText({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              <Text>{text}</Text>
+              <Hyperlink linkStyle={ { color: '#2980b9'} } onPress={ (url, text) => Linking.openURL(url) }>
+                <Text>{text}</Text>
+              </Hyperlink>
             </View>
           )}
         </TouchableHighlight>

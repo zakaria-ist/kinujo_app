@@ -851,7 +851,9 @@ export default function ProfileEditingGeneral(props) {
                           [
                             {
                               text: "OK",
-                              onPress: () => {},
+                              onPress: () => {
+                                onEmailChanged(user.email);
+                              },
                             },
                           ],
                           { cancelable: false }

@@ -66,6 +66,7 @@
     "react-native-firebase-push-notifications": "0.0.12",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-gifted-chat": "^0.16.3",
+    "react-native-hyperlink": "0.0.19",
     "react-native-image-picker": "^2.3.4",
     "react-native-image-slider-box": "^1.0.12",
     "react-native-input-credit-card": "^0.5.5",

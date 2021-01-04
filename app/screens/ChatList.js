@@ -231,7 +231,14 @@ export default function ChatList(props) {
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (
-                <Person style={styles.tabImage} />
+                <Image
+                  style={{
+                    borderRadius: win.width / 2,
+                    width: win.width / 13,
+                    height: win.width / 13 / 22 * 25,
+                  }}    
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -291,7 +298,14 @@ export default function ChatList(props) {
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (
-                <Person style={styles.tabImage} />
+                <Image
+                  style={{
+                    borderRadius: win.width / 2,
+                    width: win.width / 13,
+                    height: win.width / 13 / 22 * 25,
+                  }}    
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -350,7 +364,14 @@ export default function ChatList(props) {
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (
-                <Person style={styles.tabImage} />
+                <Image
+                  style={{
+                    borderRadius: win.width / 2,
+                    width: win.width / 13,
+                    height: win.width / 13 / 22 * 25,
+                  }}    
+                  source={require("../assets/Images/profileEditingIcon.png")}
+                />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
