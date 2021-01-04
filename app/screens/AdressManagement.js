@@ -132,6 +132,7 @@ export default function AddressManagement(props) {
               onBuildingNameChanged(response.data.address_name);
               onPhoneNumberChanged(response.data.tel);
               setSelectedValue("+" + response.data.tel_code);
+              onCallingCodeChanged(response.data.tel_code);
             })
             .catch(function (error) {
               if (
@@ -333,35 +334,41 @@ export default function AddressManagement(props) {
                 tel_code: callingCode,
               };
               // if (address2) data["address2"] = address2;
-              request
-                .patch(
-                  props.route.params.url.replace(
-                    "addresses",
-                    "insertAddresses"
-                  ),
-                  data
-                )
-                .then(function (response) {
-                  props.navigation.goBack();
-                })
-                .catch(function (error) {
-                  if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    Object.keys(error.response.data).length > 0
-                  ) {
-                    // alert.warning("3");
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0] +
-                        "(" +
-                        Object.keys(error.response.data)[0] +
-                        ")"
-                    );
-                  }
-                });
+              if (callingCode && phoneNumber) {
+                request
+                  .patch(
+                    props.route.params.url.replace(
+                      "addresses",
+                      "insertAddresses"
+                    ),
+                    data
+                  )
+                  .then(function (response) {
+                    props.navigation.goBack();
+                  })
+                  .catch(function (error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      // alert.warning("3");
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0] +
+                          "(" +
+                          Object.keys(error.response.data)[0] +
+                          ")"
+                      );
+                    }
+                  });
+                } else if (callingCode == "") {
+                  alert.warning(Translate.t("callingCode"));
+                } else if (phoneNumber == "") {
+                  alert.warning(Translate.t("(tel)"));
+                }
             } else {
               AsyncStorage.getItem("user").then(function (url) {
                 console.log(callingCode + phoneNumber);
@@ -373,8 +380,9 @@ export default function AddressManagement(props) {
                   tel: phoneNumber,
                   user: url,
                   zip1: zipcode,
+                  address2: address2,
+                  tel_code: callingCode,
                 };
-                if (address2) data["address2"] = address2;
                 if (callingCode && phoneNumber) {
                   request
                     .post("insertAddresses/", data)

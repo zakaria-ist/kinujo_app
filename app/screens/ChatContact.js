@@ -290,14 +290,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   contact_avatar: {
-    borderRadius: width / 2,
+    borderRadius: RFValue(35) / 2,
     borderColor: "#464A00",
     borderWidth: 1,
     width: RFValue(35),
     height: RFValue(35),
     marginLeft: 5,
     marginRight: 5,
-    backgroundColor: "#fff",
   },
   contact_name: {
     paddingLeft: 10,

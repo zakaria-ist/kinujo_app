@@ -169,6 +169,15 @@ export default function Setting(props) {
     // alert.warning(tmpItem[1]);
     onCallingCodeChanged(tmpItem[1]);
   }
+
+  function validateEmail(address) {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,100})+$/;
+    if (reg.test(address) === false) {
+      return false;
+    }
+    return true;
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
@@ -410,7 +419,23 @@ export default function Setting(props) {
                   reverseColor="black"
                   onPress={() => {
                     onEditEmailAddressChanged(false);
-                    promptUpdate(props, user, "email", email);
+                    if (validateEmail(email) == true) {
+                      promptUpdate(props, user, "email", email);
+                    } else {
+                      Alert.alert(
+                        Translate.t("warning"),
+                        Translate.t("invalidEmail"),
+                        [
+                          {
+                            text: "OK",
+                            onPress: () => {
+                              onEmailChanged(user.email);
+                            },
+                          },
+                        ],
+                        { cancelable: false }
+                      );
+                    }
                   }}
                 />
                 <TextInput

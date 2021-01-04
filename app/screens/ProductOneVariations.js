@@ -57,7 +57,6 @@ export default function ProductOneVariations({
     if (pItems && pItems.id) {
       onItemNameChanged(pItems.name);
     }
-    console.log(pItems)
     if (pItems && pItems.items) {
       items = pItems.items;
       onProcessVariationHtml(processVariationHtml(items));
@@ -145,7 +144,7 @@ export default function ProductOneVariations({
                     }
                   ></TextInput>
                   <Text style={styles.variantText}>
-                    {Translate.t("inStock")} :
+                    {Translate.t("inStock")} ({product.stock}):
                   </Text>
                 </View>
                 <View style={styles.variantContainer}>
