@@ -161,18 +161,22 @@ export default function FriendSearch(props) {
         <TouchableWithoutFeedback
           key={friend.id}
           onPress={() => {
-            request.addFriend(ownUserID,friend.id).then(()=>{
+            request.addFriend(ownUserID, friend.id).then(() => {
               redirectToChat(friend.id, friend.real_name);
               onSearchTextChanged("");
-            })
+            });
           }}
         >
           <View style={styles.friendListContainer}>
             <View style={styles.friendTabCotainer}>
-              <Person
-                style={styles.friendListImage}
-                // source={require("../assets/Images/profileEditingIcon.png")}
-              />
+              {friend.image ? (
+                <Image source={{ uri: friend.image.image }} style={styles.friendListImage} />
+              ) : (
+                <Person
+                  style={styles.friendListImage}
+                  // source={require("../assets/Images/profileEditingIcon.png")}
+                />
+              )}
               <Text style={styles.friendListName}>{friend.nickname}</Text>
             </View>
           </View>
@@ -204,9 +208,9 @@ export default function FriendSearch(props) {
                   })
                   .then(function (response) {
                     tmpFriend = response.data.filter((item) => {
-                      console.log(item.is_hidden);
                       return !item.allowed_by_id && item.is_hidden == 0;
                     });
+                    console.log(tmpFriend);
                     onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
                   })
                   .catch(function (error) {

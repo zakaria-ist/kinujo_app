@@ -85,30 +85,11 @@ export default function CustomerInformation(props) {
   const [existsFlag, onExistsFlag] = React.useState(false);
   const [store, onStoreChanged] = useState(0);
   const [userLink, onUserLinkChanged] = useState("");
-  React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
 
-      buildLink(userId, "1").then(function (link) {
-        console.log(link);
-        onStoreLinkChanged(link);
-      });
-      buildLink(userId, "0").then(function (link) {
-        console.log(link);
-        onUserLinkChanged(link);
-      });
-      onUserIdChanged(userId);
-    });
-
-    return () => {};
-  }, []);
   React.useEffect(() => {
     setPopupQR(false);
   }, [!isFocused]);
+
   chatPersonID = user.id;
   groupName = user.real_name;
   React.useEffect(() => {
@@ -126,6 +107,14 @@ export default function CustomerInformation(props) {
       });
       let customerId = customerUrls[customerUrls.length - 1];
       onCustomerIdChanged(customerId);
+
+
+      buildLink(customerId, "1").then(function (link) {
+        onStoreLinkChanged(link);
+      });
+      buildLink(customerId, "0").then(function (link) {
+        onUserLinkChanged(link);
+      });
 
       const subscriber = db
         .collection("users")

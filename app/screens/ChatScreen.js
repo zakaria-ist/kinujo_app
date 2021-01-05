@@ -146,6 +146,85 @@ export default function ChatScreen(props) {
   const [name, onNameChanged] = React.useState("");
   const insets = useSafeAreaInsets();
 
+  function redirectToChat(contactID, contactName) {
+    AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+
+      let groupID;
+      let groupName;
+      let deleted = "delete_" + userId;
+      db.collection("chat")
+        .where("users", "array-contains", userId)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.docChanges().forEach((snapShot) => {
+            if (
+              snapShot.doc.data().type != "groups" &&
+              snapShot.doc.data().users.length == 2
+            ) {
+              let users = snapShot.doc.data().users;
+              for (var i = 0; i < users.length; i++) {
+                if (users[i] == contactID) {
+                  groupID = snapShot.doc.id;
+                }
+              }
+            }
+          });
+          if (groupID != null) {
+            db.collection("chat")
+              .doc(groupID)
+              .set(
+                {
+                  [deleted]: false,
+                },
+                {
+                  merge: true,
+                }
+              );
+            AsyncStorage.setItem(
+              "chat",
+              JSON.stringify({
+                groupID: groupID,
+                groupName: contactName,
+              })
+            ).then(() => {
+              props.navigation.goBack();
+            });
+          } else {
+            let ownMessageUnseenField = "unseenMessageCount_" + userId;
+            let friendMessageUnseenField = "unseenMessageCount_" + contactID;
+            let ownTotalMessageReadField = "totalMessageRead_" + userId;
+            let friendTotalMessageReadField = "totalMessageRead_" + contactID;
+            db.collection("chat")
+              .add({
+                groupName: contactName,
+                users: [userId, contactID],
+                totalMessage: 0,
+                [ownMessageUnseenField]: 0,
+                [friendMessageUnseenField]: 0,
+                [ownTotalMessageReadField]: 0,
+                [friendTotalMessageReadField]: 0,
+              })
+              .then(function (docRef) {
+                AsyncStorage.setItem(
+                  "chat",
+                  JSON.stringify({
+                    groupID: docRef.id,
+                    groupName: contactName,
+                  })
+                ).then(() => {
+                  props.navigation.goBack();
+                });
+              });
+          }
+        });
+    });
+  }
+  
   async function getName(ownId, data) {
     if (data.type && data.type == "group") {
       return data.groupName;
@@ -215,14 +294,14 @@ export default function ChatScreen(props) {
     setInputBarPosition(-2);
   }
 
-  function selectedChat(chatId){
+  function selectedChat(chatId) {
     let tmpSelects = selects.filter((select) => {
       return select.id == chatId;
-    })
+    });
     return tmpSelects.length > 0;
   }
 
-  function getDate(dateString){
+  function getDate(dateString) {
     let date = dateString.split(":");
     let tmpYear = date[0];
     let tmpMonth = date[1];
@@ -231,7 +310,14 @@ export default function ChatScreen(props) {
     let tmpMinutes = date[4];
     let tmpSeconds = date[5];
 
-    return new Date(tmpYear, tmpMonth, tmpDay, tmpHours, tmpMinutes, tmpSeconds)
+    return new Date(
+      tmpYear,
+      tmpMonth,
+      tmpDay,
+      tmpHours,
+      tmpMinutes,
+      tmpSeconds
+    );
   }
   function processChat(tmpChats) {
     let tmpChatHtml = [];
@@ -260,19 +346,19 @@ export default function ChatScreen(props) {
                 ? true
                 : false
             }
-            onPress={()=>{
-              if(tmpMultiSelect){
-                if(selectedChat(chat.id)){
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
                   selects = selects.filter((select) => {
                     return select.id != chat.id;
-                  })
+                  });
                 } else {
                   selects.push({
-                    "id" : chat.id,
-                    "message" : chat.data.message
-                  })
+                    id: chat.id,
+                    message: chat.data.message,
+                  });
                 }
-                processChat(chats)
+                processChat(chats);
               }
             }}
             onLongPress={() => {
@@ -284,7 +370,12 @@ export default function ChatScreen(props) {
               onShowPopUpChanged(true);
             }}
           >
-            <View style={selectedChat(chat.id) ? styles.selected : styles.non_selected} key={chat.id}>
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
               {previousMessageDateToday == null ? (
                 <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
               ) : (
@@ -293,6 +384,11 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
+                  press={()=>{
+                    if(!tmpMultiSelect){
+                      redirectToChat(chat.data.contactID, chat.data.contactName)
+                    }
+                  }}
                   longPress={() => {
                     onLongPressObjChanged({
                       id: chat.id,
@@ -357,19 +453,19 @@ export default function ChatScreen(props) {
                 ? true
                 : false
             }
-            onPress={()=>{
-              if(tmpMultiSelect){
-                if(selectedChat(chat.id)){
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
                   selects = selects.filter((select) => {
                     return select.id != chat.id;
-                  })
+                  });
                 } else {
                   selects.push({
-                    "id" : chat.id,
-                    "message" : chat.data.message
-                  })
+                    id: chat.id,
+                    message: chat.data.message,
+                  });
                 }
-                processChat(chats)
+                processChat(chats);
               }
             }}
             onLongPress={() => {
@@ -381,7 +477,12 @@ export default function ChatScreen(props) {
               onShowPopUpChanged(true);
             }}
           >
-            <View style={selectedChat(chat.id) ? styles.selected : styles.non_selected} key={chat.id}>
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
               {previousMessageDateYesterday == null ? (
                 <Text style={[styles.chat_date]}>
                   {Translate.t("yesterday")}
@@ -392,6 +493,11 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
+                  press={()=>{
+                    if(!tmpMultiSelect){
+                      redirectToChat(chat.data.contactID, chat.data.contactName)
+                    }
+                  }}
                   longPress={() => {
                     onLongPressObjChanged({
                       id: chat.id,
@@ -456,19 +562,19 @@ export default function ChatScreen(props) {
                 ? true
                 : false
             }
-            onPress={()=>{
-              if(tmpMultiSelect){
-                if(selectedChat(chat.id)){
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
                   selects = selects.filter((select) => {
                     return select.id != chat.id;
-                  })
+                  });
                 } else {
                   selects.push({
-                    "id" : chat.id,
-                    "message" : chat.data.message
-                  })
+                    id: chat.id,
+                    message: chat.data.message,
+                  });
                 }
-                processChat(chats)
+                processChat(chats);
               }
             }}
             onLongPress={() => {
@@ -480,7 +586,12 @@ export default function ChatScreen(props) {
               onShowPopUpChanged(true);
             }}
           >
-            <View style={selectedChat(chat.id) ? styles.selected : styles.non_selected} key={chat.id}>
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
               {previousMessageDateElse ==
               chat.data.timeStamp.toDate().toDateString() ? (
                 <Text style={[styles.chat_date]}>{""}</Text>
@@ -492,6 +603,11 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
+                  press={()=>{
+                    if(!tmpMultiSelect){
+                      redirectToChat(chat.data.contactID, chat.data.contactName)
+                    }
+                  }}
                   longPress={() => {
                     onLongPressObjChanged({
                       id: chat.id,
@@ -575,8 +691,8 @@ export default function ChatScreen(props) {
     userTotalReadMessageField = "totalMessageRead_" + userId;
     let documentSnapshot = await chatsRef.doc(groupID).get();
     if (documentSnapshot && documentSnapshot.data()) {
-      if(documentSnapshot.data()["popup_addfriend_" + userId]){
-        alert.warning(Translate.t("please_add_friend"))
+      if (documentSnapshot.data()["popup_addfriend_" + userId]) {
+        alert.warning(Translate.t("please_add_friend"));
       }
 
       let users = documentSnapshot.data().users;
@@ -614,19 +730,17 @@ export default function ChatScreen(props) {
           });
         }
 
-        if (allUsers.length == 0) {
-          request
-            .get("user/byIds/", {
-              ids: snapshot.data()["users"],
-            })
-            .then((response) => {
-              allUsers = response.data.users;
-              allUsers.map((user) => {
-                imageMap[user.id] = user.image ? user.image.image : "";
-              });
-              processChat(chats);
+        request
+          .get("user/byIds/", {
+            ids: snapshot.data()["users"],
+          })
+          .then((response) => {
+            allUsers = response.data.users;
+            allUsers.map((user) => {
+              imageMap[user.id] = user.image ? user.image.image : "";
             });
-        }
+            processChat(chats);
+          });
       });
 
       unsubscribe = chatsRef
@@ -665,7 +779,7 @@ export default function ChatScreen(props) {
   }
 
   React.useEffect(() => {
-    if(!multiSelect){
+    if (!multiSelect) {
       scrollViewReference.current.scrollToEnd({ animated: true });
     }
   }, [chatHtml]);
@@ -710,23 +824,28 @@ export default function ChatScreen(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
-      {
-        !multiSelect ? (<CustomSecondaryHeader name={name} userUrl={userUrl} />) : (
-        <CustomSelectHeader onSend={()=>{
-          if(selects.length > 0){
-            props.navigation.navigate("ChatListForward", {
-              messages: selects,
-            })
-          }
-        }} onCancel={()=>{
-          setMultiSelect(false);
-          tmpMultiSelect = false;
-          selects = []
-          processChat(chats)
-        }} name={name} userUrl={userUrl} />)
-      }
-      
-      
+      {!multiSelect ? (
+        <CustomSecondaryHeader name={name} userUrl={userUrl} />
+      ) : (
+        <CustomSelectHeader
+          onSend={() => {
+            if (selects.length > 0) {
+              props.navigation.navigate("ChatListForward", {
+                messages: selects,
+              });
+            }
+          }}
+          onCancel={() => {
+            setMultiSelect(false);
+            tmpMultiSelect = false;
+            selects = [];
+            processChat(chats);
+          }}
+          name={name}
+          userUrl={userUrl}
+        />
+      )}
+
       <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : null}
@@ -882,16 +1001,18 @@ export default function ChatScreen(props) {
                       {Translate.t("addToFav")}
                     </Text>
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback onPress={()=>{
-                    setMultiSelect(true);
-                    tmpMultiSelect = true;
-                    selects.push({
-                      "id" : longPressObj.id,
-                      "message" : longPressObj.message
-                    })
-                    processChat(chats);
-                    onShowPopUpChanged(false);
-                  }}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setMultiSelect(true);
+                      tmpMultiSelect = true;
+                      selects.push({
+                        id: longPressObj.id,
+                        message: longPressObj.message,
+                      });
+                      processChat(chats);
+                      onShowPopUpChanged(false);
+                    }}
+                  >
                     <Text style={styles.popUpText}>
                       {Translate.t("multiSelect")}
                     </Text>
@@ -1248,8 +1369,10 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 1,
-    borderWidth: 1,
-    borderColor: Colors.D7CCA6,
+    // borderWidth: 1,
+    alignSelf: "center",
+    marginTop: -heightPercentageToDP("15%"),
+    // borderColor: Colors.D7CCA6,
     justifyContent: "space-evenly",
     width: widthPercentageToDP("100%"),
     height: heightPercentageToDP("100%"),
@@ -1318,9 +1441,8 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     // showEmoji == true ? heightPercentageToDP("30%") : 0,
   },
-  selected:{
-    backgroundColor: "#BBD8B3"
+  selected: {
+    backgroundColor: "#BBD8B3",
   },
-  non_selected:{
-  }
+  non_selected: {},
 });

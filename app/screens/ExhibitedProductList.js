@@ -46,6 +46,12 @@ function processProductHtml(props, products, status) {
     }
     return false;
   });
+  tmpProducts = tmpProducts.sort((p1, p2) => {
+    if (p1.created > p2.created) {
+      return -1;
+    }
+    return 1;
+  });
 
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
@@ -106,14 +112,14 @@ function processProductHtml(props, products, status) {
                 justifyContent: "space-between",
               }}
             >
-              <Text style={styles.productTabContainerText}>
+              <Text style={styles.productTabContainerRightText}>
                 {product.created.split("T")[0]}
               </Text>
               <View>
-                <Text style={styles.productTabContainerText}>
+                <Text style={styles.productTabContainerRightText}>
                   {format.separator(product.price)}円
                 </Text>
-                <Text style={styles.productTabContainerText}>
+                <Text style={styles.productTabContainerRightText}>
                   {format.separator(product.store_price)}円
                 </Text>
               </View>
@@ -391,6 +397,10 @@ const styles = StyleSheet.create({
   },
   productTabContainerText: {
     fontSize: RFValue(9),
+  },
+  productTabContainerRightText: {
+    fontSize: RFValue(9),
+    textAlign: "right"
   },
   productNameText: {
     fontSize: RFValue(9),

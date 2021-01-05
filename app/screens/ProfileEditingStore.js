@@ -245,7 +245,7 @@ export default function ProfileEditingGeneral(props) {
   };
   function validateEmail(address) {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,100})+$/;
-    if (reg.test(address) === false) {
+    if (address && reg.test(address) === false) {
       return false;
     }
     return true;

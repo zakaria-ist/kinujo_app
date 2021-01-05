@@ -47,87 +47,10 @@ export default function ChatContact({
   props,
   showCheckBox,
   image,
-  longPress
+  longPress,
+  press
 }) {
   const [contactImage, setContactImage] = React.useState("");
-  function redirectToChat(contactID, contactName) {
-    AsyncStorage.getItem("user").then((url) => {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
-
-      let groupID;
-      let groupName;
-      let deleted = "delete_" + userId;
-      db.collection("chat")
-        .where("users", "array-contains", userId)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.docChanges().forEach((snapShot) => {
-            if (
-              snapShot.doc.data().type != "groups" &&
-              snapShot.doc.data().users.length == 2
-            ) {
-              let users = snapShot.doc.data().users;
-              for (var i = 0; i < users.length; i++) {
-                if (users[i] == contactID) {
-                  groupID = snapShot.doc.id;
-                }
-              }
-            }
-          });
-          if (groupID != null) {
-            db.collection("chat")
-              .doc(groupID)
-              .set(
-                {
-                  [deleted]: false,
-                },
-                {
-                  merge: true,
-                }
-              );
-            AsyncStorage.setItem(
-              "chat",
-              JSON.stringify({
-                groupID: groupID,
-                groupName: contactName,
-              })
-            ).then(() => {
-              props.navigation.goBack();
-            });
-          } else {
-            let ownMessageUnseenField = "unseenMessageCount_" + userId;
-            let friendMessageUnseenField = "unseenMessageCount_" + contactID;
-            let ownTotalMessageReadField = "totalMessageRead_" + userId;
-            let friendTotalMessageReadField = "totalMessageRead_" + contactID;
-            db.collection("chat")
-              .add({
-                groupName: contactName,
-                users: [userId, contactID],
-                totalMessage: 0,
-                [ownMessageUnseenField]: 0,
-                [friendMessageUnseenField]: 0,
-                [ownTotalMessageReadField]: 0,
-                [friendTotalMessageReadField]: 0,
-              })
-              .then(function (docRef) {
-                AsyncStorage.setItem(
-                  "chat",
-                  JSON.stringify({
-                    groupID: docRef.id,
-                    groupName: contactName,
-                  })
-                ).then(() => {
-                  props.navigation.goBack();
-                });
-              });
-          }
-        });
-    });
-  }
 
   React.useEffect(() => {
     if (contactID) {
@@ -147,7 +70,11 @@ export default function ChatContact({
           }
         }
       }
-      onPress={() => redirectToChat(contactID, contactName)}
+      onPress={() => ()=>{
+        if(press){
+          press();
+        }
+      }}
     >
       <SafeAreaView style={{ marginTop: heightPercentageToDP("1%") }}>
         {/*Left Side*/}

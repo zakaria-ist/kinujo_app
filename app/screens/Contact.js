@@ -912,7 +912,7 @@ export default function Contact(props) {
                         ? false
                         : true;
                       db.collection("users")
-                        .doc(user.id.toString())
+                        .doc(String(userId))
                         .collection("folders")
                         .doc(longPressObj.data.id.toString())
                         .set(update, {
@@ -923,8 +923,8 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
-                      update["pinned_" + user.id] = longPressObj.data.data[
-                        "pinned_" + user.id
+                      update["pinned_" + userId] = longPressObj.data.data[
+                        "pinned_" + userId
                       ]
                         ? false
                         : true;
@@ -985,7 +985,7 @@ export default function Contact(props) {
                           ? false
                           : true;
                       db.collection("users")
-                        .doc(user.id.toString())
+                        .doc(userId)
                         .collection("folders")
                         .doc(longPressObj.data.id.toString())
                         .set(update, {
@@ -996,9 +996,9 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
-                      update["notify_" + user.id] =
-                        longPressObj.data.data["notify_" + user.id] == "" ||
-                        longPressObj.data.data["notify_" + user.id]
+                      update["notify_" + userId] =
+                        longPressObj.data.data["notify_" + userId] == "" ||
+                        longPressObj.data.data["notify_" + userId]
                           ? false
                           : true;
                       db.collection("chat")
@@ -1058,7 +1058,7 @@ export default function Contact(props) {
                           ? false
                           : true;
                       db.collection("users")
-                        .doc(user.id.toString())
+                        .doc(userId)
                         .collection("folders")
                         .doc(longPressObj.data.id.toString())
                         .set(update, {
@@ -1069,9 +1069,9 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
-                      update["hide_" + user.id] =
-                        longPressObj.data.data["hide_" + user.id] == "" ||
-                        longPressObj.data.data["hide_" + user.id]
+                      update["hide_" + userId] =
+                        longPressObj.data.data["hide_" + userId] == "" ||
+                        longPressObj.data.data["hide_" + userId]
                           ? false
                           : true;
                       db.collection("chat")
@@ -1141,7 +1141,7 @@ export default function Contact(props) {
                           ? false
                           : true;
                       db.collection("users")
-                        .doc(user.id.toString())
+                        .doc(userId)
                         .collection("folders")
                         .doc(longPressObj.data.id.toString())
                         .set(update, {
@@ -1152,9 +1152,9 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
-                      update["delete_" + user.id] =
-                        longPressObj.data.data["delete_" + user.id] == "" ||
-                        longPressObj.data.data["delete_" + user.id]
+                      update["delete_" + userId] =
+                        longPressObj.data.data["delete_" + userId] == "" ||
+                        longPressObj.data.data["delete_" + userId]
                           ? false
                           : true;
                       db.collection("chat")

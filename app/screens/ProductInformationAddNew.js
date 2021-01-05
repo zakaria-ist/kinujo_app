@@ -92,7 +92,7 @@ export default function ProductInformationAddNew(props) {
   const [productCategories, onProductCategoriesChanged] = React.useState([]);
   const [show, setShow] = React.useState(false);
   const onChange = (event, selectedDate) => {
-    if(selectedDate){
+    if (selectedDate) {
       const currentDate = selectedDate;
       onPublishDateChanged(Moment(currentDate).format("YYYY-MM-DD"));
     }
@@ -107,19 +107,18 @@ export default function ProductInformationAddNew(props) {
     let userId = urls[urls.length - 1];
     return userId;
   }
-  React.useEffect(() => {
-  }, [isFocused]);
+  React.useEffect(() => {}, [isFocused]);
   React.useEffect(() => {
     scrollViewReference.current.scrollTo({
       y: 0,
       animated: true,
     });
 
-    if(!isFocused){
+    if (!isFocused) {
       // setShow(false);
     }
 
-    if(!isFocused){
+    if (!isFocused) {
       onProductNameChanged("");
       onNoneVariationItemsChanged([]);
       onOneVariationItemsChanged([]);
@@ -230,7 +229,7 @@ export default function ProductInformationAddNew(props) {
             tmpImages.map((image) => {
               image = image.image;
 
-              if(!image.is_hidden){
+              if (!image.is_hidden) {
                 html.push(
                   <View
                     key={image.id}
@@ -247,14 +246,14 @@ export default function ProductInformationAddNew(props) {
                       alignItems: "center",
                     }}
                   >
-                      <Image
-                        style={{
-                          width: "100%",
-                          height: heightPercentageToDP("30%"),
-                          position: "absolute",
-                        }}
-                        source={{ uri: image.image }}
-                      />
+                    <Image
+                      style={{
+                        width: "100%",
+                        height: heightPercentageToDP("30%"),
+                        position: "absolute",
+                      }}
+                      source={{ uri: image.image }}
+                    />
                   </View>
                 );
               }
@@ -277,7 +276,7 @@ export default function ProductInformationAddNew(props) {
               tmpItems["items"] = [];
               // let productVariety = response.data.productVarieties[0];
               response.data.productVarieties.map((productVariety) => {
-                if(!productVariety.is_hidden){
+                if (!productVariety.is_hidden) {
                   tmpItems["name"] = productVariety["name"];
                   tmpItems["id"] = productVariety["id"];
                   for (
@@ -287,8 +286,9 @@ export default function ProductInformationAddNew(props) {
                   ) {
                     let productVarietySelection =
                       productVariety.productVarietySelections[i];
-                      console.log(productVariety.productVarietySelections)
-                    let vertical = productVarietySelection.jancode_horizontal[0];
+                    console.log(productVariety.productVarietySelections);
+                    let vertical =
+                      productVarietySelection.jancode_horizontal[0];
                     tmpItems["items"].push({
                       id: vertical.id,
                       index: tmpItems["items"].length,
@@ -668,7 +668,7 @@ export default function ProductInformationAddNew(props) {
         text={Translate.t("productInformation")}
         onBack={() => {
           props.navigation.setParams({ url: "" });
-          props.navigation.goBack()
+          props.navigation.goBack();
         }}
         onPress={() => {
           props.navigation.navigate("Cart");
@@ -900,7 +900,7 @@ export default function ProductInformationAddNew(props) {
                     style={{
                       // display:"none",
                       marginLeft: widthPercentageToDP("1%"),
-                      width: widthPercentageToDP("40%")
+                      width: widthPercentageToDP("40%"),
                     }}
                     onChange={onChange}
                   />
@@ -1439,6 +1439,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     fontSize: RFValue(12),
     width: "100%",
+    height: heightPercentageToDP("15%"),
     marginTop: heightPercentageToDP("1%"),
     marginBottom: heightPercentageToDP("2%"),
     padding: 10,
