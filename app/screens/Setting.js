@@ -172,7 +172,7 @@ export default function Setting(props) {
 
   function validateEmail(address) {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,100})+$/;
-    if (reg.test(address) === false) {
+    if (address && reg.test(address) === false) {
       return false;
     }
     return true;
@@ -320,6 +320,8 @@ export default function Setting(props) {
                     borderWidth: 1,
                     borderColor: "black",
                     height: heightPercentageToDP("6%"),
+                    // backgroundColor: "orange",
+                    width: widthPercentageToDP("30%"),
                   }}
                 />
                 <SearchableDropdown
@@ -335,7 +337,7 @@ export default function Setting(props) {
                     borderWidth: 1,
                     borderRadius: 5,
                   }}
-                  itemTextStyle={{ color: "black" }}
+                  itemTextStyle={{ color: "black", fontSize: RFValue(11) }}
                   itemsContainerStyle={{
                     maxHeight: heightPercentageToDP("15%"),
                     width: widthPercentageToDP("20%"),
@@ -346,7 +348,6 @@ export default function Setting(props) {
                     style: {
                       borderWidth: 1,
                       borderRadius: 5,
-                      fontSize: RFValue(10),
                       width: widthPercentageToDP("20%"),
                       paddingLeft: widthPercentageToDP("3%"),
                       height: heightPercentageToDP("6%"),

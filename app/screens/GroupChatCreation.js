@@ -64,6 +64,26 @@ export default function GroupChatCreation(props) {
   }
 
   React.useEffect(() => {
+
+    if(isFocused){
+      AsyncStorage.getItem("groupName").then((val) => {
+        if(val){
+          setGroupName(val);
+        }
+        AsyncStorage.removeItem("groupName");
+      });
+      // AsyncStorage.getItem("tmpIds").then((friendsIds) => {
+      //   if(friendIds){
+          
+      //   }
+      //   AsyncStorage.removeItem("tmpIds");
+      // });
+    }
+
+    if(!isFocused){
+      friendIds = []
+    }
+
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -73,6 +93,7 @@ export default function GroupChatCreation(props) {
 
       AsyncStorage.getItem("ids").then((val) => {
         friendIds = JSON.parse(val);
+        console.log(friendIds)
         dbFriendIds = JSON.parse(val);
         if (friendIds != null) {
           memberCount = friendIds.length;
@@ -86,8 +107,10 @@ export default function GroupChatCreation(props) {
           })
           .then(function (response) {
             let tmpUserHtml2 = [];
-            response.data.users.map((user) => {
-              // console.log(user.nickname);
+            let users = response.data.users.filter((user) => {
+              return friendIds.includes(String(user.id));
+            })
+            users.map((user) => {
               friendNames.push(user.nickname);
               tmpUserHtml2.push(
                 <TouchableWithoutFeedback key={String(user.id)}>
@@ -103,14 +126,14 @@ export default function GroupChatCreation(props) {
                         source={{ uri: user.image.image }}
                       />
                     ) : (
-                      <Person
-                        style={{
-                          width: RFValue(38),
-                          height: RFValue(38),
-                          borderRadius: win.width / 2,
-                          // backgroundColor: Colors.DCDCDC,
-                        }}
-                      />
+                      <Image
+                      style={{
+                        width: RFValue(38),
+                        height: RFValue(38),
+                        borderRadius: win.width / 2,
+                      }}    
+                      source={require("../assets/Images/profileEditingIcon.png")}
+                    />
                       // <Image
                       //   style={{
                       //     width: RFValue(38),
@@ -132,7 +155,6 @@ export default function GroupChatCreation(props) {
       });
     });
   }, [isFocused]);
-  // console.log(friendIds);
   function groupCreate() {
     if (friendIds.length != 0) {
       if (groupName != "") {
@@ -143,7 +165,7 @@ export default function GroupChatCreation(props) {
             usersName: friendNames,
           });
 
-          friendIds.push(String(userId));
+          // friendIds.push(String(userId));
 
           let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
           let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
@@ -171,7 +193,6 @@ export default function GroupChatCreation(props) {
                     [friendMessageUnseenField]: 0,
                   });
               }
-              console.log(friendNames);
               setGroupName("");
 
               props.navigation.navigate("GroupFolderCreateCompletion", {
@@ -215,14 +236,27 @@ export default function GroupChatCreation(props) {
   function addMemberHandler() {
     // console.log(friendIds)
     AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(() => {
-      props.navigation.navigate("GroupChatMember");
-      AsyncStorage.removeItem("ids").then(function () {
-        tmpUserHtml = [];
-        onUserHtmlChanged([]);
-        friendNames = [];
-        friendIds = null;
-        memberCount = 0;
-      });
+      if(groupName){
+        AsyncStorage.setItem("groupName", groupName).then(()=>{
+          props.navigation.navigate("GroupChatMember");
+          AsyncStorage.removeItem("ids").then(function () {
+            tmpUserHtml = [];
+            onUserHtmlChanged([]);
+            friendNames = [];
+            friendIds = null;
+            memberCount = 0;
+          });
+        })
+      } else {
+        props.navigation.navigate("GroupChatMember");
+          AsyncStorage.removeItem("ids").then(function () {
+            tmpUserHtml = [];
+            onUserHtmlChanged([]);
+            friendNames = [];
+            friendIds = null;
+            memberCount = 0;
+          });
+      }
     });
   }
   return (
@@ -358,18 +392,14 @@ export default function GroupChatCreation(props) {
           </View>
           <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
             <View style={styles.memberListContainer}>
-              <AddMember
+              <Image
                 style={{
                   width: RFValue(38),
                   height: RFValue(38),
-                  borderRadius:
-                    Math.round(
-                      Dimensions.get("window").width +
-                        Dimensions.get("window").height
-                    ) / 2,
+                  borderRadius: Dimensions.get("window").width/2,
                   backgroundColor: Colors.E6DADE,
                 }}
-                // source={require("../assets/Images/addMemberIcon.png")}
+                source={require("../assets/Images/addMemberIcon.png")}
               />
               <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>

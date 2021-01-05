@@ -31,6 +31,7 @@ import { block } from "react-native-reanimated";
 import CustomAlert from "../lib/alert";
 import Request from "../lib/request";
 import Clipboard from "@react-native-community/clipboard";
+import Spinner from "react-native-loading-spinner-overlay";
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -125,6 +126,7 @@ export default function ChatList(props) {
   const [loaded, onLoadedChanged] = React.useState(false);
   const [chatHtml, onChatHtmlChanged] = React.useState([]);
   const [longPressObj, onLongPressObjChanged] = React.useState({});
+  const [spinner, onSpinnerChanged] = React.useState(false);
   // if (!isFocused) {
   //   onShowChanged(false);
   // }
@@ -166,6 +168,7 @@ export default function ChatList(props) {
     processChat(tmpChats, ownUserID);
   }
   async function forwardMessage() {
+    onSpinnerChanged(true);
     for(j=0;j<chats.length; j++){
       let chat = chats[j];
       if (chat.checkBoxStatus == true) {
@@ -192,6 +195,7 @@ export default function ChatList(props) {
               createdAt: createdAt,
             })
             .then(function () {
+              onSpinnerChanged(false);
               props.navigation.goBack();
             });
         } else if(messages){
@@ -207,6 +211,7 @@ export default function ChatList(props) {
                 createdAt: createdAt,
               })
           }
+          onSpinnerChanged(false);
           props.navigation.goBack();
         }
       }
@@ -269,7 +274,6 @@ export default function ChatList(props) {
             delete={chat.data["delete_" + ownUserID] ? true : false}
           >
             <View style={styles.tabContainer}>
-              {console.log(chat.image)}
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (
@@ -474,6 +478,11 @@ export default function ChatList(props) {
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <SafeAreaView style={{ flex: 1 }}>
+        <Spinner
+          visible={spinner}
+          textContent={"Loading..."}
+          textStyle={styles.spinnerTextStyle}
+        />
         <CustomHeader
           text={Translate.t("chat")}
           onPress={() => props.navigation.navigate("Cart")}

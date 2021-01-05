@@ -28,6 +28,7 @@ import Person from "../assets/icons/default_avatar.svg";
 import Chat from "../assets/icons/chat.svg";
 import Close from "../assets/icons/close_black.svg";
 import AddMember from "../assets/icons/addMember.svg";
+import { useIsFocused } from "@react-navigation/native";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -47,6 +48,7 @@ const ratioChat = win.width / 7 / 21;
 export default function GroupFolderCreateCompletion(props) {
   const [userListHtml, onUserListHtml] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
+  const isFocused = useIsFocused();
   groupName = props.route.params.groupName;
   friendIds = props.route.params.friendIds;
   friendNames = props.route.params.friendNames;
@@ -117,6 +119,7 @@ export default function GroupFolderCreateCompletion(props) {
 
   function addMemberHandler() {
     AsyncStorage.setItem("ids", JSON.stringify(friendIds));
+    AsyncStorage.setItem("groupName", groupName);
     props.navigation.goBack();
   }
   function cancelHanlder() {
@@ -129,6 +132,12 @@ export default function GroupFolderCreateCompletion(props) {
   //   console.log("" + friendIds.length);
   React.useEffect(() => {
     let tmpUserListHtml = [];
+    console.log(friendIds)
+    console.log(friendIds)
+    console.log(friendIds)
+    console.log(friendIds)
+    console.log(friendIds)
+    console.log(friendIds)
     for (var i = 0; i < friendIds.length; i++) {
       console.log(friendNames[i]);
       tmpUserListHtml.push(
@@ -142,13 +151,14 @@ export default function GroupFolderCreateCompletion(props) {
             width: widthPercentageToDP("25%"),
           }}
         >
-          <Person
-            style={{
-              width: RFValue(50),
-              height: RFValue(50),
-              borderRadius: win.width / 2,
-            }}
-          />
+          <Image
+          style={{
+            width: RFValue(50),
+            height: RFValue(50),
+            borderRadius: win.width / 2,
+          }}    
+          source={require("../assets/Images/profileEditingIcon.png")}
+        />
           <Text
             style={{
               textAlign: "center",
@@ -163,7 +173,7 @@ export default function GroupFolderCreateCompletion(props) {
       );
     }
     onUserListHtml(tmpUserListHtml);
-  }, []);
+  }, [isFocused]);
 
   //   onLoaded(true);
   // }
@@ -204,15 +214,7 @@ export default function GroupFolderCreateCompletion(props) {
           />
         </TouchableWithoutFeedback>
         <View style={{ justifyContent: "center", alignItems: "center" }}>
-          <Person
-            style={{
-              width: RFValue(80),
-              height: RFValue(80),
-              borderRadius: win.width / 2,
-              marginTop: heightPercentageToDP("8%"),
-            }}
-          />
-          {/* <Image
+          <Image
             style={{
               width: RFValue(80),
               height: RFValue(80),
@@ -220,7 +222,7 @@ export default function GroupFolderCreateCompletion(props) {
               marginTop: heightPercentageToDP("8%"),
             }}
             source={require("../assets/Images/profileEditingIcon.png")}
-          /> */}
+          />
           <View
             style={{
               marginTop: heightPercentageToDP("1.5%"),

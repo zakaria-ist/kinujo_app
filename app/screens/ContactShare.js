@@ -21,6 +21,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import { useIsFocused } from "@react-navigation/native";
 import Translate from "../assets/Translates/Translate";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
@@ -48,6 +49,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 export default function ContactShare(props) {
+  const isFocused = useIsFocused();
   groupID = props.route.params.groupID;
   function storeShareContact(contactID, contactName) {
     let contactObj = {
@@ -149,10 +151,15 @@ export default function ContactShare(props) {
         .then((querySnapshot) => {
           let ids = [];
           let items = [];
+          let deleteIds = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
             if (item.type == "user") {
               ids.push(item.id);
+            }
+
+            if(item.cancel || item.delete){
+              deleteIds.push(item.id);
             }
           });
           request
@@ -162,7 +169,11 @@ export default function ContactShare(props) {
               type: "contact",
             })
             .then(function (response) {
-              onUserHtmlChanged(processUserHtml(props, response.data.users));
+              let users = response.data.users;
+              users.filter((user) => {
+                return !deleteIds.includes(user.id) && user.id != userId
+              })
+              onUserHtmlChanged(processUserHtml(props, users));
             })
             .catch(function (error) {
               if (
@@ -182,7 +193,7 @@ export default function ContactShare(props) {
         });
       onLoaded(true);
     });
-  }, []);
+  }, [isFocused]);
 
   return (
     <SafeAreaView>

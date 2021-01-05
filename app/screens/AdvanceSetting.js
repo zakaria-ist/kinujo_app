@@ -37,7 +37,7 @@ const db = firebase.firestore();
 const updateDeleteUser = (ownUserID, chatPersonID) => {
   let groupID;
   let groupName;
-  chatRef
+  db.collection("chat")
     .where("users", "array-contains", ownUserID)
     .get()
     .then(function (querySnapshot) {
@@ -50,14 +50,12 @@ const updateDeleteUser = (ownUserID, chatPersonID) => {
           }
         }
       });
-      update['delete_' + ownUserID] = true;
-      update['popup_addfriend_' + chatPersonID] = true;
+      update["delete_" + ownUserID] = true;
+      update["popup_addfriend_" + chatPersonID] = true;
       if (groupID != null) {
-        db.collection("chat")
-          .doc(groupID)
-          .set(update, {
-            merge: true,
-          })
+        db.collection("chat").doc(groupID).set(update, {
+          merge: true,
+        });
       }
     });
 };
@@ -446,7 +444,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderBottomWidth: 1,
     borderColor: Colors.E6DADE,
-    height: heightPercentageToDP("8%"),
+    // height: heightPercentageToDP("8%"),
     marginHorizontal: widthPercentageToDP("5%"),
     paddingTop: heightPercentageToDP("3%"),
     paddingBottom: heightPercentageToDP("3%"),

@@ -227,7 +227,6 @@ export default function ChatList(props) {
             }}
           >
             <View style={styles.tabContainer}>
-              {console.log(chat.image)}
               {image ? (
                 <Image source={{ uri: image }} style={styles.tabImage} />
               ) : (

@@ -28,6 +28,7 @@ import firebase from "firebase/app";
 import CheckBox from "@react-native-community/checkbox";
 import { search } from "react-native-country-picker-modal/lib/CountryService";
 import Person from "../assets/icons/default_avatar.svg";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -45,6 +46,7 @@ export default function FolderMemberSelection(props) {
   const [searchText, onSearchTextChanged] = React.useState("");
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
   const [loaded, onLoaded] = React.useState(false);
+  const isFocused = useIsFocused();
   React.useEffect(() => {
     AsyncStorage.getItem("tmpIds").then((friendIds) => {
       tmpFriendIds = JSON.parse(friendIds);
@@ -58,14 +60,19 @@ export default function FolderMemberSelection(props) {
       userId = urls[urls.length - 1];
       const subscriber = db
         .collection("users")
-        .doc(userId)
+        .doc(String(userId))
         .collection("friends")
         .get()
         .then((querySnapshot) => {
           let items = [];
+          let deleteIds = [];
+          ids = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
-            if (item.type == "user") {
+            if(item.cancel || item.delete){
+              deleteIds.push(item.id);
+            }
+            if (item.type == "user" && !item.delete && !item.cancel && item.id != userId) {
               if (tmpFriendIds == null) {
                 ids.push(item.id);
                 items.push({
@@ -102,7 +109,7 @@ export default function FolderMemberSelection(props) {
               });
             }
           });
-
+          console.log(ids)
           tmpFriend = items;
           request
             .get("user/byIds/", {
@@ -112,8 +119,11 @@ export default function FolderMemberSelection(props) {
             })
             .then(function (response) {
               users = response.data.users;
+              users = users.filter((user) => {
+                return !deleteIds.includes(user.id) && user.id != userId;
+              })
               onUserHtmlChanged(
-                processUserHtml(props, response.data.users, tmpFriend)
+                processUserHtml(props, users, tmpFriend)
               );
             })
             .catch(function (error) {
@@ -134,7 +144,7 @@ export default function FolderMemberSelection(props) {
         });
       onLoaded(true);
     });
-  }, []);
+  }, [isFocused]);
   function onValueChange(friendID) {
     let found = false;
     tmpFriend = tmpFriend.map((friend) => {

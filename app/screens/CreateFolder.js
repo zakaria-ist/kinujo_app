@@ -93,14 +93,14 @@ export default function CreateFolder(props) {
                         source={{ uri: user.image.image }}
                       />
                     ) : (
-                      <Person
-                        style={{
-                          width: RFValue(38),
-                          height: RFValue(38),
-                          borderRadius: win.width / 2,
-                          // backgroundColor: Colors.DCDCDC,
-                        }}
-                      />
+                      <Image
+                      style={{
+                        width: RFValue(38),
+                        height: RFValue(38),
+                        borderRadius: win.width / 2,
+                      }}    
+                      source={require("../assets/Images/profileEditingIcon.png")}
+                    />
                     )}
 
                     <Text style={styles.folderText}>{user.nickname}</Text>
@@ -243,18 +243,14 @@ export default function CreateFolder(props) {
           </View>
           <TouchableWithoutFeedback onPress={() => addMemberHandler()}>
             <View style={styles.memberListContainer}>
-              <AddMember
+              <Image
                 style={{
                   width: RFValue(38),
                   height: RFValue(38),
-                  borderRadius:
-                    Math.round(
-                      Dimensions.get("window").width +
-                        Dimensions.get("window").height
-                    ) / 2,
+                  borderRadius: Dimensions.get("window").width/2,
                   backgroundColor: Colors.E6DADE,
                 }}
-                // source={require("../assets/Images/addMemberIcon.png")}
+                source={require("../assets/Images/addMemberIcon.png")}
               />
               <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>

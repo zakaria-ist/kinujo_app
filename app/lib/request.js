@@ -153,6 +153,30 @@ class Request {
         }
       });
   }
+
+  async displayError(error){
+    if (
+      error &&
+      error.response &&
+      error.response.data &&
+      Object.keys(error.response.data).length > 0
+    ) {
+      let tmpErrorMessage =
+        error.response.data[
+          Object.keys(error.response.data)[0]
+        ][0] +
+        "(" +
+        Object.keys(error.response.data)[0] +
+        ")";
+      // alert.warning(tmpErrorMessage);
+      let errorMessage = String(
+        tmpErrorMessage.split("(").pop()
+      );
+      alert.warning(Translate.t("(" + errorMessage));
+    } else if (callingCode == "") {
+      alert.warning(Translate.t("callingCode"));
+    }
+  }
 }
 
 export default Request;

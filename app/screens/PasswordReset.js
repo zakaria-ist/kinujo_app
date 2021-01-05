@@ -172,7 +172,7 @@ export default function PasswordReset(props) {
                 style={styles.registeredPhoneNumber}
                 placeholder={Translate.t("phoneNumberForPasswordReset")}
                 placeholderTextColor={Colors.D7CCA6}
-                onChangeText={(text) => onPhoneChanged(text)}
+                onChangeText={(text) => onPhoneChanged(String(text).replace(/[^0-9]/g, ""))}
                 value={phone}
               ></TextInput>
             </View>
@@ -249,7 +249,7 @@ export default function PasswordReset(props) {
             style={styles.verficationCodeInput}
             placeholder={Translate.t("enterVerificationCode")}
             placeholderTextColor={Colors.D7CCA6}
-            onChangeText={(text) => onCodeChanged(text)}
+            onChangeText={(text) => onCodeChanged(String(text).replace(/[^0-9]/g, ""))}
             value={code}
           ></TextInput>
           <Text
@@ -282,7 +282,7 @@ export default function PasswordReset(props) {
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
             <TouchableWithoutFeedback
               onPress={() => {
-                if (confirm) {
+                if (confirm && code) {
                   const credential = auth.PhoneAuthProvider.credential(
                     confirm.verificationId,
                     code

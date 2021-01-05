@@ -136,7 +136,7 @@ export default function ChatText({
               isSelf ? styles.right_status_text : styles.left_status_text,
             ]}
           >
-            {seen ? (
+            {seen && !isSelf ? (
               <Image
                 source={require("../assets/Images/seenTick.png")}
                 style={{
@@ -163,14 +163,18 @@ export default function ChatText({
                 >
                   {date}
                 </Text>
-                <Image
-                  source={require("../assets/Images/seenTick.png")}
-                  style={
-                    isSelf
-                      ? styles.seenTickImageRight
-                      : styles.seenTickImageLeft
-                  }
-                />
+                {
+                  seen && !isSelf ? (
+                    <Image
+                      source={require("../assets/Images/seenTick.png")}
+                      style={
+                        isSelf
+                          ? styles.seenTickImageRight
+                          : styles.seenTickImageLeft
+                      }
+                    />) : (<View></View>)
+
+                }
               </View>
               <Image
                 source={{ uri: imageURL }}

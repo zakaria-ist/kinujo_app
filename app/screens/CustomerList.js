@@ -48,7 +48,6 @@ export default function CustomerList(props) {
     }
     for (var i = 0; i < tmpCustomers.length; i++) {
       let customer = tmpCustomers[i];
-      console.log(customer.image);
       tmpCustomerHtml.push(
         <TouchableWithoutFeedback
           key={i}
