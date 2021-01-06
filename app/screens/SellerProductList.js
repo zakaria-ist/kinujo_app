@@ -382,7 +382,7 @@ export default function SellerProductList(props) {
     <TouchableWithoutFeedback onPress={() => hideAll()}>
       <SafeAreaView>
         <CustomHeader
-          text="Seller Product List"
+          text={sellerName}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => {
             props.navigation.navigate("Cart");
