@@ -7,6 +7,7 @@ import {
   Image,
   View,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
   Dimensions,
   ScrollView,
 } from "react-native";

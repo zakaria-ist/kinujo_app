@@ -132,12 +132,6 @@ export default function GroupFolderCreateCompletion(props) {
   //   console.log("" + friendIds.length);
   React.useEffect(() => {
     let tmpUserListHtml = [];
-    console.log(friendIds)
-    console.log(friendIds)
-    console.log(friendIds)
-    console.log(friendIds)
-    console.log(friendIds)
-    console.log(friendIds)
     for (var i = 0; i < friendIds.length; i++) {
       console.log(friendNames[i]);
       tmpUserListHtml.push(

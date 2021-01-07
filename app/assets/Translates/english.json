@@ -302,6 +302,7 @@
   "(tel_code)": "Please enter the country code.",
   "callingCode": "Please enter the country code.",
   "(tel)": "Please enter the contact number.",
+  "register-(password)": "Please enter the password.",
   "This field must be unique.(username)": "The phone number is registered, please try again.",
   "chat_favourite_added" : "The contact has been added to your favourite list",
   "register-(username)" : "The phone number is registered, please try again.",

@@ -172,6 +172,7 @@ export default function ProfileEditingGeneral(props) {
   handleChoosePhoto = (type, name = "") => {
     const options = {
       noData: true,
+      mediaType: "photo"
     };
     ImagePicker.launchImageLibrary(options, (response) => {
       if (response.uri) {
