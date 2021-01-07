@@ -66,6 +66,11 @@ export default function RegistrationStore(props) {
         end={[1, 0.6]}
         style={{ flex: 1 }}
       >
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.select({ ios: 135, android: 80 })}
+      >
         <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
           <WhiteBackArrow onPress={() => props.navigation.goBack()} />
           <View
@@ -325,6 +330,7 @@ export default function RegistrationStore(props) {
             </View>
           </View>
         </ScrollView>
+                </KeyboardAvoidingView>
       </LinearGradient>
     </SafeAreaView>
   );

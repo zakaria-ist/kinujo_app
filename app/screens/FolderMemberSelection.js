@@ -362,7 +362,7 @@ export default function FolderMemberSelection(props) {
             />
           </View>
         </View>
-        <TouchableWithoutFeedback
+        {/* <TouchableWithoutFeedback
           onPress={() => {
             groupChatShow == true
               ? Animated.parallel([
@@ -416,7 +416,7 @@ export default function FolderMemberSelection(props) {
               <NextArrow style={styles.nextIcon} />
             )}
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback> */}
 {/*
         <Animated.View
           style={{

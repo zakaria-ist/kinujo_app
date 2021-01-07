@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     paddingLeft: widthPercentageToDP("2%"),
   },
   text: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(11),
     marginBottom: heightPercentageToDP("2%"),
   },
   radioButtonText: {
