@@ -10,8 +10,9 @@ import {
   Image,
   KeyboardAvoidingView,
   ScrollView,
-  Platform,
+  Platform
 } from "react-native";
+import Spinner from "react-native-loading-spinner-overlay";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -43,6 +44,7 @@ export default function SMSAuthentication(props) {
   const ratioKinujo = win.width / 1.6 / 151;
   const [code, onCodeChanged] = React.useState("");
   const [confirm, setConfirm] = React.useState(null);
+  const [spinner, onSpinnerChanged] = React.useState(false);
 
   async function signInWithPhoneNumber(phoneNumber) {
     // console.log(phoneNumber);
@@ -70,6 +72,11 @@ export default function SMSAuthentication(props) {
       end={[1, 0.6]}
       style={{ flex: 1 }}
     >
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
         style={{ flex: 1 }}
@@ -110,6 +117,7 @@ export default function SMSAuthentication(props) {
               if (!code) return;
               if (!confirm) return;
               if (!props.route.params.type) {
+                onSpinnerChanged(true);
                 const credential = auth.PhoneAuthProvider.credential(
                   confirm.verificationId,
                   code,
@@ -121,6 +129,7 @@ export default function SMSAuthentication(props) {
                       console.log(response);
                       response = response.data;
                       if (response.success) {
+                        onSpinnerChanged(false);
                         AsyncStorage.setItem(
                           "user",
                           response.data.user.url
@@ -159,17 +168,24 @@ export default function SMSAuthentication(props) {
                           let errorMessage = String(
                             tmpErrorMessage.split("(").pop()
                           );
+                          onSpinnerChanged(false);
                           alert.warning(
-                            Translate.t("register-(" + errorMessage)
+                            Translate.t("register-(" + errorMessage), ()=>{
+                              props.navigation.goBack();
+                            }
                           );
                         }
                       }
                     })
                     .catch((error) => {
+                      onSpinnerChanged(false);
                       request.displayError(error);
                     });
                 }).catch((error)=>{
-                  alert.warning(error.code);
+                  onSpinnerChanged(false);
+                  alert.warning(error.code, ()=>{
+                    props.navigation.goBack();
+                  });
                 })
               } else {
                 const credential = auth.PhoneAuthProvider.credential(
@@ -177,10 +193,12 @@ export default function SMSAuthentication(props) {
                   code,
                 );
                 let userData = auth().signInWithCredential(credential).then(()=>{
+                  onSpinnerChanged(false);
                   AsyncStorage.setItem("verified", "1").then(() => {
                     props.navigation.goBack();
                   });
                 }).catch((error)=>{
+                  onSpinnerChanged(false);
                   alert.warning(error.code, function(){
                     AsyncStorage.setItem("verified", "0").then(() => {
                       props.navigation.goBack();

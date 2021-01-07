@@ -144,6 +144,10 @@ export default function FolderMemberSelection(props) {
         });
       onLoaded(true);
     });
+
+    if(!isFocused){
+      onUserHtmlChanged(<View></View>)
+    }
   }, [isFocused]);
   function onValueChange(friendID) {
     let found = false;

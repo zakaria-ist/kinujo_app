@@ -243,6 +243,7 @@ export default function QRCode(props) {
                   const options = {
                     // noData: true,
                     includeBase64: true,
+                    mediaType: "photo"
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
                     console.log(response);

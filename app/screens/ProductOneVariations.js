@@ -68,6 +68,7 @@ export default function ProductOneVariations({
         choice: "",
         stock: 0,
         janCode: "",
+        editStock: ""
       });
       onProcessVariationHtml(processVariationHtml(items));
       onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
@@ -138,7 +139,7 @@ export default function ProductOneVariations({
                 <View style={styles.variantContainer}>
                   <TextInput
                     style={styles.variantInput}
-                    value={product.stock}
+                    value={product.editStock}
                     onChangeText={(value) =>
                       onValueChanged(value, "stock", product.index)
                     }
@@ -225,7 +226,7 @@ export default function ProductOneVariations({
           product.janCode = value;
         }
         if (type == "stock") {
-          product.stock = value;
+          product.editStock = value;
         }
         if (type == "choice") {
           product.choice = value;
@@ -237,6 +238,12 @@ export default function ProductOneVariations({
       return product;
     });
     onProcess(items);
+
+    onItemsChanged({
+      id: id,
+      name: itemName,
+      items: items,
+    });
   }
   function processVariationHtml(items) {
     let tmpVariationHtml = [];

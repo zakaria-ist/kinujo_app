@@ -113,11 +113,9 @@ export default function ProductInformationAddNew(props) {
       y: 0,
       animated: true,
     });
-
     if (!isFocused) {
       // setShow(false);
     }
-
     if (!isFocused) {
       onProductNameChanged("");
       onNoneVariationItemsChanged([]);
@@ -498,6 +496,32 @@ export default function ProductInformationAddNew(props) {
       });
       let userId = urls[urls.length - 1];
       onSpinnerChanged(true);
+
+      let tmpOneVariation = JSON.parse(JSON.stringify(oneVariationItems));
+      let tmpTwoVariation = JSON.parse(JSON.stringify(twoVariationItems));
+      let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
+
+      if(productVariation == "none"){
+        if(tmpNoneVariation['editStock']){
+          tmpNoneVariation['stock'] = parseInt(tmpNoneVariation['stock']) + parseInt(tmpNoneVariation['editStock'])
+        }
+      } else if(productVariation == "one"){
+        let items = tmpOneVariation['items'];
+        tmpOneVariation['items'] = items.map((item) => {
+          if(item['editStock']){
+            item['stock'] = parseInt(item['stock']) + parseInt(item['editStock']);
+          }
+          return item;
+        })
+      } else if(productVariation == "two"){
+        tmpTwoVariation['items'][0]['choices'].map((choice1) => {
+          tmpTwoVariation['items'][1]['choices'].map((choice2) => {
+            if(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']){
+              tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock'] = parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock']) + parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']);
+            }
+          })
+        })
+      }
       request
         .post("createProduct/" + userId + "/", {
           productName: productName,
@@ -506,9 +530,9 @@ export default function ProductInformationAddNew(props) {
           productId: productId,
           productCategory: productCategory,
           productVariation: productVariation,
-          oneVariationItems: oneVariationItems,
-          twoVariationItems: twoVariationItems,
-          noneVariationItems: noneVariationItems,
+          oneVariationItems: tmpOneVariation,
+          twoVariationItems: tmpTwoVariation,
+          noneVariationItems: tmpNoneVariation,
           productStock: productStock,
           publishState: publishState,
           publishDate: publishDate,
@@ -526,6 +550,7 @@ export default function ProductInformationAddNew(props) {
         })
         .then((response) => {
           response = response.data;
+          console.log(response);
           // console.log(response);
           if (response.success) {
             onSpinnerChanged(false);
@@ -546,7 +571,7 @@ export default function ProductInformationAddNew(props) {
                   onSpinnerChanged(false);
                 }
               );
-            } else if (response.errors.length > 0) {
+            } else if (response.errors && response.errors.length > 0) {
               alert.warning(response.errors[0], () => {
                 onSpinnerChanged(false);
               });
@@ -558,6 +583,7 @@ export default function ProductInformationAddNew(props) {
           }
         })
         .catch((error) => {
+          console.log(error);
           if (
             error &&
             error.response &&
@@ -576,6 +602,7 @@ export default function ProductInformationAddNew(props) {
   }
 
   function saveProduct(draft) {
+
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -583,6 +610,32 @@ export default function ProductInformationAddNew(props) {
       });
       let userId = urls[urls.length - 1];
       onSpinnerChanged(true);
+
+      let tmpOneVariation = JSON.parse(JSON.stringify(oneVariationItems));
+      let tmpTwoVariation = JSON.parse(JSON.stringify(twoVariationItems));
+      let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
+
+      if(productVariation == "none"){
+        if(tmpNoneVariation['editStock']){
+          tmpNoneVariation['stock'] = parseInt(tmpNoneVariation['stock']) + parseInt(tmpNoneVariation['editStock'])
+        }
+      } else if(productVariation == "one"){
+        let items = tmpOneVariation['items'];
+        tmpOneVariation['items'] = items.map((item) => {
+          if(item['editStock']){
+            item['stock'] = parseInt(item['stock']) + parseInt(item['editStock']);
+          }
+          return item;
+        })
+      } else if(productVariation == "two"){
+        tmpTwoVariation['items'][0]['choices'].map((choice1) => {
+          tmpTwoVariation['items'][1]['choices'].map((choice2) => {
+            if(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']){
+              tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock'] = parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock']) + parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']);
+            }
+          })
+        })
+      }
       request
         .post("editProduct/" + userId + "/", {
           id: product.id,
@@ -592,9 +645,9 @@ export default function ProductInformationAddNew(props) {
           productId: productId,
           productCategory: productCategory,
           productVariation: productVariation,
-          oneVariationItems: oneVariationItems,
-          twoVariationItems: twoVariationItems,
-          noneVariationItems: noneVariationItems,
+          oneVariationItems: tmpOneVariation,
+          twoVariationItems: tmpTwoVariation,
+          noneVariationItems: tmpNoneVariation,
           productStock: productStock,
           publishState: publishState,
           publishDate: publishDate,
@@ -1096,6 +1149,7 @@ export default function ProductInformationAddNew(props) {
                     onPress={() => {
                       const options = {
                         noData: true,
+                        mediaType: "photo"
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
                         if (response.uri) {

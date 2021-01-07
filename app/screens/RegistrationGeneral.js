@@ -58,6 +58,7 @@ export default function RegistrationGeneral(props) {
   function processCountryCode(val) {
     let tmpItem = val.split("+");
     // alert.warning(tmpItem[1]);
+    console.log(tmpItem);
     onCallingCodeChanged(tmpItem[1]);
   }
 

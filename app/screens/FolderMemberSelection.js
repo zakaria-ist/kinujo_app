@@ -69,11 +69,11 @@ export default function FolderMemberSelection(props) {
   ).current;
   React.useEffect(() => {
     ids = [];
+    let deleteIds = [];
     AsyncStorage.getItem("tmpIds").then((friendIds) => {
       if (friendIds) {
         tmpFriendIds = JSON.parse(friendIds);
       }
-      console.log(tmpFriendIds);
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url);
         let urls = url.split("/");
@@ -89,6 +89,9 @@ export default function FolderMemberSelection(props) {
             let items = [];
             querySnapshot.forEach((documentSnapshot) => {
               let item = documentSnapshot.data();
+              if(item.cancel || item.delete){
+                deleteIds.push(item.id);
+              }
               if (item.type == "user") {
                 if (tmpFriendIds == null) {
                   ids.push(item.id);
@@ -145,7 +148,9 @@ export default function FolderMemberSelection(props) {
                 // console.log(response.data.users.length);
                 //response = get use details from url
                 onUserHtmlChanged(
-                  processUserHtml(props, response.data.users, tmpFriend)
+                  processUserHtml(props, response.data.users.filter((user) => {
+                    return !deleteIds.includes(user.id) && user.id != userId;
+                  }), tmpFriend)
                 );
               })
               .catch(function (error) {
@@ -171,6 +176,10 @@ export default function FolderMemberSelection(props) {
         tmpFriendIds.map((id) => {});
       });
     });
+
+    if(!isFocused){
+      onUserHtmlChanged(<View></View>)
+    }
   }, [isFocused]);
   function onValueChange(friendID) {
     let found = false;

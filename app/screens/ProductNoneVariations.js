@@ -35,14 +35,21 @@ export default function ProductNoneVariations({
   const [invt, hideInvt] = React.useState(false);
   const [janCode, setJanCode] = React.useState("");
   const [stock, setStock] = React.useState(0);
+  const [editStock, setEditStock] = React.useState(0);
   const [id, setId] = React.useState("");
   React.useEffect(() => {
     if (pItems) {
       setJanCode(pItems.janCode);
-      if (pItems.stock) {
-        setStock(String(pItems.stock).replace(/[^0-9]/g, ""));
+      if (pItems.editStock) {
+        console.log(pItems.editStock)
+        if(pItems.editStock != "+" && pItems.editStock != "-"){
+          if(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)){
+            setEditStock(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)[0]);
+          } else {
+            setEditStock("")
+          }
+        }
       }
-      // setStock(pItems.id);
     }
   }, [pItems]);
   function handleStock(value) {
@@ -50,12 +57,11 @@ export default function ProductNoneVariations({
       onItemsChanged({
         id: id,
         janCode: janCode,
-        stock: value,
+        stock: stock,
+        editStock: value
       });
     }
   }
-  console.log(janCode);
-  console.log(stock);
   return (
     <SafeAreaView>
       {/*項目名*/}
@@ -80,9 +86,9 @@ export default function ProductNoneVariations({
         <TextInput
           keyboardType={"numeric"}
           style={styles.textInput}
-          value={stock}
+          value={editStock}
           onChangeText={(value) => {
-            setStock(value);
+            setEditStock(value);
             handleStock(value);
           }}
         ></TextInput>

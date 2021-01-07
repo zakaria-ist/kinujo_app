@@ -787,6 +787,15 @@ export default function ChatScreen(props) {
   React.useEffect(() => {
     if (!isFocused) {
       onNameChanged("");
+      setShouldShow(false);
+      processChat([])
+      chats = []
+      if (unsubscribe) {
+        unsubscribe();
+      }
+      if (unsubscribe1) {
+        unsubscribe1();
+      }
     }
     if (props.route.params.groupName) {
       onNameChanged(props.route.params.groupName);
@@ -1202,6 +1211,7 @@ export default function ChatScreen(props) {
                 onPress={() => {
                   const options = {
                     noData: true,
+                    mediaType: "photo"
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
                     if (response.uri) {

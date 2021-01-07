@@ -43,10 +43,12 @@ const updateDeleteUser = (ownUserID, chatPersonID) => {
     .then(function (querySnapshot) {
       querySnapshot.docChanges().forEach((snapShot) => {
         let users = snapShot.doc.data().users;
-        for (var i = 0; i < users.length; i++) {
-          if (users[i] == chatPersonID) {
-            groupID = snapShot.doc.id;
-            groupName = snapShot.doc.data().groupName;
+        if(users.length == 2){
+          for (var i = 0; i < users.length; i++) {
+            if (users[i] == chatPersonID) {
+              groupID = snapShot.doc.id;
+              groupName = snapShot.doc.data().groupName;
+            }
           }
         }
       });
@@ -57,6 +59,11 @@ const updateDeleteUser = (ownUserID, chatPersonID) => {
           merge: true,
         });
       }
+      db.collection("users").doc(String(ownUserID)).collection("friends").doc(String(chatPersonID)).set({
+        delete: true
+      }, {
+        merge: true,
+      });
     });
 };
 export default function AdvanceSetting(props) {

@@ -12,6 +12,7 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -312,8 +313,6 @@ export default function LoginScreen(props) {
           <TouchableWithoutFeedback
             onPress={() => {
               if (phone && password) {
-                console.log(callingCode + phone);
-                console.log(password);
                 request
                   .post("user/login", {
                     tel: callingCode + phone,

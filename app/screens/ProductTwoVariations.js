@@ -316,7 +316,7 @@ export default function ProductTwoVariations({
             }
           } else if (type == "stock") {
             if (choices.choiceIndex == choiceIndex) {
-              choices.stock = value;
+              choices.editStock = value;
             }
           } else if (type == "janCode") {
             if (choices.choiceIndex == choiceIndex) {
@@ -327,6 +327,10 @@ export default function ProductTwoVariations({
         });
       }
       return product;
+    });
+    onItemsChanged({
+      items: items,
+      mappingValue: globalMappingValue,
     });
     populateMapping();
     onProcessVariationHtml(processVariationHtml(items));
@@ -384,13 +388,13 @@ export default function ProductTwoVariations({
                   globalMappingValue[choice1Item] &&
                   globalMappingValue[choice1Item][choice.choiceItem]
                     ? globalMappingValue[choice1Item][choice.choiceItem][
-                        "stock"
+                        "editStock"
                       ]
                     : ""
                 }
                 onChangeText={(value) => {
                   globalMappingValue[choice1Item][choice.choiceItem][
-                    "stock"
+                    "editStock"
                   ] = value;
                   onProcessVariationHtml(processVariationHtml(items));
                   onProcessVariationDetailsHtml(
