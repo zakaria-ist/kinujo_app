@@ -94,13 +94,13 @@ export default function CreateFolder(props) {
                       />
                     ) : (
                       <Image
-                      style={{
-                        width: RFValue(38),
-                        height: RFValue(38),
-                        borderRadius: win.width / 2,
-                      }}    
-                      source={require("../assets/Images/profileEditingIcon.png")}
-                    />
+                        style={{
+                          width: RFValue(38),
+                          height: RFValue(38),
+                          borderRadius: win.width / 2,
+                        }}
+                        source={require("../assets/Images/profileEditingIcon.png")}
+                      />
                     )}
 
                     <Text style={styles.folderText}>{user.nickname}</Text>
@@ -247,7 +247,7 @@ export default function CreateFolder(props) {
                 style={{
                   width: RFValue(38),
                   height: RFValue(38),
-                  borderRadius: Dimensions.get("window").width/2,
+                  borderRadius: Dimensions.get("window").width / 2,
                   backgroundColor: Colors.E6DADE,
                 }}
                 source={require("../assets/Images/addMemberIcon.png")}
@@ -272,6 +272,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   createFolderContainer: {
+    alignItems: "center",
     flexDirection: "row",
     borderBottomWidth: 2,
     borderBottomColor: Colors.D7CCA6,

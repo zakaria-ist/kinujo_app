@@ -501,26 +501,45 @@ export default function ProductInformationAddNew(props) {
       let tmpTwoVariation = JSON.parse(JSON.stringify(twoVariationItems));
       let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
 
-      if(productVariation == "none"){
-        if(tmpNoneVariation['editStock']){
-          tmpNoneVariation['stock'] = parseInt(tmpNoneVariation['stock']) + parseInt(tmpNoneVariation['editStock'])
+      if (productVariation == "none") {
+        if (tmpNoneVariation["editStock"]) {
+          tmpNoneVariation["stock"] =
+            parseInt(tmpNoneVariation["stock"]) +
+            parseInt(tmpNoneVariation["editStock"]);
         }
-      } else if(productVariation == "one"){
-        let items = tmpOneVariation['items'];
-        tmpOneVariation['items'] = items.map((item) => {
-          if(item['editStock']){
-            item['stock'] = parseInt(item['stock']) + parseInt(item['editStock']);
+      } else if (productVariation == "one") {
+        let items = tmpOneVariation["items"];
+        tmpOneVariation["items"] = items.map((item) => {
+          if (item["editStock"]) {
+            item["stock"] =
+              parseInt(item["stock"]) + parseInt(item["editStock"]);
           }
           return item;
-        })
-      } else if(productVariation == "two"){
-        tmpTwoVariation['items'][0]['choices'].map((choice1) => {
-          tmpTwoVariation['items'][1]['choices'].map((choice2) => {
-            if(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']){
-              tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock'] = parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock']) + parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']);
+        });
+      } else if (productVariation == "two") {
+        tmpTwoVariation["items"][0]["choices"].map((choice1) => {
+          tmpTwoVariation["items"][1]["choices"].map((choice2) => {
+            if (
+              tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                choice2.choiceItem
+              ]["editStock"]
+            ) {
+              tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                choice2.choiceItem
+              ]["stock"] =
+                parseInt(
+                  tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                    choice2.choiceItem
+                  ]["stock"]
+                ) +
+                parseInt(
+                  tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                    choice2.choiceItem
+                  ]["editStock"]
+                );
             }
-          })
-        })
+          });
+        });
       }
       request
         .post("createProduct/" + userId + "/", {
@@ -602,7 +621,6 @@ export default function ProductInformationAddNew(props) {
   }
 
   function saveProduct(draft) {
-
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -615,26 +633,45 @@ export default function ProductInformationAddNew(props) {
       let tmpTwoVariation = JSON.parse(JSON.stringify(twoVariationItems));
       let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
 
-      if(productVariation == "none"){
-        if(tmpNoneVariation['editStock']){
-          tmpNoneVariation['stock'] = parseInt(tmpNoneVariation['stock']) + parseInt(tmpNoneVariation['editStock'])
+      if (productVariation == "none") {
+        if (tmpNoneVariation["editStock"]) {
+          tmpNoneVariation["stock"] =
+            parseInt(tmpNoneVariation["stock"]) +
+            parseInt(tmpNoneVariation["editStock"]);
         }
-      } else if(productVariation == "one"){
-        let items = tmpOneVariation['items'];
-        tmpOneVariation['items'] = items.map((item) => {
-          if(item['editStock']){
-            item['stock'] = parseInt(item['stock']) + parseInt(item['editStock']);
+      } else if (productVariation == "one") {
+        let items = tmpOneVariation["items"];
+        tmpOneVariation["items"] = items.map((item) => {
+          if (item["editStock"]) {
+            item["stock"] =
+              parseInt(item["stock"]) + parseInt(item["editStock"]);
           }
           return item;
-        })
-      } else if(productVariation == "two"){
-        tmpTwoVariation['items'][0]['choices'].map((choice1) => {
-          tmpTwoVariation['items'][1]['choices'].map((choice2) => {
-            if(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']){
-              tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock'] = parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['stock']) + parseInt(tmpTwoVariation['mappingValue'][choice1.choiceItem][choice2.choiceItem]['editStock']);
+        });
+      } else if (productVariation == "two") {
+        tmpTwoVariation["items"][0]["choices"].map((choice1) => {
+          tmpTwoVariation["items"][1]["choices"].map((choice2) => {
+            if (
+              tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                choice2.choiceItem
+              ]["editStock"]
+            ) {
+              tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                choice2.choiceItem
+              ]["stock"] =
+                parseInt(
+                  tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                    choice2.choiceItem
+                  ]["stock"]
+                ) +
+                parseInt(
+                  tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                    choice2.choiceItem
+                  ]["editStock"]
+                );
             }
-          })
-        })
+          });
+        });
       }
       request
         .post("editProduct/" + userId + "/", {
@@ -1149,7 +1186,7 @@ export default function ProductInformationAddNew(props) {
                     onPress={() => {
                       const options = {
                         noData: true,
-                        mediaType: "photo"
+                        mediaType: "photo",
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
                         if (response.uri) {
@@ -1309,21 +1346,90 @@ export default function ProductInformationAddNew(props) {
             </View>
             <TouchableWithoutFeedback
               onPress={() => {
-                // alert.warning("Z");
-                if (props.route.params.url) {
-                  request
-                    .patch(props.route.params.url, {
-                      is_hidden: 1,
-                    })
-                    .then((response) => {
-                      props.navigation.navigate("ExhibitedProductList");
-                    })
-                    .catch((error) => {
-                      // console.log(error);
-                    });
-                } else {
-                  props.navigation.navigate("ExhibitedProductList");
+                if (type == "newProduct") {
+                  Alert.alert(
+                    Translate.t("warning"),
+                    Translate.t("newItemDelete"),
+                    [
+                      {
+                        text: "YES",
+                        onPress: () => {
+                          if (props.route.params.url) {
+                            // alert.warning("Z");
+                            request
+                              .patch(props.route.params.url, {
+                                is_hidden: 1,
+                              })
+                              .then((response) => {
+                                props.navigation.navigate(
+                                  "ExhibitedProductList"
+                                );
+                              })
+                              .catch((error) => {
+                                // console.log(error);
+                              });
+                          } else {
+                            props.navigation.navigate("ExhibitedProductList");
+                          }
+                        },
+                      },
+                      {
+                        text: "NO",
+                        onPress: () => {},
+                      },
+                    ],
+                    { cancelable: false }
+                  );
+                } else if (type == "existingProduct") {
+                  Alert.alert(
+                    Translate.t("warning"),
+                    Translate.t("existingItemDelete"),
+                    [
+                      {
+                        text: "YES",
+                        onPress: () => {
+                          if (props.route.params.url) {
+                            // alert.warning("Z");
+                            request
+                              .patch(props.route.params.url, {
+                                is_hidden: 1,
+                              })
+                              .then((response) => {
+                                props.navigation.navigate(
+                                  "ExhibitedProductList"
+                                );
+                              })
+                              .catch((error) => {
+                                // console.log(error);
+                              });
+                          } else {
+                            props.navigation.navigate("ExhibitedProductList");
+                          }
+                        },
+                      },
+                      {
+                        text: "NO",
+                        onPress: () => {},
+                      },
+                    ],
+                    { cancelable: false }
+                  );
                 }
+                // if (props.route.params.url) {
+                //   // alert.warning("Z");
+                //   request
+                //     .patch(props.route.params.url, {
+                //       is_hidden: 1,
+                //     })
+                //     .then((response) => {
+                //       props.navigation.navigate("ExhibitedProductList");
+                //     })
+                //     .catch((error) => {
+                //       // console.log(error);
+                //     });
+                // } else {
+                //   props.navigation.navigate("ExhibitedProductList");
+                // }
               }}
             >
               <View

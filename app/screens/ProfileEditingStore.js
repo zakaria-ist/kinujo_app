@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { NavigationEvents } from "react-navigation";
+import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -31,7 +32,6 @@ import CustomAlert from "../lib/alert";
 import ImagePicker from "react-native-image-picker";
 import { Icon } from "react-native-elements";
 import { Keyboard } from "react-native";
-import SearchableDropdown from "react-native-searchable-dropdown";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -81,13 +81,7 @@ export default function ProfileEditingGeneral(props) {
   ] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const isFocused = useIsFocused();
-  React.useEffect(() => {
-    onEditEmailChanged(false);
-    onEditPasswordChanged(false);
-    onEditPhoneNumberChanged(false);
-    onEditNickNameChanged(false);
-    onEditShopNameChanged(false);
-  }, [!isFocused]);
+
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
     let verified = await AsyncStorage.getItem("verified");
@@ -138,6 +132,14 @@ export default function ProfileEditingGeneral(props) {
   }
 
   React.useEffect(() => {
+    if(!isFocused){
+      onEditEmailChanged(false);
+      onEditPasswordChanged(false);
+      onEditPhoneNumberChanged(false);
+      onEditNickNameChanged(false);
+      onEditShopNameChanged(false);
+    }
+
     loadUser();
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
@@ -762,39 +764,11 @@ export default function ProfileEditingGeneral(props) {
                       width: widthPercentageToDP("27%"),
                     }}
                   />
-                  <SearchableDropdown
-                    onItemSelect={(item) => {
-                      processCountryCode(item.id);
-                    }}
-                    containerStyle={{ padding: 5 }}
-                    itemStyle={{
-                      padding: 10,
-                      marginTop: 2,
-                      borderColor: "#bbb",
-                      borderWidth: 1,
-                      borderRadius: 5,
-                    }}
-                    itemTextStyle={{ color: "black" }}
-                    itemsContainerStyle={{
-                      maxHeight: heightPercentageToDP("15%"),
-                    }}
-                    items={countryCodeHtml ? countryCodeHtml : []}
-                    textInputProps={{
-                      placeholder: "+",
-                      style: {
-                        borderWidth: 1,
-                        // backgroundColor: "white",
-                        borderRadius: 5,
-                        fontSize: RFValue(10),
-                        width: widthPercentageToDP("23%"),
-                        paddingLeft: widthPercentageToDP("3%"),
-                        height: heightPercentageToDP("6%"),
-                      },
-                    }}
-                    listProps={{
-                      nestedScrollEnabled: true,
-                    }}
-                  />
+                  <CountrySearch props={props} onCountryChanged={(val)=>{
+                    if(val){
+                      processCountryCode(val);
+                    }
+                  }}></CountrySearch>
                 </View>
               ) : (
                 <View

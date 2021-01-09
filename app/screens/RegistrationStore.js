@@ -15,6 +15,8 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-community/async-storage";
+import CountrySearch from "../assets/CustomComponents/CountrySearch";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Colors } from "../assets/Colors";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
@@ -24,9 +26,6 @@ import {
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
-import CountryPicker from "react-native-country-picker-modal";
-import DropDownPicker from "react-native-dropdown-picker";
-import SearchableDropdown from "react-native-searchable-dropdown";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -67,12 +66,12 @@ export default function RegistrationStore(props) {
         end={[1, 0.6]}
         style={{ flex: 1 }}
       >
-      <KeyboardAvoidingView
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.select({ ios: 135, android: 80 })}
-      >
-        <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
+      
+        <KeyboardAwareScrollView
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.container}
+          scrollEnabled={true}
+        >
           <WhiteBackArrow onPress={() => props.navigation.goBack()} />
           <View
             style={{
@@ -148,37 +147,11 @@ export default function RegistrationStore(props) {
                 alignItems: "center",
               }}
             >
-              <SearchableDropdown
-                onItemSelect={(item) => {
-                  processCountryCode(item.id);
-                }}
-                containerStyle={{ padding: 5 }}
-                itemStyle={{
-                  padding: 10,
-                  marginTop: 2,
-                  borderColor: "#bbb",
-                  borderWidth: 1,
-                  borderRadius: 5,
-                }}
-                itemTextStyle={{ color: "black" }}
-                itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
-                items={countryCodeHtml ? countryCodeHtml : []}
-                textInputProps={{
-                  placeholder: "+",
-                  style: {
-                    borderWidth: 1,
-                    // backgroundColor: "white",
-                    borderRadius: 5,
-                    fontSize: RFValue(10),
-                    width: widthPercentageToDP("23%"),
-                    paddingLeft: widthPercentageToDP("3%"),
-                    height: heightPercentageToDP("6%"),
-                  },
-                }}
-                listProps={{
-                  nestedScrollEnabled: true,
-                }}
-              />
+              <CountrySearch props={props} onCountryChanged={(val)=>{
+                if(val){
+                  processCountryCode(val);
+                }
+              }}></CountrySearch>
               {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
@@ -330,8 +303,7 @@ export default function RegistrationStore(props) {
               />
             </View>
           </View>
-        </ScrollView>
-                </KeyboardAvoidingView>
+                </KeyboardAwareScrollView>
       </LinearGradient>
     </SafeAreaView>
   );

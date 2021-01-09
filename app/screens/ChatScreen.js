@@ -57,6 +57,7 @@ import Clipboard from "@react-native-community/clipboard";
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
+const win = Dimensions.get("window");
 var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -224,7 +225,7 @@ export default function ChatScreen(props) {
         });
     });
   }
-  
+
   async function getName(ownId, data) {
     if (data.type && data.type == "group") {
       return data.groupName;
@@ -384,9 +385,12 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
-                  press={()=>{
-                    if(!tmpMultiSelect){
-                      redirectToChat(chat.data.contactID, chat.data.contactName)
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
                     }
                   }}
                   longPress={() => {
@@ -493,9 +497,12 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
-                  press={()=>{
-                    if(!tmpMultiSelect){
-                      redirectToChat(chat.data.contactID, chat.data.contactName)
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
                     }
                   }}
                   longPress={() => {
@@ -603,9 +610,12 @@ export default function ChatScreen(props) {
               {/*///////////////////////////////////////*/}
               {chat.data.contactID ? (
                 <ChatContact
-                  press={()=>{
-                    if(!tmpMultiSelect){
-                      redirectToChat(chat.data.contactID, chat.data.contactName)
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
                     }
                   }}
                   longPress={() => {
@@ -788,8 +798,8 @@ export default function ChatScreen(props) {
     if (!isFocused) {
       onNameChanged("");
       setShouldShow(false);
-      processChat([])
-      chats = []
+      processChat([]);
+      chats = [];
       if (unsubscribe) {
         unsubscribe();
       }
@@ -820,6 +830,7 @@ export default function ChatScreen(props) {
       if (unsubscribe1) {
         unsubscribe1();
       }
+      setShouldShow(false);
       onShowPopUpChanged(false);
       onChatHtmlChanged([]);
       tmpChatHtml = [];
@@ -896,137 +907,117 @@ export default function ChatScreen(props) {
           <View style={showPopUp == true ? styles.popUpView : styles.none}>
             <View
               style={{
-                backgroundColor: "white",
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1,
+                marginTop: heightPercentageToDP("1%"),
+                // paddingBottom: heightPercentageToDP("1.5%"),
                 flex: 1,
-                marginHorizontal: widthPercentageToDP("15%"),
-                marginVertical: heightPercentageToDP("34%"),
-                borderWidth: 1,
-                borderColor: Colors.D7CCA6,
-                justifyContent: "space-evenly",
+                width: "100%",
               }}
             >
-              <View
-                style={{
-                  marginTop: heightPercentageToDP("1.5%"),
-                  flex: 1,
-                  width: "100%",
-                }}
-              >
-                <View>
-                  <TouchableWithoutFeedback
-                    onPress={() => Clipboard.setString(longPressObj.message)}
-                    onPressIn={() => onShowPopUpChanged(false)}
-                  >
-                    <Text style={styles.popUpText}>{Translate.t("copy")}</Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() =>
-                      props.navigation.navigate("ChatListForward", {
-                        message: longPressObj.message,
-                      })
-                    }
-                  >
-                    <Text style={styles.popUpText}>
-                      {Translate.t("forward")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      let update = {};
-                      update["delete"] = longPressObj.data["delete"]
-                        ? false
-                        : true;
-                      db.collection("chat")
-                        .doc(groupID)
-                        .collection("messages")
-                        .doc(longPressObj.id)
-                        .set(update, {
-                          merge: true,
-                        });
-                      onShowPopUpChanged(false);
-                    }}
-                  >
-                    <Text style={styles.popUpText}>
-                      {Translate.t("cancelOnlyMe")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      let update = {};
-                      update["delete_" + userId] = longPressObj.data[
-                        "delete_" + userId
-                      ]
-                        ? false
-                        : true;
-                      db.collection("chat")
-                        .doc(groupID)
-                        .collection("messages")
-                        .doc(longPressObj.id)
-                        .set(update, {
-                          merge: true,
-                        });
-                      onShowPopUpChanged(false);
-                    }}
-                  >
-                    <Text style={styles.popUpText}>
-                      {Translate.t("remove")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      let update = {};
-                      update["favourite_" + userId] = true;
-                      db.collection("chat")
-                        .doc(groupID)
-                        .set(update, {
-                          merge: true,
-                        })
-                        .then(() => {
-                          onShowPopUpChanged(false);
-                          alert.warning(Translate.t("chat_favourite_added"));
-                        });
-
-                      // db.collection("users")
-                      //   .doc(userId)
-                      //   .collection("FavoriteChat")
-                      //   .doc(longPressObj.id)
-                      //   .set({
-                      //     createdAt: longPressObj.data.createdAt,
-                      //     favoriteMessage: longPressObj.message,
-                      //     groupID: groupID,
-                      //     groupName: groupName,
-                      //     timeStamp: longPressObj.data.timeStamp,
-                      //   })
-                      //   .then(function () {
-                      //   });
-                    }}
-                  >
-                    <Text style={styles.popUpText}>
-                      {Translate.t("addToFav")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      setMultiSelect(true);
-                      tmpMultiSelect = true;
-                      selects.push({
-                        id: longPressObj.id,
-                        message: longPressObj.message,
+              <View>
+                <TouchableWithoutFeedback
+                  onPress={() => Clipboard.setString(longPressObj.message)}
+                  onPressIn={() => onShowPopUpChanged(false)}
+                >
+                  <Text style={styles.popUpText}>{Translate.t("copy")}</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    props.navigation.navigate("ChatListForward", {
+                      message: longPressObj.message,
+                    })
+                  }
+                >
+                  <Text style={styles.popUpText}>{Translate.t("forward")}</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["delete"] = longPressObj.data["delete"]
+                      ? false
+                      : true;
+                    db.collection("chat")
+                      .doc(groupID)
+                      .collection("messages")
+                      .doc(longPressObj.id)
+                      .set(update, {
+                        merge: true,
                       });
-                      processChat(chats);
-                      onShowPopUpChanged(false);
-                    }}
-                  >
-                    <Text style={styles.popUpText}>
-                      {Translate.t("multiSelect")}
-                    </Text>
-                  </TouchableWithoutFeedback>
-                </View>
+                    onShowPopUpChanged(false);
+                  }}
+                >
+                  <Text style={styles.popUpText}>
+                    {Translate.t("cancelOnlyMe")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["delete_" + userId] = longPressObj.data[
+                      "delete_" + userId
+                    ]
+                      ? false
+                      : true;
+                    db.collection("chat")
+                      .doc(groupID)
+                      .collection("messages")
+                      .doc(longPressObj.id)
+                      .set(update, {
+                        merge: true,
+                      });
+                    onShowPopUpChanged(false);
+                  }}
+                >
+                  <Text style={styles.popUpText}>{Translate.t("remove")}</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    let update = {};
+                    update["favourite_" + userId] = true;
+                    db.collection("chat")
+                      .doc(groupID)
+                      .set(update, {
+                        merge: true,
+                      })
+                      .then(() => {
+                        onShowPopUpChanged(false);
+                        alert.warning(Translate.t("chat_favourite_added"));
+                      });
+
+                    // db.collection("users")
+                    //   .doc(userId)
+                    //   .collection("FavoriteChat")
+                    //   .doc(longPressObj.id)
+                    //   .set({
+                    //     createdAt: longPressObj.data.createdAt,
+                    //     favoriteMessage: longPressObj.message,
+                    //     groupID: groupID,
+                    //     groupName: groupName,
+                    //     timeStamp: longPressObj.data.timeStamp,
+                    //   })
+                    //   .then(function () {
+                    //   });
+                  }}
+                >
+                  <Text style={styles.popUpText}>
+                    {Translate.t("addToFav")}
+                  </Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    setMultiSelect(true);
+                    tmpMultiSelect = true;
+                    selects.push({
+                      id: longPressObj.id,
+                      message: longPressObj.message,
+                    });
+                    processChat(chats);
+                    onShowPopUpChanged(false);
+                  }}
+                >
+                  <Text style={styles.popUpText}>
+                    {Translate.t("multiSelect")}
+                  </Text>
+                </TouchableWithoutFeedback>
               </View>
             </View>
           </View>
@@ -1063,9 +1054,11 @@ export default function ChatScreen(props) {
                     />
                   ) : (
                     <PlusCircleLogo
-                      width={"100%"}
-                      height={"100%"}
-                      resizeMode="contain"
+                      style={{
+                        width: RFValue(23),
+                        height: RFValue(23),
+                        alignSelf: "center",
+                      }}
                     />
                   )}
                 </TouchableWithoutFeedback>
@@ -1099,9 +1092,11 @@ export default function ChatScreen(props) {
                   >
                     <View style={styles.user_emoji_input}>
                       <EmojiLogo
-                        width={"100%"}
-                        height={"100%"}
-                        resizeMode="contain"
+                        style={{
+                          width: RFValue(22),
+                          height: RFValue(22),
+                          alignSelf: "center",
+                        }}
                       />
                     </View>
                   </TouchableWithoutFeedback>
@@ -1132,9 +1127,14 @@ export default function ChatScreen(props) {
               >
                 <View style={styles.input_bar_send}>
                   <SendLogo
-                    width={"100%"}
-                    height={"100%"}
-                    resizeMode="contain"
+                    style={{
+                      width: RFValue(23),
+                      height: RFValue(23),
+                      alignSelf: "center",
+                    }}
+                    // width={"100%"}
+                    // height={"100%"}
+                    // resizeMode="contain"
                   />
                 </View>
               </TouchableWithoutFeedback>
@@ -1211,7 +1211,7 @@ export default function ChatScreen(props) {
                 onPress={() => {
                   const options = {
                     noData: true,
-                    mediaType: "photo"
+                    mediaType: "photo",
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
                     if (response.uri) {
@@ -1374,18 +1374,22 @@ const styles = StyleSheet.create({
   },
   popUpView: {
     position: "absolute",
+    backgroundColor: "white",
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
     zIndex: 1,
-    // borderWidth: 1,
-    alignSelf: "center",
-    marginTop: -heightPercentageToDP("15%"),
-    // borderColor: Colors.D7CCA6,
-    justifyContent: "space-evenly",
-    width: widthPercentageToDP("100%"),
-    height: heightPercentageToDP("100%"),
+    borderWidth: 1,
+    borderColor: Colors.D7CCA6,
+    // alignSelf: "center",
+    // marginTop: -heightPercentageToDP("15%"),
+    // justifyContent: "space-evenly",
+    marginHorizontal: widthPercentageToDP("15%"),
+    marginVertical: heightPercentageToDP("24%"),
+    // paddingTop: heightPercentageToDP("1%"),
+    // paddingBottom: heightPercentageToDP("3%"),
+    // alignItems: "center",
   },
   popUpText: {
     marginLeft: widthPercentageToDP("2%"),
@@ -1403,10 +1407,11 @@ const styles = StyleSheet.create({
   //   paddingLeft: 15,
   // },
   user_emoji_input: {
-    height: heightPercentageToDP("6%"),
+    // height: heightPercentageToDP("6%"),
     width: heightPercentageToDP("6%"),
     fontSize: RFValue(10),
     padding: 10,
+    alignItems: "center",
   },
   input_bar_send: {
     marginRight: 5,

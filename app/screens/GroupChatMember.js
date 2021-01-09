@@ -48,6 +48,7 @@ export default function FolderMemberSelection(props) {
   const [loaded, onLoaded] = React.useState(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
+    ids = [];
     AsyncStorage.getItem("tmpIds").then((friendIds) => {
       tmpFriendIds = JSON.parse(friendIds);
     });
@@ -69,10 +70,15 @@ export default function FolderMemberSelection(props) {
           ids = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
-            if(item.cancel || item.delete){
+            if (item.cancel || item.delete) {
               deleteIds.push(item.id);
             }
-            if (item.type == "user" && !item.delete && !item.cancel && item.id != userId) {
+            if (
+              item.type == "user" &&
+              !item.delete &&
+              !item.cancel &&
+              item.id != userId
+            ) {
               if (tmpFriendIds == null) {
                 ids.push(item.id);
                 items.push({
@@ -109,7 +115,11 @@ export default function FolderMemberSelection(props) {
               });
             }
           });
-          console.log(ids)
+          ids.filter((item) => {
+            console.log(item + " " + userId);
+            return item != userId;
+          });
+          console.log(ids);
           tmpFriend = items;
           request
             .get("user/byIds/", {
@@ -121,10 +131,8 @@ export default function FolderMemberSelection(props) {
               users = response.data.users;
               users = users.filter((user) => {
                 return !deleteIds.includes(user.id) && user.id != userId;
-              })
-              onUserHtmlChanged(
-                processUserHtml(props, users, tmpFriend)
-              );
+              });
+              onUserHtmlChanged(processUserHtml(props, users, tmpFriend));
             })
             .catch(function (error) {
               if (
@@ -145,8 +153,8 @@ export default function FolderMemberSelection(props) {
       onLoaded(true);
     });
 
-    if(!isFocused){
-      onUserHtmlChanged(<View></View>)
+    if (!isFocused) {
+      onUserHtmlChanged(<View></View>);
     }
   }, [isFocused]);
   function onValueChange(friendID) {

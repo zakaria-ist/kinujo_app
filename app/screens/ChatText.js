@@ -20,7 +20,7 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
-import Hyperlink from 'react-native-hyperlink'
+import Hyperlink from "react-native-hyperlink";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import Request from "../lib/request";
@@ -81,7 +81,10 @@ export default function ChatText({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              <Hyperlink linkStyle={ { color: '#2980b9'} } onPress={ (url, text) => Linking.openURL(url) }>
+              <Hyperlink
+                linkStyle={{ color: "#2980b9" }}
+                onPress={(url, text) => Linking.openURL(url)}
+              >
                 <Text>{text}</Text>
               </Hyperlink>
             </View>
@@ -92,7 +95,10 @@ export default function ChatText({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              <Hyperlink linkStyle={ { color: '#2980b9'} } onPress={ (url, text) => Linking.openURL(url) }>
+              <Hyperlink
+                linkStyle={{ color: "#2980b9" }}
+                onPress={(url, text) => Linking.openURL(url)}
+              >
                 <Text>{text}</Text>
               </Hyperlink>
             </View>
@@ -163,26 +169,26 @@ export default function ChatText({
                 >
                   {date}
                 </Text>
-                {
-                  seen && !isSelf ? (
-                    <Image
-                      source={require("../assets/Images/seenTick.png")}
-                      style={
-                        isSelf
-                          ? styles.seenTickImageRight
-                          : styles.seenTickImageLeft
-                      }
-                    />) : (<View></View>)
-
-                }
+                {seen && !isSelf ? (
+                  <Image
+                    source={require("../assets/Images/seenTick.png")}
+                    style={
+                      isSelf
+                        ? styles.seenTickImageRight
+                        : styles.seenTickImageLeft
+                    }
+                  />
+                ) : (
+                  <View></View>
+                )}
               </View>
               <Image
                 source={{ uri: imageURL }}
                 style={{
-                  width: width / 3,
-                  height: 250 * ratioImage,
-                  resizeMode: "stretch",
-                  marginBottom: 10
+                  width: RFValue(150),
+                  height: RFValue(150),
+                  resizeMode: "contain",
+                  marginBottom: 10,
                 }}
               />
             </View>

@@ -11,6 +11,8 @@ import {
   ScrollView,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import CountrySearch from "../assets/CustomComponents/CountrySearch";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -29,7 +31,6 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioKinujo = win.width / 1.6 / 151;
-import SearchableDropdown from "react-native-searchable-dropdown";
 import BlackBackArrow from "../assets/CustomComponents/CustomBlackBackArrow";
 import { call } from "react-native-reanimated";
 export default function PasswordReset(props) {
@@ -82,7 +83,11 @@ export default function PasswordReset(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container}
+        scrollEnabled={true}
+      >
         <View>
           <BlackBackArrow onPress={() => props.navigation.goBack()} />
           {/* <Image
@@ -113,37 +118,12 @@ export default function PasswordReset(props) {
                 marginTop: heightPercentageToDP("2%"),
               }}
             >
-              <SearchableDropdown
-                onItemSelect={(item) => {
-                  processCountryCode(item.id);
-                }}
-                containerStyle={{ padding: 5 }}
-                itemStyle={{
-                  padding: 10,
-                  marginTop: 2,
-                  borderColor: "#bbb",
-                  borderWidth: 1,
-                  borderRadius: 5,
-                }}
-                itemTextStyle={{ color: "black" }}
-                itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
-                items={countryCodeHtml ? countryCodeHtml : []}
-                textInputProps={{
-                  placeholder: "+",
-                  style: {
-                    borderWidth: 1,
-                    // backgroundColor: "white",
-                    borderRadius: 5,
-                    fontSize: RFValue(10),
-                    width: widthPercentageToDP("23%"),
-                    paddingLeft: widthPercentageToDP("3%"),
-                    height: heightPercentageToDP("6%"),
-                  },
-                }}
-                listProps={{
-                  nestedScrollEnabled: true,
-                }}
-              />
+              
+              <CountrySearch props={props} onCountryChanged={(val)=>{
+                    if(val){
+                      processCountryCode(val);
+                    }
+                  }}></CountrySearch>
               {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
@@ -322,7 +302,7 @@ export default function PasswordReset(props) {
                                   }
                                 );
                               } else {
-                                alert.warning(response.error);
+                                alert.warning(Translate.t(response.error));
                               }
                             })
                             .catch(function (error) {
@@ -367,7 +347,7 @@ export default function PasswordReset(props) {
             </TouchableWithoutFeedback>
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

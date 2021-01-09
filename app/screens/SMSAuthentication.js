@@ -126,7 +126,7 @@ export default function SMSAuthentication(props) {
                   request
                     .post("user/register", props.route.params)
                     .then(function (response) {
-                      console.log(response);
+                      console.log(response.data);
                       response = response.data;
                       if (response.success) {
                         onSpinnerChanged(false);
@@ -183,7 +183,7 @@ export default function SMSAuthentication(props) {
                     });
                 }).catch((error)=>{
                   onSpinnerChanged(false);
-                  alert.warning(error.code, ()=>{
+                  alert.warning(Translate.t(error.code), ()=>{
                     props.navigation.goBack();
                   });
                 })

@@ -400,11 +400,12 @@ const styles = StyleSheet.create({
   },
   productTabContainerRightText: {
     fontSize: RFValue(9),
-    textAlign: "right"
+    textAlign: "right",
   },
   productNameText: {
+    // backgroundColor: "orange",
     fontSize: RFValue(9),
-    width: widthPercentageToDP("25%"),
+    width: widthPercentageToDP("20%"),
     marginLeft: widthPercentageToDP("2%"),
   },
 });

@@ -568,7 +568,7 @@ export default function FavoriteChat(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("notification")} OFF
+                    {Translate.t("notification")} {longPressObj && longPressObj.data && longPressObj.data["notify_" + ownUserID] != false ? "ON" : "OFF"}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback

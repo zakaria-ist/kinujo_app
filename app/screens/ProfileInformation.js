@@ -138,6 +138,15 @@ export default function ProfileInformation(props) {
       });
   }
   React.useEffect(() => {
+    if(!isFocused){
+      onEditAddress1Changed(false);
+      onEditAddress2Changed(false);
+      onEditGenderChanged(false);
+      onEditNameChanged(false);
+      onEditNicknameChanged(false);
+      onEditPostalCodeChanged(false);
+      onEditPrefectureChanged(false);
+    }
     loadUser();
   }, [isFocused]);
   function loadUser() {
