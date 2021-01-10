@@ -1014,7 +1014,7 @@ export default function Contact(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("notification")}OFF
+                    {Translate.t("notification")} {longPressObj && longPressObj.data &&  longPressObj.data["notify_" + userId] != false ? "ON" : "OFF"}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback

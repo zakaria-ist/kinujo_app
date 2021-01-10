@@ -23,6 +23,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 
 import DropDownPicker from "react-native-dropdown-picker";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -70,37 +71,15 @@ export default function StoreInformation(props) {
   const [address1, onAddress1Changed] = React.useState("");
   const [address2, onAddress2Changed] = React.useState("");
   const [user, onUserChanged] = React.useState({});
-  if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          onCorporateNameChanged(response.data.corporate_name);
-          onRepresentativeNameChanged(response.data.representative_name);
-          onPostalCodeChanged(response.data.zipcode);
-          onPrefectureChanged(response.data.prefecture_id);
-          onAddress1Changed(response.data.address1);
-          onAddress2Changed(response.data.address2);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-    });
-  }
+  const isFocused = useIsFocused();
+
   React.useEffect(() => {
+    if(!isFocused){
+      onEditPasswordChanged(false);
+      onEditPostalCodeChanged(false);
+      onEditPrefectureChanged(false);
+      onEditRepresentativeNameChanged(false);
+    }
     request.get("prefectures/").then(function (response) {
       let tmpPrefectures = response.data.map((prefecture) => {
         return {
@@ -113,8 +92,37 @@ export default function StoreInformation(props) {
         value: "",
       });
       onPrefecturesChanged(tmpPrefectures);
+
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            onCorporateNameChanged(response.data.corporate_name);
+            onRepresentativeNameChanged(response.data.representative_name);
+            onPostalCodeChanged(response.data.zipcode);
+            onPrefectureChanged(response.data.prefecture_id);
+            onAddress1Changed(response.data.address1);
+            onAddress2Changed(response.data.address2);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
     });
-  }, []);
+  }, [isFocused]);
   return (
     <SafeAreaView>
       <CustomHeader

@@ -26,6 +26,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { block } from "react-native-reanimated";
 import { Alert } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -77,8 +78,11 @@ export default function AdvanceSetting(props) {
   const [displayName, onDisplayNameChanged] = React.useState("");
   const [firstLoaded, onFirstLoadedChanged] = React.useState(false);
   const [showDeletePopUp, onShowDeletePopUp] = React.useState(false);
-
+  const isFocused = useIsFocused();
   React.useEffect(() => {
+    if(!isFocused){
+      onEditDisplayNameChanged(false);
+    }
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -136,7 +140,7 @@ export default function AdvanceSetting(props) {
           });
       });
     });
-  }, []);
+  }, [isFocused]);
 
   if (!userId) {
   }

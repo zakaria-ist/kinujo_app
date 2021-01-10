@@ -32,6 +32,7 @@ import PurchaseHistory from "../Screens/PurchaseHistory";
 import CustomerList from "../Screens/CustomerList";
 import CustomerInformation from "../Screens/CustomerInformation";
 import BankAccountRegistration from "../Screens/BankAccountRegistration";
+import CountrySearch from "../Screens/CountrySearch";
 import ProfileInformation from "../Screens/ProfileInformation";
 import StoreInformation from "../Screens/StoreInformation";
 import ShippingList from "../Screens/ShippingList";
@@ -2052,6 +2053,7 @@ export default function LoginStack() {
         }}
       >
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="CountrySearch" component={CountrySearch}/>
         <Stack.Screen
           name="RegistrationGeneral"
           component={RegistrationGeneral}
@@ -2081,6 +2083,7 @@ export default function LoginStack() {
           component={BankAccountRegistrationOption}
         />
         <Stack.Screen name="HomeGeneral" component={BottomNavigationGeneral} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
         {/* <Stack.Screen name="CreateFolder" component={CreateFolder} />
         <Stack.Screen
           name="FolderMemberSelection"

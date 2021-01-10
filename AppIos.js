@@ -2,7 +2,6 @@ import React from "react";
 import { AppRegistry, AppConfig, StatusBar, Platform } from "react-native";
 // import AccountExamination from "./app/Screens/RegistrationStore";
 // import SMS from "./app/Screens/SMSAuthentication";
-// import CR from "./app/Screens/SearchProducts";
 import Navigator from "./app/Routes/LoginStack";
 import BackdropProvider from "@mgcrea/react-native-backdrop-provider";
 import firebase from "firebase/app";

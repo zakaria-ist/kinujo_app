@@ -76,6 +76,7 @@ export default function ContactShare(props) {
   }
   function processUserHtml(props, users) {
     let tmpUserHtml = [];
+    console.log(users.length)
     users.map((user) => {
       tmpUserHtml.push(
         <TouchableWithoutFeedback
@@ -170,8 +171,8 @@ export default function ContactShare(props) {
             })
             .then(function (response) {
               let users = response.data.users;
-              users.filter((user) => {
-                return !deleteIds.includes(user.id) && user.id != userId
+              users = users.filter((user) => {
+                return !deleteIds.includes(user.id) && !deleteIds.includes(String(user.id)) && user.id != userId
               })
               onUserHtmlChanged(processUserHtml(props, users));
             })

@@ -17,6 +17,7 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import VersionInfo from "react-native-version-info";
+import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -26,7 +27,6 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
-import SearchableDropdown from "react-native-searchable-dropdown";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -153,6 +153,11 @@ export default function Setting(props) {
   }
 
   React.useEffect(() => {
+    if(!isFocused){
+      onEditEmailAddressChanged(false);
+      onEditPasswordChanged(false);
+      onEditPhoneNumberChanged(false);
+    }
     load();
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
@@ -324,39 +329,12 @@ export default function Setting(props) {
                     width: widthPercentageToDP("30%"),
                   }}
                 />
-                <SearchableDropdown
-                  // onPress={() => onSelectingCountryCodeChaged(true)}
-                  onItemSelect={(item) => {
-                    processCountryCode(item.id);
-                  }}
-                  containerStyle={{ padding: 5 }}
-                  itemStyle={{
-                    padding: 10,
-                    marginTop: 2,
-                    borderColor: "#bbb",
-                    borderWidth: 1,
-                    borderRadius: 5,
-                  }}
-                  itemTextStyle={{ color: "black", fontSize: RFValue(11) }}
-                  itemsContainerStyle={{
-                    maxHeight: heightPercentageToDP("15%"),
-                    width: widthPercentageToDP("20%"),
-                  }}
-                  items={countryCodeHtml ? countryCodeHtml : []}
-                  textInputProps={{
-                    placeholder: "+",
-                    style: {
-                      borderWidth: 1,
-                      borderRadius: 5,
-                      width: widthPercentageToDP("20%"),
-                      paddingLeft: widthPercentageToDP("3%"),
-                      height: heightPercentageToDP("6%"),
-                    },
-                  }}
-                  listProps={{
-                    nestedScrollEnabled: true,
-                  }}
-                />
+                
+                <CountrySearch props={props} onCountryChanged={(val)=>{
+                    if(val){
+                      processCountryCode(val);
+                    }
+                  }}></CountrySearch>
               </View>
             ) : (
               <View

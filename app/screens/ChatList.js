@@ -94,12 +94,12 @@ async function getDetail(ownId, data) {
 
   firebaseName = "";
   let isBlock = false;
-  let isHide = false
+  let isHide = false;
   snapShot.forEach((docRef) => {
     if (docRef.data().displayName && docRef.id == JSON.parse(users)) {
       firebaseName = docRef.data().displayName;
-      isBlock = docRef.data().blockMode ? true : false
-      isHide = docRef.data().secretMode ? true : false
+      isBlock = docRef.data().blockMode ? true : false;
+      isHide = docRef.data().secretMode ? true : false;
     }
   });
 
@@ -112,7 +112,7 @@ async function getDetail(ownId, data) {
       name: firebaseName ? firebaseName : djangoName,
       image: user.image ? user.image.image : "",
       block: isBlock,
-      hide: isHide
+      hide: isHide,
     };
   }
   return {
@@ -162,7 +162,11 @@ export default function ChatList(props) {
     let unreadMessage = 0;
 
     tmpChats = tmpChats.filter((chat) => {
-      return !chat.data["delete_" + ownUserID] && !chat.data["hide_" + ownUserID] && !chat['hide'];
+      return (
+        !chat.data["delete_" + ownUserID] &&
+        !chat.data["hide_" + ownUserID] &&
+        !chat["hide"]
+      );
     });
     tmpChats.map((chat) => {
       if (
@@ -234,14 +238,16 @@ export default function ChatList(props) {
                   style={{
                     borderRadius: win.width / 2,
                     width: win.width / 13,
-                    height: win.width / 13 / 22 * 25,
-                  }}    
+                    height: (win.width / 13 / 22) * 25,
+                  }}
                   source={require("../assets/Images/profileEditingIcon.png")}
                 />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.secret ? "" :chat.data.lastMessage}</Text>
+                <Text style={styles.tabText}>
+                  {chat.secret ? "" : chat.data.lastMessage}
+                </Text>
               </View>
               <View style={styles.tabRightContainer}>
                 {tmpDay == today ? (
@@ -301,14 +307,16 @@ export default function ChatList(props) {
                   style={{
                     borderRadius: win.width / 2,
                     width: win.width / 13,
-                    height: win.width / 13 / 22 * 25,
-                  }}    
+                    height: (win.width / 13 / 22) * 25,
+                  }}
                   source={require("../assets/Images/profileEditingIcon.png")}
                 />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.secret ? "" : chat.data.lastMessage}</Text>
+                <Text style={styles.tabText}>
+                  {chat.secret ? "" : chat.data.lastMessage}
+                </Text>
               </View>
               <View style={styles.tabRightContainer}>
                 {tmpDay == today - 1 ? (
@@ -367,14 +375,16 @@ export default function ChatList(props) {
                   style={{
                     borderRadius: win.width / 2,
                     width: win.width / 13,
-                    height: win.width / 13 / 22 * 25,
-                  }}    
+                    height: (win.width / 13 / 22) * 25,
+                  }}
                   source={require("../assets/Images/profileEditingIcon.png")}
                 />
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.secret ? "" :chat.data.lastMessage}</Text>
+                <Text style={styles.tabText}>
+                  {chat.secret ? "" : chat.data.lastMessage}
+                </Text>
               </View>
               <View style={styles.tabRightContainer}>
                 <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
@@ -463,7 +473,7 @@ export default function ChatList(props) {
                   name: detail.name,
                   image: detail.image,
                   block: detail.block,
-                  hide: detail.hide
+                  hide: detail.hide,
                 });
                 processChat(chats, ownUserID);
               });
@@ -611,7 +621,7 @@ export default function ChatList(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("notification")} OFF
+                    {Translate.t("notification")} {longPressObj && longPressObj.data && longPressObj.data["notify_" + ownUserID] != false ? "ON" : "OFF"}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback

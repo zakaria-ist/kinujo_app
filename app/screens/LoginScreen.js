@@ -12,18 +12,16 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors.js";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
+import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
-import CountryPicker from "react-native-country-picker-modal";
-import DropDownPicker from "react-native-dropdown-picker";
-import SearchableDropdown from "react-native-searchable-dropdown";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -173,9 +171,10 @@ export default function LoginScreen(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView
-        keyboardShouldPersistTaps="always"
-        style={{ flex: 1, backgroundColor: Colors.white }}
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container}
+        scrollEnabled={true}
       >
         <ImageBackground
           style={styles.backgroundImageContainer}
@@ -212,42 +211,11 @@ export default function LoginScreen(props) {
               alignItems: "center",
             }}
           >
-            <SearchableDropdown
-              onItemSelect={(item) => {
-                processCountryCode(item.id);
-              }}
-              containerStyle={{
-                padding: 5,
-                // elevation: 10,
-                // backgroundColor: "orange",
-                // borderBottomWidth: 1,
-              }}
-              itemStyle={{
-                padding: 10,
-                marginTop: 2,
-                borderColor: "#bbb",
-                borderWidth: 1,
-                borderRadius: 5,
-              }}
-              itemTextStyle={{ color: "black" }}
-              itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
-              items={countryCodeHtml ? countryCodeHtml : []}
-              textInputProps={{
-                placeholder: "+",
-                style: {
-                  borderWidth: 1,
-                  backgroundColor: "white",
-                  borderRadius: 5,
-                  fontSize: RFValue(10),
-                  width: widthPercentageToDP("23%"),
-                  paddingLeft: widthPercentageToDP("3%"),
-                  height: heightPercentageToDP("6%"),
-                },
-              }}
-              listProps={{
-                nestedScrollEnabled: true,
-              }}
-            />
+            <CountrySearch props={props} onCountryChanged={(val)=>{
+              if(val){
+                processCountryCode(val);
+              }
+            }}></CountrySearch>
             {/* <DropDownPicker
               // controller={(instance) => (controller = instance)}
               style={styles.textInput}
@@ -431,10 +399,7 @@ export default function LoginScreen(props) {
           </Text>
           <TouchableWithoutFeedback
             onPress={() => {
-              // props.navigation.navigate("AdvanceSetting");
-              // props.navigation.navigate("ProductInformationAddNew");
               props.navigation.navigate("TermsOfCondition");
-              // props.navigation.navigate("QRCode");
             }}
           >
             <View style={styles.registerButton}>
@@ -444,7 +409,7 @@ export default function LoginScreen(props) {
             </View>
           </TouchableWithoutFeedback>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

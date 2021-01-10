@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
+import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -24,7 +25,6 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
-import SearchableDropdown from "../assets/CustomComponents/SearchableDropDown";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
@@ -271,45 +271,11 @@ export default function AddressManagement(props) {
             onChangeText={(text) => onAddress2Changed(text)}
           ></TextInput>
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
-            <SearchableDropdown
-              name={selectedValue}
-              onTextChange={(text) => {
-                setSelectedValue(text);
-              }}
-              onItemSelect={(item) => {
-                setSelectedValue(item.id);
-                processCountryCode(item.id);
-              }}
-              containerStyle={{
-                padding: 5,
-              }}
-              defaultIndex={2}
-              itemStyle={{
-                padding: 10,
-                marginTop: 2,
-                borderColor: "#bbb",
-                borderWidth: 1,
-                borderRadius: 5,
-              }}
-              itemTextStyle={{ color: "black" }}
-              itemsContainerStyle={{ maxHeight: heightPercentageToDP("15%") }}
-              items={countryCodeHtml ? countryCodeHtml : []}
-              textInputProps={{
-                placeholder: "+",
-                style: {
-                  borderWidth: 1,
-                  backgroundColor: "white",
-                  borderRadius: 5,
-                  fontSize: RFValue(10),
-                  width: widthPercentageToDP("23%"),
-                  paddingLeft: widthPercentageToDP("3%"),
-                  height: heightPercentageToDP("6%"),
-                },
-              }}
-              listProps={{
-                nestedScrollEnabled: true,
-              }}
-            />
+            <CountrySearch props={props} onCountryChanged={(val)=>{
+                if(val){
+                  processCountryCode(val);
+                }
+              }}></CountrySearch>
             <TextInput
               keyboardType={"numeric"}
               placeholder={Translate.t("profileEditPhoneNumber")}
