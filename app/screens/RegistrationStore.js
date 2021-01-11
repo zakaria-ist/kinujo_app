@@ -16,13 +16,14 @@ import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import AsyncStorage from "@react-native-community/async-storage";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Colors } from "../assets/Colors";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
@@ -66,7 +67,6 @@ export default function RegistrationStore(props) {
         end={[1, 0.6]}
         style={{ flex: 1 }}
       >
-      
         <KeyboardAwareScrollView
           resetScrollToCoords={{ x: 0, y: 0 }}
           contentContainerStyle={styles.container}
@@ -147,11 +147,14 @@ export default function RegistrationStore(props) {
                 alignItems: "center",
               }}
             >
-              <CountrySearch props={props} onCountryChanged={(val)=>{
-                if(val){
-                  processCountryCode(val);
-                }
-              }}></CountrySearch>
+              <CountrySearch
+                props={props}
+                onCountryChanged={(val) => {
+                  if (val) {
+                    processCountryCode(val);
+                  }
+                }}
+              ></CountrySearch>
               {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
@@ -235,8 +238,19 @@ export default function RegistrationStore(props) {
                             let errorMessage = String(
                               tmpErrorMessage.split("(").pop()
                             );
-                            alert.warning(
-                              Translate.t("register-(" + errorMessage)
+                            // alert.warning(
+                            //   Translate.t("register-(" + errorMessage)
+                            // );
+                            Alert.alert(
+                              Translate.t("registerWarning"),
+                              Translate.t("register-(" + errorMessage),
+                              [
+                                {
+                                  text: "OK",
+                                  onPress: () => {},
+                                },
+                              ],
+                              { cancelable: false }
                             );
                           }
                         }
@@ -303,7 +317,7 @@ export default function RegistrationStore(props) {
               />
             </View>
           </View>
-                </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
       </LinearGradient>
     </SafeAreaView>
   );

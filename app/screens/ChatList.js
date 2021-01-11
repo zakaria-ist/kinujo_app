@@ -38,6 +38,7 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 const chatRef = db.collection("chat");
 const win = Dimensions.get("window");
+const ratioProfile = win.width / 9 / 512;
 let groupID = [];
 let today = new Date().getDate();
 let chats = [];
@@ -236,11 +237,11 @@ export default function ChatList(props) {
               ) : (
                 <Image
                   style={{
+                    width: win.width / 9,
+                    height: 512 * ratioProfile,
                     borderRadius: win.width / 2,
-                    width: win.width / 13,
-                    height: (win.width / 13 / 22) * 25,
                   }}
-                  source={require("../assets/Images/profileEditingIcon.png")}
+                  source={require("../assets/Images/profileEditingIconLarge.png")}
                 />
               )}
               <View style={styles.descriptionContainer}>
@@ -305,11 +306,11 @@ export default function ChatList(props) {
               ) : (
                 <Image
                   style={{
+                    width: win.width / 9,
+                    height: 512 * ratioProfile,
                     borderRadius: win.width / 2,
-                    width: win.width / 13,
-                    height: (win.width / 13 / 22) * 25,
                   }}
-                  source={require("../assets/Images/profileEditingIcon.png")}
+                  source={require("../assets/Images/profileEditingIconLarge.png")}
                 />
               )}
               <View style={styles.descriptionContainer}>
@@ -373,11 +374,11 @@ export default function ChatList(props) {
               ) : (
                 <Image
                   style={{
+                    width: win.width / 9,
+                    height: 512 * ratioProfile,
                     borderRadius: win.width / 2,
-                    width: win.width / 13,
-                    height: (win.width / 13 / 22) * 25,
                   }}
-                  source={require("../assets/Images/profileEditingIcon.png")}
+                  source={require("../assets/Images/profileEditingIconLarge.png")}
                 />
               )}
               <View style={styles.descriptionContainer}>
@@ -621,7 +622,12 @@ export default function ChatList(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("notification")} {longPressObj && longPressObj.data && longPressObj.data["notify_" + ownUserID] != false ? "ON" : "OFF"}
+                    {Translate.t("notification")}{" "}
+                    {longPressObj &&
+                    longPressObj.data &&
+                    longPressObj.data["notify_" + ownUserID] != false
+                      ? "ON"
+                      : "OFF"}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback

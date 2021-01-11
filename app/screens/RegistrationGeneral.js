@@ -17,13 +17,14 @@ import AsyncStorage from "@react-native-community/async-storage";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Colors } from "../assets/Colors";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWordWithArrow";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
@@ -59,7 +60,7 @@ export default function RegistrationGeneral(props) {
   function processCountryCode(val) {
     let tmpItem = val.split("+");
     // alert.warning(tmpItem[1]);
-    console.log(tmpItem);
+    // console.log(tmpItem);
     onCallingCodeChanged(tmpItem[1]);
   }
 
@@ -142,12 +143,14 @@ export default function RegistrationGeneral(props) {
                 alignItems: "center",
               }}
             >
-              
-              <CountrySearch props={props} onCountryChanged={(val)=>{
-                    if(val){
-                      processCountryCode(val);
-                    }
-                  }}></CountrySearch>
+              <CountrySearch
+                props={props}
+                onCountryChanged={(val) => {
+                  if (val) {
+                    processCountryCode(val);
+                  }
+                }}
+              ></CountrySearch>
               {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
@@ -186,12 +189,12 @@ export default function RegistrationGeneral(props) {
               onPress={() => {
                 if (nickname && phone && password && confirm_password) {
                   if (password == confirm_password) {
-                    console.log({
-                      nickname: nickname,
-                      username: callingCode + phone,
-                      password: password,
-                      authority: "general",
-                    });
+                    // console.log({
+                    //   nickname: nickname,
+                    //   username: callingCode + phone,
+                    //   password: password,
+                    //   authority: "general",
+                    // });
                     request
                       .post("user/register/check", {
                         nickname: nickname,
@@ -200,7 +203,7 @@ export default function RegistrationGeneral(props) {
                         authority: "general",
                       })
                       .then(function (response) {
-                        console.log(response);
+                        // console.log(response);
                         response = response.data;
                         if (response.success) {
                           // onConfirmPasswordChanged("")
@@ -234,8 +237,20 @@ export default function RegistrationGeneral(props) {
                             let errorMessage = String(
                               tmpErrorMessage.split("(").pop()
                             );
-                            alert.warning(
-                              Translate.t("register-(" + errorMessage)
+                            // alert.warning(
+                            //   Translate.t("register-(" + errorMessage)
+                            // );
+
+                            Alert.alert(
+                              Translate.t("registerWarning"),
+                              Translate.t("register-(" + errorMessage),
+                              [
+                                {
+                                  text: "OK",
+                                  onPress: () => {},
+                                },
+                              ],
+                              { cancelable: false }
                             );
                           }
                         }

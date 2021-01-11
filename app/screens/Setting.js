@@ -128,7 +128,8 @@ export default function Setting(props) {
       onPhoneNumberChanged(updateData["value"]);
       request.post("user/change-phone", {
         tel: response.data.tel,
-        phone: updateData["value"],
+        phone: updateData["value"][1],
+        code: updateData["value"][0],
       });
       await AsyncStorage.removeItem("update-data");
       await AsyncStorage.removeItem("verified");
@@ -157,6 +158,14 @@ export default function Setting(props) {
       onEditEmailAddressChanged(false);
       onEditPasswordChanged(false);
       onEditPhoneNumberChanged(false);
+    }
+
+    if(isFocused){
+      AsyncStorage.getItem("tel-navigate").then((val) => {
+        AsyncStorage.removeItem("tel-navigate", ()=>{
+          onEditPhoneNumberChanged(true);
+        });
+      })
     }
     load();
     request.get("country_codes/").then(function (response) {
@@ -312,7 +321,7 @@ export default function Setting(props) {
                   reverseColor="black"
                   onPress={() => {
                     onEditPhoneNumberChanged(false);
-                    promptUpdate(props, user, "tel", callingCode + phoneNumber);
+                    promptUpdate(props, user, "tel", [callingCode, phoneNumber]);
                   }}
                 />
 
@@ -330,7 +339,11 @@ export default function Setting(props) {
                   }}
                 />
                 
-                <CountrySearch props={props} onCountryChanged={(val)=>{
+                <CountrySearch onNavigate={
+                    () => {
+                      AsyncStorage.setItem("tel-navigate", "tel-navigate");
+                    }
+                  } props={props} onCountryChanged={(val)=>{
                     if(val){
                       processCountryCode(val);
                     }

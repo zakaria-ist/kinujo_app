@@ -109,7 +109,8 @@ export default function ProfileEditingGeneral(props) {
       onPhoneNumberChanged(updateData["value"]);
       request.post("user/change-phone", {
         tel: response.data.tel,
-        phone: updateData["value"],
+        phone: updateData["value"][1],
+        code: updateData["value"][0],
       });
       await AsyncStorage.removeItem("update-data");
       await AsyncStorage.removeItem("verified");
@@ -138,6 +139,14 @@ export default function ProfileEditingGeneral(props) {
       onEditPhoneNumberChanged(false);
       onEditNickNameChanged(false);
       onEditShopNameChanged(false);
+    }
+
+    if(isFocused){
+      AsyncStorage.getItem("tel-navigate").then((val) => {
+        AsyncStorage.removeItem("tel-navigate", ()=>{
+          onEditPhoneNumberChanged(true);
+        });
+      })
     }
 
     loadUser();
@@ -734,7 +743,7 @@ export default function ProfileEditingGeneral(props) {
                           props,
                           user,
                           "tel",
-                          callingCode + phoneNumber
+                          [callingCode, phoneNumber]
                         );
                       } else {
                         Alert.alert(
@@ -764,7 +773,11 @@ export default function ProfileEditingGeneral(props) {
                       width: widthPercentageToDP("27%"),
                     }}
                   />
-                  <CountrySearch props={props} onCountryChanged={(val)=>{
+                  <CountrySearch onNavigate={
+                    () => {
+                      AsyncStorage.setItem("tel-navigate", "tel-navigate");
+                    }
+                  } defaultCountry={"+" + user.tel_code} props={props} onCountryChanged={(val)=>{
                     if(val){
                       processCountryCode(val);
                     }

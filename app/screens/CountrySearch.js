@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  ScrollView,
+  TouchableWithoutFeedback,
 } from "react-native";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -21,43 +23,48 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
-import { ScrollView, TouchableWithoutFeedback } from "react-native-gesture-handler";
 // import { useIsFocused } from "@react-navigation/native";
 const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 16 / 19;
 const request = new Request();
 let countries = [];
 
-export default function ContactSearch(props) {
+export default function CountrySearch(props) {
   //const isFocused = useIsFocused();
   const [countryHtml, setCountryHtml] = React.useState(<View></View>);
   const [searchText, setSearchText] = React.useState("");
 
-  function processCountryHtml(countries){
-    let html = []
+  function processCountryHtml(countries) {
+    let html = [];
     countries.map((country) => {
       console.log();
-      html.push(<TouchableWithoutFeedback onPress={
-        ()=>{
-          AsyncStorage.setItem("selectedCountry", country.tel_code).then(()=>{
-            props.navigation.goBack();
-          })
-        }
-      }>
-        <View style={styles.contactListContainer}>
-        <View style={styles.contactTabContainer}>
-          {/* <Image
+      html.push(
+        <TouchableWithoutFeedback
+          onPress={() => {
+            AsyncStorage.setItem("selectedCountry", country.tel_code).then(
+              () => {
+                props.navigation.goBack();
+              }
+            );
+          }}
+        >
+          <View style={styles.contactListContainer}>
+            <View style={styles.contactTabContainer}>
+              {/* <Image
             style={styles.contactListImage}
             source={require("../assets/Images/profileEditingIcon.png")}
           /> */}
-          <Text style={styles.contactListName}>{country.name} ({country.tel_code})</Text>
-        </View>
-      </View>
-      </TouchableWithoutFeedback>)
-    })
+              <Text style={styles.contactListName}>
+                {country.name} ({country.tel_code})
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    });
     return html;
   }
-  React.useEffect(()=>{
+  React.useEffect(() => {
     request.get("country_codes/").then(function (response) {
       countries = response.data;
       setCountryHtml(processCountryHtml(countries));
@@ -65,22 +72,27 @@ export default function ContactSearch(props) {
   }, [true]);
   return (
     <SafeAreaView>
-      {/* <CustomHeader
-        text={Translate.t("contact")}
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onPress={() => props.navigation.navigate("Cart")}
-      /> */}
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TextInput
             value={searchText}
             onChangeText={(text) => {
-              setSearchText(text)
-              setCountryHtml(processCountryHtml(countries.filter((country) => {
-                return country.name.toLowerCase().indexOf(text.toLowerCase()) >= 0 || country.tel_code.toLowerCase().indexOf(text.toLowerCase()) >= 0;
-              })))
+              setSearchText(text);
+              setCountryHtml(
+                processCountryHtml(
+                  countries.filter((country) => {
+                    return (
+                      country.name.toLowerCase().indexOf(text.toLowerCase()) >=
+                        0 ||
+                      country.tel_code
+                        .toLowerCase()
+                        .indexOf(text.toLowerCase()) >= 0
+                    );
+                  })
+                )
+              );
             }}
-            autoFocus="true"
+            autoFocus={true}
             placeholder=""
             placeholderTextColor={Colors.grey}
             style={styles.searchContactTextInput}
@@ -124,7 +136,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP("3%"),
     borderWidth: 1,
     borderColor: "white",
-    backgroundColor: Colors.F6F6F6,
+    // backgroundColor: "orange",
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
