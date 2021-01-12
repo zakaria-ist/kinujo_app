@@ -10,7 +10,7 @@ import {
   Image,
   KeyboardAvoidingView,
   ScrollView,
-  Platform
+  Platform,
 } from "react-native";
 import Spinner from "react-native-loading-spinner-overlay";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -50,7 +50,7 @@ export default function SMSAuthentication(props) {
     // console.log(phoneNumber);
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
 
-    console.log(confirmation)
+    console.log(confirmation);
     setConfirm(confirmation);
   }
 
@@ -105,11 +105,14 @@ export default function SMSAuthentication(props) {
               ? phone + Translate.t("sentVerificationCode")
               : Translate.t("sentVerificationCode") + phone}
           </Text>
+          {/* function handleShippingPrice(value) {
+    onShippingChanged(value.replace(/[^0-9]/g, "")); */}
+          {/* } */}
           <TextInput
             style={styles.verificationCode}
             placeholder={Translate.t("enterVerificationCode")}
             placeholderTextColor="white"
-            onChangeText={(text) => onCodeChanged(text)}
+            onChangeText={(text) => onCodeChanged(text.replace(/[^0-9]/g, ""))}
             value={code}
           ></TextInput>
           <TouchableWithoutFeedback
@@ -120,91 +123,95 @@ export default function SMSAuthentication(props) {
                 onSpinnerChanged(true);
                 const credential = auth.PhoneAuthProvider.credential(
                   confirm.verificationId,
-                  code,
+                  code
                 );
-                let userData = auth().signInWithCredential(credential).then(()=>{
-                  request
-                    .post("user/register", props.route.params)
-                    .then(function (response) {
-                      console.log(response.data);
-                      response = response.data;
-                      if (response.success) {
-                        onSpinnerChanged(false);
-                        AsyncStorage.setItem(
-                          "user",
-                          response.data.user.url
-                        ).then(function (response) {
-                          if (props.route.params.authority == "general") {
-                            props.navigation.navigate(
-                              "RegisterCompletion",
-                              {
+                let userData = auth()
+                  .signInWithCredential(credential)
+                  .then(() => {
+                    request
+                      .post("user/register", props.route.params)
+                      .then(function (response) {
+                        console.log(response.data);
+                        response = response.data;
+                        if (response.success) {
+                          onSpinnerChanged(false);
+                          AsyncStorage.setItem(
+                            "user",
+                            response.data.user.url
+                          ).then(function (response) {
+                            if (props.route.params.authority == "general") {
+                              props.navigation.navigate("RegisterCompletion", {
                                 authority: props.route.params.authority,
-                              }
-                            );
-                          } else if (
-                            props.route.params.authority == "store"
+                              });
+                            } else if (
+                              props.route.params.authority == "store"
+                            ) {
+                              props.navigation.navigate(
+                                "StoreAccountSelection",
+                                {
+                                  authority: props.route.params.authority,
+                                }
+                              );
+                            }
+                          });
+                        } else {
+                          if (
+                            response.errors &&
+                            Object.keys(response.errors).length > 0
                           ) {
-                            props.navigation.navigate(
-                              "StoreAccountSelection",
-                              {
-                                authority: props.route.params.authority,
+                            let tmpErrorMessage =
+                              response.errors[
+                                Object.keys(response.errors)[0]
+                              ][0] +
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")";
+                            // alert.warning(tmpErrorMessage);
+                            let errorMessage = String(
+                              tmpErrorMessage.split("(").pop()
+                            );
+                            onSpinnerChanged(false);
+                            alert.warning(
+                              Translate.t("register-(" + errorMessage),
+                              () => {
+                                props.navigation.goBack();
                               }
                             );
                           }
-                        });
-                      } else {
-                        if (
-                          response.errors &&
-                          Object.keys(response.errors).length > 0
-                        ) {
-                          let tmpErrorMessage =
-                            response.errors[
-                              Object.keys(response.errors)[0]
-                            ][0] +
-                            "(" +
-                            Object.keys(response.errors)[0] +
-                            ")";
-                          // alert.warning(tmpErrorMessage);
-                          let errorMessage = String(
-                            tmpErrorMessage.split("(").pop()
-                          );
-                          onSpinnerChanged(false);
-                          alert.warning(
-                            Translate.t("register-(" + errorMessage), ()=>{
-                              props.navigation.goBack();
-                            }
-                          );
                         }
-                      }
-                    })
-                    .catch((error) => {
-                      onSpinnerChanged(false);
-                      request.displayError(error);
+                      })
+                      .catch((error) => {
+                        onSpinnerChanged(false);
+                        request.displayError(error);
+                      });
+                  })
+                  .catch((error) => {
+                    onSpinnerChanged(false);
+                    alert.warning(Translate.t(error.code), () => {
+                      props.navigation.goBack();
                     });
-                }).catch((error)=>{
-                  onSpinnerChanged(false);
-                  alert.warning(Translate.t(error.code), ()=>{
-                    props.navigation.goBack();
                   });
-                })
               } else {
                 const credential = auth.PhoneAuthProvider.credential(
                   confirm.verificationId,
-                  code,
+                  code
                 );
-                let userData = auth().signInWithCredential(credential).then(()=>{
-                  onSpinnerChanged(false);
-                  AsyncStorage.setItem("verified", "1").then(() => {
-                    props.navigation.goBack();
-                  });
-                }).catch((error)=>{
-                  onSpinnerChanged(false);
-                  alert.warning(error.code, function(){
-                    AsyncStorage.setItem("verified", "0").then(() => {
+                let userData = auth()
+                  .signInWithCredential(credential)
+                  .then(() => {
+                    onSpinnerChanged(false);
+                    AsyncStorage.setItem("verified", "1").then(() => {
                       props.navigation.goBack();
                     });
                   })
-                })
+                  .catch((error) => {
+                    onSpinnerChanged(false);
+                    alert.warning(error.code, function () {
+                      AsyncStorage.setItem("verified", "0").then(() => {
+                        props.navigation.goBack();
+                      });
+                    });
+                  });
               }
             }}
           >

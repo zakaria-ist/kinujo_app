@@ -1190,6 +1190,7 @@ export default function ProductInformationAddNew(props) {
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
                         if (response.uri) {
+                          onSpinnerChanged(true);
                           const formData = new FormData();
                           formData.append("image", {
                             ...response,
@@ -1205,6 +1206,7 @@ export default function ProductInformationAddNew(props) {
                               "Content-Type": "multipart/form-data",
                             })
                             .then((response) => {
+                              onSpinnerChanged(false);
                               let tmpImages = productImages;
                               tmpImages.push(response.data);
                               onProductImagesChanged(tmpImages);
@@ -1240,6 +1242,7 @@ export default function ProductInformationAddNew(props) {
                               onProductImageHtmlChanged(html);
                             })
                             .catch((error) => {
+                              onSpinnerChanged(false);
                               alert.warning(JSON.stringify(error));
                               if (
                                 error &&

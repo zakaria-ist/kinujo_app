@@ -344,7 +344,10 @@ export default function QRCode(props) {
                     backgroundColor: "#E6DADE",
                   },
                 ]}
-                onPress={() => setPopupQR(true)}
+                onPress={() => {
+                  onStoreChanged(0);
+                  setPopupQR(true)
+                }}
               >
                 <Text style={styles.submit_text}>
                   {Translate.t("generalUserInvite")}

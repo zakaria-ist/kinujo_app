@@ -32,6 +32,7 @@ import AddMember from "../assets/icons/addMember.svg";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+
 const db = firebase.firestore();
 let friendIds = [];
 let memberCount = 0;
@@ -41,6 +42,7 @@ let userId;
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
+const ratioProfile = win.width / 9 / 512;
 export default function CreateFolder(props) {
   const isFocused = useIsFocused();
   const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
@@ -95,11 +97,11 @@ export default function CreateFolder(props) {
                     ) : (
                       <Image
                         style={{
-                          width: RFValue(38),
-                          height: RFValue(38),
+                          width: win.width / 9,
+                          height: 512 * ratioProfile,
                           borderRadius: win.width / 2,
                         }}
-                        source={require("../assets/Images/profileEditingIcon.png")}
+                        source={require("../assets/Images/profileEditingIconLarge.png")}
                       />
                     )}
 
@@ -250,7 +252,7 @@ export default function CreateFolder(props) {
                   borderRadius: Dimensions.get("window").width / 2,
                   backgroundColor: Colors.E6DADE,
                 }}
-                source={require("../assets/Images/addMemberIcon.png")}
+                source={require("../assets/Images/addMemberIconLarge.png")}
               />
               <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>

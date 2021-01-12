@@ -308,6 +308,7 @@
   "This field must be unique.(username)": "The phone number is registered, please try again.",
   "chat_favourite_added" : "The contact has been added to your favourite list",
   "register-(username)" : "The phone number is registered, please try again.",
+  "register-(email)" : "The phone number is registered, please try again.",
   "normal": "Normal",
   "current": "Current",
   "savings": "Savings",
@@ -333,5 +334,6 @@
   "destination":"Destination",
   "home":"Home",
   "dialogYes":"Yes",
-  "dialogNo":"No"
+  "dialogNo":"No",
+  "registerWarning":"This phone number has been registered."
 }

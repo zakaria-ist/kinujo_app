@@ -146,7 +146,9 @@ export default function ChatScreen(props) {
   const [longPressObj, onLongPressObjChanged] = React.useState({});
   const [name, onNameChanged] = React.useState("");
   const insets = useSafeAreaInsets();
-
+  React.useEffect(() => {
+    hideEmoji();
+  }, [!isFocused]);
   function redirectToChat(contactID, contactName) {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -303,6 +305,7 @@ export default function ChatScreen(props) {
   }
 
   function getDate(dateString) {
+    console.log(dateString);
     let date = dateString.split(":");
     let tmpYear = date[0];
     let tmpMonth = date[1];
@@ -866,437 +869,449 @@ export default function ChatScreen(props) {
         />
       )}
 
-      <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS == "ios" ? "padding" : null}
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : null}
+        style={{ flex: 1 }}
+      >
+        <EmojiBoard
+          numCols={parseInt(heightPercentageToDP("30%") / 60)}
+          showBoard={showEmoji}
+          style={{
+            height: heightPercentageToDP("50%"),
+            marginBottom: heightPercentageToDP("10%"),
+          }}
+          containerStyle={{
+            height: heightPercentageToDP("30%"),
+          }}
+          onClick={onClick}
+          onRemove={onRemove}
+        />
+        <LinearGradient
+          colors={[Colors.E4DBC0, Colors.C2A059]}
+          start={[0, 0]}
+          end={[1, 0.6]}
           style={{ flex: 1 }}
         >
-          <EmojiBoard
-            numCols={parseInt(heightPercentageToDP("30%") / 60)}
-            showBoard={showEmoji}
-            style={{
-              height: heightPercentageToDP("50%"),
-              marginBottom: heightPercentageToDP("10%"),
-            }}
-            containerStyle={{
-              height: heightPercentageToDP("30%"),
-            }}
-            onClick={onClick}
-            onRemove={onRemove}
-          />
-          <LinearGradient
-            colors={[Colors.E4DBC0, Colors.C2A059]}
-            start={[0, 0]}
-            end={[1, 0.6]}
-            style={{ flex: 1 }}
+          <ScrollView
+            keyboardShouldPersistTaps={"handled"}
+            ref={scrollViewReference}
+            onContentSizeChange={() =>
+              scrollViewReference.current.scrollToEnd({ animated: true })
+            }
+            style={
+              showEmoji == true
+                ? styles.scrollViewStyleWithEmoji
+                : styles.scrollViewStyleWithoutEmoji
+            }
           >
-            <ScrollView
-              ref={scrollViewReference}
-              onContentSizeChange={() =>
-                scrollViewReference.current.scrollToEnd({ animated: true })
-              }
-              style={
-                showEmoji == true
-                  ? styles.scrollViewStyleWithEmoji
-                  : styles.scrollViewStyleWithoutEmoji
-              }
-            >
-              {secretMode ? null : chatHtml}
-            </ScrollView>
-          </LinearGradient>
-          <View style={showPopUp == true ? styles.popUpView : styles.none}>
-            <View
-              style={{
-                marginTop: heightPercentageToDP("1%"),
-                // paddingBottom: heightPercentageToDP("1.5%"),
-                flex: 1,
-                width: "100%",
-              }}
-            >
-              <View>
-                <TouchableWithoutFeedback
-                  onPress={() => Clipboard.setString(longPressObj.message)}
-                  onPressIn={() => onShowPopUpChanged(false)}
-                >
-                  <Text style={styles.popUpText}>{Translate.t("copy")}</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() =>
-                    props.navigation.navigate("ChatListForward", {
-                      message: longPressObj.message,
-                    })
-                  }
-                >
-                  <Text style={styles.popUpText}>{Translate.t("forward")}</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["delete"] = longPressObj.data["delete"]
-                      ? false
-                      : true;
-                    db.collection("chat")
-                      .doc(groupID)
-                      .collection("messages")
-                      .doc(longPressObj.id)
-                      .set(update, {
-                        merge: true,
-                      });
-                    onShowPopUpChanged(false);
+            {/* <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}> */}
+            {secretMode ? null : chatHtml}
+            {/* </TouchableWithoutFeedback> */}
+          </ScrollView>
+        </LinearGradient>
+        <Modal
+          presentationStyle={"overFullScreen"}
+          visible={showPopUp}
+          transparent={true}
+        >
+          <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
+            <View style={{ flex: 1, backgroundColor: "transparent" }}>
+              <View style={showPopUp == true ? styles.popUpView : styles.none}>
+                <View
+                  style={{
+                    marginTop: heightPercentageToDP("1%"),
+                    // paddingBottom: heightPercentageToDP("1.5%"),
+                    flex: 1,
+                    width: "100%",
                   }}
                 >
-                  <Text style={styles.popUpText}>
-                    {Translate.t("cancelOnlyMe")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["delete_" + userId] = longPressObj.data[
-                      "delete_" + userId
-                    ]
-                      ? false
-                      : true;
-                    db.collection("chat")
-                      .doc(groupID)
-                      .collection("messages")
-                      .doc(longPressObj.id)
-                      .set(update, {
-                        merge: true,
-                      });
-                    onShowPopUpChanged(false);
-                  }}
-                >
-                  <Text style={styles.popUpText}>{Translate.t("remove")}</Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["favourite_" + userId] = true;
-                    db.collection("chat")
-                      .doc(groupID)
-                      .set(update, {
-                        merge: true,
-                      })
-                      .then(() => {
+                  <View>
+                    <TouchableWithoutFeedback
+                      onPress={() => Clipboard.setString(longPressObj.message)}
+                      onPressIn={() => onShowPopUpChanged(false)}
+                    >
+                      <Text style={styles.popUpText}>
+                        {Translate.t("copy")}
+                      </Text>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() =>
+                        props.navigation.navigate("ChatListForward", {
+                          message: longPressObj.message,
+                        })
+                      }
+                    >
+                      <Text style={styles.popUpText}>
+                        {Translate.t("forward")}
+                      </Text>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        let update = {};
+                        update["delete"] = longPressObj.data["delete"]
+                          ? false
+                          : true;
+                        db.collection("chat")
+                          .doc(groupID)
+                          .collection("messages")
+                          .doc(longPressObj.id)
+                          .set(update, {
+                            merge: true,
+                          });
                         onShowPopUpChanged(false);
-                        alert.warning(Translate.t("chat_favourite_added"));
-                      });
-
-                    // db.collection("users")
-                    //   .doc(userId)
-                    //   .collection("FavoriteChat")
-                    //   .doc(longPressObj.id)
-                    //   .set({
-                    //     createdAt: longPressObj.data.createdAt,
-                    //     favoriteMessage: longPressObj.message,
-                    //     groupID: groupID,
-                    //     groupName: groupName,
-                    //     timeStamp: longPressObj.data.timeStamp,
-                    //   })
-                    //   .then(function () {
-                    //   });
-                  }}
-                >
-                  <Text style={styles.popUpText}>
-                    {Translate.t("addToFav")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    setMultiSelect(true);
-                    tmpMultiSelect = true;
-                    selects.push({
-                      id: longPressObj.id,
-                      message: longPressObj.message,
-                    });
-                    processChat(chats);
-                    onShowPopUpChanged(false);
-                  }}
-                >
-                  <Text style={styles.popUpText}>
-                    {Translate.t("multiSelect")}
-                  </Text>
-                </TouchableWithoutFeedback>
-              </View>
-            </View>
-          </View>
-          {/* Bottom Area */}
-          <View
-            style={{
-              width: "100%",
-              bottom: inputBarPosition,
-              left: 0,
-              overflow: "hidden",
-            }}
-          >
-            <View
-              style={{
-                height: textInputHeight,
-                backgroundColor: "#F0EEE9",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <View style={styles.input_bar_file}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    hideEmoji();
-                    setShouldShow(!shouldShow);
-                  }}
-                >
-                  {shouldShow ? (
-                    <ArrowDownLogo
-                      width={"100%"}
-                      height={"100%"}
-                      resizeMode="contain"
-                    />
-                  ) : (
-                    <PlusCircleLogo
-                      style={{
-                        width: RFValue(23),
-                        height: RFValue(23),
-                        alignSelf: "center",
                       }}
-                    />
-                  )}
-                </TouchableWithoutFeedback>
-              </View>
-              <View style={styles.input_bar_text}>
-                <View style={styles.input_bar_text_border}>
-                  <TextInput
-                    onContentSizeChange={() =>
-                      scrollViewReference.current.scrollToEnd({
-                        animated: true,
-                      })
-                    }
-                    onFocus={() => hideEmoji()}
-                    multiline={true}
-                    value={messages}
-                    onChangeText={(value) => setMessages(value)}
-                    placeholder="Type a message"
-                    style={{
-                      fontSize: RFValue(9.5),
-                      width: widthPercentageToDP("15%"),
-                      flexGrow: 1,
-                      color: "black",
-                      flexDirection: "row",
-                      justifyContent: "flex-end",
-                      paddingLeft: 15,
-                    }}
-                  ></TextInput>
+                    >
+                      <Text style={styles.popUpText}>
+                        {Translate.t("cancelOnlyMe")}
+                      </Text>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        let update = {};
+                        update["delete_" + userId] = longPressObj.data[
+                          "delete_" + userId
+                        ]
+                          ? false
+                          : true;
+                        db.collection("chat")
+                          .doc(groupID)
+                          .collection("messages")
+                          .doc(longPressObj.id)
+                          .set(update, {
+                            merge: true,
+                          });
+                        onShowPopUpChanged(false);
+                      }}
+                    >
+                      <Text style={styles.popUpText}>
+                        {Translate.t("remove")}
+                      </Text>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        let update = {};
+                        update["favourite_" + userId] = true;
+                        db.collection("chat")
+                          .doc(groupID)
+                          .set(update, {
+                            merge: true,
+                          })
+                          .then(() => {
+                            onShowPopUpChanged(false);
+                            alert.warning(Translate.t("chat_favourite_added"));
+                          });
 
-                  <TouchableWithoutFeedback
-                    onPress={() => handleEmojiIconPressed()}
-                  >
-                    <View style={styles.user_emoji_input}>
-                      <EmojiLogo
-                        style={{
-                          width: RFValue(22),
-                          height: RFValue(22),
-                          alignSelf: "center",
-                        }}
-                      />
-                    </View>
-                  </TouchableWithoutFeedback>
+                        // db.collection("users")
+                        //   .doc(userId)
+                        //   .collection("FavoriteChat")
+                        //   .doc(longPressObj.id)
+                        //   .set({
+                        //     createdAt: longPressObj.data.createdAt,
+                        //     favoriteMessage: longPressObj.message,
+                        //     groupID: groupID,
+                        //     groupName: groupName,
+                        //     timeStamp: longPressObj.data.timeStamp,
+                        //   })
+                        //   .then(function () {
+                        //   });
+                      }}
+                    >
+                      <Text style={styles.popUpText}>
+                        {Translate.t("addToFav")}
+                      </Text>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback
+                      onPress={() => {
+                        setMultiSelect(true);
+                        tmpMultiSelect = true;
+                        selects.push({
+                          id: longPressObj.id,
+                          message: longPressObj.message,
+                        });
+                        processChat(chats);
+                        onShowPopUpChanged(false);
+                      }}
+                    >
+                      <Text style={styles.popUpText}>
+                        {Translate.t("multiSelect")}
+                      </Text>
+                    </TouchableWithoutFeedback>
+                  </View>
                 </View>
               </View>
-              {/* SEND BUTTON */}
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
+        {/* Bottom Area */}
+        <View
+          style={{
+            width: "100%",
+            bottom: inputBarPosition,
+            left: 0,
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{
+              height: textInputHeight,
+              backgroundColor: "#F0EEE9",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <View style={styles.input_bar_file}>
               <TouchableWithoutFeedback
                 onPress={() => {
-                  let tmpMessage = messages;
-                  setMessages("");
-                  let createdAt = getTime();
-                  if (tmpMessage) {
-                    let doc = db
-                      .collection("chat")
-                      .doc(groupID)
-                      .collection("messages")
-                      .doc();
-                    doc
-                      .set({
-                        userID: userId,
-                        createdAt: createdAt,
-                        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        message: tmpMessage,
-                      })
-                      .then((item) => {});
-                  }
+                  hideEmoji();
+                  setShouldShow(!shouldShow);
                 }}
               >
-                <View style={styles.input_bar_send}>
-                  <SendLogo
+                {shouldShow ? (
+                  <ArrowDownLogo
+                    width={"100%"}
+                    height={"100%"}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <PlusCircleLogo
                     style={{
                       width: RFValue(23),
                       height: RFValue(23),
                       alignSelf: "center",
                     }}
-                    // width={"100%"}
-                    // height={"100%"}
-                    // resizeMode="contain"
                   />
-                </View>
+                )}
               </TouchableWithoutFeedback>
             </View>
-            <Animated.View
-              style={[shouldShow ? styles.input_bar_widget : styles.none]}
-            >
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  const options = {
-                    noData: true,
-                    mediaType: "photo",
-                  };
-                  ImagePicker.launchCamera(options, (response) => {
-                    if (response.uri) {
-                      const reference = storage().ref(uuid.v4() + ".png");
-                      if (Platform.OS === "android") {
-                        RNFetchBlob.fs.stat(response.path).then((stat) => {
-                          reference
-                            .putFile(stat.path)
-                            .then((response) => {
-                              reference.getDownloadURL().then((url) => {
-                                let createdAt = getTime();
+            <View style={styles.input_bar_text}>
+              <View style={styles.input_bar_text_border}>
+                <TextInput
+                  onContentSizeChange={() =>
+                    scrollViewReference.current.scrollToEnd({
+                      animated: true,
+                    })
+                  }
+                  onFocus={() => hideEmoji()}
+                  multiline={true}
+                  value={messages}
+                  onChangeText={(value) => setMessages(value)}
+                  placeholder="Type a message"
+                  style={{
+                    fontSize: RFValue(9.5),
+                    width: widthPercentageToDP("15%"),
+                    flexGrow: 1,
+                    color: "black",
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    paddingLeft: 15,
+                  }}
+                ></TextInput>
 
-                                chatsRef
-                                  .doc(groupID)
-                                  .collection("messages")
-                                  .add({
-                                    userID: userId,
-                                    createdAt: createdAt,
-                                    message: "Photo",
-                                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                    image: url,
-                                  })
-                                  .then(function () {});
-                              });
-                            })
-                            .catch((error) => {});
-                        });
-                      } else {
-                        reference
-                          .putFile(response.path.replace("file://", ""))
-                          .then((response) => {
-                            reference.getDownloadURL().then((url) => {
-                              let createdAt = getTime();
-
-                              chatsRef
-                                .doc(groupID)
-                                .collection("messages")
-                                .add({
-                                  userID: userId,
-                                  createdAt: createdAt,
-                                  message: "Photo",
-                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                  image: url,
-                                })
-                                .then(function () {});
-                            });
-                          })
-                          .catch((error) => {});
-                      }
-                    }
-                  });
-                }}
-              >
-                <View style={styles.widget_box}>
-                  <CameraLogo style={styles.widget_icon} resizeMode="contain" />
-                  <Text style={{ fontSize: RFValue(11) }}>
-                    {Translate.t("camera")}
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  const options = {
-                    noData: true,
-                    mediaType: "photo",
-                  };
-                  ImagePicker.launchImageLibrary(options, (response) => {
-                    if (response.uri) {
-                      const reference = storage().ref(uuid.v4() + ".png");
-                      if (Platform.OS === "android") {
-                        RNFetchBlob.fs.stat(response.uri).then((stat) => {
-                          reference
-                            .putFile(stat.path)
-                            .then((response) => {
-                              reference.getDownloadURL().then((url) => {
-                                let createdAt = getTime();
-
-                                chatsRef
-                                  .doc(groupID)
-                                  .collection("messages")
-                                  .add({
-                                    userID: userId,
-                                    createdAt: createdAt,
-                                    message: "Photo",
-                                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                    image: url,
-                                  })
-                                  .then(function () {});
-                              });
-                            })
-                            .catch((error) => {});
-                        });
-                      } else {
-                        reference
-                          .putFile(response.uri.replace("file://", ""))
-                          .then((response) => {
-                            reference.getDownloadURL().then((url) => {
-                              let createdAt = getTime();
-
-                              chatsRef
-                                .doc(groupID)
-                                .collection("messages")
-                                .add({
-                                  userID: userId,
-                                  createdAt: createdAt,
-                                  message: "Photo",
-                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                  image: url,
-                                })
-                                .then(function () {});
-                            });
-                          })
-                          .catch((error) => {});
-                      }
-                    }
-                  });
-                }}
-              >
-                <View style={styles.widget_box}>
-                  <GalleryLogo
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                  <Text style={{ fontSize: RFValue(11) }}>
-                    {Translate.t("gallery")}
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-              <TouchableWithoutFeedback
-                onPress={() =>
-                  props.navigation.navigate("ContactShare", {
-                    groupID: groupID,
-                  })
+                <TouchableWithoutFeedback
+                  onPress={() => handleEmojiIconPressed()}
+                >
+                  <View style={styles.user_emoji_input}>
+                    <EmojiLogo
+                      style={{
+                        width: RFValue(22),
+                        height: RFValue(22),
+                        alignSelf: "center",
+                      }}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            </View>
+            {/* SEND BUTTON */}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                let tmpMessage = messages;
+                setMessages("");
+                let createdAt = getTime();
+                if (tmpMessage) {
+                  let doc = db
+                    .collection("chat")
+                    .doc(groupID)
+                    .collection("messages")
+                    .doc();
+                  doc
+                    .set({
+                      userID: userId,
+                      createdAt: createdAt,
+                      timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                      message: tmpMessage,
+                    })
+                    .then((item) => {});
                 }
-              >
-                <View style={styles.widget_box}>
-                  <ContactLogo
-                    style={styles.widget_icon}
-                    resizeMode="contain"
-                  />
-                  <Text style={{ fontSize: RFValue(11) }}>
-                    {Translate.t("contact")}
-                  </Text>
-                </View>
-              </TouchableWithoutFeedback>
-            </Animated.View>
+              }}
+            >
+              <View style={styles.input_bar_send}>
+                <SendLogo
+                  style={{
+                    width: RFValue(23),
+                    height: RFValue(23),
+                    alignSelf: "center",
+                  }}
+                  // width={"100%"}
+                  // height={"100%"}
+                  // resizeMode="contain"
+                />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
+          <Animated.View
+            style={[shouldShow ? styles.input_bar_widget : styles.none]}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                const options = {
+                  noData: true,
+                  mediaType: "photo",
+                };
+                ImagePicker.launchCamera(options, (response) => {
+                  if (response.uri) {
+                    const reference = storage().ref(uuid.v4() + ".png");
+                    if (Platform.OS === "android") {
+                      RNFetchBlob.fs.stat(response.path).then((stat) => {
+                        reference
+                          .putFile(stat.path)
+                          .then((response) => {
+                            reference.getDownloadURL().then((url) => {
+                              let createdAt = getTime();
+
+                              chatsRef
+                                .doc(groupID)
+                                .collection("messages")
+                                .add({
+                                  userID: userId,
+                                  createdAt: createdAt,
+                                  message: "Photo",
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                  image: url,
+                                })
+                                .then(function () {});
+                            });
+                          })
+                          .catch((error) => {});
+                      });
+                    } else {
+                      reference
+                        .putFile(response.path.replace("file://", ""))
+                        .then((response) => {
+                          reference.getDownloadURL().then((url) => {
+                            let createdAt = getTime();
+
+                            chatsRef
+                              .doc(groupID)
+                              .collection("messages")
+                              .add({
+                                userID: userId,
+                                createdAt: createdAt,
+                                message: "Photo",
+                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                image: url,
+                              })
+                              .then(function () {});
+                          });
+                        })
+                        .catch((error) => {});
+                    }
+                  }
+                });
+              }}
+            >
+              <View style={styles.widget_box}>
+                <CameraLogo style={styles.widget_icon} resizeMode="contain" />
+                <Text style={{ fontSize: RFValue(11) }}>
+                  {Translate.t("camera")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                const options = {
+                  noData: true,
+                  mediaType: "photo",
+                };
+                ImagePicker.launchImageLibrary(options, (response) => {
+                  if (response.uri) {
+                    const reference = storage().ref(uuid.v4() + ".png");
+                    if (Platform.OS === "android") {
+                      RNFetchBlob.fs.stat(response.uri).then((stat) => {
+                        reference
+                          .putFile(stat.path)
+                          .then((response) => {
+                            reference.getDownloadURL().then((url) => {
+                              let createdAt = getTime();
+
+                              chatsRef
+                                .doc(groupID)
+                                .collection("messages")
+                                .add({
+                                  userID: userId,
+                                  createdAt: createdAt,
+                                  message: "Photo",
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                  image: url,
+                                })
+                                .then(function () {});
+                            });
+                          })
+                          .catch((error) => {});
+                      });
+                    } else {
+                      reference
+                        .putFile(response.uri.replace("file://", ""))
+                        .then((response) => {
+                          reference.getDownloadURL().then((url) => {
+                            let createdAt = getTime();
+
+                            chatsRef
+                              .doc(groupID)
+                              .collection("messages")
+                              .add({
+                                userID: userId,
+                                createdAt: createdAt,
+                                message: "Photo",
+                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                image: url,
+                              })
+                              .then(function () {});
+                          });
+                        })
+                        .catch((error) => {});
+                    }
+                  }
+                });
+              }}
+            >
+              <View style={styles.widget_box}>
+                <GalleryLogo style={styles.widget_icon} resizeMode="contain" />
+                <Text style={{ fontSize: RFValue(11) }}>
+                  {Translate.t("gallery")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() =>
+                props.navigation.navigate("ContactShare", {
+                  groupID: groupID,
+                })
+              }
+            >
+              <View style={styles.widget_box}>
+                <ContactLogo style={styles.widget_icon} resizeMode="contain" />
+                <Text style={{ fontSize: RFValue(11) }}>
+                  {Translate.t("contact")}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </Animated.View>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
+    // </TouchableWithoutFeedback>
   );
 }
 
@@ -1386,7 +1401,7 @@ const styles = StyleSheet.create({
     // marginTop: -heightPercentageToDP("15%"),
     // justifyContent: "space-evenly",
     marginHorizontal: widthPercentageToDP("15%"),
-    marginVertical: heightPercentageToDP("24%"),
+    marginVertical: heightPercentageToDP("34%"),
     // paddingTop: heightPercentageToDP("1%"),
     // paddingBottom: heightPercentageToDP("3%"),
     // alignItems: "center",

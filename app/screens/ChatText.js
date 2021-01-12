@@ -48,12 +48,12 @@ export default function ChatText({
         <View style={isSelf ? styles.selfPadding : styles.notSelfPadding}>
           {image && !isSelf ? (
             <Image
-              style={[isSelf ? styles.none : styles.avatar]}
+              style={[isSelf ? styles.nonae : styles.avatar]}
               source={{ uri: image }}
             />
           ) : (
             <Image
-              style={[isSelf ? styles.none : styles.avatar]}
+              style={[isSelf ? styles.nonae : styles.avatar]}
               source={require("../assets/Images/profileEditingIcon.png")}
             />
           )}
