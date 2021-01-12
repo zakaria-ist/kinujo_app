@@ -94,7 +94,7 @@ export default function CountrySearch(props) {
             }}
             autoFocus={true}
             placeholder=""
-            placeholderTextColor={Colors.grey}
+            placeholderTextColor={"white"}
             style={styles.searchContactTextInput}
           ></TextInput>
           <Image
@@ -118,9 +118,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   searchContactTextInput: {
+    height: heightPercentageToDP("6%"),
     paddingLeft: widthPercentageToDP("5%"),
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,
+    color: "black",
   },
   contactListContainer: {
     marginTop: heightPercentageToDP("3%"),

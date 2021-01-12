@@ -31,6 +31,7 @@ import ArrowUpLogo from "../assets/icons/arrow_up.svg";
 import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import Person from "../assets/icons/personPink.svg";
+import GroupImages from "../assets/CustomComponents/GroupImages";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -267,14 +268,15 @@ export default function Contact(props) {
           }}
         >
           <View style={styles.contactTabContainer}>
-            <Image
+            {/* <Image
               style={{
                 borderRadius: win.width / 2,
                 width: win.width / 13,
                 height: ratioProfile * 25,
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
-            />
+            /> */}
+            <GroupImages width={win.width / 13} height={ratioProfile * 25} images={group['images']}></GroupImages>
             <Text style={styles.tabLeftText}>{groups[i]["name"]}</Text>
           </View>
         </TouchableWithoutFeedback>
@@ -363,36 +365,42 @@ export default function Contact(props) {
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
 
-  function populateGroup() {
-    AsyncStorage.getItem("user").then(function (url) {
+  async function populateGroup() {
+    let url = await AsyncStorage.getItem("user");
       userId = getID(url);
-      db.collection("chat")
-        .where("users", "array-contains", String(userId))
-        .get()
-        .then((querySnapshot) => {
-          let ids = [];
-          let items = [];
-          let total = 0;
-          let groups = [];
+    let querySnapshot = await db.collection("chat")
+    .where("users", "array-contains", String(userId))
+    .get();
 
-          querySnapshot.forEach((documentSnapshot) => {
-            if (
-              documentSnapshot.data().users.length > 2 ||
-              documentSnapshot.data().type == "group"
-            ) {
-              groups.push({
-                id: documentSnapshot.id,
-                name: documentSnapshot.data().groupName,
-                data: documentSnapshot.data(),
-              });
-              total += 1;
-            }
-          });
-          globalGroups = groups;
-          onGroupHtmlChanged(processGroupHtml(props, groups, userId));
+    let ids = [];
+    let items = [];
+    let total = 0;
+    let groups = [];
+    querySnapshot.forEach((documentSnapshot) => {
+      if (
+        documentSnapshot.data().users.length > 2 ||
+        documentSnapshot.data().type == "group"
+      ) {
+        groups.push({
+          id: documentSnapshot.id,
+          name: documentSnapshot.data().groupName,
+          data: documentSnapshot.data(),
         });
-      onGroupLoaded(true);
+        total += 1;
+      }
     });
+    let finalGroups = [];
+    for(i=0; i<groups.length; i++){
+      let group = groups[i];
+      images = await request.post("user/images", {
+        "users" : groups[i].data.users
+      });
+      group['images'] = images.data.images;
+      finalGroups.push(group)
+    }
+    globalGroups = finalGroups;
+    onGroupHtmlChanged(processGroupHtml(props, groups, userId));
+    onGroupLoaded(true);
   }
 
   function populateUser() {
@@ -1014,7 +1022,7 @@ export default function Contact(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("notification")} {longPressObj && longPressObj.data &&  longPressObj.data["notify_" + userId] != false ? "ON" : "OFF"}
+                    {Translate.t("notification")} {longPressObj && longPressObj.data &&  longPressObj.data["notify_" + userId] == false ? "ON" : "OFF"}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback

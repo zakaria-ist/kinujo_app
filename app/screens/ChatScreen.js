@@ -21,6 +21,7 @@ import {
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
+import GroupImages from "../assets/CustomComponents/GroupImages";
 import RNFetchBlob from "rn-fetch-blob";
 import { LinearGradient } from "expo-linear-gradient";
 import EmojiBoard from "react-native-emoji-board";
@@ -305,7 +306,6 @@ export default function ChatScreen(props) {
   }
 
   function getDate(dateString) {
-    console.log(dateString);
     let date = dateString.split(":");
     let tmpYear = date[0];
     let tmpMonth = date[1];
@@ -316,7 +316,7 @@ export default function ChatScreen(props) {
 
     return new Date(
       tmpYear,
-      tmpMonth,
+      tmpMonth - 1,
       tmpDay,
       tmpHours,
       tmpMinutes,
@@ -1231,7 +1231,6 @@ export default function ChatScreen(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 const options = {
-                  noData: true,
                   mediaType: "photo",
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {

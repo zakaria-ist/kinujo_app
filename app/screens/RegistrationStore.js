@@ -242,8 +242,9 @@ export default function RegistrationStore(props) {
                             //   Translate.t("register-(" + errorMessage)
                             // );
                             Alert.alert(
+                              "",
                               Translate.t("registerWarning"),
-                              Translate.t("register-(" + errorMessage),
+                              // Translate.t("register-(" + errorMessage),
                               [
                                 {
                                   text: "OK",
