@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Colors } from "../assets/Colors";
+import Spinner from "react-native-loading-spinner-overlay";
 import Kinujo from "../assets/icons/kinujo.svg";
 import {
   widthPercentageToDP,
@@ -38,6 +39,7 @@ export default function PasswordReset(props) {
   const [code, onCodeChanged] = React.useState("");
   const [password, onPasswordChanged] = React.useState("");
   const [confirm_password, onConfirmPasswordChanged] = React.useState("");
+  const [spinner, onSpinnerChanged] = React.useState(false);
   const [confirm, setConfirm] = React.useState(null);
   const [verficaitonButtonClicked, onVerficaitonButtonClicked] = React.useState(
     false
@@ -72,6 +74,7 @@ export default function PasswordReset(props) {
   });
 
   async function signInWithPhoneNumber(phoneNumber) {
+    console.log(phoneNumber)
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
@@ -83,6 +86,11 @@ export default function PasswordReset(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <KeyboardAwareScrollView
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.container}
@@ -267,30 +275,28 @@ export default function PasswordReset(props) {
                     confirm.verificationId,
                     code
                   );
+                  onSpinnerChanged(true);
                   let userData = auth()
                     .signInWithCredential(credential)
                     .then(() => {
                       if (password && confirm_password) {
                         if (password == confirm_password) {
-                          console.log({
-                            tel: phone,
-                            password: password,
-                            confirm_password: confirm_password,
-                            confirm_password: confirm_password,
-                          });
                           request
                             .post("password/reset", {
                               tel: phone,
+                              tel_code: callingCode,
                               password: password,
                               confirm_password: confirm_password,
                               confirm_password: confirm_password,
                             })
                             .then(function (response) {
                               response = response.data;
+                              
                               if (response.success) {
                                 alert.warning(
                                   Translate.t("pass_reset_success"),
                                   function () {
+                                    onSpinnerChanged(false)
                                     onCodeChanged("");
                                     onConfirmPasswordChanged("");
                                     onPasswordChanged("");
@@ -302,10 +308,13 @@ export default function PasswordReset(props) {
                                   }
                                 );
                               } else {
-                                alert.warning(Translate.t(response.error));
+                                alert.warning(Translate.t(response.error), ()=>{
+                                  onSpinnerChanged(false);
+                                });
                               }
                             })
                             .catch(function (error) {
+                              onSpinnerChanged(false);
                               if (
                                 error &&
                                 error.response &&
@@ -318,23 +327,33 @@ export default function PasswordReset(props) {
                                   ][0] +
                                     "(" +
                                     Object.keys(error.response.data)[0] +
-                                    ")"
+                                    ")", ()=>{
+                                      onSpinnerChanged(false);
+                                    }
                                 );
                               }
                             });
                         } else {
+                          onSpinnerChanged(false);
                           alert.warning(
-                            "Password and confirm password mismatch."
+                            "Password and confirm password mismatch.", ()=>{
+                              onSpinnerChanged(false);
+                            }
                           );
                         }
                       } else {
                         alert.warning(
-                          "Please fill in the password and confirm password"
+                          "Please fill in the password and confirm password", ()=>{
+                            onSpinnerChanged(false);
+                          }
                         );
                       }
                     })
                     .catch((error) => {
-                      alert.warning(Translate.t("invalidValidationCode"));
+                      console.log(error)
+                      alert.warning(Translate.t("invalidValidationCode"), ()=>{
+                        onSpinnerChanged(false);
+                      });
                     });
                 }
               }}

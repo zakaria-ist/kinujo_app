@@ -21,6 +21,7 @@ import Person from "../assets/icons/default_avatar.svg";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
+import GroupImages from "../assets/CustomComponents/GroupImages";
 import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import _ from "lodash";
@@ -72,15 +73,21 @@ function getDate(string) {
 
 async function getDetail(ownId, data) {
   if (data.type && data.type == "group") {
+    images = await request.post("user/images", {
+      users: data.users,
+    });
     return {
       name: data.groupName,
-      image: "",
+      images: images.data.images,
     };
   }
   if (data.users.length > 2) {
+    images = await request.post("user/images", {
+      users: data.users,
+    });
     return {
       name: data.groupName,
-      image: "",
+      images: images.data.images,
     };
   }
 
@@ -111,14 +118,14 @@ async function getDetail(ownId, data) {
     djangoName = user.nickname;
     return {
       name: firebaseName ? firebaseName : djangoName,
-      image: user.image ? user.image.image : "",
+      images: [user.image ? user.image.image : ""],
       block: isBlock,
       hide: isHide,
     };
   }
   return {
     name: "",
-    image: "",
+    images: [],
   };
 }
 
@@ -202,7 +209,7 @@ export default function ChatList(props) {
       lastReadDate = chat.data[lastReadDateField];
 
       name = chat.name;
-      image = chat.image;
+      images = chat.images;
       if (tmpDay == today && chat.data.totalMessage > 0) {
         tmpChatHtml.unshift(
           <TouchableWithoutFeedback
@@ -232,17 +239,20 @@ export default function ChatList(props) {
             }}
           >
             <View style={styles.tabContainer}>
-              {image ? (
-                <Image source={{ uri: image }} style={styles.tabImage} />
+              {images ? (
+                <GroupImages
+                  width={RFValue(40)}
+                  height={RFValue(40)}
+                  images={images}
+                  style={styles.tabImage}
+                ></GroupImages>
               ) : (
-                <Image
-                  style={{
-                    width: win.width / 9,
-                    height: 512 * ratioProfile,
-                    borderRadius: win.width / 2,
-                  }}
-                  source={require("../assets/Images/profileEditingIconLarge.png")}
-                />
+                <GroupImages
+                  width={RFValue(40)}
+                  height={RFValue(40)}
+                  images={images}
+                  style={styles.tabImage}
+                ></GroupImages>
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -301,17 +311,20 @@ export default function ChatList(props) {
             }}
           >
             <View style={styles.tabContainer}>
-              {image ? (
-                <Image source={{ uri: image }} style={styles.tabImage} />
+              {images ? (
+                <GroupImages
+                  width={RFValue(40)}
+                  height={RFValue(40)}
+                  images={images}
+                  style={styles.tabImage}
+                ></GroupImages>
               ) : (
-                <Image
-                  style={{
-                    width: win.width / 9,
-                    height: 512 * ratioProfile,
-                    borderRadius: win.width / 2,
-                  }}
-                  source={require("../assets/Images/profileEditingIconLarge.png")}
-                />
+                <GroupImages
+                  width={RFValue(40)}
+                  height={RFValue(40)}
+                  images={images}
+                  style={styles.tabImage}
+                ></GroupImages>
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -369,17 +382,20 @@ export default function ChatList(props) {
           >
             <View style={styles.tabContainer}>
               {/*console.log(chat)*/}
-              {image ? (
-                <Image source={{ uri: image }} style={styles.tabImage} />
+              {images ? (
+                <GroupImages
+                  width={RFValue(40)}
+                  height={RFValue(40)}
+                  images={images}
+                  style={styles.tabImage}
+                ></GroupImages>
               ) : (
-                <Image
-                  style={{
-                    width: win.width / 9,
-                    height: 512 * ratioProfile,
-                    borderRadius: win.width / 2,
-                  }}
-                  source={require("../assets/Images/profileEditingIconLarge.png")}
-                />
+                <GroupImages
+                  width={RFValue(40)}
+                  height={RFValue(40)}
+                  images={images}
+                  style={styles.tabImage}
+                ></GroupImages>
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
@@ -472,7 +488,7 @@ export default function ChatList(props) {
                   id: snapShot.id,
                   data: snapShot.data(),
                   name: detail.name,
-                  image: detail.image,
+                  images: detail.images,
                   block: detail.block,
                   hide: detail.hide,
                 });
@@ -625,7 +641,7 @@ export default function ChatList(props) {
                     {Translate.t("notification")}{" "}
                     {longPressObj &&
                     longPressObj.data &&
-                    longPressObj.data["notify_" + ownUserID] != false
+                    longPressObj.data["notify_" + ownUserID] == false
                       ? "ON"
                       : "OFF"}
                   </Text>
@@ -763,6 +779,7 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     alignItems: "center",
+    // justifyContent: "center",
     flexDirection: "row",
     borderTopWidth: 1,
     borderBottomWidth: 1,
@@ -774,6 +791,7 @@ const styles = StyleSheet.create({
     height: RFValue(40),
     borderRadius: win.width / 2,
     backgroundColor: Colors.DCDCDC,
+    // paddingVertical: heightPercentageToDP("2%"),
   },
   longPressText: {
     fontSize: RFValue(12),

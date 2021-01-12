@@ -1185,7 +1185,6 @@ export default function ProductInformationAddNew(props) {
                     }}
                     onPress={() => {
                       const options = {
-                        noData: true,
                         mediaType: "photo",
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {

@@ -242,8 +242,9 @@ export default function RegistrationGeneral(props) {
                             // );
 
                             Alert.alert(
+                              "",
                               Translate.t("registerWarning"),
-                              Translate.t("register-(" + errorMessage),
+                              // Translate.t("register-(" + errorMessage),
                               [
                                 {
                                   text: "OK",
@@ -341,7 +342,7 @@ const styles = StyleSheet.create({
     marginLeft: widthPercentageToDP("3%"),
     borderBottomWidth: 1,
     // paddingBottom: RFValue(15),
-    // paddingTop: RFValue(15),
+    paddingTop: RFValue(15),
     fontSize: RFValue(12),
     borderBottomColor: Colors.white,
   },

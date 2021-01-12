@@ -19,7 +19,7 @@ import { Colors } from "../assets/Colors.js";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 if (!firebase.apps.length) {
@@ -211,11 +211,14 @@ export default function LoginScreen(props) {
               alignItems: "center",
             }}
           >
-            <CountrySearch props={props} onCountryChanged={(val)=>{
-              if(val){
-                processCountryCode(val);
-              }
-            }}></CountrySearch>
+            <CountrySearch
+              props={props}
+              onCountryChanged={(val) => {
+                if (val) {
+                  processCountryCode(val);
+                }
+              }}
+            ></CountrySearch>
             {/* <DropDownPicker
               // controller={(instance) => (controller = instance)}
               style={styles.textInput}
@@ -385,18 +388,25 @@ export default function LoginScreen(props) {
               <Text style={styles.loginButtonText}>{Translate.t("login")}</Text>
             </View>
           </TouchableWithoutFeedback>
-          <Text
-            onPress={() => props.navigation.navigate("PasswordReset")}
+          <View
             style={{
-              alignSelf: "center",
-              marginTop: heightPercentageToDP("3%"),
-              fontSize: RFValue(12),
               borderBottomColor: Colors.black,
               borderBottomWidth: 1,
+              marginHorizontal: widthPercentageToDP("10%"),
+              paddingBottom: heightPercentageToDP("1%"),
             }}
           >
-            {Translate.t("forgetPasswordText")}
-          </Text>
+            <Text
+              onPress={() => props.navigation.navigate("PasswordReset")}
+              style={{
+                alignSelf: "center",
+                marginTop: heightPercentageToDP("3%"),
+                fontSize: RFValue(12),
+              }}
+            >
+              {Translate.t("forgetPasswordText")}
+            </Text>
+          </View>
           <TouchableWithoutFeedback
             onPress={() => {
               props.navigation.navigate("TermsOfCondition");

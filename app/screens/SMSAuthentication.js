@@ -170,10 +170,10 @@ export default function SMSAuthentication(props) {
                             let errorMessage = String(
                               tmpErrorMessage.split("(").pop()
                             );
-                            onSpinnerChanged(false);
                             alert.warning(
                               Translate.t("register-(" + errorMessage),
                               () => {
+                                onSpinnerChanged(false);
                                 props.navigation.goBack();
                               }
                             );
@@ -186,8 +186,8 @@ export default function SMSAuthentication(props) {
                       });
                   })
                   .catch((error) => {
-                    onSpinnerChanged(false);
                     alert.warning(Translate.t(error.code), () => {
+                      onSpinnerChanged(false);
                       props.navigation.goBack();
                     });
                   });
@@ -199,15 +199,15 @@ export default function SMSAuthentication(props) {
                 let userData = auth()
                   .signInWithCredential(credential)
                   .then(() => {
-                    onSpinnerChanged(false);
                     AsyncStorage.setItem("verified", "1").then(() => {
+                      onSpinnerChanged(false);
                       props.navigation.goBack();
                     });
                   })
                   .catch((error) => {
-                    onSpinnerChanged(false);
                     alert.warning(error.code, function () {
                       AsyncStorage.setItem("verified", "0").then(() => {
+                        onSpinnerChanged(false);
                         props.navigation.goBack();
                       });
                     });

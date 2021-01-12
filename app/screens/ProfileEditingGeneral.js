@@ -50,7 +50,7 @@ function promptUpdate(props, user, field, value) {
     })
   ).then(() => {
     props.navigation.navigate("SMSAuthentication", {
-      username: field == "tel" ? value : user.tel,
+      username: field == "tel" ? (value[0] ? value[0] : user.tel_code) + value[1] : user.tel_code + user.tel,
       type: field,
     });
   });
@@ -104,6 +104,9 @@ export default function ProfileEditingGeneral(props) {
       });
       await AsyncStorage.removeItem("update-data");
       await AsyncStorage.removeItem("verified");
+
+      onPhoneNumberChanged(updateData["value"][1]);
+      onCallingCodeChanged(updateData["value"][0])
     } else {
       onPhoneNumberChanged(response.data.tel);
     }
@@ -141,9 +144,12 @@ export default function ProfileEditingGeneral(props) {
 
     if(isFocused){
       AsyncStorage.getItem("tel-navigate").then((val) => {
-        AsyncStorage.removeItem("tel-navigate", ()=>{
-          onEditPhoneNumberChanged(true);
-        });
+        if(val){
+          onPhoneNumberChanged(val);
+          AsyncStorage.removeItem("tel-navigate").then(()=>{
+            onEditPhoneNumberChanged(true);
+          });
+        }
       })
     }
 
@@ -182,7 +188,6 @@ export default function ProfileEditingGeneral(props) {
   // updateUser(user, "gender", "Male");
   handleChoosePhoto = (type, name = "") => {
     const options = {
-      noData: true,
       mediaType: "photo"
     };
     ImagePicker.launchImageLibrary(options, (response) => {
@@ -591,16 +596,8 @@ export default function ProfileEditingGeneral(props) {
                           [callingCode, phoneNumber]
                         );
                       } else {
-                        Alert.alert(
-                          Translate.t("warning"),
-                          Translate.t("fieldEmpty"),
-                          [
-                            {
-                              text: "OK",
-                              onPress: () => {},
-                            },
-                          ],
-                          { cancelable: false }
+                        alert.warning(
+                          Translate.t("fieldEmpty")
                         );
                       }
                     }}
@@ -620,9 +617,9 @@ export default function ProfileEditingGeneral(props) {
                   />
                   <CountrySearch onNavigate={
                     () => {
-                      AsyncStorage.setItem("tel-navigate", "tel-navigate");
+                      AsyncStorage.setItem("tel-navigate", phoneNumber);
                     }
-                  } defaultCountry={"+" + user.tel_code} props={props} onCountryChanged={(val)=>{
+                  } defaultCountry={user.tel_code} props={props} onCountryChanged={(val)=>{
                     if(val){
                       processCountryCode(val);
                     }
@@ -648,7 +645,7 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => onEditPhoneNumberChanged(true)}
                   />
-                  <Text style={{ fontSize: RFValue(12) }}>{phoneNumber}</Text>
+                  <Text style={{ fontSize: RFValue(12) }}>{(callingCode ? "+" + callingCode : user.tel_code) + phoneNumber}</Text>
                 </View>
               )}
             </View>
@@ -679,18 +676,10 @@ export default function ProfileEditingGeneral(props) {
                       if (validateEmail(email) == true) {
                         promptUpdate(props, user, "email", email);
                       } else {
-                        Alert.alert(
-                          Translate.t("warning"),
-                          Translate.t("invalidEmail"),
-                          [
-                            {
-                              text: "OK",
-                              onPress: () => {
-                                onEmailChanged(user.email);
-                              },
-                            },
-                          ],
-                          { cancelable: false }
+                        alert.warning(
+                          Translate.t("invalidEmail"), () => {
+                            onEmailChanged(user.email)
+                          }
                         );
                       }
                     }}

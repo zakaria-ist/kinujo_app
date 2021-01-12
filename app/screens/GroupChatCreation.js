@@ -165,7 +165,7 @@ export default function GroupChatCreation(props) {
             usersName: friendNames,
           });
 
-          // friendIds.push(String(userId));
+          friendIds.push(String(userId));
 
           let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
           let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
