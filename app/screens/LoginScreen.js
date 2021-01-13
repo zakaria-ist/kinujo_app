@@ -284,6 +284,10 @@ export default function LoginScreen(props) {
           <TouchableWithoutFeedback
             onPress={() => {
               if (phone && password) {
+                console.log({
+                  tel: callingCode + phone,
+                  password: password,
+                })
                 request
                   .post("user/login", {
                     tel: callingCode + phone,
