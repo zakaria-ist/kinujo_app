@@ -14,11 +14,22 @@ export default function CountrySearch({ props, onNavigate, defaultCountry, onCou
 
   React.useEffect(() => {
     AsyncStorage.getItem("selectedCountry").then((val) => {
-      onCountryChanged(val);
-      setCountryCode(val);
-      AsyncStorage.removeItem("selectedCountry");
+      if(val){
+        onCountryChanged(val);
+        setCountryCode(val);
+        AsyncStorage.removeItem("selectedCountry");
+      } else {
+        if(defaultCountry){
+          onCountryChanged(defaultCountry);
+          setCountryCode(defaultCountry);
+        } else {
+          onCountryChanged("+81");
+          setCountryCode("+81");
+        }
+      }
     });
   }, [isFocused]);
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -46,7 +57,7 @@ export default function CountrySearch({ props, onNavigate, defaultCountry, onCou
             paddingLeft: widthPercentageToDP("3%"),
           }}
         >
-          {countryCode ? countryCode : (defaultCountry ? defaultCountry : "+")}
+          {countryCode}
         </Text>
       </View>
     </TouchableWithoutFeedback>

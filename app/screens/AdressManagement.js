@@ -297,7 +297,7 @@ export default function AddressManagement(props) {
                 prefecture: prefecture,
                 tel: phoneNumber,
                 zip1: zipcode,
-                tel_code: callingCode,
+                tel_code: "+" + callingCode,
               };
               // if (address2) data["address2"] = address2;
               if (callingCode && phoneNumber) {

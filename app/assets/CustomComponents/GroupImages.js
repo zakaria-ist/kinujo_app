@@ -22,7 +22,7 @@ export default function GroupImages({ props, width, height, images }) {
     let tmpHtml = [];
     if (images) {
       images.map((image) => {
-        if (images.length <= 9) {
+        if (tmpHtml.length <= 9) {
           if (image) {
             tmpHtml.push(
               <Image
@@ -84,6 +84,7 @@ export default function GroupImages({ props, width, height, images }) {
           flexWrap: "wrap",
           flexDirection: "row",
           paddingVertical: heightPercentageToDP("1%"),
+          backgroundColor: "#B3B3B3"
           // alignSelf: "center",
         }}
       >
