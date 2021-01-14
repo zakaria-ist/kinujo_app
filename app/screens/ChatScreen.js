@@ -134,6 +134,7 @@ export default function ChatScreen(props) {
   const [showCheckBox, onShowCheckBoxChanged] = useState(false);
   const [users, onUserChanged] = React.useState("");
   const [userUrl, onUserUrlChanged] = React.useState("group");
+  const [images, setImages] = React.useState([]);
   const [friendImage, onFriendImageChanged] = React.useState("");
   const [copiedText, setCopiedText] = useState("");
   const [multiSelect, setMultiSelect] = React.useState(false);
@@ -704,6 +705,22 @@ export default function ChatScreen(props) {
     userTotalReadMessageField = "totalMessageRead_" + userId;
     let documentSnapshot = await chatsRef.doc(groupID).get();
     if (documentSnapshot && documentSnapshot.data()) {
+
+      let tmpUsers = documentSnapshot.data().users;
+      tmpUsers = tmpUsers.filter((user) => {
+        return user != userId;
+      })
+      if(tmpUsers.length == 1){
+        let images = await request.post("user/images", {
+          "users" : tmpUsers
+        });
+        setImages(images.data.images)
+      } else {
+        let images = await request.post("user/images", {
+          "users" : documentSnapshot.data().users
+        });
+        setImages(images.data.images)
+      }
       if (documentSnapshot.data()["popup_addfriend_" + userId]) {
         alert.warning(Translate.t("please_add_friend"));
       }
@@ -802,6 +819,7 @@ export default function ChatScreen(props) {
       onNameChanged("");
       setShouldShow(false);
       processChat([]);
+      setImages([""]);
       chats = [];
       if (unsubscribe) {
         unsubscribe();
@@ -848,7 +866,7 @@ export default function ChatScreen(props) {
         onPress={() => props.navigation.navigate("Cart")}
       />
       {!multiSelect ? (
-        <CustomSecondaryHeader name={name} userUrl={userUrl} />
+        <CustomSecondaryHeader name={name} userUrl={userUrl} images={images}/>
       ) : (
         <CustomSelectHeader
           onSend={() => {

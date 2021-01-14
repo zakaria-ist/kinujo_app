@@ -291,10 +291,7 @@ export default function Setting(props) {
           <View
             style={{
               flexDirection: "row",
-              height:
-                editPhoneNumber == true
-                  ? heightPercentageToDP("29%")
-                  : heightPercentageToDP("8%"),
+              height: heightPercentageToDP("8%"),
               justifyContent: "flex-start",
               alignItems: "center",
               marginHorizontal: widthPercentageToDP("4%"),

@@ -244,14 +244,12 @@ export default function ChatList(props) {
                   width={RFValue(40)}
                   height={RFValue(40)}
                   images={images}
-                  style={styles.tabImage}
                 ></GroupImages>
               ) : (
                 <GroupImages
                   width={RFValue(40)}
                   height={RFValue(40)}
                   images={images}
-                  style={styles.tabImage}
                 ></GroupImages>
               )}
               <View style={styles.descriptionContainer}>
@@ -316,14 +314,12 @@ export default function ChatList(props) {
                   width={RFValue(40)}
                   height={RFValue(40)}
                   images={images}
-                  style={styles.tabImage}
                 ></GroupImages>
               ) : (
                 <GroupImages
                   width={RFValue(40)}
                   height={RFValue(40)}
                   images={images}
-                  style={styles.tabImage}
                 ></GroupImages>
               )}
               <View style={styles.descriptionContainer}>
@@ -387,14 +383,12 @@ export default function ChatList(props) {
                   width={RFValue(40)}
                   height={RFValue(40)}
                   images={images}
-                  style={styles.tabImage}
                 ></GroupImages>
               ) : (
                 <GroupImages
                   width={RFValue(40)}
                   height={RFValue(40)}
                   images={images}
-                  style={styles.tabImage}
                 ></GroupImages>
               )}
               <View style={styles.descriptionContainer}>

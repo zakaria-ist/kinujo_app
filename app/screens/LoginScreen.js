@@ -66,7 +66,7 @@ async function performUrl(props, link) {
   let userId = findParams(link, "userId");
   let store = findParams(link, "is_store");
   await AsyncStorage.setItem("referUser", userId);
-  if (store) {
+  if (String(store) == "1") {
     props.navigation.navigate("RegistrationStore");
   } else {
     props.navigation.navigate("RegistrationGeneral");
@@ -264,7 +264,7 @@ export default function LoginScreen(props) {
               }}
             /> */}
             <TextInput
-              onChangeText={(text) => onPhoneChanged(text)}
+              onChangeText={(text) => onPhoneChanged(String(text).replace(/[^0-9]/g, ""))}
               value={phone}
               placeholder={Translate.t("phoneNumber")}
               placeholderTextColor={Colors.D7CCA6}
@@ -394,8 +394,8 @@ export default function LoginScreen(props) {
           </TouchableWithoutFeedback>
           <View
             style={{
-              borderBottomColor: Colors.black,
-              borderBottomWidth: 1,
+              // borderBottomColor: Colors.black,
+              // borderBottomWidth: 1,
               marginHorizontal: widthPercentageToDP("10%"),
               paddingBottom: heightPercentageToDP("1%"),
             }}
@@ -406,6 +406,7 @@ export default function LoginScreen(props) {
                 alignSelf: "center",
                 marginTop: heightPercentageToDP("3%"),
                 fontSize: RFValue(12),
+                textDecorationLine: "underline"
               }}
             >
               {Translate.t("forgetPasswordText")}

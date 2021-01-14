@@ -83,13 +83,10 @@ export default function ChatContact({
             {image && !isSelf ? (
               <Image
                 style={[isSelf ? styles.none : styles.avatar]}
-                source={{ uri: image }}
+                source={image ? { uri: image } : require("../assets/Images/profileEditingIcon.png")}
               />
             ) : (
-              <Image
-                style={[isSelf ? styles.none : styles.avatar]}
-                source={require("../assets/Images/profileEditingIcon.png")}
-              />
+              <View></View>
             )}
           </View>
           <View

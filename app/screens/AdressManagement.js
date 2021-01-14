@@ -31,6 +31,7 @@ import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 import postal_code from "japan-postal-code-oasis";
+import { call } from "react-native-reanimated";
 const win = Dimensions.get("window");
 
 export default function AddressManagement(props) {
@@ -271,7 +272,7 @@ export default function AddressManagement(props) {
             onChangeText={(text) => onAddress2Changed(text)}
           ></TextInput>
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
-            <CountrySearch props={props} onCountryChanged={(val)=>{
+            <CountrySearch props={props} defaultCountry={"+" + callingCode} onCountryChanged={(val)=>{
                 if(val){
                   processCountryCode(val);
                 }
@@ -347,7 +348,7 @@ export default function AddressManagement(props) {
                   user: url,
                   zip1: zipcode,
                   address2: address2,
-                  tel_code: callingCode,
+                  tel_code: "+" + callingCode,
                 };
                 if (callingCode && phoneNumber) {
                   request

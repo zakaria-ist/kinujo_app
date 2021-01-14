@@ -19,6 +19,7 @@ import Translate from "../Translates/Translate";
 import PersonIcon from "../icons/person.svg";
 import Request from "../../lib/request";
 import AsyncStorage from "@react-native-community/async-storage";
+import GroupImages from "./GroupImages";
 
 const request = new Request();
 
@@ -28,9 +29,11 @@ export default function CustomKinujoWord({
   accountType,
   editProfile,
   userUrl,
+  images,
 }) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = React.useState({});
+  const [localImages, setImages] = React.useState([]);
   // const [userAuthorityId, onUserAuthorityIdChanged] = React.useState("");
   const [userAccountType, onUserAccountTypeChanged] = React.useState("");
   const win = Dimensions.get("window");
@@ -60,7 +63,17 @@ export default function CustomKinujoWord({
         });
       });
     }
-  }, [isFocused, userUrl]);
+
+    if(images){
+      setImages(images);
+    } else {
+      setImages([""]);
+    }
+
+    if(!isFocused){
+      setImages([""]);
+    }
+  }, [isFocused, userUrl, images]);
   return (
     <TouchableWithoutFeedback onPress={onPress}>
       <SafeAreaView
@@ -71,14 +84,26 @@ export default function CustomKinujoWord({
           height: heightPercentageToDP("10%"),
         }}
       >
-        {user && user.image ? (
+        {localImages.length > 0 ? (<GroupImages style={{
+          marginLeft: widthPercentageToDP("5%"),
+          alignItems: "center",
+          justifyContent: "center",
+          width: RFValue(50),
+          height: RFValue(50),
+          flexWrap: "wrap",
+          flexDirection: "row",
+          paddingVertical: heightPercentageToDP("1%"),
+          borderRadius: images.length > 0 ? 5: 0,
+          backgroundColor: (images && images.length > 1) ? "#B3B3B3" : "transparent"
+        }} width={RFValue(40)} height={RFValue(40)} images={localImages}></GroupImages>) : (<View></View>)}
+        
+        {/* {user && user.image ? (
           <Image
             style={{
               borderRadius: win.width / 2,
-              marginLeft: widthPercentageToDP("8%"),
             }}
             source={{ uri: user.image.image }}
-            width={RFValue(40)}
+            width={}
             height={RFValue(40)}
           />
         ) : (
@@ -90,7 +115,7 @@ export default function CustomKinujoWord({
             width={RFValue(40)}
             height={RFValue(40)}
           />
-        )}
+        )} */}
 
         <View style={{ marginLeft: widthPercentageToDP("3%") }}>
           {user.nickname ? (

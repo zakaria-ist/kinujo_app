@@ -93,6 +93,7 @@ export default function ProfileEditingGeneral(props) {
     console.log(updateData)
     onShopNameChanged(response.data.shop_name);
     onNickNameChanged(response.data.nickname);
+    onCallingCodeChanged(response.data.tel_code)
     onUserChanged(response.data);
 
     if (updateData && updateData["type"] == "email" && verified == "1") {
@@ -711,10 +712,7 @@ export default function ProfileEditingGeneral(props) {
             <View
               style={{
                 flexDirection: "row",
-                height:
-                  editPhoneNumber == true
-                    ? heightPercentageToDP("29%")
-                    : heightPercentageToDP("8%"),
+                height: heightPercentageToDP("8%"),
                 justifyContent: "flex-start",
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
@@ -800,7 +798,7 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => onEditPhoneNumberChanged(true)}
                   />
-                  <Text style={{ fontSize: RFValue(12) }}>{(callingCode ? "+" + callingCode : user.tel_code) + phoneNumber}</Text>
+                  <Text style={{ fontSize: RFValue(12) }}>{callingCode + phoneNumber}</Text>
                 </View>
               )}
             </View>
