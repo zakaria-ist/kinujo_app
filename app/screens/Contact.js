@@ -211,8 +211,8 @@ export default function Contact(props) {
               <Image
                 style={{
                   borderRadius: win.width / 2,
-                  width: win.width / 13,
-                  height: ratioProfile * 25,
+                  width: RFValue(40),
+                  height: RFValue(40),
                 }}
                 source={require("../assets/Images/profileEditingIcon.png")}
               />

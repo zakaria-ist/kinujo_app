@@ -179,7 +179,7 @@ export default function RegistrationGeneral(props) {
                 style={styles.携帯電話番号}
                 placeholderTextColor={Colors.white}
                 placeholder={Translate.t("phoneNumber")}
-                onChangeText={(text) => onPhoneChanged(text)}
+                onChangeText={(text) => onPhoneChanged(String(text).replace(/[^0-9]/g, ""))}
                 value={phone}
               ></TextInput>
             </View>
@@ -187,7 +187,7 @@ export default function RegistrationGeneral(props) {
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
             <TouchableOpacity
               onPress={() => {
-                if (nickname && phone && password && confirm_password) {
+                if (callingCode && nickname && phone && password && confirm_password) {
                   if (password == confirm_password) {
                     // console.log({
                     //   nickname: nickname,
