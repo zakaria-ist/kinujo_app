@@ -187,8 +187,9 @@ export default function ChatText({
                 style={{
                   width: RFValue(150),
                   height: RFValue(150),
-                  resizeMode: "contain",
-                  marginBottom: 10,
+                  resizeMode: "cover",
+                  // marginBottom: 10,
+                  marginTop: heightPercentageToDP("2%"),
                 }}
               />
             </View>
@@ -411,17 +412,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     textAlign: "left",
     width: 60,
-    marginLeft: widthPercentageToDP("1%"),
+    marginLeft: widthPercentageToDP("45%"),
     fontSize: RFValue(8),
     bottom: 5,
-    left: 0,
+    // left: 0,
     // marginLeft: widthPercentageToDP("30%"),
   },
   right_status_time_image: {
     position: "absolute",
     textAlign: "right",
     width: 60,
-    marginRight: widthPercentageToDP("1%"),
+    marginRight: widthPercentageToDP("45%"),
     fontSize: RFValue(8),
     bottom: 5,
     right: 0,

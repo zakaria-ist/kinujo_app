@@ -42,7 +42,7 @@ const ratioNext = win.width / 38 / 8;
 const ratioEditIcon = win.width / 24 / 17;
 const ratioApprovedIcon = win.width / 22 / 19;
 const ratioCancelIcon = win.width / 20 / 15;
-
+const ratioSearchIcon = win.width / 16 / 19;
 function promptUpdate(props, user, field, value) {
   AsyncStorage.setItem(
     "update-data",
@@ -52,7 +52,10 @@ function promptUpdate(props, user, field, value) {
     })
   ).then(() => {
     props.navigation.navigate("SMSAuthentication", {
-      username: field == "tel" ? (value[0] ? value[0] : user.tel_code) + value[1] : user.tel_code + user.tel,
+      username:
+        field == "tel"
+          ? (value[0] ? value[0] : user.tel_code) + value[1]
+          : user.tel_code + user.tel,
       type: field,
     });
   });
@@ -71,6 +74,10 @@ export default function ProfileEditingGeneral(props) {
   const [editEmail, onEditEmailChanged] = React.useState(false);
   const [editNickName, onEditNickNameChanged] = React.useState(false);
   const [show, onShowChanged] = React.useState(false);
+  const [showCountry, onShowCountryChanged] = React.useState(false);
+  const [countryCode, setCountryCode] = React.useState("");
+  const [searchText, setSearchText] = React.useState("");
+  const [countryHtml, setCountryHtml] = React.useState(<View></View>);
   const [addingFriendsByID, onAddingFriendsByIDChanged] = React.useState(false);
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
@@ -81,7 +88,64 @@ export default function ProfileEditingGeneral(props) {
   ] = React.useState(false);
   const [user, onUserChanged] = React.useState({});
   const isFocused = useIsFocused();
-
+  React.useEffect(() => {
+    AsyncStorage.getItem("selectedCountry").then((val) => {
+      if (val) {
+        onCountryChanged(val);
+        setCountryCode(val);
+        onCallingCodeChanged(val);
+        AsyncStorage.removeItem("selectedCountry");
+      } else {
+        if (defaultCountry) {
+          onCountryChanged(defaultCountry);
+          setCountryCode(defaultCountry);
+          onCallingCodeChanged(defaultCountry);
+        } else {
+          onCountryChanged("+81");
+          setCountryCode("+81");
+          onCallingCodeChanged("+81");
+        }
+      }
+    });
+  }, [isFocused]);
+  function processCountryHtml(countries) {
+    let html = [];
+    countries.map((country) => {
+      console.log();
+      html.push(
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setCountryCode(country.tel_code);
+            onCallingCodeChanged(country.tel_code);
+            AsyncStorage.setItem("selectedCountry", country.tel_code).then(
+              () => {
+                onShowCountryChanged(false);
+              }
+            );
+          }}
+        >
+          <View style={styles.contactListContainer}>
+            <View style={styles.contactTabContainer}>
+              {/* <Image
+            style={styles.contactListImage}
+            source={require("../assets/Images/profileEditingIcon.png")}
+          /> */}
+              <Text style={styles.contactListName}>
+                {country.name} ({country.tel_code})
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    });
+    return html;
+  }
+  React.useEffect(() => {
+    request.get("country_codes/").then(function (response) {
+      countries = response.data;
+      setCountryHtml(processCountryHtml(countries));
+    });
+  }, [true]);
   async function loadUser() {
     let url = await AsyncStorage.getItem("user");
     let verified = await AsyncStorage.getItem("verified");
@@ -90,10 +154,10 @@ export default function ProfileEditingGeneral(props) {
     if (updateData) {
       updateData = JSON.parse(updateData);
     }
-    console.log(updateData)
+    console.log(updateData);
     onShopNameChanged(response.data.shop_name);
     onNickNameChanged(response.data.nickname);
-    onCallingCodeChanged(response.data.tel_code)
+    onCallingCodeChanged(response.data.tel_code);
     onUserChanged(response.data);
 
     if (updateData && updateData["type"] == "email" && verified == "1") {
@@ -118,7 +182,7 @@ export default function ProfileEditingGeneral(props) {
       await AsyncStorage.removeItem("verified");
 
       onPhoneNumberChanged(updateData["value"][1]);
-      onCallingCodeChanged(updateData["value"][0])
+      onCallingCodeChanged(updateData["value"][0]);
     } else {
       onPhoneNumberChanged(response.data.tel);
     }
@@ -138,7 +202,7 @@ export default function ProfileEditingGeneral(props) {
   }
 
   React.useEffect(() => {
-    if(!isFocused){
+    if (!isFocused) {
       onEditEmailChanged(false);
       onEditPasswordChanged(false);
       onEditPhoneNumberChanged(false);
@@ -146,15 +210,15 @@ export default function ProfileEditingGeneral(props) {
       onEditShopNameChanged(false);
     }
 
-    if(isFocused){
+    if (isFocused) {
       AsyncStorage.getItem("tel-navigate").then((val) => {
-        if(val){
+        if (val) {
           onPhoneNumberChanged(val);
-          AsyncStorage.removeItem("tel-navigate").then(()=>{
+          AsyncStorage.removeItem("tel-navigate").then(() => {
             onEditPhoneNumberChanged(true);
           });
         }
-      })
+      });
     }
 
     loadUser();
@@ -201,7 +265,7 @@ export default function ProfileEditingGeneral(props) {
 
   handleChoosePhoto = (type, name = "") => {
     const options = {
-      mediaType: "photo"
+      mediaType: "photo",
     };
     ImagePicker.launchImageLibrary(options, (response) => {
       if (response.uri) {
@@ -271,6 +335,51 @@ export default function ProfileEditingGeneral(props) {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Modal visible={showCountry}>
+        <SafeAreaView>
+          <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+            <View style={styles.searchInputContainer}>
+              <TextInput
+                onPress={() => this.textInput.focus()}
+                ref={(input) => {
+                  this.textInput = input;
+                }}
+                value={searchText}
+                onChangeText={(text) => {
+                  setSearchText(text);
+                  setCountryHtml(
+                    processCountryHtml(
+                      countries.filter((country) => {
+                        return (
+                          country.name
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0 ||
+                          country.tel_code
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0
+                        );
+                      })
+                    )
+                  );
+                }}
+                autoFocus={true}
+                placeholder=""
+                placeholderTextColor={"white"}
+                style={styles.searchContactTextInput}
+              ></TextInput>
+              <Image
+                style={styles.searchIcon}
+                source={require("../assets/Images/searchIcon.png")}
+              />
+            </View>
+          </View>
+          <ScrollView>
+            <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+              {countryHtml}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
       <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="always">
         <Modal
           onShow={() => {
@@ -743,16 +852,12 @@ export default function ProfileEditingGeneral(props) {
                     onPress={() => {
                       if (phoneNumber) {
                         onEditPhoneNumberChanged(false);
-                        promptUpdate(
-                          props,
-                          user,
-                          "tel",
-                          [callingCode, phoneNumber]
-                        );
+                        promptUpdate(props, user, "tel", [
+                          callingCode,
+                          phoneNumber,
+                        ]);
                       } else {
-                        alert.warning(
-                          Translate.t("fieldEmpty")
-                        );
+                        alert.warning(Translate.t("fieldEmpty"));
                       }
                     }}
                   />
@@ -769,15 +874,45 @@ export default function ProfileEditingGeneral(props) {
                       width: widthPercentageToDP("27%"),
                     }}
                   />
-                  <CountrySearch onNavigate={
-                    () => {
+                  {/* <CountrySearch
+                    onNavigate={() => {
                       AsyncStorage.setItem("tel-navigate", phoneNumber);
-                    }
-                  } defaultCountry={user.tel_code} props={props} onCountryChanged={(val)=>{
-                    if(val){
-                      processCountryCode(val);
-                    }
-                  }}></CountrySearch>
+                    }}
+                    defaultCountry={user.tel_code}
+                    props={props}
+                    onCountryChanged={(val) => {
+                      if (val) {
+                        processCountryCode(val);
+                      }
+                    }}
+                  ></CountrySearch> */}
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      onShowCountryChanged(true);
+                    }}
+                  >
+                    <View
+                      style={{
+                        //   alignItems: "center",
+                        justifyContent: "center",
+                        padding: 5,
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        width: widthPercentageToDP("23%"),
+                        height: heightPercentageToDP("6%"),
+                      }}
+                    >
+                      <Text
+                        style={{
+                          // alignSelf: "center",
+                          fontSize: RFValue(10),
+                          paddingLeft: widthPercentageToDP("3%"),
+                        }}
+                      >
+                        {countryCode}
+                      </Text>
+                    </View>
+                  </TouchableWithoutFeedback>
                 </View>
               ) : (
                 <View
@@ -798,7 +933,9 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => onEditPhoneNumberChanged(true)}
                   />
-                  <Text style={{ fontSize: RFValue(12) }}>{callingCode + phoneNumber}</Text>
+                  <Text style={{ fontSize: RFValue(12) }}>
+                    {callingCode + phoneNumber}
+                  </Text>
                 </View>
               )}
             </View>
@@ -829,11 +966,9 @@ export default function ProfileEditingGeneral(props) {
                       if (validateEmail(email) == true) {
                         promptUpdate(props, user, "email", email);
                       } else {
-                        alert.warning(
-                          Translate.t("invalidEmail"), () =>{
-                            onEmailChanged(user.email)
-                          }
-                        );
+                        alert.warning(Translate.t("invalidEmail"), () => {
+                          onEmailChanged(user.email);
+                        });
                       }
                     }}
                   />
@@ -1106,5 +1241,50 @@ const styles = StyleSheet.create({
     borderColor: "black",
     height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("40%"),
+  },
+  contactTabContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchContactTextInput: {
+    height: heightPercentageToDP("6%"),
+    paddingLeft: widthPercentageToDP("5%"),
+    paddingRight: widthPercentageToDP("15%"),
+    flex: 1,
+    color: "black",
+    fontSize: RFValue(11),
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: win.width / 2,
+  },
+  contactListContainer: {
+    marginTop: heightPercentageToDP("3%"),
+  },
+  searchIcon: {
+    width: win.width / 16,
+    height: 19 * ratioSearchIcon,
+    position: "absolute",
+    right: 0,
+    marginRight: widthPercentageToDP("5%"),
+  },
+  searchInputContainer: {
+    marginTop: heightPercentageToDP("3%"),
+    borderWidth: 1,
+    borderColor: "white",
+    // backgroundColor: "orange",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: win.width / 2,
+    height: heightPercentageToDP("6%"),
+  },
+  contactListImage: {
+    width: RFValue(40),
+    height: RFValue(40),
+    alignSelf: "center",
+    borderRadius: win.width / 2,
+  },
+  contactListName: {
+    fontSize: RFValue(14),
+    marginLeft: widthPercentageToDP("5%"),
   },
 });

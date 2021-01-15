@@ -276,7 +276,12 @@ export default function Contact(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             /> */}
-            <GroupImages width={win.width / 13} height={ratioProfile * 25} images={group['images']}></GroupImages>
+            {console.log(group["images"])}
+            <GroupImages
+              width={win.width / 13}
+              height={ratioProfile * 25}
+              images={group["images"]}
+            ></GroupImages>
             <Text style={styles.tabLeftText}>{groups[i]["name"]}</Text>
           </View>
         </TouchableWithoutFeedback>
@@ -367,10 +372,11 @@ export default function Contact(props) {
 
   async function populateGroup() {
     let url = await AsyncStorage.getItem("user");
-      userId = getID(url);
-    let querySnapshot = await db.collection("chat")
-    .where("users", "array-contains", String(userId))
-    .get();
+    userId = getID(url);
+    let querySnapshot = await db
+      .collection("chat")
+      .where("users", "array-contains", String(userId))
+      .get();
 
     let ids = [];
     let items = [];
@@ -390,13 +396,13 @@ export default function Contact(props) {
       }
     });
     let finalGroups = [];
-    for(i=0; i<groups.length; i++){
+    for (i = 0; i < groups.length; i++) {
       let group = groups[i];
       images = await request.post("user/images", {
-        "users" : groups[i].data.users
+        users: groups[i].data.users,
       });
-      group['images'] = images.data.images;
-      finalGroups.push(group)
+      group["images"] = images.data.images;
+      finalGroups.push(group);
     }
     globalGroups = finalGroups;
     onGroupHtmlChanged(processGroupHtml(props, groups, userId));
@@ -417,14 +423,12 @@ export default function Contact(props) {
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
             console.log(item);
-            if (
-              (item.type == "user" && !item['delete'])
-            ) {
+            if (item.type == "user" && !item["delete"]) {
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"];
             }
 
-            if(item['delete']){
+            if (item["delete"]) {
               deleteIds.push(item.id);
             }
           });
@@ -439,7 +443,10 @@ export default function Contact(props) {
               if (response.success) {
                 globalUsers = response.users;
                 globalUsers = globalUsers.filter((user) => {
-                  return !deleteIds.includes(user.id) && !deleteIds.includes(String(user.id));
+                  return (
+                    !deleteIds.includes(user.id) &&
+                    !deleteIds.includes(String(user.id))
+                  );
                 });
                 globalUsers = globalUsers.filter((user) => {
                   return user.id != userId;
@@ -1022,7 +1029,12 @@ export default function Contact(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("notification")} {longPressObj && longPressObj.data &&  longPressObj.data["notify_" + userId] == false ? "ON" : "OFF"}
+                    {Translate.t("notification")}{" "}
+                    {longPressObj &&
+                    longPressObj.data &&
+                    longPressObj.data["notify_" + userId] == false
+                      ? "ON"
+                      : "OFF"}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
@@ -1103,12 +1115,12 @@ export default function Contact(props) {
                     if (longPressObj.type == "user") {
                       globalUsers = globalUsers.filter((user) => {
                         return user.id != longPressObj.data.id;
-                      })
+                      });
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
                       });
-                      
-                      console.log(longPressObj.data.id)
+
+                      console.log(longPressObj.data.id);
                       db.collection("users")
                         .doc(String(userId))
                         .collection("friends")
@@ -1118,7 +1130,7 @@ export default function Contact(props) {
                           console.log("FOUDNDDD");
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
-                              console.log(documentSnapshot.id)
+                              console.log(documentSnapshot.id);
                               db.collection("users")
                                 .doc(String(userId))
                                 .collection("friends")

@@ -12,6 +12,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
+  Modal,
 } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
@@ -33,7 +34,8 @@ const alert = new CustomAlert();
 import postal_code from "japan-postal-code-oasis";
 import { call } from "react-native-reanimated";
 const win = Dimensions.get("window");
-
+const ratioSearchIcon = win.width / 16 / 19;
+let countries = [];
 export default function AddressManagement(props) {
   const [prefectures, onPrefecturesChanged] = React.useState([]);
   const [prefectureLoaded, onPrefectureLoadedChanged] = React.useState(false);
@@ -48,6 +50,10 @@ export default function AddressManagement(props) {
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [selectedValue, setSelectedValue] = React.useState([]);
+  const [countryHtml, setCountryHtml] = React.useState(<View></View>);
+  const [searchText, setSearchText] = React.useState("");
+  const [showCountry, onShowCountryChanged] = React.useState(false);
+  const [countryCode, setCountryCode] = React.useState("");
   let controller;
   const isFocused = useIsFocused();
   function handlePhone(value) {
@@ -60,7 +66,64 @@ export default function AddressManagement(props) {
       this.handleBackButtonClick
     );
   }
-
+  React.useEffect(() => {
+    AsyncStorage.getItem("selectedCountry").then((val) => {
+      if (val) {
+        onCountryChanged(val);
+        setCountryCode(val);
+        onCallingCodeChanged(val);
+        AsyncStorage.removeItem("selectedCountry");
+      } else {
+        if (defaultCountry) {
+          onCountryChanged(defaultCountry);
+          setCountryCode(defaultCountry);
+          onCallingCodeChanged(defaultCountry);
+        } else {
+          onCountryChanged("+81");
+          setCountryCode("+81");
+          onCallingCodeChanged("+81");
+        }
+      }
+    });
+  }, [isFocused]);
+  function processCountryHtml(countries) {
+    let html = [];
+    countries.map((country) => {
+      console.log();
+      html.push(
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setCountryCode(country.tel_code);
+            onCallingCodeChanged(country.tel_code);
+            AsyncStorage.setItem("selectedCountry", country.tel_code).then(
+              () => {
+                onShowCountryChanged(false);
+              }
+            );
+          }}
+        >
+          <View style={styles.contactListContainer}>
+            <View style={styles.contactTabContainer}>
+              {/* <Image
+            style={styles.contactListImage}
+            source={require("../assets/Images/profileEditingIcon.png")}
+          /> */}
+              <Text style={styles.contactListName}>
+                {country.name} ({country.tel_code})
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    });
+    return html;
+  }
+  React.useEffect(() => {
+    request.get("country_codes/").then(function (response) {
+      countries = response.data;
+      setCountryHtml(processCountryHtml(countries));
+    });
+  }, [true]);
   React.useEffect(() => {
     onNameChanged("");
     onZipcodeChanged("");
@@ -70,6 +133,7 @@ export default function AddressManagement(props) {
     onPhoneNumberChanged("");
     onAddress2Changed("");
     onCallingCodeChanged("");
+    // onCountryChanged("")
     setSelectedValue("");
     // onPrefecturesChanged([]);
     onPrefectureLoadedChanged(false);
@@ -205,6 +269,51 @@ export default function AddressManagement(props) {
         }}
         text={Translate.t("addressee")}
       />
+      <Modal visible={showCountry}>
+        <SafeAreaView>
+          <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+            <View style={styles.searchInputContainer}>
+              <TextInput
+                onPress={() => this.textInput.focus()}
+                ref={(input) => {
+                  this.textInput = input;
+                }}
+                value={searchText}
+                onChangeText={(text) => {
+                  setSearchText(text);
+                  setCountryHtml(
+                    processCountryHtml(
+                      countries.filter((country) => {
+                        return (
+                          country.name
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0 ||
+                          country.tel_code
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0
+                        );
+                      })
+                    )
+                  );
+                }}
+                autoFocus={true}
+                placeholder=""
+                placeholderTextColor={"white"}
+                style={styles.searchContactTextInput}
+              ></TextInput>
+              <Image
+                style={styles.searchIcon}
+                source={require("../assets/Images/searchIcon.png")}
+              />
+            </View>
+          </View>
+          <ScrollView>
+            <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+              {countryHtml}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
       <ScrollView
         style={{ paddingBottom: heightPercentageToDP("5%") }}
         keyboardShouldPersistTaps="always"
@@ -272,11 +381,43 @@ export default function AddressManagement(props) {
             onChangeText={(text) => onAddress2Changed(text)}
           ></TextInput>
           <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
-            <CountrySearch props={props} defaultCountry={"+" + callingCode} onCountryChanged={(val)=>{
-                if(val){
-                  processCountryCode(val);
-                }
-              }}></CountrySearch>
+            {/* <CountrySearch
+              // props={props}
+              // defaultCountry={"+" + callingCode}
+              // onCountryChanged={(val) => {
+              //   if (val) {
+              //     processCountryCode(val);
+              //   }
+              // }}
+
+            ></CountrySearch> */}
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onShowCountryChanged(true);
+              }}
+            >
+              <View
+                style={{
+                  //   alignItems: "center",
+                  justifyContent: "center",
+                  padding: 5,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  width: widthPercentageToDP("23%"),
+                  height: heightPercentageToDP("6%"),
+                }}
+              >
+                <Text
+                  style={{
+                    // alignSelf: "center",
+                    fontSize: RFValue(10),
+                    paddingLeft: widthPercentageToDP("3%"),
+                  }}
+                >
+                  {countryCode}
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
             <TextInput
               keyboardType={"numeric"}
               placeholder={Translate.t("profileEditPhoneNumber")}
@@ -331,11 +472,11 @@ export default function AddressManagement(props) {
                       );
                     }
                   });
-                } else if (callingCode == "") {
-                  alert.warning(Translate.t("callingCode"));
-                } else if (phoneNumber == "") {
-                  alert.warning(Translate.t("(tel)"));
-                }
+              } else if (callingCode == "") {
+                alert.warning(Translate.t("callingCode"));
+              } else if (phoneNumber == "") {
+                alert.warning(Translate.t("(tel)"));
+              }
             } else {
               AsyncStorage.getItem("user").then(function (url) {
                 console.log(callingCode + phoneNumber);
@@ -437,5 +578,50 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: RFValue(14),
     color: "white",
+  },
+  contactTabContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchContactTextInput: {
+    height: heightPercentageToDP("6%"),
+    paddingLeft: widthPercentageToDP("5%"),
+    paddingRight: widthPercentageToDP("15%"),
+    flex: 1,
+    color: "black",
+    fontSize: RFValue(11),
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: win.width / 2,
+  },
+  contactListContainer: {
+    marginTop: heightPercentageToDP("3%"),
+  },
+  searchIcon: {
+    width: win.width / 16,
+    height: 19 * ratioSearchIcon,
+    position: "absolute",
+    right: 0,
+    marginRight: widthPercentageToDP("5%"),
+  },
+  searchInputContainer: {
+    marginTop: heightPercentageToDP("3%"),
+    borderWidth: 1,
+    borderColor: "white",
+    // backgroundColor: "orange",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: win.width / 2,
+    height: heightPercentageToDP("6%"),
+  },
+  contactListImage: {
+    width: RFValue(40),
+    height: RFValue(40),
+    alignSelf: "center",
+    borderRadius: win.width / 2,
+  },
+  contactListName: {
+    fontSize: RFValue(14),
+    marginLeft: widthPercentageToDP("5%"),
   },
 });

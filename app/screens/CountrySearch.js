@@ -43,7 +43,7 @@ export default function CountrySearch(props) {
           onPress={() => {
             AsyncStorage.setItem("selectedCountry", country.tel_code).then(
               () => {
-                props.navigation.goBack();
+                props.navigation.pop();
               }
             );
           }}
@@ -75,6 +75,10 @@ export default function CountrySearch(props) {
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TextInput
+            onPress={() => this.textInput.focus()}
+            ref={(input) => {
+              this.textInput = input;
+            }}
             value={searchText}
             onChangeText={(text) => {
               setSearchText(text);
@@ -123,6 +127,7 @@ const styles = StyleSheet.create({
     paddingRight: widthPercentageToDP("15%"),
     flex: 1,
     color: "black",
+    fontSize: RFValue(11),
   },
   contactListContainer: {
     marginTop: heightPercentageToDP("3%"),
@@ -142,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     borderRadius: win.width / 2,
-    height: heightPercentageToDP("5%"),
+    height: heightPercentageToDP("6%"),
   },
   contactListImage: {
     width: RFValue(40),

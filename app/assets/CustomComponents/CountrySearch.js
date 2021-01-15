@@ -8,18 +8,24 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 
-export default function CountrySearch({ props, onNavigate, defaultCountry, onCountryChanged, icon }) {
+export default function CountrySearch({
+  props,
+  onNavigate,
+  defaultCountry,
+  onCountryChanged,
+  icon,
+}) {
   const isFocused = useIsFocused();
   const [countryCode, setCountryCode] = React.useState("");
 
   React.useEffect(() => {
     AsyncStorage.getItem("selectedCountry").then((val) => {
-      if(val){
+      if (val) {
         onCountryChanged(val);
         setCountryCode(val);
         AsyncStorage.removeItem("selectedCountry");
       } else {
-        if(defaultCountry){
+        if (defaultCountry) {
           onCountryChanged(defaultCountry);
           setCountryCode(defaultCountry);
         } else {
@@ -33,7 +39,7 @@ export default function CountrySearch({ props, onNavigate, defaultCountry, onCou
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        if(onNavigate){
+        if (onNavigate) {
           onNavigate();
         }
         props.navigation.navigate("CountrySearch");
