@@ -264,7 +264,9 @@ export default function LoginScreen(props) {
               }}
             /> */}
             <TextInput
-              onChangeText={(text) => onPhoneChanged(String(text).replace(/[^0-9]/g, ""))}
+              onChangeText={(text) =>
+                onPhoneChanged(String(text).replace(/[^0-9]/g, ""))
+              }
               value={phone}
               placeholder={Translate.t("phoneNumber")}
               placeholderTextColor={Colors.D7CCA6}
@@ -287,7 +289,7 @@ export default function LoginScreen(props) {
                 console.log({
                   tel: callingCode + phone,
                   password: password,
-                })
+                });
                 request
                   .post("user/login", {
                     tel: callingCode + phone,
@@ -406,7 +408,7 @@ export default function LoginScreen(props) {
                 alignSelf: "center",
                 marginTop: heightPercentageToDP("3%"),
                 fontSize: RFValue(12),
-                textDecorationLine: "underline"
+                textDecorationLine: "underline",
               }}
             >
               {Translate.t("forgetPasswordText")}

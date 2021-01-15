@@ -63,14 +63,13 @@ export default function CustomKinujoWord({
         });
       });
     }
-
-    if(images){
+    if (images) {
       setImages(images);
     } else {
       setImages([""]);
     }
 
-    if(!isFocused){
+    if (!isFocused) {
       setImages([""]);
     }
   }, [isFocused, userUrl, images]);
@@ -84,19 +83,47 @@ export default function CustomKinujoWord({
           height: heightPercentageToDP("10%"),
         }}
       >
-        {localImages.length > 0 ? (<GroupImages style={{
-          marginLeft: widthPercentageToDP("5%"),
-          alignItems: "center",
-          justifyContent: "center",
-          width: RFValue(50),
-          height: RFValue(50),
-          flexWrap: "wrap",
-          flexDirection: "row",
-          paddingVertical: heightPercentageToDP("1%"),
-          borderRadius: images.length > 0 ? 5: 0,
-          backgroundColor: (images && images.length > 1) ? "#B3B3B3" : "transparent"
-        }} width={RFValue(40)} height={RFValue(40)} images={localImages}></GroupImages>) : (<View></View>)}
-        
+        {localImages.length > 0 ? (
+          <GroupImages
+            style={{
+              marginLeft: widthPercentageToDP("5%"),
+              alignItems: "center",
+              justifyContent: "center",
+              width: RFValue(50),
+              height: RFValue(50),
+              flexWrap: "wrap",
+              flexDirection: "row",
+              paddingVertical: heightPercentageToDP("1%"),
+              borderRadius: localImages.length > 0 ? 5 : 0,
+              backgroundColor:
+                localImages && localImages.length > 1
+                  ? "#B3B3B3"
+                  : "transparent",
+            }}
+            width={RFValue(40)}
+            height={RFValue(40)}
+            images={localImages}
+          ></GroupImages>
+        ) : user && user.image ? (
+          <Image
+            style={{
+              borderRadius: win.width / 2,
+            }}
+            source={{ uri: user.image.image }}
+            width={RFValue(40)}
+            height={RFValue(40)}
+          />
+        ) : (
+          <PersonIcon
+            style={{
+              borderRadius: win.width / 2,
+              marginLeft: widthPercentageToDP("8%"),
+            }}
+            width={RFValue(40)}
+            height={RFValue(40)}
+          />
+        )}
+
         {/* {user && user.image ? (
           <Image
             style={{

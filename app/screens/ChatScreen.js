@@ -705,21 +705,20 @@ export default function ChatScreen(props) {
     userTotalReadMessageField = "totalMessageRead_" + userId;
     let documentSnapshot = await chatsRef.doc(groupID).get();
     if (documentSnapshot && documentSnapshot.data()) {
-
       let tmpUsers = documentSnapshot.data().users;
       tmpUsers = tmpUsers.filter((user) => {
         return user != userId;
-      })
-      if(tmpUsers.length == 1){
+      });
+      if (tmpUsers.length == 1) {
         let images = await request.post("user/images", {
-          "users" : tmpUsers
+          users: tmpUsers,
         });
-        setImages(images.data.images)
+        setImages(images.data.images);
       } else {
         let images = await request.post("user/images", {
-          "users" : documentSnapshot.data().users
+          users: documentSnapshot.data().users,
         });
-        setImages(images.data.images)
+        setImages(images.data.images);
       }
       if (documentSnapshot.data()["popup_addfriend_" + userId]) {
         alert.warning(Translate.t("please_add_friend"));
@@ -866,7 +865,7 @@ export default function ChatScreen(props) {
         onPress={() => props.navigation.navigate("Cart")}
       />
       {!multiSelect ? (
-        <CustomSecondaryHeader name={name} userUrl={userUrl} images={images}/>
+        <CustomSecondaryHeader name={name} userUrl={userUrl} images={images} />
       ) : (
         <CustomSelectHeader
           onSend={() => {
@@ -1192,6 +1191,7 @@ export default function ChatScreen(props) {
                     const reference = storage().ref(uuid.v4() + ".png");
                     if (Platform.OS === "android") {
                       RNFetchBlob.fs.stat(response.path).then((stat) => {
+                        console.log(stat);
                         reference
                           .putFile(stat.path)
                           .then((response) => {
@@ -1256,6 +1256,7 @@ export default function ChatScreen(props) {
                     const reference = storage().ref(uuid.v4() + ".png");
                     if (Platform.OS === "android") {
                       RNFetchBlob.fs.stat(response.uri).then((stat) => {
+                        console.log(stat);
                         reference
                           .putFile(stat.path)
                           .then((response) => {
