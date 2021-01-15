@@ -46,6 +46,7 @@ let globalFolders = [];
 let globalUsers = [];
 let globalGroups = [];
 let contactPinned = {};
+let contactNotify = {};
 let selectedUserId;
 let userId;
 if (!firebase.apps.length) {
@@ -276,7 +277,6 @@ export default function Contact(props) {
               }}
               source={require("../assets/Images/profileEditingIcon.png")}
             /> */}
-            {console.log(group["images"])}
             <GroupImages
               width={win.width / 13}
               height={ratioProfile * 25}
@@ -406,7 +406,6 @@ export default function Contact(props) {
     }
     globalGroups = finalGroups;
     onGroupHtmlChanged(processGroupHtml(props, groups, userId));
-    onGroupLoaded(true);
   }
 
   function populateUser() {
@@ -422,10 +421,10 @@ export default function Contact(props) {
           let deleteIds = [];
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
-            console.log(item);
-            if (item.type == "user" && !item["delete"]) {
+            if (!item["delete"]) {
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"];
+              contactNotify[item.id] = item["notify"];
             }
 
             if (item["delete"]) {
@@ -877,13 +876,11 @@ export default function Contact(props) {
                 <TouchableWithoutFeedback
                   onPress={() => {
                     if (longPressObj.type == "user") {
-                      console.log(contactPinned[longPressObj.data.id]);
                       contactPinned[longPressObj.data.id] = contactPinned[
                         longPressObj.data.id
                       ]
                         ? false
                         : true;
-                      console.log(contactPinned[longPressObj.data.id]);
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
                       });
@@ -964,33 +961,45 @@ export default function Contact(props) {
                     // alert.warning("1" + longPressObj.data.data["notify"]);
                     if (longPressObj.type == "user") {
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
-                        .where("id", "==", String(longPressObj.data.id))
+                        .where("id", "==", longPressObj.data.id)
                         .get()
                         .then((querySnapshot) => {
-                          querySnapshot.forEach((snapShot) => {
-                            let notification = snapShot.data().notify;
-                            // alert.warning(snapShot.id);
+                          if(querySnapshot.size == 0){
                             db.collection("users")
-                              .doc(String(user.id))
-                              .collection("friends")
-                              .doc(snapShot.id)
-                              .set(
-                                {
-                                  notify:
-                                    notification == "" || notification
-                                      ? false
-                                      : true,
-                                },
-                                {
-                                  merge: true,
-                                }
-                              )
-                              .then(() => {
+                              .doc(String(userId))
+                              .collection("friends").add({
+                                "notify" : false,
+                                "id" : longPressObj.data.id
+                              }).then(() => {
                                 populateUser();
-                              });
-                          });
+                              })
+                          } else {
+                            querySnapshot.forEach((snapShot) => {
+                              console.log(contactNotify[snapShot.data().id])
+                              let notification = snapShot.data().notify;
+                              // alert.warning(snapShot.id);
+                              db.collection("users")
+                                .doc(String(userId))
+                                .collection("friends")
+                                .doc(snapShot.id)
+                                .set(
+                                  {
+                                    notify:
+                                      notification == false
+                                        ? true
+                                        : false,
+                                  },
+                                  {
+                                    merge: true,
+                                  }
+                                )
+                                .then(() => {
+                                  populateUser();
+                                });
+                            });
+                          }
                         });
                     } else if (longPressObj.type == "folder") {
                       let update = {};
@@ -1011,19 +1020,22 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
+                      console.log(longPressObj.data.data["notify_" + userId])
                       update["notify_" + userId] =
-                        longPressObj.data.data["notify_" + userId] == "" ||
-                        longPressObj.data.data["notify_" + userId]
-                          ? false
-                          : true;
+                        longPressObj.data.data["notify_" + userId] == false
+                          ? true
+                          : false;
                       db.collection("chat")
                         .doc(longPressObj.data.id)
                         .set(update, {
                           merge: true,
                         })
                         .then(() => {
+                          console.log("DONE")
                           populateGroup();
-                        });
+                        }).catch((error)=>{
+                          console.log(error)
+                        })
                     }
                     onShowChanged(false);
                   }}
@@ -1032,7 +1044,8 @@ export default function Contact(props) {
                     {Translate.t("notification")}{" "}
                     {longPressObj &&
                     longPressObj.data &&
-                    longPressObj.data["notify_" + userId] == false
+                    ((longPressObj.type == "user" && contactNotify[longPressObj.data['id']] == false) || 
+                    (longPressObj.type != "user" && longPressObj.data.data["notify_" + userId] == false))
                       ? "ON"
                       : "OFF"}
                   </Text>
@@ -1120,17 +1133,14 @@ export default function Contact(props) {
                         onUserHtmlChanged(html);
                       });
 
-                      console.log(longPressObj.data.id);
                       db.collection("users")
                         .doc(String(userId))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
-                          console.log("FOUDNDDD");
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
-                              console.log(documentSnapshot.id);
                               db.collection("users")
                                 .doc(String(userId))
                                 .collection("friends")

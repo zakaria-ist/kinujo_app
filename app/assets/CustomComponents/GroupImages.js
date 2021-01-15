@@ -37,7 +37,7 @@ export default function GroupImages({ props, style, width, height, images }) {
     let tmpHtml = [];
     if (images) {
       images.map((image) => {
-        if (tmpHtml.length < 3) {
+        if (tmpHtml.length < 9) {
           if (image) {
             tmpHtml.push(
               <Image
@@ -88,8 +88,8 @@ export default function GroupImages({ props, style, width, height, images }) {
           //   images.length % 2 == 0
           //     ? height / images.length / 2
           //     : height / images.length / 3,
-          width: getWidth(width, images.length),
-          height: getHeight(height, images.length),
+          width: getWidth(width, images ? images.length : 0),
+          height: getHeight(height, images ? images.length: 0),
           marginLeft: 0,
           borderRadius: win.width / 2,
           margin: 2,
@@ -117,7 +117,7 @@ export default function GroupImages({ props, style, width, height, images }) {
           flexWrap: "wrap",
           flexDirection: "row",
           paddingVertical: heightPercentageToDP("1%"),
-          borderRadius: images.length > 0 ? 5: 0,
+          borderRadius: images && images.length > 0 ? 5: 0,
           backgroundColor: (images && images.length > 1) ? "#B3B3B3" : "transparent"
           // alignSelf: "center",
         }}

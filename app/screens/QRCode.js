@@ -81,7 +81,7 @@ async function buildLink(userId, is_store) {
   const link = await dynamicLinks().buildLink(
     {
       link:
-        "https://kinujo.page.link?userId=" + userId + "&is_store=" + is_store,
+        "https://kinujo.page.link?userId=" + userId + "&store=" + is_store,
       // domainUriPrefix is created in your Firebase console
       domainUriPrefix: "https://kinujo.page.link",
       android: {

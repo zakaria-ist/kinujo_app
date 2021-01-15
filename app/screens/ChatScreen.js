@@ -327,12 +327,10 @@ export default function ChatScreen(props) {
   function processChat(tmpChats) {
     let tmpChatHtml = [];
     index = 1;
-    tmpChats = tmpChats.sort((a, b) => {
-      let date1 = getDate(a.data.createdAt);
-      let date2 = getDate(b.data.createdAt);
+    // tmpChats = tmpChats.sort((a, b) => {
 
-      return date1 >= date2;
-    });
+    //   return a.data.timeStamp.nanoseconds <= b.data.timeStamp.nanoseconds;
+    // });
     tmpChats.map((chat) => {
       let date = chat.data.createdAt.split(":");
       let tmpMonth = date[1];
@@ -361,16 +359,21 @@ export default function ChatScreen(props) {
                   selects.push({
                     id: chat.id,
                     message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName
                   });
                 }
                 processChat(chats);
               }
             }}
             onLongPress={() => {
+              console.log(chat.data)
               onLongPressObjChanged({
                 id: chat.id,
                 message: chat.data.message,
                 data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName
               });
               onShowPopUpChanged(true);
             }}
@@ -395,6 +398,21 @@ export default function ChatScreen(props) {
                         chat.data.contactID,
                         chat.data.contactName
                       );
+                    } else {
+                      console.log("1");
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName
+                        });
+                      }
+                      processChat(chats);
                     }
                   }}
                   longPress={() => {
@@ -402,6 +420,8 @@ export default function ChatScreen(props) {
                       id: chat.id,
                       message: chat.data.message,
                       data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName
                     });
                     onShowPopUpChanged(true);
                   }}
@@ -481,6 +501,8 @@ export default function ChatScreen(props) {
                 id: chat.id,
                 message: chat.data.message,
                 data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName
               });
               onShowPopUpChanged(true);
             }}
@@ -507,6 +529,20 @@ export default function ChatScreen(props) {
                         chat.data.contactID,
                         chat.data.contactName
                       );
+                    } else {
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName
+                        });
+                      }
+                      processChat(chats);
                     }
                   }}
                   longPress={() => {
@@ -514,6 +550,8 @@ export default function ChatScreen(props) {
                       id: chat.id,
                       message: chat.data.message,
                       data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName
                     });
                     onShowPopUpChanged(true);
                   }}
@@ -583,6 +621,8 @@ export default function ChatScreen(props) {
                   selects.push({
                     id: chat.id,
                     message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName
                   });
                 }
                 processChat(chats);
@@ -593,6 +633,8 @@ export default function ChatScreen(props) {
                 id: chat.id,
                 message: chat.data.message,
                 data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName
               });
               onShowPopUpChanged(true);
             }}
@@ -620,6 +662,20 @@ export default function ChatScreen(props) {
                         chat.data.contactID,
                         chat.data.contactName
                       );
+                    } else {
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName
+                        });
+                      }
+                      processChat(chats);
                     }
                   }}
                   longPress={() => {
@@ -627,6 +683,8 @@ export default function ChatScreen(props) {
                       id: chat.id,
                       message: chat.data.message,
                       data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName
                     });
                     onShowPopUpChanged(true);
                   }}
@@ -1044,6 +1102,8 @@ export default function ChatScreen(props) {
                         selects.push({
                           id: longPressObj.id,
                           message: longPressObj.message,
+                          contactID: longPressObj.contactID,
+                          contactName: longPressObj.contactName
                         });
                         processChat(chats);
                         onShowPopUpChanged(false);

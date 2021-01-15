@@ -63,17 +63,9 @@ export default function PurchaseCompletion(props) {
         <TouchableOpacity
           onPress={() => {
             if (user.is_seller) {
-              props.navigation.reset({
-                index: 0,
-                routes: [{ name: "HomeStore" }],
-              });
-              // props.navigation.navigate("HomeStore");
+              props.navigation.navigate("HomeStore");
             } else {
-              props.navigation.reset({
-                index: 0,
-                routes: [{ name: "HomeGeneral" }],
-              });
-              // props.navigation.navigate("HomeGeneral");
+              props.navigation.navigate("HomeGeneral");
             }
           }}
         >

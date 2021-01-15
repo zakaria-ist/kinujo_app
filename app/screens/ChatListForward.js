@@ -172,19 +172,20 @@ export default function ChatList(props) {
     for(j=0;j<chats.length; j++){
       let chat = chats[j];
       if (chat.checkBoxStatus == true) {
+        let createdAt =
+          year +
+          ":" +
+          month +
+          ":" +
+          day +
+          ":" +
+          hour +
+          ":" +
+          minute +
+          ":" +
+          seconds;
+
         if(messageToForward){
-          let createdAt =
-            year +
-            ":" +
-            month +
-            ":" +
-            day +
-            ":" +
-            hour +
-            ":" +
-            minute +
-            ":" +
-            seconds;
           db.collection("chat")
             .doc(chat.id)
             .collection("messages")
@@ -201,21 +202,30 @@ export default function ChatList(props) {
         } else if(messages){
           for(i=0; i<messages.length; i++){
             let message = messages[i];
+
+            let field = {
+              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+              message: message["message"],
+              userID: String(ownUserID),
+              createdAt: createdAt,
+            }
+            if(message["contactID"]){
+              field['contactID'] = message["contactID"]
+            }
+            if(message["contactName"]){
+              field['contactName'] = message["contactName"]
+            }
             await db.collection("chat")
               .doc(chat.id)
               .collection("messages")
-              .add({
-                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                message: message,
-                userID: String(ownUserID),
-                createdAt: createdAt,
-              })
+              .add(field)
           }
           onSpinnerChanged(false);
           props.navigation.goBack();
         }
       }
     }
+
   }
   function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];

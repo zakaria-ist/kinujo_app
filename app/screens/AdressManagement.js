@@ -94,7 +94,7 @@ export default function AddressManagement(props) {
         <TouchableWithoutFeedback
           onPress={() => {
             setCountryCode(country.tel_code);
-            onCallingCodeChanged(country.tel_code);
+            processCountryCode(country.tel_code)
             AsyncStorage.setItem("selectedCountry", country.tel_code).then(
               () => {
                 onShowCountryChanged(false);
@@ -132,7 +132,8 @@ export default function AddressManagement(props) {
     onBuildingNameChanged("");
     onPhoneNumberChanged("");
     onAddress2Changed("");
-    onCallingCodeChanged("");
+    onCallingCodeChanged("81");
+    setCountryCode("+81");
     // onCountryChanged("")
     setSelectedValue("");
     // onPrefecturesChanged([]);
@@ -198,6 +199,7 @@ export default function AddressManagement(props) {
               onPhoneNumberChanged(response.data.tel);
               setSelectedValue("+" + response.data.tel_code);
               onCallingCodeChanged(response.data.tel_code);
+              setCountryCode("+" + response.data.tel_code.replace("+", ""));
             })
             .catch(function (error) {
               if (
@@ -405,6 +407,8 @@ export default function AddressManagement(props) {
                   borderRadius: 5,
                   width: widthPercentageToDP("23%"),
                   height: heightPercentageToDP("6%"),
+                  marginRight: widthPercentageToDP("1%"),
+                  backgroundColor: "white"
                 }}
               >
                 <Text
