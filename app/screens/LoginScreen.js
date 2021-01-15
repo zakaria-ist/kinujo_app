@@ -64,9 +64,9 @@ async function saveProduct(props, link) {
 
 async function performUrl(props, link) {
   let userId = findParams(link, "userId");
-  let store = findParams(link, "is_store");
+  let store = findParams(link, "store");
   await AsyncStorage.setItem("referUser", userId);
-  if (String(store) == "1") {
+  if (parseInt(store)) {
     props.navigation.navigate("RegistrationStore");
   } else {
     props.navigation.navigate("RegistrationGeneral");

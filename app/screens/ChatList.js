@@ -621,10 +621,9 @@ export default function ChatList(props) {
                   onPress={() => {
                     let update = {};
                     update["notify_" + ownUserID] =
-                      longPressObj.data["notify_" + ownUserID] == "" ||
-                      longPressObj.data["notify_" + ownUserID]
-                        ? false
-                        : true;
+                      longPressObj.data["notify_" + ownUserID] == false
+                        ? true
+                        : false;
                     db.collection("chat").doc(longPressObj.id).set(update, {
                       merge: true,
                     });

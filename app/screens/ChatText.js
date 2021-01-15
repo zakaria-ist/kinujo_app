@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     textAlign: "right",
     width: 60,
-    marginRight: widthPercentageToDP("45%"),
+    marginRight: widthPercentageToDP("1%"),
     fontSize: RFValue(8),
     bottom: 5,
     right: 0,

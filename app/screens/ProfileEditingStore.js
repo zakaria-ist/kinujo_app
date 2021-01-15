@@ -55,7 +55,7 @@ function promptUpdate(props, user, field, value) {
       username:
         field == "tel"
           ? (value[0] ? value[0] : user.tel_code) + value[1]
-          : user.tel_code + user.tel,
+          : (user.tel_code ? user.tel_code : "") + (user.tel ? user.tel : ""),
       type: field,
     });
   });
@@ -91,20 +91,14 @@ export default function ProfileEditingGeneral(props) {
   React.useEffect(() => {
     AsyncStorage.getItem("selectedCountry").then((val) => {
       if (val) {
-        onCountryChanged(val);
+        // onCountryChanged(val);
         setCountryCode(val);
         onCallingCodeChanged(val);
         AsyncStorage.removeItem("selectedCountry");
       } else {
-        if (defaultCountry) {
-          onCountryChanged(defaultCountry);
-          setCountryCode(defaultCountry);
-          onCallingCodeChanged(defaultCountry);
-        } else {
-          onCountryChanged("+81");
-          setCountryCode("+81");
-          onCallingCodeChanged("+81");
-        }
+        // onCountryChanged("+81");
+        setCountryCode("+81");
+        onCallingCodeChanged("+81");
       }
     });
   }, [isFocused]);
@@ -154,10 +148,10 @@ export default function ProfileEditingGeneral(props) {
     if (updateData) {
       updateData = JSON.parse(updateData);
     }
-    console.log(updateData);
     onShopNameChanged(response.data.shop_name);
     onNickNameChanged(response.data.nickname);
     onCallingCodeChanged(response.data.tel_code);
+    setCountryCode(response.data.tel_code);
     onUserChanged(response.data);
 
     if (updateData && updateData["type"] == "email" && verified == "1") {
@@ -176,7 +170,7 @@ export default function ProfileEditingGeneral(props) {
       request.post("user/change-phone", {
         tel: response.data.tel,
         phone: updateData["value"][1],
-        code: updateData["value"][0],
+        code: "+" + updateData["value"][0].replace("+", ""),
       });
       await AsyncStorage.removeItem("update-data");
       await AsyncStorage.removeItem("verified");

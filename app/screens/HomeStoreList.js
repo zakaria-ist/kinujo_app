@@ -99,7 +99,7 @@ export default function HomeStoreList(props) {
         link:
           "https://kinujo-link.c2sg.asia?userId=" +
           userId +
-          "&is_store=0&product_id=" +
+          "&store=0&product_id=" +
           productId,
         // domainUriPrefix is created in your Firebase console
         domainUriPrefix: "https://kinujo-link.c2sg.asia",

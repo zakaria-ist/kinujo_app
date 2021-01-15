@@ -178,7 +178,9 @@ export default function FolderMemberSelection(props) {
       });
       console.log(tmpFriend);
     }
-    onUpdate(ids, tmpFriend);
+    onUserHtmlChanged(
+      processUserHtml(props, users, tmpFriend)
+    );
   }
   function onUpdate(ids, items) {
     request
@@ -188,9 +190,6 @@ export default function FolderMemberSelection(props) {
         type: "contact",
       })
       .then(function (response) {
-        onUserHtmlChanged(
-          processUserHtml(props, response.data.users, tmpFriend)
-        );
       })
       .catch(function (error) {
         if (

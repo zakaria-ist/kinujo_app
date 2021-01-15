@@ -65,7 +65,8 @@ function promptUpdate(props, user, field, value) {
     })
   ).then(() => {
     props.navigation.navigate("SMSAuthentication", {
-      username: field == "tel" ? (value[0] ? value[0] : user.tel_code) + value[1] : user.tel_code + user.tel,
+      username: field == "tel" ? (value[0] ? value[0] : user.tel_code) + value[1]
+      : (user.tel_code ? user.tel_code : "") + (user.tel ? user.tel : ""),
       type: field,
     });
   });

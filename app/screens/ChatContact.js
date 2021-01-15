@@ -65,12 +65,13 @@ export default function ChatContact({
     <TouchableWithoutFeedback
       onLongPress={
         ()=>{
+          console.log("OONG")
           if(longPress){
             longPress();
           }
         }
       }
-      onPress={() => ()=>{
+      onPress={() => {
         if(press){
           press();
         }
