@@ -9,6 +9,7 @@
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <react-native-splash-screen/RNSplashScreen.h>
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -41,6 +42,7 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif
@@ -61,7 +63,9 @@ static void InitializeFlipper(UIApplication *application) {
   #endif
 
   [super application:application didFinishLaunchingWithOptions:launchOptions];
-
+  
+  
+  [RNSplashScreen show];
   return YES;
 }
 
@@ -75,7 +79,6 @@ static void InitializeFlipper(UIApplication *application) {
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
-
   return bridge;
  }
 

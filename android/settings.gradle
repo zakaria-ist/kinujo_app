@@ -1,4 +1,6 @@
 rootProject.name = 'kinujo'
+include ':react-native-splash-screen'
+project(':react-native-splash-screen').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-splash-screen/android')
 include ':react-native-android-keyboard-adjust'
 project(':react-native-android-keyboard-adjust').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-android-keyboard-adjust/android')
 include ':react-native-version-info'

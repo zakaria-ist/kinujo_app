@@ -54,6 +54,7 @@ export default function CountrySearch({
           borderRadius: 5,
           width: widthPercentageToDP("23%"),
           height: heightPercentageToDP("6%"),
+          marginTop: heightPercentageToDP("1%")
         }}
       >
         <Text

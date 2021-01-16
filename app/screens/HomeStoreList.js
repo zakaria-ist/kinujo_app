@@ -26,6 +26,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
 import { useIsFocused } from "@react-navigation/native";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
+import SplashScreen from 'react-native-splash-screen'
 import {
   widthPercentageToDP,
   heightPercentageToDP,

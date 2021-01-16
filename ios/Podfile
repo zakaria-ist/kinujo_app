@@ -24,6 +24,8 @@ target 'kinujo' do
 
   pod 'react-native-version-info', :path => '../node_modules/react-native-version-info'
 
+  pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
+
   post_install do |installer|
     flipper_post_install(installer)
   end
