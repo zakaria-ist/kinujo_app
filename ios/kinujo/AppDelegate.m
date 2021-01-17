@@ -9,6 +9,7 @@
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <Firebase.h>
 #import <react-native-splash-screen/RNSplashScreen.h>
 
 #ifdef FB_SONARKIT_ENABLED
