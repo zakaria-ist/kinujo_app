@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import net.zubricky.AndroidKeyboardAdjust.AndroidKeyboardAdjustPackage;
 import cx.evermeet.versioninfo.RNVersionInfoPackage;
 import com.reactnativecommunity.rnpermissions.RNPermissionsPackage;
@@ -52,6 +53,7 @@ public class MainApplication extends Application implements ReactApplication {
       List<ReactPackage> packages = new PackageList(this).getPackages();
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       // packages.add(new MainReactPackage(),
+            new SplashScreenReactPackage();
             new AndroidKeyboardAdjustPackage();
             new RNVersionInfoPackage();
       //      new RNPermissionsPackage(),

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
+import SplashScreen from 'react-native-splash-screen'
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { RFValue } from "react-native-responsive-fontsize";
 import {
@@ -23,6 +24,9 @@ const alert = new CustomAlert();
 
 import Translate from "../assets/Translates/Translate";
 export default function RegisterCompletion(props) {
+  setTimeout(function(){
+    SplashScreen.hide();
+  }, 1000)
   async function updateProfile(nextPage) {
     AsyncStorage.getItem("user").then(function (url) {
       request

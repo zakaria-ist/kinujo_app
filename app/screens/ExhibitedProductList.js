@@ -84,7 +84,7 @@ function processProductHtml(props, products, status) {
             >
               {product.productImages.length > 0 &&
               product.productImages[0].image.image &&
-              product.productImages[0].is_hidden == false ? (
+              !product.productImages[0].is_hidden ? (
                 <Image
                   style={{
                     width: RFValue(30),

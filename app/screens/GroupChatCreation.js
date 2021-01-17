@@ -399,7 +399,7 @@ export default function GroupChatCreation(props) {
                   borderRadius: Dimensions.get("window").width/2,
                   backgroundColor: Colors.E6DADE,
                 }}
-                source={require("../assets/Images/addMemberIcon.png")}
+                source={require("../assets/Images/addMemberIconLarge.png")}
               />
               <Text style={styles.folderText}>{Translate.t("addMember")}</Text>
             </View>

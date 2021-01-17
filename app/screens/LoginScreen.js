@@ -12,6 +12,7 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import SplashScreen from 'react-native-splash-screen'
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -32,6 +33,7 @@ import {
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -111,6 +113,7 @@ async function init(props, foreground) {
         }
       });
   } else {
+    SplashScreen.hide();
     let link = await dynamicLinks().getInitialLink();
     if (link) {
       await saveProduct(props, link.url);
@@ -129,6 +132,7 @@ export default function LoginScreen(props) {
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [loaded, onLoaded] = React.useState(false);
+  const isFocused = useIsFocused();
   if (!loaded) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {

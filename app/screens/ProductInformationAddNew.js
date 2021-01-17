@@ -219,6 +219,9 @@ export default function ProductInformationAddNew(props) {
               tmpImage["is_old"] = true;
               return tmpImage;
             });
+            oldImages = images.map((image) => {
+              return !image.is_hidden;
+            });
             onProductImagesChanged(oldImages);
             onProductPageDisplayMethodChanged("slidingType");
             let tmpImages = response.data.productImages;
@@ -226,7 +229,6 @@ export default function ProductInformationAddNew(props) {
             let html = [];
             tmpImages.map((image) => {
               image = image.image;
-
               if (!image.is_hidden) {
                 html.push(
                   <View
@@ -555,9 +557,9 @@ export default function ProductInformationAddNew(props) {
           productStock: productStock,
           publishState: publishState,
           publishDate: publishDate,
-          price: price,
-          storePrice: storePrice,
-          shipping: shipping,
+          price: price.replace(/,/g, ""),
+          storePrice: storePrice.replace(/,/g, ""),
+          shipping: shipping.replace(/,/g, ""),
           productPageDisplayMethod: productPageDisplayMethod
             ? productPageDisplayMethod
             : "none",
@@ -688,9 +690,9 @@ export default function ProductInformationAddNew(props) {
           productStock: productStock,
           publishState: publishState,
           publishDate: publishDate,
-          price: price,
-          storePrice: storePrice,
-          shipping: shipping,
+          price: price.replace(/,/g, ""),
+          storePrice: storePrice.replace(/,/g, ""),
+          shipping: shipping.replace(/,/g, ""),
           productPageDisplayMethod: productPageDisplayMethod
             ? productPageDisplayMethod
             : "none",
@@ -736,15 +738,16 @@ export default function ProductInformationAddNew(props) {
   }
 
   function handleGeneralPrice(value) {
-    onPriceChanged(value.replace(",", "").replace(/[^0-9]/g, ""));
+    let number = value.replace(/,/g, "");
+    onPriceChanged(String(number).replace(/[^0-9]/g, ""));
     if (user.is_master) {
-      onStorePriceChanged(value.replace(",", "") * 0.7 + "");
+      onStorePriceChanged(String(number * 0.7));
     } else if (user.is_seller) {
-      onStorePriceChanged(value.replace(",", "") * 0.8 + "");
+      onStorePriceChanged(String(number * 0.8));
     }
   }
   function handleShippingPrice(value) {
-    onShippingChanged(value.replace(/[^0-9]/g, ""));
+    onShippingChanged(value.replace(/,/g, "").replace(/[^0-9]/g, ""));
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>

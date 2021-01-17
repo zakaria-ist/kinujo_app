@@ -13,6 +13,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
+import SplashScreen from 'react-native-splash-screen'
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { RFValue } from "react-native-responsive-fontsize";
 import {
@@ -26,6 +27,9 @@ const win = Dimensions.get("window");
 const ratioKinujo = win.width / 1.6 / 151;
 import Translate from "../assets/Translates/Translate";
 export default function StoreAccountSelection(props) {
+  setTimeout(function(){
+    SplashScreen.hide();
+  }, 1000)
   async function updateProfile() {
     AsyncStorage.getItem("user").then(function(url) {
       request

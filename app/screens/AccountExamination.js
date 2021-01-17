@@ -10,6 +10,7 @@ import {
 import AsyncStorage from "@react-native-community/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
+import SplashScreen from 'react-native-splash-screen'
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -20,6 +21,9 @@ import Translate from "../assets/Translates/Translate";
 const win = Dimensions.get("window");
 const ratioKinujo = win.width / 1.6 / 151;
 export default function AccountExamination(props) {
+  setTimeout(function(){
+    SplashScreen.hide();
+  }, 1000)
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}

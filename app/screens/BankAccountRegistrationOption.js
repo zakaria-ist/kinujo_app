@@ -12,6 +12,7 @@ import {
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
+import SplashScreen from 'react-native-splash-screen'
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import {
@@ -29,6 +30,9 @@ const ratio = win.width / 25 / 17;
 const ratioKinujo = win.width / 1.6 / 151;
 export default function BankAccountRegistration(props) {
   const [user, setUser] = React.useState({});
+  setTimeout(function(){
+    SplashScreen.hide();
+  }, 1000)
 
   async function updateProfile(nextPage) {
     AsyncStorage.getItem("user").then(function(url) {

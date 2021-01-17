@@ -16,6 +16,7 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import SplashScreen from 'react-native-splash-screen'
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -62,7 +63,6 @@ export default function Home(props) {
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
-
   messaging()
     .getInitialNotification()
     .then((remoteMessage) => {
@@ -77,7 +77,9 @@ export default function Home(props) {
         });
       }
     });
-
+    setTimeout(function(){
+      SplashScreen.hide();
+    }, 1000)
   React.useEffect(() => {
     AsyncStorage.getItem("product").then((product_id) => {
       AsyncStorage.removeItem("product").then(() => {

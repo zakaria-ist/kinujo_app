@@ -1386,6 +1386,7 @@ export default function ChatScreen(props) {
               </View>
             </TouchableWithoutFeedback>
           </Animated.View>
+          <View style={{ flex : 1 }} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

@@ -24,6 +24,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import { Alert } from "react-native";
+import SplashScreen from 'react-native-splash-screen'
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
@@ -42,6 +43,9 @@ export default function RegistrationStore(props) {
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [loaded, onLoaded] = React.useState(false);
+  setTimeout(function(){
+    SplashScreen.hide();
+  }, 1000)
   if (!loaded) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
@@ -149,6 +153,7 @@ export default function RegistrationStore(props) {
             >
               <CountrySearch
                 props={props}
+                defaultCountry={"+" + callingCode}
                 onCountryChanged={(val) => {
                   if (val) {
                     processCountryCode(val);
