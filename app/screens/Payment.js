@@ -103,7 +103,12 @@ export default function Payment(props) {
                                 .then(() => {});
                             });
 
-                            props.navigation.navigate("PurchaseCompletion");
+                            db.collection("sellers")
+                            .add({
+                              sellers: response.sellers
+                            }).then(() => {
+                              props.navigation.navigate("PurchaseCompletion");
+                            });
                           });
                       } else {
                         if (
