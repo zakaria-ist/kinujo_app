@@ -26,7 +26,7 @@ import {
 } from "react-native-responsive-screen";
 import { Alert } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from "react-native-splash-screen";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
 import CountryPicker from "react-native-country-picker-modal";
@@ -46,9 +46,9 @@ export default function RegistrationGeneral(props) {
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [loaded, onLoaded] = React.useState(false);
-  setTimeout(function(){
+  setTimeout(function () {
     SplashScreen.hide();
-  }, 1000)
+  }, 1000);
   if (!loaded) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
@@ -149,13 +149,21 @@ export default function RegistrationGeneral(props) {
             >
               <CountrySearch
                 props={props}
-                defaultCountry={"+" + callingCode}
                 onCountryChanged={(val) => {
                   if (val) {
                     processCountryCode(val);
                   }
                 }}
               ></CountrySearch>
+              {/* <CountrySearch
+                props={props}
+                defaultCountry={"+" + callingCode}
+                onCountryChanged={(val) => {
+                  if (val) {
+                    processCountryCode(val);
+                  }
+                }}
+              ></CountrySearch> */}
               {/* <DropDownPicker
                 // controller={(instance) => (controller = instance)}
                 style={styles.textInput}
@@ -184,7 +192,9 @@ export default function RegistrationGeneral(props) {
                 style={styles.携帯電話番号}
                 placeholderTextColor={Colors.white}
                 placeholder={Translate.t("phoneNumber")}
-                onChangeText={(text) => onPhoneChanged(String(text).replace(/[^0-9]/g, ""))}
+                onChangeText={(text) =>
+                  onPhoneChanged(String(text).replace(/[^0-9]/g, ""))
+                }
                 value={phone}
               ></TextInput>
             </View>
@@ -192,7 +202,13 @@ export default function RegistrationGeneral(props) {
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
             <TouchableOpacity
               onPress={() => {
-                if (callingCode && nickname && phone && password && confirm_password) {
+                if (
+                  callingCode &&
+                  nickname &&
+                  phone &&
+                  password &&
+                  confirm_password
+                ) {
                   if (password == confirm_password) {
                     // console.log({
                     //   nickname: nickname,

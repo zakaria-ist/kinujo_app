@@ -44,7 +44,7 @@ const updateDeleteUser = (ownUserID, chatPersonID) => {
     .then(function (querySnapshot) {
       querySnapshot.docChanges().forEach((snapShot) => {
         let users = snapShot.doc.data().users;
-        if(users.length == 2){
+        if (users.length == 2) {
           for (var i = 0; i < users.length; i++) {
             if (users[i] == chatPersonID) {
               groupID = snapShot.doc.id;
@@ -60,11 +60,18 @@ const updateDeleteUser = (ownUserID, chatPersonID) => {
           merge: true,
         });
       }
-      db.collection("users").doc(String(ownUserID)).collection("friends").doc(String(chatPersonID)).set({
-        delete: true
-      }, {
-        merge: true,
-      });
+      db.collection("users")
+        .doc(String(ownUserID))
+        .collection("friends")
+        .doc(String(chatPersonID))
+        .set(
+          {
+            delete: true,
+          },
+          {
+            merge: true,
+          }
+        );
     });
 };
 export default function AdvanceSetting(props) {
@@ -80,7 +87,7 @@ export default function AdvanceSetting(props) {
   const [showDeletePopUp, onShowDeletePopUp] = React.useState(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    if(!isFocused){
+    if (!isFocused) {
       onEditDisplayNameChanged(false);
     }
     AsyncStorage.getItem("user").then(function (url) {
@@ -274,6 +281,7 @@ export default function AdvanceSetting(props) {
             value={secretMode}
           />
         </View>
+
         <View style={styles.tabContainer}>
           <Text style={styles.textInTabs}>Block</Text>
           <Switch
