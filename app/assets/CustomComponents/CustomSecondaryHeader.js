@@ -66,11 +66,11 @@ export default function CustomKinujoWord({
     if (images) {
       setImages(images);
     } else {
-      setImages([""]);
+      setImages([]);
     }
 
     if (!isFocused) {
-      setImages([""]);
+      setImages([]);
     }
   }, [isFocused, userUrl, images]);
   return (
@@ -108,6 +108,7 @@ export default function CustomKinujoWord({
           <Image
             style={{
               borderRadius: win.width / 2,
+              marginLeft: widthPercentageToDP("5%"),
             }}
             source={{ uri: user.image.image }}
             width={RFValue(40)}

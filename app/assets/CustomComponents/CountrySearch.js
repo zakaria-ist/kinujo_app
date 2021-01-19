@@ -34,7 +34,7 @@ export default function CountrySearch({
         }
       }
     });
-  }, [isFocused]);
+  }, [isFocused, defaultCountry]);
 
   return (
     <TouchableWithoutFeedback

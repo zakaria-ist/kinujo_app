@@ -28,6 +28,7 @@ import SplashScreen from "react-native-splash-screen";
 import { RFValue } from "react-native-responsive-fontsize";
 import Translate from "../assets/Translates/Translate";
 import WhiteBackArrow from "../assets/CustomComponents/CustomWhiteBackArrow";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 
@@ -43,21 +44,27 @@ export default function RegistrationStore(props) {
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [loaded, onLoaded] = React.useState(false);
+  const isFocused = useIsFocused();
+
   setTimeout(function () {
     SplashScreen.hide();
   }, 1000);
-  if (!loaded) {
+  React.useEffect(()=>{
     request.get("country_codes/").then(function (response) {
-      let tmpCountry = response.data.map((country) => {
-        return {
-          id: country.tel_code,
-          name: country.tel_code,
-        };
+        let tmpCountry = response.data.map((country) => {
+          return {
+            id: country.tel_code,
+            name: country.tel_code,
+          };
+        });
+        onCountryCodeHtmlChanged(tmpCountry);
+        if(!callingCode){
+          onCallingCodeChanged(81);
+        }
       });
-      onCountryCodeHtmlChanged(tmpCountry);
-    });
-    onLoaded(true);
-  }
+      onLoaded(true);
+  }, [isFocused])
+
   function processCountryCode(val) {
     let tmpItem = val.split("+");
     // alert.warning(tmpItem[1]);
@@ -133,6 +140,7 @@ export default function RegistrationStore(props) {
               placeholderTextColor={Colors.white}
               secureTextEntry={true}
               placeholder={Translate.t("password")}
+              textContentType="password"
               onChangeText={(text) => onPasswordChanged(text)}
               value={password}
             ></TextInput>
@@ -141,6 +149,7 @@ export default function RegistrationStore(props) {
               placeholderTextColor={Colors.white}
               secureTextEntry={true}
               placeholder={Translate.t("passwordConfirmation")}
+              textContentType="password"
               onChangeText={(text) => onConfirmPasswordChanged(text)}
               value={confirm_password}
             ></TextInput>
@@ -152,6 +161,7 @@ export default function RegistrationStore(props) {
               }}
             >
               <CountrySearch
+                defaultCountry={"+" + callingCode}
                 props={props}
                 onCountryChanged={(val) => {
                   if (val) {

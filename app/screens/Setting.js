@@ -250,7 +250,9 @@ export default function Setting(props) {
                     onEditPasswordChanged(false);
                     let tmpPassword = password;
                     onPasswordChanged("********");
-                    promptUpdate(props, user, "password", tmpPassword);
+                    if(tmpPassword){
+                      promptUpdate(props, user, "password", tmpPassword);
+                    }
                   }}
                 />
                 <TextInput

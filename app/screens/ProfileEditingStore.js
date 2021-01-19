@@ -894,6 +894,7 @@ export default function ProfileEditingGeneral(props) {
                         borderRadius: 5,
                         width: widthPercentageToDP("23%"),
                         height: heightPercentageToDP("6%"),
+                        marginRight: widthPercentageToDP("1%")
                       }}
                     >
                       <Text
@@ -1022,7 +1023,9 @@ export default function ProfileEditingGeneral(props) {
                       onEditPasswordChanged(false);
                       let tmpPassword = password;
                       onPasswordChanged("********");
-                      promptUpdate(props, user, "password", tmpPassword);
+                      if(tmpPassword){
+                        promptUpdate(props, user, "password", tmpPassword);
+                      }
                     }}
                   />
                   <TextInput

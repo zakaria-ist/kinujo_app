@@ -150,6 +150,9 @@ export default function ChatScreen(props) {
   const insets = useSafeAreaInsets();
   React.useEffect(() => {
     hideEmoji();
+    setMultiSelect(false);
+    tmpMultiSelect = false;
+    selects = []
   }, [!isFocused]);
   function redirectToChat(contactID, contactName) {
     AsyncStorage.getItem("user").then((url) => {
@@ -360,20 +363,21 @@ export default function ChatScreen(props) {
                     id: chat.id,
                     message: chat.data.message,
                     contactID: chat.data.contactID,
-                    contactName: chat.data.contactName
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
                   });
                 }
                 processChat(chats);
               }
             }}
             onLongPress={() => {
-              console.log(chat.data)
               onLongPressObjChanged({
                 id: chat.id,
                 message: chat.data.message,
                 data: chat.data,
                 contactID: chat.data.contactID,
-                contactName: chat.data.contactName
+                contactName: chat.data.contactName,
+                image: chat.data.image
               });
               onShowPopUpChanged(true);
             }}
@@ -409,7 +413,8 @@ export default function ChatScreen(props) {
                           id: chat.id,
                           message: chat.data.message,
                           contactID: chat.data.contactID,
-                          contactName: chat.data.contactName
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
                         });
                       }
                       processChat(chats);
@@ -491,6 +496,9 @@ export default function ChatScreen(props) {
                   selects.push({
                     id: chat.id,
                     message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
                   });
                 }
                 processChat(chats);
@@ -539,7 +547,8 @@ export default function ChatScreen(props) {
                           id: chat.id,
                           message: chat.data.message,
                           contactID: chat.data.contactID,
-                          contactName: chat.data.contactName
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
                         });
                       }
                       processChat(chats);
@@ -622,7 +631,8 @@ export default function ChatScreen(props) {
                     id: chat.id,
                     message: chat.data.message,
                     contactID: chat.data.contactID,
-                    contactName: chat.data.contactName
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
                   });
                 }
                 processChat(chats);
@@ -672,7 +682,8 @@ export default function ChatScreen(props) {
                           id: chat.id,
                           message: chat.data.message,
                           contactID: chat.data.contactID,
-                          contactName: chat.data.contactName
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
                         });
                       }
                       processChat(chats);
@@ -1103,7 +1114,8 @@ export default function ChatScreen(props) {
                           id: longPressObj.id,
                           message: longPressObj.message,
                           contactID: longPressObj.contactID,
-                          contactName: longPressObj.contactName
+                          contactName: longPressObj.contactName,
+                          image: longPressObj.image
                         });
                         processChat(chats);
                         onShowPopUpChanged(false);

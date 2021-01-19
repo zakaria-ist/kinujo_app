@@ -215,6 +215,9 @@ export default function ChatList(props) {
             if(message["contactName"]){
               field['contactName'] = message["contactName"]
             }
+            if(message["image"]){
+              field['image'] = message["image"]
+            }
             await db.collection("chat")
               .doc(chat.id)
               .collection("messages")

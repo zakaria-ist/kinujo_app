@@ -77,9 +77,6 @@ export default function Home(props) {
         });
       }
     });
-    setTimeout(function(){
-      SplashScreen.hide();
-    }, 1000)
   React.useEffect(() => {
     AsyncStorage.getItem("product").then((product_id) => {
       AsyncStorage.removeItem("product").then(() => {
@@ -331,6 +328,11 @@ export default function Home(props) {
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
+
+    setTimeout(function(){
+      SplashScreen.hide();
+    }, 1000)
+    
     onFeaturedHtmlChanged([]);
     onKinujoHtmlChanged([]);
     requestUserPermission();

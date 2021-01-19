@@ -256,6 +256,7 @@ export default function PasswordReset(props) {
             placeholder={Translate.t("newPassword")}
             placeholderTextColor={Colors.D7CCA6}
             secureTextEntry={true}
+            textContentType="password"
             onChangeText={(text) => onPasswordChanged(text)}
             value={password}
           ></TextInput>
@@ -264,6 +265,7 @@ export default function PasswordReset(props) {
             placeholder={Translate.t("newPasswordReenter")}
             placeholderTextColor={Colors.D7CCA6}
             secureTextEntry={true}
+            textContentType="password"
             onChangeText={(text) => onConfirmPasswordChanged(text)}
             value={confirm_password}
           ></TextInput>
