@@ -133,8 +133,8 @@ export default function ProductInformationAddNew(props) {
       onPriceChanged("");
       onStorePriceChanged("");
       onShippingChanged("");
-      onProductPageDisplayMethodChanged(""), onProductImagesChanged([]);
-      onProductImageHtmlChanged([]);
+      onProductPageDisplayMethodChanged("");
+      onProductImageHtmlChanged([]), onProductImagesChanged([]);
       onProductDescriptionChanged("");
       onSpinnerChanged(false);
       onProductChanged(false);
@@ -219,7 +219,7 @@ export default function ProductInformationAddNew(props) {
               tmpImage["is_old"] = true;
               return tmpImage;
             });
-            oldImages = images.map((image) => {
+            oldImages = oldImages.filter((image) => {
               return !image.is_hidden;
             });
             onProductImagesChanged(oldImages);
@@ -286,7 +286,6 @@ export default function ProductInformationAddNew(props) {
                   ) {
                     let productVarietySelection =
                       productVariety.productVarietySelections[i];
-                    console.log(productVariety.productVarietySelections);
                     let vertical =
                       productVarietySelection.jancode_horizontal[0];
                     tmpItems["items"].push({
@@ -571,7 +570,6 @@ export default function ProductInformationAddNew(props) {
         })
         .then((response) => {
           response = response.data;
-          console.log(response);
           // console.log(response);
           if (response.success) {
             onSpinnerChanged(false);

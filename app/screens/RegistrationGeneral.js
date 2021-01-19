@@ -33,6 +33,7 @@ import CountryPicker from "react-native-country-picker-modal";
 import { call } from "react-native-reanimated";
 import * as Localization from "expo-localization";
 import DropDownPicker from "react-native-dropdown-picker";
+import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -46,10 +47,12 @@ export default function RegistrationGeneral(props) {
   const [callingCode, onCallingCodeChanged] = React.useState("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
   const [loaded, onLoaded] = React.useState(false);
+  const isFocused = useIsFocused();
   setTimeout(function () {
     SplashScreen.hide();
   }, 1000);
-  if (!loaded) {
+
+  React.useEffect(()=>{
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {
         return {
@@ -58,9 +61,13 @@ export default function RegistrationGeneral(props) {
         };
       });
       onCountryCodeHtmlChanged(tmpCountry);
+
+      if(!callingCode){
+        onCallingCodeChanged(81);
+      }
     });
     onLoaded(true);
-  }
+  }, [isFocused])
   function processCountryCode(val) {
     let tmpItem = val.split("+");
     // alert.warning(tmpItem[1]);
@@ -129,6 +136,7 @@ export default function RegistrationGeneral(props) {
               placeholderTextColor={Colors.white}
               placeholder={Translate.t("password")}
               secureTextEntry={true}
+              textContentType="password"
               onChangeText={(text) => onPasswordChanged(text)}
               value={password}
             ></TextInput>
@@ -137,6 +145,7 @@ export default function RegistrationGeneral(props) {
               placeholderTextColor={Colors.white}
               placeholder={Translate.t("passwordConfirmation")}
               secureTextEntry={true}
+              textContentType="password"
               onChangeText={(text) => onConfirmPasswordChanged(text)}
               value={confirm_password}
             ></TextInput>
@@ -148,6 +157,7 @@ export default function RegistrationGeneral(props) {
               }}
             >
               <CountrySearch
+                defaultCountry={"+" + callingCode}
                 props={props}
                 onCountryChanged={(val) => {
                   if (val) {

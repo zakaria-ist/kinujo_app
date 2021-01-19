@@ -16,17 +16,16 @@ import {
 const win = Dimensions.get("window");
 
 function getHeight(height, size){
-  if(size == 1) return height;
-  if(size <= 2) return 20;
-  if(size <= 4) return 15;
-  return 10;
+  if(size >= 7) return (height)/3;
+  if(size >= 5) return (height)/2;
+  if(size >= 2) return (height)/2;
+  return height;
 }
 
 function getWidth(width, size){
-  if(size == 1) return width;
-  if(size <= 2) return 20;
-  if(size <= 4) return 15;
-  return 10;
+  if(size >= 5) return (width)/3;
+  if(size >= 2) return (width)/2;
+  return width;
 }
 
 export default function GroupImages({ props, style, width, height, images }) {
@@ -42,16 +41,12 @@ export default function GroupImages({ props, style, width, height, images }) {
             tmpHtml.push(
               <Image
                 style={{
-                  // width: images.length % 2 == 0 ? width / 2 : width / 3,
-                  // height:
-                  //   images.length % 2 == 0
-                  //     ? height / images.length / 2
-                  //     : height / images.length / 3,
                   width: getWidth(width, images.length),
-                  height: getHeight(height, images.length),
-                  marginLeft: 0,
+                  height: getHeight(width, images.length),
                   borderRadius: images.length == 1 ? win.width / 2 : 0,
-                  margin: 2,
+                  padding: widthPercentageToDP("0.2%"),
+                  resizeMode: images.length == 1 ? "" : 'contain',
+                  marginTop: height/15,
                 }}
                 source={{ uri: image }}
               />
@@ -60,16 +55,12 @@ export default function GroupImages({ props, style, width, height, images }) {
             tmpHtml.push(
               <Image
                 style={{
-                  // width: images.length % 2 == 0 ? width / 2 : width / 3,
-                  // height:
-                  //   images.length % 2 == 0
-                  //     ? height / images.length / 2
-                  //     : height / images.length / 3,
                   width: getWidth(width, images.length),
-                  height: getHeight(height, images.length),
-                  marginLeft: 0,
+                  height: getHeight(width, images.length),
                   borderRadius: images.length == 1 ? win.width / 2 : 0,
-                  margin: 2,
+                  padding: widthPercentageToDP("0.2%"),
+                  resizeMode: 'contain',
+                  marginTop: height/15,
                 }}
                 source={require("../Images/profileEditingIconLarge.png")}
               />
@@ -92,7 +83,6 @@ export default function GroupImages({ props, style, width, height, images }) {
           height: getHeight(height, images ? images.length: 0),
           marginLeft: 0,
           borderRadius: win.width / 2,
-          margin: 2,
         }}
         source={require("../Images/profileEditingIconLarge.png")}
       />);
@@ -116,7 +106,7 @@ export default function GroupImages({ props, style, width, height, images }) {
           height: RFValue(50),
           flexWrap: "wrap",
           flexDirection: "row",
-          paddingVertical: heightPercentageToDP("1%"),
+          paddingVertical: heightPercentageToDP("0.2%"),
           borderRadius: images && images.length > 0 ? 5: 0,
           backgroundColor: (images && images.length > 1) ? "#B3B3B3" : "transparent"
           // alignSelf: "center",

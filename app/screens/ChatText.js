@@ -14,6 +14,7 @@ import {
   Linking,
   SafeAreaView,
 } from "react-native";
+import AutoHeightImage from 'react-native-auto-height-image';
 import { Colors } from "../assets/Colors.js";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -182,16 +183,14 @@ export default function ChatText({
                   <View></View>
                 )}
               </View>
-              <Image
+              <View style={{
+                justifyContent: "flex-start"
+              }}>
+                <AutoHeightImage
+                    width={RFValue(150)}
                 source={{ uri: imageURL }}
-                style={{
-                  width: RFValue(150),
-                  height: RFValue(150),
-                  resizeMode: "cover",
-                  // marginBottom: 10,
-                  marginTop: heightPercentageToDP("2%"),
-                }}
               />
+              </View>
             </View>
           ) : (
             <View></View>
@@ -414,7 +413,7 @@ const styles = StyleSheet.create({
     width: 60,
     marginLeft: widthPercentageToDP("45%"),
     fontSize: RFValue(8),
-    bottom: 5,
+    bottom: 0,
     // left: 0,
     // marginLeft: widthPercentageToDP("30%"),
   },
@@ -424,7 +423,7 @@ const styles = StyleSheet.create({
     width: 60,
     marginRight: widthPercentageToDP("1%"),
     fontSize: RFValue(8),
-    bottom: 5,
+    bottom: 0,
     right: 0,
     // marginRight: widthPercentageToDP("30%"),
   },
