@@ -1259,6 +1259,7 @@ export default function ChatScreen(props) {
                   mediaType: "photo",
                 };
                 ImagePicker.launchCamera(options, (response) => {
+                  console.log(response)
                   if (response.uri) {
                     const reference = storage().ref(uuid.v4() + ".png");
                     if (Platform.OS === "android") {
@@ -1287,7 +1288,7 @@ export default function ChatScreen(props) {
                       });
                     } else {
                       reference
-                        .putFile(response.path.replace("file://", ""))
+                        .putFile(response.uri.replace("file://", ""))
                         .then((response) => {
                           reference.getDownloadURL().then((url) => {
                             let createdAt = getTime();

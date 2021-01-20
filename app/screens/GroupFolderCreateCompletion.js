@@ -260,13 +260,14 @@ export default function GroupFolderCreateCompletion(props) {
                   width: widthPercentageToDP("25%"),
                 }}
               >
-                <AddMember
+                <Image
                   style={{
                     width: RFValue(50),
                     height: RFValue(50),
                     borderRadius: win.width / 2,
                     backgroundColor: Colors.E6DADE,
                   }}
+                  source={require("../assets/Images/addMemberIconLarge.png")}
                 />
                 <Text style={styles.textForIcon}>
                   {Translate.t("addMember")}

@@ -489,7 +489,7 @@ export default function ProfileEditingGeneral(props) {
                 width: widthPercentageToDP("100%"),
                 height: heightPercentageToDP("30%"),
               }}
-              source={{ uri: user.image.image }}
+              source={{ uri: user.background_img.image }}
             >
               <TouchableWithoutFeedback
                 onPress={() => {

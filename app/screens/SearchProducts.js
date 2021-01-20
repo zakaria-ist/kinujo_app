@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
+import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -45,6 +46,7 @@ export default function SearchProducts(props) {
   const [products, onProductsChanged] = React.useState([]);
   const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
   const [searchTerm, onSearchTermChanged] = React.useState([]);
+  const [favoriteText, showFavoriteText] = React.useState(false);
 
   function performProductHtml(products) {
     products = products.sort((p1, p2) => {
@@ -109,6 +111,9 @@ export default function SearchProducts(props) {
               ? "Shipping :" + format.separator(product.shipping_fee) + "円"
               : "Free Shipping"
           }
+          addFavourite={(favorite) => {
+            showFavoriteText(favorite);
+          }}
           productAuthorityID={product.user.authority.id}
         />
       );
@@ -215,6 +220,59 @@ export default function SearchProducts(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
+
+
+        {favoriteText == "true" ? (
+          <View
+            style={{
+              borderRadius: win.width / 2,
+              borderWidth: 1,
+              backgroundColor: Colors.E6DADE,
+              borderColor: "transparent",
+              zIndex: 1,
+              elevation: 1,
+              position: "absolute",
+              right: 0,
+              marginRight:
+                user.authority.id <= 3 ? RFValue(5) : widthPercentageToDP("15%"),
+              borderStyle: "solid",
+              paddingVertical: widthPercentageToDP("1%"),
+              paddingHorizontal: widthPercentageToDP("7%"),
+              marginTop:
+                Platform.OS == "ios"
+                  ? getStatusBarHeight() + heightPercentageToDP("6.7%")
+                  : heightPercentageToDP("6.7%"),
+            }}
+          >
+            <View
+              style={{
+                width: 0,
+                height: 0,
+                borderBottomWidth: RFValue(20),
+                borderRightWidth: RFValue(12),
+                borderLeftWidth: RFValue(12),
+                borderLeftColor: "transparent",
+                borderRightColor: "transparent",
+                borderBottomColor: Colors.E6DADE,
+                top: RFValue(-15),
+                position: "absolute",
+                right: RFValue(9),
+              }}
+            ></View>
+            <Text
+              style={{
+                fontSize: RFValue(10),
+                color: "black",
+                alignSelf: "flex-start",
+              }}
+            >
+              {Translate.t("addedToFavorite")}
+            </Text>
+          </View>
+        ) : (
+          <View></View>
+        )}
+        
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TouchableWithoutFeedback
