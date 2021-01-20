@@ -45,7 +45,7 @@ export default function GroupImages({ props, style, width, height, images }) {
                   height: getHeight(width, images.length),
                   borderRadius: images.length == 1 ? win.width / 2 : 0,
                   padding: widthPercentageToDP("0.2%"),
-                  resizeMode: images.length == 1 ? "" : 'contain',
+                  resizeMode: images.length == 1 ? "cover" : 'contain',
                   marginTop: height/15,
                 }}
                 source={{ uri: image }}

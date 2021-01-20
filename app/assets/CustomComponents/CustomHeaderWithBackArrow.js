@@ -75,12 +75,12 @@ export default function CustomKinujoWord({
     });
   }, [isFocused]);
   React.useEffect(() => {
-    if (overrideCartCount) {
+    if (overrideCartCount >= 0) {
       console.log("overRideCart", overrideCartCount);
       onCartChanged(overrideCartCount);
       // setState(!state);
     }
-  });
+  }, [overrideCartCount]);
 
   return (
     <SafeAreaView

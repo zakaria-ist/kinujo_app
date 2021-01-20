@@ -57,6 +57,7 @@ let controller;
 export default function Cart(props) {
   const [cartItemShow, onCartItemShowChanged] = React.useState(true);
   const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
+  const [cartCount, onCartCountChanged] = React.useState(0);
   const cartItemHeight = useRef(new Animated.Value(heightPercentageToDP("50%")))
     .current;
   const cartItemOpacity = useRef(
@@ -344,7 +345,17 @@ export default function Cart(props) {
                                 .doc(userId.toString())
                                 .collection("carts")
                                 .doc(product.id.toString())
-                                .delete();
+                                .delete().then(()=>{
+                                  const subscriber = db
+                                  .collection("users")
+                                  .doc(userId.toString())
+                                  .collection("carts")
+                                  .get()
+                                  .then((querySnapShot) => {
+                                    console.log(querySnapShot.size)
+                                    onCartCountChanged(querySnapShot.size ? "clear" : querySnapShot.size);
+                                  });
+                                })
                             },
                           },
                           {
@@ -596,6 +607,10 @@ export default function Cart(props) {
           onPress={() => {
             props.navigation.navigate("Cart");
           }}
+          onCartCount={(count) => {
+            onCartCountChanged(count);
+          }}
+          overrideCartCount={cartCount}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
         />
         <ScrollView>

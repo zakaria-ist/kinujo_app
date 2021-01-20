@@ -518,10 +518,10 @@ export default function Contact(props) {
 
   React.useEffect(() => {
     selectedUserId = props.route.params ? props.route.params.user_id : "";
-    populateFolder();
-    populateGroup();
     onShowFriendsChanged(true);
     populateUser();
+    populateFolder();
+    populateGroup();
     props.navigation.setParams({ user_id: "" });
   }, [isFocused]);
 
