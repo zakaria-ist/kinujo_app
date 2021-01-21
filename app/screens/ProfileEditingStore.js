@@ -866,6 +866,7 @@ export default function ProfileEditingGeneral(props) {
                       borderColor: "black",
                       height: heightPercentageToDP("6%"),
                       width: widthPercentageToDP("27%"),
+                      paddingLeft: widthPercentageToDP("1%")
                     }}
                   />
                   {/* <CountrySearch

@@ -342,6 +342,7 @@ export default function Setting(props) {
                     height: heightPercentageToDP("6%"),
                     // backgroundColor: "orange",
                     width: widthPercentageToDP("30%"),
+                    paddingLeft: widthPercentageToDP("1%")
                   }}
                 />
                 

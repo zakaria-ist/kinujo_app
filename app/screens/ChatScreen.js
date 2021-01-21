@@ -426,7 +426,8 @@ export default function ChatScreen(props) {
                       message: chat.data.message,
                       data: chat.data,
                       contactID: chat.data.contactID,
-                      contactName: chat.data.contactName
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
                     });
                     onShowPopUpChanged(true);
                   }}
@@ -510,7 +511,8 @@ export default function ChatScreen(props) {
                 message: chat.data.message,
                 data: chat.data,
                 contactID: chat.data.contactID,
-                contactName: chat.data.contactName
+                contactName: chat.data.contactName,
+                image: chat.data.image
               });
               onShowPopUpChanged(true);
             }}
@@ -560,7 +562,8 @@ export default function ChatScreen(props) {
                       message: chat.data.message,
                       data: chat.data,
                       contactID: chat.data.contactID,
-                      contactName: chat.data.contactName
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
                     });
                     onShowPopUpChanged(true);
                   }}
@@ -644,7 +647,8 @@ export default function ChatScreen(props) {
                 message: chat.data.message,
                 data: chat.data,
                 contactID: chat.data.contactID,
-                contactName: chat.data.contactName
+                contactName: chat.data.contactName,
+                image: chat.data.image
               });
               onShowPopUpChanged(true);
             }}
@@ -695,7 +699,8 @@ export default function ChatScreen(props) {
                       message: chat.data.message,
                       data: chat.data,
                       contactID: chat.data.contactID,
-                      contactName: chat.data.contactName
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
                     });
                     onShowPopUpChanged(true);
                   }}
@@ -1024,6 +1029,9 @@ export default function ChatScreen(props) {
                       onPress={() =>
                         props.navigation.navigate("ChatListForward", {
                           message: longPressObj.message,
+                          contactID: longPressObj.contactID,
+                          contactName: longPressObj.contactName,
+                          image: longPressObj.image
                         })
                       }
                     >

@@ -467,12 +467,15 @@ export default function SettingStore(props) {
                 }}
                 onPress={() => {
                   AsyncStorage.removeItem("user").then(() => {
-                    props.navigation.navigate("LoginScreen");
                     db.collection("users")
                       .doc(String(user.id))
                       .collection("token")
                       .doc(String(user.id))
                       .delete();
+                    props.navigation.reset({
+                      index: 0,
+                      routes: [{ name: "LoginScreen" }],
+                    });
                   });
                   AsyncStorage.removeItem("defaultAddress");
                 }}

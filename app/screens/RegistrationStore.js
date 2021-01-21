@@ -326,27 +326,32 @@ export default function RegistrationStore(props) {
                 marginTop: heightPercentageToDP("4%"),
               }}
             >
-              <Text
+              <TouchableWithoutFeedback
                 onPress={() => props.navigation.goBack()}
-                style={{
-                  color: Colors.white,
-                  fontSize: RFValue(12),
-                  alignSelf: "center",
-                }}
               >
-                {Translate.t("nonBeautician")}
-              </Text>
-              <Image
-                onPress={() => props.navigation.goBack()}
-                style={{
-                  alignSelf: "center",
-                  marginLeft: 5,
-                  width: win.width / 25,
-                  height: 17 * ratio,
-                  alignSelf: "center",
-                }}
-                source={require("../assets/Images/whiteNextArrow.png")}
-              />
+                <View style={{flexDirection:"row"}}>
+                  <Text
+                    style={{
+                      color: Colors.white,
+                      fontSize: RFValue(12),
+                      alignSelf: "center",
+                    }}
+                  >
+                    {Translate.t("nonBeautician")}
+                  </Text>
+                  <Image
+                    onPress={() => props.navigation.goBack()}
+                    style={{
+                      alignSelf: "center",
+                      marginLeft: 5,
+                      width: win.width / 25,
+                      height: 17 * ratio,
+                      alignSelf: "center",
+                    }}
+                    source={require("../assets/Images/whiteNextArrow.png")}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
             </View>
           </View>
         </KeyboardAwareScrollView>

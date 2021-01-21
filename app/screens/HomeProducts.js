@@ -153,6 +153,7 @@ export default function HomeProducts({
                     ? require("../assets/Images/favoriteLove.png")
                     : require("../assets/Images/productFavorite.png")
                 }
+
                 style={
                   favourite
                     ? styles.favoriteLoveIcon
@@ -192,6 +193,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     bottom: 10,
+    resizeMode: 'contain',
   },
   productFavoriteIcon: {
     width: width / 14,
@@ -199,6 +201,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     bottom: 10,
+    resizeMode: 'contain',
   },
   products_left: {
     // alignItems: "center",
