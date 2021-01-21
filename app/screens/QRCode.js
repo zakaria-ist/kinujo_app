@@ -107,6 +107,9 @@ export default function QRCode(props) {
   const [storeLink, onStoreLinkChanged] = useState("");
   const [userLink, onUserLinkChanged] = useState("");
   React.useEffect(() => {
+    if(!isFocused){
+      setInviteShow(false);
+    }
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
         onUserChanged(response.data);
@@ -115,6 +118,7 @@ export default function QRCode(props) {
   }, [isFocused]);
   React.useEffect(() => {
     setPopupQR(false);
+    setInviteShow(false);
   }, [!isFocused]);
 
   const onSuccess = (e) => {
@@ -123,17 +127,19 @@ export default function QRCode(props) {
       // alert.warning(userId.toString());
 
       request.addFriend(userId, code).then(() => {
-        Alert.alert(
-          Translate.t("information"),
-          Translate.t("friendAdded"),
-          [
-            {
-              text: "OK",
-              onPress: () => {},
-            },
-          ],
-          { cancelable: false }
-        );
+        request.addFriend(code, userId).then(() => {
+          Alert.alert(
+            Translate.t("information"),
+            Translate.t("friendAdded"),
+            [
+              {
+                text: "OK",
+                onPress: () => {},
+              },
+            ],
+            { cancelable: false }
+          );
+        });
       });
     } else {
       alert.warning(Translate.t("invalidQRcode"));
@@ -376,7 +382,7 @@ export default function QRCode(props) {
             ) : (
               <View></View>
             )}
-            <View style={styles.button_frame}>
+            {/* <View style={styles.button_frame}>
               <TouchableOpacity
                 style={[
                   styles.submit,
@@ -388,7 +394,7 @@ export default function QRCode(props) {
               >
                 <Text style={styles.submit_text}>{Translate.t("myQR")}</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
           </View>
         </View>
         </ScrollView>

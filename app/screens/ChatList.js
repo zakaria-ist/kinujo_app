@@ -255,7 +255,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                  {chat.secret ? "" : chat.data.lastMessage}
+                  {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
@@ -614,7 +614,7 @@ export default function ChatList(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("upperFixed")}
+                    {longPressObj && longPressObj.data && longPressObj.data["pinned_" + ownUserID] == true ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback
@@ -767,6 +767,7 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     justifyContent: "center",
+    width: widthPercentageToDP("60%"),
     marginLeft: widthPercentageToDP("3%"),
   },
   tabContainer: {

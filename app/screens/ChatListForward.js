@@ -119,6 +119,7 @@ async function getDetail(ownId, data) {
 
 export default function ChatList(props) {
   let messageToForward = props.route.params.message;
+  let message = props.route.params;
   let messages = props.route.params.messages;
   const isFocused = useIsFocused();
   const [show, onShowChanged] = React.useState(false);
@@ -186,15 +187,26 @@ export default function ChatList(props) {
           seconds;
 
         if(messageToForward){
+          let field = {
+            timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+            message: messageToForward,
+            userID: String(ownUserID),
+            createdAt: createdAt,
+          }
+          if(message["contactID"]){
+            field['contactID'] = message["contactID"]
+          }
+          if(message["contactName"]){
+            field['contactName'] = message["contactName"]
+          }
+          if(message["image"]){
+            field['image'] = message["image"]
+          }
+
           db.collection("chat")
             .doc(chat.id)
             .collection("messages")
-            .add({
-              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-              message: messageToForward,
-              userID: String(ownUserID),
-              createdAt: createdAt,
-            })
+            .add(field)
             .then(function () {
               onSpinnerChanged(false);
               props.navigation.goBack();

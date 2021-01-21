@@ -953,7 +953,11 @@ export default function Contact(props) {
                   }}
                 >
                   <Text style={styles.longPressText}>
-                    {Translate.t("upperFixed")}
+                    {(longPressObj && longPressObj.data && (longPressObj.type == 'user' && contactPinned[longPressObj.data.id]) || 
+                    (longPressObj.type == 'folder' && longPressObj.data.data["pinned"]) || 
+                    (longPressObj.type == 'group' && longPressObj.data.data[
+                      "pinned_" + userId
+                    ])) ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
                   </Text>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback

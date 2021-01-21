@@ -391,7 +391,7 @@ export default function ProductList(props) {
     <TouchableWithoutFeedback onPress={() => hideAll()}>
       <SafeAreaView>
         <CustomHeader
-          text="Product List"
+          text={Translate.t("productList")}
           onBack={() => props.navigation.goBack()}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => {
@@ -552,7 +552,7 @@ export default function ProductList(props) {
         <ScrollView style={styles.home_product_view}>
           <View style={styles.section_header}>
             <Text style={styles.section_header_text}>
-              {"Number of Sellers : "} {count}
+              {Translate.t('numberOfSellers')} {count}
             </Text>
           </View>
 
