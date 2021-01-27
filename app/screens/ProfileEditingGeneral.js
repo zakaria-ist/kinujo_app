@@ -14,6 +14,8 @@ import {
   Platform,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Icon } from "react-native-elements";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import { Colors } from "../assets/Colors.js";
@@ -62,29 +64,29 @@ function promptUpdate(props, user, field, value) {
 
 export default function ProfileEditingGeneral(props) {
   const textInput = React.createRef();
-  const [password, onPasswordChanged] = React.useState("********");
-  const [phoneNumber, onPhoneNumberChanged] = React.useState("");
-  const [word, setWord] = React.useState("");
-  const [email, onEmailChanged] = React.useState("");
-  const [showTest, setShowTest] = React.useState(true);
-  const [editPassword, onEditPasswordChanged] = React.useState(false);
-  const [editPhoneNumber, onEditPhoneNumberChanged] = React.useState(false);
-  const [editEmail, onEditEmailChanged] = React.useState(false);
-  const [show, onShowChanged] = React.useState(false);
-  const [showCountry, onShowCountryChanged] = React.useState(false);
-  const [countryCode, setCountryCode] = React.useState("");
-  const [searchText, setSearchText] = React.useState("");
-  const [countryHtml, setCountryHtml] = React.useState(<View></View>);
-  const [addingFriendsByID, onAddingFriendsByIDChanged] = React.useState(false);
+  const [password, onPasswordChanged] = useStateIfMounted("********");
+  const [phoneNumber, onPhoneNumberChanged] = useStateIfMounted("");
+  const [word, setWord] = useStateIfMounted("");
+  const [email, onEmailChanged] = useStateIfMounted("");
+  const [showTest, setShowTest] = useStateIfMounted(true);
+  const [editPassword, onEditPasswordChanged] = useStateIfMounted(false);
+  const [editPhoneNumber, onEditPhoneNumberChanged] = useStateIfMounted(false);
+  const [editEmail, onEditEmailChanged] = useStateIfMounted(false);
+  const [show, onShowChanged] = useStateIfMounted(false);
+  const [showCountry, onShowCountryChanged] = useStateIfMounted(false);
+  const [countryCode, setCountryCode] = useStateIfMounted("");
+  const [searchText, setSearchText] = useStateIfMounted("");
+  const [countryHtml, setCountryHtml] = useStateIfMounted(<View></View>);
+  const [addingFriendsByID, onAddingFriendsByIDChanged] = useStateIfMounted(false);
 
   const [
     allowAddingFriendsByPhoneNumber,
     onAllowAddingFriendsByPhoneNumber,
-  ] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
+  ] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
-  const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
   React.useEffect(() => {
     AsyncStorage.getItem("selectedCountry").then((val) => {
       if (val) {

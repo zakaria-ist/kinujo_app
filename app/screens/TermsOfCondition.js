@@ -9,6 +9,8 @@ import {
   View,
   Dimensions,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";
 import { ScrollView } from "react-native-gesture-handler";

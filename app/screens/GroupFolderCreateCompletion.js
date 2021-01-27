@@ -10,6 +10,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -46,8 +48,8 @@ const win = Dimensions.get("window");
 const ratioCancel = win.width / 20 / 15;
 const ratioChat = win.width / 7 / 21;
 export default function GroupFolderCreateCompletion(props) {
-  const [userListHtml, onUserListHtml] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
+  const [userListHtml, onUserListHtml] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   groupName = props.route.params.groupName;
   friendIds = props.route.params.friendIds;

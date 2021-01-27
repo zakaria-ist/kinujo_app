@@ -10,6 +10,8 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
@@ -34,19 +36,19 @@ export default function ProductOneVariations({
   onItemsChanged,
 }) {
   const isFocused = useIsFocused();
-  const [item, hideItem] = React.useState(false);
-  const [invt, hideInvt] = React.useState(false);
-  const [choice, onChoiceChanged] = React.useState("");
-  const [janCode, onJanCodeChanged] = React.useState(123456789);
-  const [stock, onStockChanged] = React.useState(1);
-  const [itemName, onItemNameChanged] = React.useState("");
-  const [id, onIdChanged] = React.useState("");
-  const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
-  const [variationDetailsHtml, onProcessSVariationDetailsHtml] = React.useState(
+  const [item, hideItem] = useStateIfMounted(false);
+  const [invt, hideInvt] = useStateIfMounted(false);
+  const [choice, onChoiceChanged] = useStateIfMounted("");
+  const [janCode, onJanCodeChanged] = useStateIfMounted(123456789);
+  const [stock, onStockChanged] = useStateIfMounted(1);
+  const [itemName, onItemNameChanged] = useStateIfMounted("");
+  const [id, onIdChanged] = useStateIfMounted("");
+  const [variationHtml, onProcessVariationHtml] = useStateIfMounted(<View></View>);
+  const [variationDetailsHtml, onProcessSVariationDetailsHtml] = useStateIfMounted(
     <View></View>
   );
-  const [loaded, onLoaded] = React.useState(false);
-  const [currentVariationCount, onCurrentVariationCount] = React.useState(1);
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [currentVariationCount, onCurrentVariationCount] = useStateIfMounted(1);
 
   React.useEffect(() => {
     if (pItems && pItems.name) {

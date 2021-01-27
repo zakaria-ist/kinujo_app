@@ -12,6 +12,8 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -50,11 +52,11 @@ const ratioDown = win.width / 32 / 8;
 const ratioNext = win.width / 38 / 8;
 export default function FolderMemberSelection(props) {
   const isFocused = useIsFocused();
-  const [friendChatShow, onFriendChatShowChanged] = React.useState(true);
-  const [groupChatShow, onGroupChatShowChanged] = React.useState(true);
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
-  const [searchText, onSearchTextChanged] = React.useState("");
+  const [friendChatShow, onFriendChatShowChanged] = useStateIfMounted(true);
+  const [groupChatShow, onGroupChatShowChanged] = useStateIfMounted(true);
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const groupChatOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;

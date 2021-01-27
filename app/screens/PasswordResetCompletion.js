@@ -8,6 +8,8 @@ import {
   Dimensions,
   Image,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { Colors } from "../assets/Colors";
 import { RFValue } from "react-native-responsive-fontsize";

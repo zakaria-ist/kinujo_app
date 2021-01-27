@@ -9,6 +9,8 @@ import {
   ScrollView,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
 import Moment from "moment";
@@ -41,26 +43,26 @@ let day = new Date().getDate();
 let month = new Date().getMonth() + 1;
 let year = new Date().getFullYear();
 export default function ProfileInformation(props) {
-  const [user, onUserChanged] = React.useState({});
-  const [editName, onEditNameChanged] = React.useState(false);
-  const [editNickname, onEditNicknameChanged] = React.useState(false);
-  const [editGender, onEditGenderChanged] = React.useState(false);
-  const [editBirthday, onEditBirthdayChanged] = React.useState(false);
-  const [editPostalCode, onEditPostalCodeChanged] = React.useState(false);
-  const [editPrefecture, onEditPrefectureChanged] = React.useState(false);
-  const [editAddress1, onEditAddress1Changed] = React.useState(false);
-  const [editAddress2, onEditAddress2Changed] = React.useState(false);
-  const [name, onNameChanged] = React.useState("");
-  const [nickname, onNicknameChanged] = React.useState("");
-  const [gender, onGenderChanged] = React.useState("");
-  const [birthday, onBirthdayChanged] = React.useState("");
-  const [postalCode, onPostalCodeChanged] = React.useState("");
-  const [prefecture, onPrefectureChanged] = React.useState("");
-  const [prefectures, onPrefecturesChanged] = React.useState([]);
-  const [address1, onAddress1Changed] = React.useState("");
-  const [address2, onAddress2Changed] = React.useState("");
-  const [date, setDate] = React.useState(day + "-" + month + "-" + year);
-  const [pickerShow, onPickerShow] = React.useState(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [editName, onEditNameChanged] = useStateIfMounted(false);
+  const [editNickname, onEditNicknameChanged] = useStateIfMounted(false);
+  const [editGender, onEditGenderChanged] = useStateIfMounted(false);
+  const [editBirthday, onEditBirthdayChanged] = useStateIfMounted(false);
+  const [editPostalCode, onEditPostalCodeChanged] = useStateIfMounted(false);
+  const [editPrefecture, onEditPrefectureChanged] = useStateIfMounted(false);
+  const [editAddress1, onEditAddress1Changed] = useStateIfMounted(false);
+  const [editAddress2, onEditAddress2Changed] = useStateIfMounted(false);
+  const [name, onNameChanged] = useStateIfMounted("");
+  const [nickname, onNicknameChanged] = useStateIfMounted("");
+  const [gender, onGenderChanged] = useStateIfMounted("");
+  const [birthday, onBirthdayChanged] = useStateIfMounted("");
+  const [postalCode, onPostalCodeChanged] = useStateIfMounted("");
+  const [prefecture, onPrefectureChanged] = useStateIfMounted("");
+  const [prefectures, onPrefecturesChanged] = useStateIfMounted([]);
+  const [address1, onAddress1Changed] = useStateIfMounted("");
+  const [address2, onAddress2Changed] = useStateIfMounted("");
+  const [date, setDate] = useStateIfMounted(day + "-" + month + "-" + year);
+  const [pickerShow, onPickerShow] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
     request.get("prefectures/").then(function (response) {

@@ -10,6 +10,7 @@ import {
   Platform,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -34,13 +35,13 @@ const db = firebase.firestore();
 const win = Dimensions.get("window");
 let userId;
 export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
-  const [cartCount, onCartChanged] = React.useState(0);
+  const [cartCount, onCartChanged] = useStateIfMounted(0);
   const ratioKinujo = win.width / 4 / 78;
   const ratioFavorite = win.width / 14 / 24;
   const ratioCart = win.width / 11 / 23;
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
-  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [userAuthorityID, onUserAuthorityIDChanged] = useStateIfMounted(0);
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {

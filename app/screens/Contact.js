@@ -11,6 +11,8 @@ import {
   Animated,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -200,7 +202,7 @@ export default function Contact(props) {
         >
           <View style={styles.contactTabContainer}>
             {user && user.image && user.image.image ? (
-              <Image
+              <CachedImage
                 style={{
                   borderRadius: win.width / 2,
                   width: RFValue(40),
@@ -345,22 +347,22 @@ export default function Contact(props) {
     }
     return tmpFolderHtml;
   }
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [groupHtml, onGroupHtmlChanged] = React.useState(<View></View>);
-  const [folderHtml, onFolderHtmlChanged] = React.useState(<View></View>);
-  const [friendLoaded, onFriendLoaded] = React.useState(false);
-  const [folderLoaded, onFolderLoaded] = React.useState(false);
-  const [groupLoaded, onGroupLoaded] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-  const [show, onShowChanged] = React.useState(false);
-  const [longPressObj, onLongPressObjChanged] = React.useState({});
-  const [searchText, onSearchTextChanged] = React.useState("");
-  const [friendCount, setFriendCount] = React.useState(0);
-  const [groupCount, setGroupCount] = React.useState(0);
-  const [folderCount, setFolderCount] = React.useState(0);
-  const [showFriends, onShowFriendsChanged] = React.useState(false);
-  const [showGroups, onShowGroupsChanged] = React.useState(false);
-  const [showFolders, onShowFoldersChanged] = React.useState(false);
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [groupHtml, onGroupHtmlChanged] = useStateIfMounted(<View></View>);
+  const [folderHtml, onFolderHtmlChanged] = useStateIfMounted(<View></View>);
+  const [friendLoaded, onFriendLoaded] = useStateIfMounted(false);
+  const [folderLoaded, onFolderLoaded] = useStateIfMounted(false);
+  const [groupLoaded, onGroupLoaded] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [show, onShowChanged] = useStateIfMounted(false);
+  const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
+  const [searchText, onSearchTextChanged] = useStateIfMounted("");
+  const [friendCount, setFriendCount] = useStateIfMounted(0);
+  const [groupCount, setGroupCount] = useStateIfMounted(0);
+  const [folderCount, setFolderCount] = useStateIfMounted(0);
+  const [showFriends, onShowFriendsChanged] = useStateIfMounted(false);
+  const [showGroups, onShowGroupsChanged] = useStateIfMounted(false);
+  const [showFolders, onShowFoldersChanged] = useStateIfMounted(false);
   const foldersOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;

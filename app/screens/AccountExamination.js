@@ -7,6 +7,8 @@ import {
   Dimensions,
   Image
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import AsyncStorage from "@react-native-community/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "../assets/Colors";

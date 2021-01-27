@@ -8,6 +8,8 @@ import {
   TextInput,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -52,25 +54,25 @@ function updateUser(user, field, value) {
 }
 let controller;
 export default function StoreInformation(props) {
-  const [password, onPasswordChanged] = React.useState("XXXXXXXXXXX STORE");
-  const [editPassword, onEditPasswordChanged] = React.useState(false);
-  const [editCorporateName, onEditCorporateNameChanged] = React.useState(false);
+  const [password, onPasswordChanged] = useStateIfMounted("XXXXXXXXXXX STORE");
+  const [editPassword, onEditPasswordChanged] = useStateIfMounted(false);
+  const [editCorporateName, onEditCorporateNameChanged] = useStateIfMounted(false);
   const [
     editRepresentativeName,
     onEditRepresentativeNameChanged,
-  ] = React.useState(false);
-  const [editPostalCode, onEditPostalCodeChanged] = React.useState(false);
-  const [editPrefecture, onEditPrefectureChanged] = React.useState(false);
-  const [editAddress1, onEditAddress1Changed] = React.useState(false);
-  const [editAddress2, onEditAddress2Changed] = React.useState(false);
-  const [corporateName, onCorporateNameChanged] = React.useState("");
-  const [representativeName, onRepresentativeNameChanged] = React.useState("");
-  const [postalCode, onPostalCodeChanged] = React.useState("");
-  const [prefecture, onPrefectureChanged] = React.useState("");
-  const [prefectures, onPrefecturesChanged] = React.useState([]);
-  const [address1, onAddress1Changed] = React.useState("");
-  const [address2, onAddress2Changed] = React.useState("");
-  const [user, onUserChanged] = React.useState({});
+  ] = useStateIfMounted(false);
+  const [editPostalCode, onEditPostalCodeChanged] = useStateIfMounted(false);
+  const [editPrefecture, onEditPrefectureChanged] = useStateIfMounted(false);
+  const [editAddress1, onEditAddress1Changed] = useStateIfMounted(false);
+  const [editAddress2, onEditAddress2Changed] = useStateIfMounted(false);
+  const [corporateName, onCorporateNameChanged] = useStateIfMounted("");
+  const [representativeName, onRepresentativeNameChanged] = useStateIfMounted("");
+  const [postalCode, onPostalCodeChanged] = useStateIfMounted("");
+  const [prefecture, onPrefectureChanged] = useStateIfMounted("");
+  const [prefectures, onPrefecturesChanged] = useStateIfMounted([]);
+  const [address1, onAddress1Changed] = useStateIfMounted("");
+  const [address2, onAddress2Changed] = useStateIfMounted("");
+  const [user, onUserChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
 
   React.useEffect(() => {

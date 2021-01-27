@@ -11,10 +11,12 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import CachedImage from 'react-native-expo-cached-image';
 import AsyncStorage from "@react-native-community/async-storage";
 import Translate from "../assets/Translates/Translate";
 import { useIsFocused } from "@react-navigation/native";
@@ -56,10 +58,10 @@ export default function HomeProducts({
   onProductNamePress,
 }) {
   const isFocused = useIsFocused();
-  const [favourite, setFavourite] = React.useState(false);
-  const [favoriteGet, onFavorite] = React.useState("");
-  const [favoriteText, showFavoriteText] = React.useState(false);
-  const [state, setState] = React.useState(false);
+  const [favourite, setFavourite] = useStateIfMounted(false);
+  const [favoriteGet, onFavorite] = useStateIfMounted("");
+  const [favoriteText, showFavoriteText] = useStateIfMounted(false);
+  const [state, setState] = useStateIfMounted(false);
   function checkFavourite(product) {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -97,7 +99,8 @@ export default function HomeProducts({
     >
       <View style={idx % 2 == 0 ? styles.products_left : styles.products_right}>
         <TouchableWithoutFeedback onPress={onPress}>
-          <ImageBackground
+          <CachedImage
+            isBackground={true}
             style={styles.product_image}
             source={{
               uri: image,
@@ -161,7 +164,7 @@ export default function HomeProducts({
                 }
               />
             </TouchableWithoutFeedback>
-          </ImageBackground>
+          </CachedImage>
         </TouchableWithoutFeedback>
         <Text style={styles.product_office}>{office}</Text>
         <TouchableWithoutFeedback onPress={onProductNamePress}>

@@ -14,6 +14,8 @@ import {
   Linking,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import AutoHeightImage from 'react-native-auto-height-image';
 import { Colors } from "../assets/Colors.js";
 import { LinearGradient } from "expo-linear-gradient";
@@ -42,6 +44,26 @@ export default function ChatText({
   showCheckBox,
   image,
 }) {
+
+  function findParams(data, param) {
+    let tmps = data.split("?");
+    if (tmps.length > 0) {
+      let tmp = tmps[1];
+      let params = tmp.split("&");
+      let searchParams = params.filter((tmpParam) => {
+        return tmpParam.indexOf(param) >= 0;
+      });
+      if (searchParams.length > 0) {
+        let foundParam = searchParams[0];
+        let foundParams = foundParam.split("=");
+        if (foundParams.length > 0) {
+          return foundParams[1];
+        }
+      }
+    }
+    return "";
+  }
+
   return (
     <SafeAreaView>
       {/*Right Side*/}
@@ -84,7 +106,16 @@ export default function ChatText({
             >
               <Hyperlink
                 linkStyle={{ color: "#2980b9" }}
-                onPress={(url, text) => Linking.openURL(url)}
+                onPress={(url, text) => {
+                  if(findParams(url, "apn") && findParams(url, "product_id")){
+                    let apiUrl = request.getApiUrl() + "products/" + findParams(url, "product_id");
+                    props.navigation.navigate("HomeStoreList", {
+                      url: apiUrl,
+                    });
+                  } else {
+                    Linking.openURL(url);
+                  }
+                }}
               >
                 <Text>{text}</Text>
               </Hyperlink>
@@ -98,7 +129,16 @@ export default function ChatText({
             >
               <Hyperlink
                 linkStyle={{ color: "#2980b9" }}
-                onPress={(url, text) => Linking.openURL(url)}
+                onPress={(url, text) => {
+                  if(findParams(url, "apn") && findParams(url, "product_id")){
+                    let apiUrl = request.getApiUrl() + "products/" + findParams(url, "product_id");
+                    props.navigation.navigate("HomeStoreList", {
+                      url: apiUrl,
+                    });
+                  } else {
+                    Linking.openURL(url);
+                  }
+                }}
               >
                 <Text>{text}</Text>
               </Hyperlink>

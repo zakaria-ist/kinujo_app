@@ -10,6 +10,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
 import {
@@ -32,11 +34,11 @@ const ratioSearchIcon = win.width / 19 / 19;
 const ratioNext = win.width / 38 / 8;
 
 export default function CustomerList(props) {
-  const [customers, onCustomersChanged] = React.useState({});
-  const [loaded, onLoaded] = React.useState(false);
-  const [search, onSearchChanged] = React.useState("");
-  const [customerHtml, onCustomerHtmlChanged] = React.useState(<View></View>);
-  const [user, onUserChanged] = React.useState({});
+  const [customers, onCustomersChanged] = useStateIfMounted({});
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [search, onSearchChanged] = useStateIfMounted("");
+  const [customerHtml, onCustomerHtmlChanged] = useStateIfMounted(<View></View>);
+  const [user, onUserChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
   function processCustomerHtml(props, customers, search = "") {
     let tmpCustomerHtml = [];

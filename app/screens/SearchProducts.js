@@ -12,6 +12,8 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { useIsFocused } from "@react-navigation/native";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
@@ -41,12 +43,12 @@ const ratioSearchIcon = win.width / 19 / 19;
 const ratioProfile = win.width / 13 / 22;
 
 export default function SearchProducts(props) {
-  const [user, onUserChanged] = React.useState({});
-  const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
-  const [products, onProductsChanged] = React.useState([]);
-  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
-  const [searchTerm, onSearchTermChanged] = React.useState([]);
-  const [favoriteText, showFavoriteText] = React.useState(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
+  const [products, onProductsChanged] = useStateIfMounted([]);
+  const [kinujoHtml, onKinujoHtmlChanged] = useStateIfMounted([]);
+  const [searchTerm, onSearchTermChanged] = useStateIfMounted([]);
+  const [favoriteText, showFavoriteText] = useStateIfMounted(false);
 
   function performProductHtml(products) {
     products = products.sort((p1, p2) => {
@@ -188,7 +190,7 @@ export default function SearchProducts(props) {
         });
     });
     request
-      .get("products/")
+      .get("simple_products/")
       .then(function (response) {
         let products = response.data;
         onProductsChanged(products);

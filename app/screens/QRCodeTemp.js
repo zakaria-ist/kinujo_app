@@ -15,6 +15,8 @@ import {
   Button,
   Linking,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import {
   heightPercentageToDP,
   widthPercentageToDP,

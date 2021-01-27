@@ -8,6 +8,8 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -38,8 +40,8 @@ const ratioStoreIcon = win.width / 12 / 20;
 const ratioNext = win.width / 38 / 8;
 
 export default function PurchaseHistoryDetails(props) {
-  const [order, onOrderChanged] = React.useState({});
-  const [loaded, onLoaded] = React.useState(false);
+  const [order, onOrderChanged] = useStateIfMounted({});
+  const [loaded, onLoaded] = useStateIfMounted(false);
 
   if (!loaded) {
     AsyncStorage.getItem("user").then(function (url) {

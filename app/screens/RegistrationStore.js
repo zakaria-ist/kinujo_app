@@ -11,6 +11,8 @@ import {
   Dimensions,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { LinearGradient } from "expo-linear-gradient";
@@ -37,13 +39,13 @@ export default function RegistrationStore(props) {
   const ratio = win.width / 25 / 17;
   const ratioTripleDot = win.width / 23 / 15;
   const ratioKinujo = win.width / 1.6 / 151;
-  const [nickname, onNicknameChanged] = React.useState("");
-  const [password, onPasswordChanged] = React.useState("");
-  const [confirm_password, onConfirmPasswordChanged] = React.useState("");
-  const [phone, onPhoneChanged] = React.useState("");
-  const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
-  const [loaded, onLoaded] = React.useState(false);
+  const [nickname, onNicknameChanged] = useStateIfMounted("");
+  const [password, onPasswordChanged] = useStateIfMounted("");
+  const [confirm_password, onConfirmPasswordChanged] = useStateIfMounted("");
+  const [phone, onPhoneChanged] = useStateIfMounted("");
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   const isFocused = useIsFocused();
 
   setTimeout(function () {

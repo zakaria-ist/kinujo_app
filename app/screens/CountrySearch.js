@@ -11,6 +11,8 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import AsyncStorage from "@react-native-community/async-storage";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
@@ -31,8 +33,8 @@ let countries = [];
 
 export default function CountrySearch(props) {
   //const isFocused = useIsFocused();
-  const [countryHtml, setCountryHtml] = React.useState(<View></View>);
-  const [searchText, setSearchText] = React.useState("");
+  const [countryHtml, setCountryHtml] = useStateIfMounted(<View></View>);
+  const [searchText, setSearchText] = useStateIfMounted("");
 
   function processCountryHtml(countries) {
     let html = [];

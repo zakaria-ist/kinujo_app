@@ -14,6 +14,8 @@ import {
   ScrollView,
   Modal,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
@@ -37,23 +39,23 @@ const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 16 / 19;
 let countries = [];
 export default function AddressManagement(props) {
-  const [prefectures, onPrefecturesChanged] = React.useState([]);
-  const [prefectureLoaded, onPrefectureLoadedChanged] = React.useState(false);
-  const [address, onAddressChanged] = React.useState({});
-  const [address2, onAddress2Changed] = React.useState("");
-  const [name, onNameChanged] = React.useState("");
-  const [zipcode, onZipcodeChanged] = React.useState("");
-  const [prefecture, onPrefectureChanged] = React.useState("");
-  const [add, onAddChanged] = React.useState("");
-  const [buildingName, onBuildingNameChanged] = React.useState("");
-  const [phoneNumber, onPhoneNumberChanged] = React.useState("");
-  const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
-  const [selectedValue, setSelectedValue] = React.useState([]);
-  const [countryHtml, setCountryHtml] = React.useState(<View></View>);
-  const [searchText, setSearchText] = React.useState("");
-  const [showCountry, onShowCountryChanged] = React.useState(false);
-  const [countryCode, setCountryCode] = React.useState("");
+  const [prefectures, onPrefecturesChanged] = useStateIfMounted([]);
+  const [prefectureLoaded, onPrefectureLoadedChanged] = useStateIfMounted(false);
+  const [address, onAddressChanged] = useStateIfMounted({});
+  const [address2, onAddress2Changed] = useStateIfMounted("");
+  const [name, onNameChanged] = useStateIfMounted("");
+  const [zipcode, onZipcodeChanged] = useStateIfMounted("");
+  const [prefecture, onPrefectureChanged] = useStateIfMounted("");
+  const [add, onAddChanged] = useStateIfMounted("");
+  const [buildingName, onBuildingNameChanged] = useStateIfMounted("");
+  const [phoneNumber, onPhoneNumberChanged] = useStateIfMounted("");
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
+  const [selectedValue, setSelectedValue] = useStateIfMounted([]);
+  const [countryHtml, setCountryHtml] = useStateIfMounted(<View></View>);
+  const [searchText, setSearchText] = useStateIfMounted("");
+  const [showCountry, onShowCountryChanged] = useStateIfMounted(false);
+  const [countryCode, setCountryCode] = useStateIfMounted("");
   let controller;
   const isFocused = useIsFocused();
   function handlePhone(value) {

@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -32,10 +33,10 @@ export default function CustomKinujoWord({
   images,
 }) {
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
-  const [localImages, setImages] = React.useState([]);
-  // const [userAuthorityId, onUserAuthorityIdChanged] = React.useState("");
-  const [userAccountType, onUserAccountTypeChanged] = React.useState("");
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [localImages, setImages] = useStateIfMounted([]);
+  // const [userAuthorityId, onUserAuthorityIdChanged] = useStateIfMounted("");
+  const [userAccountType, onUserAccountTypeChanged] = useStateIfMounted("");
   const win = Dimensions.get("window");
   const ratioNext = win.width / 38 / 8;
   React.useEffect(() => {

@@ -12,6 +12,8 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { useIsFocused } from "@react-navigation/native";
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -57,11 +59,11 @@ function getID(url) {
 }
 
 export default function FolderContactList(props) {
-  const [user, onUserChanged] = React.useState({});
-  const [searchTerm, onSearchTermChanged] = React.useState([]);
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  // const [longPressObj, onLongPressObjChanged] = React.useState({});
-  // const [show, onShowChanged] = React.useState(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [searchTerm, onSearchTermChanged] = useStateIfMounted([]);
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  // const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
+  // const [show, onShowChanged] = useStateIfMounted(false);
   function redirectToChat(friendID, friendName) {
     let groupID;
     let groupName;

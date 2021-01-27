@@ -10,10 +10,12 @@ import "firebase/firestore";
 import messaging from "@react-native-firebase/messaging";
 import { firebaseConfig } from "./firebaseConfig";
 import { useNavigation } from "react-navigation-hooks";
+import { enableScreens } from 'react-native-screens';
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 export default function App() {
+  enableScreens();
   return (
     <BackdropProvider>
       <StatusBar barStyle="dark-content" />

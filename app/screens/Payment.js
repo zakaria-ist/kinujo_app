@@ -11,6 +11,8 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -39,8 +41,8 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 export default function Payment(props) {
-  const [card, onCardChanged] = React.useState({});
-  const [spinner, onSpinnerChanged] = React.useState(false);
+  const [card, onCardChanged] = useStateIfMounted({});
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
 
   React.useEffect(() => {}, []);
   return (

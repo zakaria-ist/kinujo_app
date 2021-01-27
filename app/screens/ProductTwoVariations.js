@@ -11,6 +11,8 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
 import {
@@ -59,16 +61,16 @@ export default function ProductTwoVariations({
   pItems,
   onItemsChanged,
 }) {
-  const [invt, hideInvt] = React.useState(false);
-  const [choice, onChoiceChanged] = React.useState("");
-  const [horizontalAxis, onHorizontalAxisChanged] = React.useState("");
-  const [janCode, onJanCodeChanged] = React.useState("");
-  const [stock, onStockChanged] = React.useState("");
-  const [itemName, onItemNameChanged] = React.useState("");
-  const [variationHtml, onProcessVariationHtml] = React.useState(<View></View>);
-  const [horizontalName, onHorizontalNameChanged] = React.useState();
-  const [loaded, onLoaded] = React.useState(false);
-  const [variationDetailsHtml, onProcessVariationDetailsHtml] = React.useState(
+  const [invt, hideInvt] = useStateIfMounted(false);
+  const [choice, onChoiceChanged] = useStateIfMounted("");
+  const [horizontalAxis, onHorizontalAxisChanged] = useStateIfMounted("");
+  const [janCode, onJanCodeChanged] = useStateIfMounted("");
+  const [stock, onStockChanged] = useStateIfMounted("");
+  const [itemName, onItemNameChanged] = useStateIfMounted("");
+  const [variationHtml, onProcessVariationHtml] = useStateIfMounted(<View></View>);
+  const [horizontalName, onHorizontalNameChanged] = useStateIfMounted();
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [variationDetailsHtml, onProcessVariationDetailsHtml] = useStateIfMounted(
     <View></View>
   );
 

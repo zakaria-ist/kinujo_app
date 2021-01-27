@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -29,7 +31,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 25 / 17;
 const ratioKinujo = win.width / 1.6 / 151;
 export default function BankAccountRegistration(props) {
-  const [user, setUser] = React.useState({});
+  const [user, setUser] = useStateIfMounted({});
   setTimeout(function(){
     SplashScreen.hide();
   }, 1000)

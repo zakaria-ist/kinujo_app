@@ -15,6 +15,8 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -57,23 +59,23 @@ let categoryDetails;
 let sellers = [];
 let productsView = {};
 export default function HomeByCategory(props) {
-  const [favoriteText, showFavoriteText] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-  const [userAuthorityId, setUserAuthorityId] = React.useState(0);
-  const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
-  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
-  const [showCategory, onCategoryShow] = React.useState(false);
-  const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
-  const [categoryName, onCategoryName] = React.useState("");
-  const [selected, onSelected] = React.useState("");
+  const [favoriteText, showFavoriteText] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
+  const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
+  const [kinujoHtml, onKinujoHtmlChanged] = useStateIfMounted([]);
+  const [showCategory, onCategoryShow] = useStateIfMounted(false);
+  const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
+  const [categoryName, onCategoryName] = useStateIfMounted("");
+  const [selected, onSelected] = useStateIfMounted("");
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
-  const [productID, onProductIDChanged] = React.useState([]);
-  const [productView, onProductView] = React.useState(0);
-  const [officialProductCount, onOfficialProductCount] = React.useState(0);
-  const [featuredProductCount, onFeaturedProductCount] = React.useState(0);
-  const [sellCount, setSellerCount] = React.useState(0);
+  const [productID, onProductIDChanged] = useStateIfMounted([]);
+  const [productView, onProductView] = useStateIfMounted(0);
+  const [officialProductCount, onOfficialProductCount] = useStateIfMounted(0);
+  const [featuredProductCount, onFeaturedProductCount] = useStateIfMounted(0);
+  const [sellCount, setSellerCount] = useStateIfMounted(0);
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
@@ -287,7 +289,7 @@ export default function HomeByCategory(props) {
     }
     if (type == "reset") {
       onSelected("");
-      request.get("products/").then(function (response) {
+      request.get("simple_products/").then(function (response) {
         let products = response.data;
         products = products.sort((p1, p2) => {
           if (p1.created > p2.created) {
@@ -392,7 +394,7 @@ export default function HomeByCategory(props) {
       onCategoryHtmlChanged(processCategoryHtml(response.data));
     });
     request
-      .get("products/")
+      .get("simple_products/")
       .then(function (response) {
         let products = response.data;
         products.push({

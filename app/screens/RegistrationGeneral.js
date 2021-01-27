@@ -12,6 +12,8 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import Request from "../lib/request";
 import AsyncStorage from "@react-native-community/async-storage";
 import CustomAlert from "../lib/alert";
@@ -40,13 +42,13 @@ const win = Dimensions.get("window");
 const ratioTripleDot = win.width / 23 / 15;
 const ratioKinujo = win.width / 1.6 / 151;
 export default function RegistrationGeneral(props) {
-  const [nickname, onNicknameChanged] = React.useState("");
-  const [password, onPasswordChanged] = React.useState("");
-  const [confirm_password, onConfirmPasswordChanged] = React.useState("");
-  const [phone, onPhoneChanged] = React.useState("");
-  const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
-  const [loaded, onLoaded] = React.useState(false);
+  const [nickname, onNicknameChanged] = useStateIfMounted("");
+  const [password, onPasswordChanged] = useStateIfMounted("");
+  const [confirm_password, onConfirmPasswordChanged] = useStateIfMounted("");
+  const [phone, onPhoneChanged] = useStateIfMounted("");
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   setTimeout(function () {
     SplashScreen.hide();

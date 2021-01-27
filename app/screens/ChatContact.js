@@ -13,6 +13,8 @@ import {
   Platform,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import CheckBox from "@react-native-community/checkbox";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -50,7 +52,7 @@ export default function ChatContact({
   longPress,
   press
 }) {
-  const [contactImage, setContactImage] = React.useState("");
+  const [contactImage, setContactImage] = useStateIfMounted("");
 
   React.useEffect(() => {
     if (contactID) {

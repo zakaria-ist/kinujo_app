@@ -10,6 +10,8 @@ import {
   Image,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import DropDownPicker from "react-native-dropdown-picker";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -35,23 +37,23 @@ const ratioKinujo = win.width / 1.6 / 151;
 import BlackBackArrow from "../assets/CustomComponents/CustomBlackBackArrow";
 import { call } from "react-native-reanimated";
 export default function PasswordReset(props) {
-  const [phone, onPhoneChanged] = React.useState("");
-  const [code, onCodeChanged] = React.useState("");
-  const [password, onPasswordChanged] = React.useState("");
-  const [confirm_password, onConfirmPasswordChanged] = React.useState("");
-  const [spinner, onSpinnerChanged] = React.useState(false);
-  const [confirm, setConfirm] = React.useState(null);
-  const [verficaitonButtonClicked, onVerficaitonButtonClicked] = React.useState(
+  const [phone, onPhoneChanged] = useStateIfMounted("");
+  const [code, onCodeChanged] = useStateIfMounted("");
+  const [password, onPasswordChanged] = useStateIfMounted("");
+  const [confirm_password, onConfirmPasswordChanged] = useStateIfMounted("");
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
+  const [confirm, setConfirm] = useStateIfMounted(null);
+  const [verficaitonButtonClicked, onVerficaitonButtonClicked] = useStateIfMounted(
     false
   );
-  const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [flag, onFlagChanged] = React.useState("");
-  const [triggerTimer, onTriggerTimer] = React.useState(false);
-  const [timer, setTimer] = React.useState(30);
-  const [showResend, onResendShow] = React.useState(false);
-  const [resend, triggerResend] = React.useState(false);
-  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
-  const [loaded, onLoaded] = React.useState(false);
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [flag, onFlagChanged] = useStateIfMounted("");
+  const [triggerTimer, onTriggerTimer] = useStateIfMounted(false);
+  const [timer, setTimer] = useStateIfMounted(30);
+  const [showResend, onResendShow] = useStateIfMounted(false);
+  const [resend, triggerResend] = useStateIfMounted(false);
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   if (!loaded) {
     request.get("country_codes/").then(function (response) {
       let tmpCountry = response.data.map((country) => {

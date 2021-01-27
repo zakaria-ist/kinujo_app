@@ -2089,6 +2089,10 @@ export default function LoginStack() {
           name="FolderMemberSelection"
           component={FolderMemberSelection}
         /> */}
+        <Stack.Screen
+          name="BankAccountRegistration"
+          component={BankAccountRegistration}
+        />
         <Stack.Screen name="HomeStore" component={BottomNavigationStore} />
         <Stack.Screen
           name="ProductInformationAddNew"

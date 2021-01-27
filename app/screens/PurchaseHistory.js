@@ -13,6 +13,8 @@ import {
   SafeAreaView,
   TextInput,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -45,13 +47,13 @@ const ratioSearch = win.width / 24 / 19;
 const ratioCancel = win.width / 25 / 15;
 let userId;
 export default function PurchaseHistory(props) {
-  const [orders, onOrdersChanged] = React.useState({});
-  const [orderHtml, onOrderHtmlChanged] = React.useState([]);
-  const [user, onUserChanged] = React.useState({});
-  const [loaded, onLoaded] = React.useState(false);
-  const [yearHtml, onYearHtmlChanged] = React.useState(<View></View>);
-  const [years, onYearChanged] = React.useState(<View></View>);
-  const [searchText, onSearchTextChanged] = React.useState("");
+  const [orders, onOrdersChanged] = useStateIfMounted({});
+  const [orderHtml, onOrderHtmlChanged] = useStateIfMounted([]);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [yearHtml, onYearHtmlChanged] = useStateIfMounted(<View></View>);
+  const [years, onYearChanged] = useStateIfMounted(<View></View>);
+  const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
   function getProductImages(order) {
     return order.product_jan_code.horizontal.product_variety.product

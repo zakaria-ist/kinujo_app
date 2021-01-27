@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
 import {
@@ -28,29 +30,29 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioProductAddIcon = win.width / 10 / 28;
 export default function ProductInformationAdd(props) {
-  const [user, onUserChanged] = React.useState({});
-  const [productName, onProductNameChanged] = React.useState("");
-  const [brandName, onBrandNameChanged] = React.useState("");
-  const [pr, onPrChanged] = React.useState("");
-  const [productId, onProductIdChanged] = React.useState("");
-  const [productCategory, onProductCategoryChanged] = React.useState("");
-  const [productVariation, onProductVariationChanged] = React.useState("");
-  const [oneItemList, onOneItemList] = React.useState("");
-  const [twoItemList, onTwoItemList] = React.useState("");
-  const [noneItemList, onNoneItemList] = React.useState("");
-  const [publishState, onPublishStateChanged] = React.useState("");
-  const [publishDate, onPublishDateChanged] = React.useState("");
-  const [productStatus, onProductStatusChanged] = React.useState("");
-  const [targetUser, onTargetUserChanged] = React.useState("");
-  const [price, onPriceChanged] = React.useState("");
-  const [storePrice, onStorePriceChanged] = React.useState("");
-  const [shipping, onShippingChanged] = React.useState("");
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [productName, onProductNameChanged] = useStateIfMounted("");
+  const [brandName, onBrandNameChanged] = useStateIfMounted("");
+  const [pr, onPrChanged] = useStateIfMounted("");
+  const [productId, onProductIdChanged] = useStateIfMounted("");
+  const [productCategory, onProductCategoryChanged] = useStateIfMounted("");
+  const [productVariation, onProductVariationChanged] = useStateIfMounted("");
+  const [oneItemList, onOneItemList] = useStateIfMounted("");
+  const [twoItemList, onTwoItemList] = useStateIfMounted("");
+  const [noneItemList, onNoneItemList] = useStateIfMounted("");
+  const [publishState, onPublishStateChanged] = useStateIfMounted("");
+  const [publishDate, onPublishDateChanged] = useStateIfMounted("");
+  const [productStatus, onProductStatusChanged] = useStateIfMounted("");
+  const [targetUser, onTargetUserChanged] = useStateIfMounted("");
+  const [price, onPriceChanged] = useStateIfMounted("");
+  const [storePrice, onStorePriceChanged] = useStateIfMounted("");
+  const [shipping, onShippingChanged] = useStateIfMounted("");
   const [
     productPageDisplayMethod,
     onProductPageDisplayMethodChanged,
-  ] = React.useState("");
-  const [productImages, onProductImagesChanged] = React.useState("");
-  const [productDescription, onProductDescriptionChanged] = React.useState("");
+  ] = useStateIfMounted("");
+  const [productImages, onProductImagesChanged] = useStateIfMounted("");
+  const [productDescription, onProductDescriptionChanged] = useStateIfMounted("");
 
   if (!user.url) {
     AsyncStorage.getItem("user").then(function (url) {

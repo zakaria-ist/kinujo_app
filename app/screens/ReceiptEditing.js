@@ -10,6 +10,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -33,12 +35,12 @@ const ratioKinujo = win.width / 4 / 151;
 
 export default function ReceiptView(props) {
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
-  const [order, onOrderChanged] = React.useState({});
-  const [orderReceipt, onOrderReceiptChanged] = React.useState({});
-  const [loaded, onLoaded] = React.useState(false);
-  const [issueName, onIssueNameChange] = React.useState("");
-  const [oldIssueName, onOldIssueNameChange] = React.useState("");
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [order, onOrderChanged] = useStateIfMounted({});
+  const [orderReceipt, onOrderReceiptChanged] = useStateIfMounted({});
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [issueName, onIssueNameChange] = useStateIfMounted("");
+  const [oldIssueName, onOldIssueNameChange] = useStateIfMounted("");
 
   React.useEffect(() => {
     console.log(props.route.params.url);

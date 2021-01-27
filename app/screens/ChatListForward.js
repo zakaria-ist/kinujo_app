@@ -11,6 +11,8 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CheckBox from "@react-native-community/checkbox";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -122,12 +124,12 @@ export default function ChatList(props) {
   let message = props.route.params;
   let messages = props.route.params.messages;
   const isFocused = useIsFocused();
-  const [show, onShowChanged] = React.useState(false);
-  const [totalUnread, setTotalUnread] = React.useState(false);
-  const [loaded, onLoadedChanged] = React.useState(false);
-  const [chatHtml, onChatHtmlChanged] = React.useState([]);
-  const [longPressObj, onLongPressObjChanged] = React.useState({});
-  const [spinner, onSpinnerChanged] = React.useState(false);
+  const [show, onShowChanged] = useStateIfMounted(false);
+  const [totalUnread, setTotalUnread] = useStateIfMounted(false);
+  const [loaded, onLoadedChanged] = useStateIfMounted(false);
+  const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
+  const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   // if (!isFocused) {
   //   onShowChanged(false);
   // }

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Text, View, TouchableWithoutFeedback } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -16,7 +17,7 @@ export default function CountrySearch({
   icon,
 }) {
   const isFocused = useIsFocused();
-  const [countryCode, setCountryCode] = React.useState("");
+  const [countryCode, setCountryCode] = useStateIfMounted("");
 
   React.useEffect(() => {
     AsyncStorage.getItem("selectedCountry").then((val) => {
