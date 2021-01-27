@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { RadioButton } from "react-native-paper";
 import {
@@ -32,11 +34,11 @@ export default function ProductNoneVariations({
   onItemsChanged,
   type,
 }) {
-  const [invt, hideInvt] = React.useState(false);
-  const [janCode, setJanCode] = React.useState("");
-  const [stock, setStock] = React.useState(0);
-  const [editStock, setEditStock] = React.useState(0);
-  const [id, setId] = React.useState("");
+  const [invt, hideInvt] = useStateIfMounted(false);
+  const [janCode, setJanCode] = useStateIfMounted("");
+  const [stock, setStock] = useStateIfMounted(0);
+  const [editStock, setEditStock] = useStateIfMounted(0);
+  const [id, setId] = useStateIfMounted("");
   React.useEffect(() => {
     if (pItems) {
       setJanCode(pItems.janCode);

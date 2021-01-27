@@ -12,6 +12,8 @@ import {
   ScrollView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import SplashScreen from 'react-native-splash-screen'
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -127,11 +129,11 @@ async function init(props, foreground) {
 }
 
 export default function LoginScreen(props) {
-  const [password, onPasswordChanged] = React.useState("");
-  const [phone, onPhoneChanged] = React.useState("");
-  const [callingCode, onCallingCodeChanged] = React.useState("");
-  const [countryCodeHtml, onCountryCodeHtmlChanged] = React.useState([]);
-  const [loaded, onLoaded] = React.useState(false);
+  const [password, onPasswordChanged] = useStateIfMounted("");
+  const [phone, onPhoneChanged] = useStateIfMounted("");
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   if (!loaded) {
     request.get("country_codes/").then(function (response) {

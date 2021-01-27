@@ -16,6 +16,8 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -59,14 +61,14 @@ export default function SellerProductList(props) {
   const rightSorting = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
-  const [selected, onSelected] = React.useState("");
-  const [favoriteText, showFavoriteText] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-  const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
-  const [userAuthorityId, setUserAuthorityId] = React.useState(0);
-  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
-  const [showCategory, onCategoryShow] = React.useState(false);
-  const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
+  const [selected, onSelected] = useStateIfMounted("");
+  const [favoriteText, showFavoriteText] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
+  const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
+  const [kinujoHtml, onKinujoHtmlChanged] = useStateIfMounted([]);
+  const [showCategory, onCategoryShow] = useStateIfMounted(false);
+  const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
@@ -299,7 +301,7 @@ export default function SellerProductList(props) {
       onCategoryHtmlChanged(processCategoryHtml(response.data));
     });
     request
-      .get("products/")
+      .get("simple_products/")
       .then(function (response) {
         let products = response.data;
         // console.log(products)

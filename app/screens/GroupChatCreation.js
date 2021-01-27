@@ -11,6 +11,8 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -49,10 +51,10 @@ let tmpGroupID;
 let chatRoomID;
 export default function GroupChatCreation(props) {
   const isFocused = useIsFocused();
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [groupName, setGroupName] = React.useState("");
-  const [showGroupPhoto, onShowGroupPhotoChanged] = React.useState(false);
-  const [loaded, onLoaded] = React.useState(false);
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [groupName, setGroupName] = useStateIfMounted("");
+  const [showGroupPhoto, onShowGroupPhotoChanged] = useStateIfMounted(false);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   if (!isFocused) {
     // AsyncStorage.removeItem("ids").then(function () {
     //   tmpUserHtml = [];

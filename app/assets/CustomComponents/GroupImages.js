@@ -6,9 +6,11 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import AsyncStorage from "@react-native-community/async-storage";
 import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
+import CachedImage from 'react-native-expo-cached-image';
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -30,8 +32,8 @@ function getWidth(width, size){
 
 export default function GroupImages({ props, style, width, height, images }) {
   const isFocused = useIsFocused();
-  const [countryCode, setCountryCode] = React.useState("");
-  const [imageHtml, setImageHtml] = React.useState(<View></View>);
+  const [countryCode, setCountryCode] = useStateIfMounted("");
+  const [imageHtml, setImageHtml] = useStateIfMounted(<View></View>);
   React.useEffect(() => {
     let tmpHtml = [];
     if (images) {
@@ -39,7 +41,7 @@ export default function GroupImages({ props, style, width, height, images }) {
         if (tmpHtml.length < 9) {
           if (image) {
             tmpHtml.push(
-              <Image
+              <CachedImage
                 style={{
                   width: getWidth(width, images.length),
                   height: getHeight(width, images.length),

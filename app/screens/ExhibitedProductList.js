@@ -10,6 +10,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
 import {
@@ -140,11 +142,11 @@ function processProductHtml(props, products, status) {
 }
 
 export default function ExhibitedProductList(props) {
-  const [products, onProductsChanged] = React.useState({});
-  const [status, onStatusChanged] = React.useState("published");
-  const [loaded, onLoaded] = React.useState(false);
-  const [productHtml, onProductHtmlChanged] = React.useState(<View></View>);
-  const [user, onUserChanged] = React.useState({});
+  const [products, onProductsChanged] = useStateIfMounted({});
+  const [status, onStatusChanged] = useStateIfMounted("published");
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [productHtml, onProductHtmlChanged] = useStateIfMounted(<View></View>);
+  const [user, onUserChanged] = useStateIfMounted({});
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
 

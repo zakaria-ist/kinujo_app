@@ -17,6 +17,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import RNQRGenerator from "rn-qr-generator";
 import { Buffer } from "buffer";
 import {
@@ -100,7 +102,7 @@ async function buildLink(userId, is_store) {
 export default function QRCode(props) {
   const isFocused = useIsFocused();
   const [inviteShow, setInviteShow] = useState(false);
-  const [user, onUserChanged] = React.useState({});
+  const [user, onUserChanged] = useStateIfMounted({});
   const [popupQR, setPopupQR] = useState(false);
   const [userId, onUserIDChanged] = useState(false);
   const [store, onStoreChanged] = useState(0);
@@ -175,6 +177,7 @@ export default function QRCode(props) {
         showMarker={true}
         reactivate={true}
         reactivateTimeout={5000}
+        buttonPositive={Translate.t("ok")}
         cameraStyle={
           {
             height: heightPercentageToDP("50%")

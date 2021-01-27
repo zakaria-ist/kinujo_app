@@ -11,6 +11,7 @@ import {
   PixelRatio,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import {
   heightPercentageToDP,
   widthPercentageToDP,

@@ -11,6 +11,8 @@ import {
   Animated,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { useIsFocused } from "@react-navigation/native";
 import { Alert } from "react-native";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -55,9 +57,9 @@ let taxObj = {};
 let productLoaded = false;
 let controller;
 export default function Cart(props) {
-  const [cartItemShow, onCartItemShowChanged] = React.useState(true);
-  const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
-  const [cartCount, onCartCountChanged] = React.useState(0);
+  const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
+  const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
+  const [cartCount, onCartCountChanged] = useStateIfMounted(0);
   const cartItemHeight = useRef(new Animated.Value(heightPercentageToDP("50%")))
     .current;
   const cartItemOpacity = useRef(
@@ -70,18 +72,18 @@ export default function Cart(props) {
   const paymentItemOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
-  const [picker, onPickerChanged] = React.useState(1);
-  const [cartHtml, onCartHtmlChanged] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
-  const [subtotal, onSubTotalChanged] = React.useState(0);
-  const [shipping, onShippingChanged] = React.useState(0);
-  const [tax, onTaxChanged] = React.useState(0);
+  const [picker, onPickerChanged] = useStateIfMounted(1);
+  const [cartHtml, onCartHtmlChanged] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [subtotal, onSubTotalChanged] = useStateIfMounted(0);
+  const [shipping, onShippingChanged] = useStateIfMounted(0);
+  const [tax, onTaxChanged] = useStateIfMounted(0);
 
   let userId = 0;
   const isFocused = useIsFocused();
-  const [selected, onSelectedChanged] = React.useState("");
-  const [addressHtml, onAddressHtmlChanged] = React.useState([]);
-  const [dropDownPickerOpen, onDropDownPickerOpen] = React.useState(false);
+  const [selected, onSelectedChanged] = useStateIfMounted("");
+  const [addressHtml, onAddressHtmlChanged] = useStateIfMounted([]);
+  const [dropDownPickerOpen, onDropDownPickerOpen] = useStateIfMounted(false);
   const cartItems = [];
   // if (this.controller.isOpen()) {
   //   onDropDownPickerOpen(true);

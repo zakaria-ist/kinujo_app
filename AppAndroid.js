@@ -16,6 +16,7 @@ import {
   Android,
 } from "react-native-firebase-push-notifications";
 import { cos } from "react-native-reanimated";
+import { enableScreens } from 'react-native-screens';
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -39,6 +40,7 @@ messaging().onMessage((payload) => {
 });
 
 export default function AppAndroid() {
+  enableScreens();
   return (
     <BackdropProvider>
       <StatusBar barStyle="dark-content" />

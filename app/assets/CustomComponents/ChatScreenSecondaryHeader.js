@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -29,7 +30,7 @@ export default function CustomKinujoWord({
   editProfile,
 }) {
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
+  const [user, onUserChanged] = useStateIfMounted({});
   const win = Dimensions.get("window");
   const ratioNext = win.width / 38 / 8;
   React.useEffect(() => {

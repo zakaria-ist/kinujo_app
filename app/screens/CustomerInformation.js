@@ -11,6 +11,8 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -73,16 +75,16 @@ async function buildLink(userId, is_store) {
 }
 export default function CustomerInformation(props) {
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
+  const [user, onUserChanged] = useStateIfMounted({});
   const [inviteShow, setInviteShow] = useState(false);
-  const [firebaseUser, onFirebaseUserChanged] = React.useState({});
-  const [userId, onUserIdChanged] = React.useState("");
-  const [customerId, onCustomerIdChanged] = React.useState("");
-  const [memo, onMemoChanged] = React.useState("");
-  const [modal, onModalChanged] = React.useState(false);
+  const [firebaseUser, onFirebaseUserChanged] = useStateIfMounted({});
+  const [userId, onUserIdChanged] = useStateIfMounted("");
+  const [customerId, onCustomerIdChanged] = useStateIfMounted("");
+  const [memo, onMemoChanged] = useStateIfMounted("");
+  const [modal, onModalChanged] = useStateIfMounted(false);
   const [popupQR, setPopupQR] = useState(false);
   const [storeLink, onStoreLinkChanged] = useState("");
-  const [existsFlag, onExistsFlag] = React.useState(false);
+  const [existsFlag, onExistsFlag] = useStateIfMounted(false);
   const [store, onStoreChanged] = useState(0);
   const [userLink, onUserLinkChanged] = useState("");
 

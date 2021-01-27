@@ -9,6 +9,8 @@ import {
   TextInput,
   Dimensions,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";

@@ -11,6 +11,8 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -110,9 +112,9 @@ function processAddressHtml(props, addresses, status = "") {
 }
 
 export default function ShippingList(props) {
-  const [addresses, onAddressesChanged] = React.useState([]);
-  const [addressHtml, onAddressHtmlChanged] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
+  const [addresses, onAddressesChanged] = useStateIfMounted([]);
+  const [addressHtml, onAddressHtmlChanged] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   function setDefaultAddress(url) {
     AsyncStorage.setItem("defaultAddress", url).then(function () {
       props.navigation.goBack();

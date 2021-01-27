@@ -13,6 +13,8 @@ import {
   Button,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -45,11 +47,11 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 
 export default function Favorite(props) {
-  const [favouriteHtml, onFavouriteHtmlChanged] = React.useState(<View></View>);
-  const [featuredHtml, onFeaturedHtmlChanged] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-  const [showCategory, onCategoryShow] = React.useState(false);
+  const [favouriteHtml, onFavouriteHtmlChanged] = useStateIfMounted(<View></View>);
+  const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [showCategory, onCategoryShow] = useStateIfMounted(false);
   const rightSorting = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;

@@ -11,6 +11,8 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -45,10 +47,10 @@ const win = Dimensions.get("window");
 const ratioProfile = win.width / 9 / 512;
 export default function CreateFolder(props) {
   const isFocused = useIsFocused();
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [folderName, setFolderName] = React.useState("");
-  const [loaded, onLoaded] = React.useState(false);
-  const [friendName, onFriendNameChanged] = React.useState([]);
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [folderName, setFolderName] = useStateIfMounted("");
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [friendName, onFriendNameChanged] = useStateIfMounted([]);
   React.useEffect(() => {
     friendNames = [];
     let routes = props.navigation.dangerouslyGetState().routes;

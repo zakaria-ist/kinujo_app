@@ -19,6 +19,9 @@ import {
   SafeAreaView,
   PixelRatio,
 } from "react-native";
+import dynamicLinks from "@react-native-firebase/dynamic-links";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
 import GroupImages from "../assets/CustomComponents/GroupImages";
@@ -123,21 +126,21 @@ function getTime() {
   );
 }
 export default function ChatScreen(props) {
-  const [shouldShow, setShouldShow] = React.useState(false);
-  const [secretMode, setSecretMode] = React.useState(false);
-  const [showPopUp, onShowPopUpChanged] = React.useState(false);
-  const [loaded, onLoadedChanged] = React.useState(false);
-  const [chatHtml, onChatHtmlChanged] = React.useState([]);
-  const [messages, setMessages] = React.useState("");
+  const [shouldShow, setShouldShow] = useStateIfMounted(false);
+  const [secretMode, setSecretMode] = useStateIfMounted(false);
+  const [showPopUp, onShowPopUpChanged] = useStateIfMounted(false);
+  const [loaded, onLoadedChanged] = useStateIfMounted(false);
+  const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
+  const [messages, setMessages] = useStateIfMounted("");
   const [showEmoji, onShowEmojiChanged] = useState(false);
   const [prevEmoji, setPrevEmoji] = useState("");
   const [showCheckBox, onShowCheckBoxChanged] = useState(false);
-  const [users, onUserChanged] = React.useState("");
-  const [userUrl, onUserUrlChanged] = React.useState("group");
-  const [images, setImages] = React.useState([]);
-  const [friendImage, onFriendImageChanged] = React.useState("");
+  const [users, onUserChanged] = useStateIfMounted("");
+  const [userUrl, onUserUrlChanged] = useStateIfMounted("group");
+  const [images, setImages] = useStateIfMounted([]);
+  const [friendImage, onFriendImageChanged] = useStateIfMounted("");
   const [copiedText, setCopiedText] = useState("");
-  const [multiSelect, setMultiSelect] = React.useState(false);
+  const [multiSelect, setMultiSelect] = useStateIfMounted(false);
   // const [user, processUser] = useState("");
   const [inputBarPosition, setInputBarPosition] = useState(0);
   const scrollViewReference = useRef();
@@ -145,8 +148,8 @@ export default function ChatScreen(props) {
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
   groupType = props.route.params.type;
-  const [longPressObj, onLongPressObjChanged] = React.useState({});
-  const [name, onNameChanged] = React.useState("");
+  const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
+  const [name, onNameChanged] = useStateIfMounted("");
   const insets = useSafeAreaInsets();
   React.useEffect(() => {
     hideEmoji();
@@ -282,7 +285,7 @@ export default function ChatScreen(props) {
   const onRemove = () => {
     setMessages(messages.slice(0, -2));
   };
-  const [textInputHeight, setTextInputHeight] = React.useState(
+  const [textInputHeight, setTextInputHeight] = useStateIfMounted(
     heightPercentageToDP("8%")
   );
   function handleEmojiIconPressed() {

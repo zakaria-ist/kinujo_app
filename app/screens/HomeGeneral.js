@@ -16,6 +16,8 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import SplashScreen from 'react-native-splash-screen'
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
@@ -53,13 +55,13 @@ const win = Dimensions.get("window");
 let kinujoProducts;
 let featuredProducts;
 export default function Home(props) {
-  const [favoriteText, showFavoriteText] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-  const [featuredHtml, onFeaturedHtmlChanged] = React.useState([]);
-  const [userAuthorityId, setUserAuthorityId] = React.useState(0);
-  const [kinujoHtml, onKinujoHtmlChanged] = React.useState([]);
-  const [showCategory, onCategoryShow] = React.useState(false);
-  const [categoryHtml, onCategoryHtmlChanged] = React.useState([]);
+  const [favoriteText, showFavoriteText] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
+  const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
+  const [kinujoHtml, onKinujoHtmlChanged] = useStateIfMounted([]);
+  const [showCategory, onCategoryShow] = useStateIfMounted(false);
+  const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
@@ -363,7 +365,7 @@ export default function Home(props) {
       onCategoryHtmlChanged(processCategoryHtml(response.data));
     });
     request
-      .get("products/")
+      .get("simple_products/")
       .then(function (response) {
         let products = response.data;
         // console.log(products)

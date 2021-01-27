@@ -12,6 +12,8 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Select } from "react-native-propel-kit";
@@ -62,9 +64,9 @@ let defaultLanguage = Localization.locale;
 let controller;
 export default function SettingStore(props) {
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
-  const [controllerState, onControllerStateChanged] = React.useState(false);
-  const [state, setState] = React.useState(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [controllerState, onControllerStateChanged] = useStateIfMounted(false);
+  const [state, setState] = useStateIfMounted(false);
   async function onValueChanged(language) {
     switch (language.value) {
       case "ja":

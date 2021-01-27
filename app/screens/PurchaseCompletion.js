@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -20,7 +22,7 @@ import Request from "../lib/request";
 const request = new Request();
 
 export default function PurchaseCompletion(props) {
-  const [user, setUser] = React.useState({});
+  const [user, setUser] = useStateIfMounted({});
   React.useEffect(() => {
     AsyncStorage.getItem("user").then((url) => {
       request.get(url).then((response) => {

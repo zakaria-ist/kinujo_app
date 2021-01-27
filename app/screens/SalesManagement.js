@@ -9,6 +9,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
 import * as Localization from "expo-localization";
@@ -138,23 +140,23 @@ let salesProducts = [];
 
 export default function SalesManagement(props) {
   const isFocused = useIsFocused();
-  const [status, onStatusChanged] = React.useState("commission");
-  const [sales, onSalesChanged] = React.useState({});
-  const [saleHtml, onSaleHtmlChanged] = React.useState(<View></View>);
-  const [commissions, onCommissionsChanged] = React.useState({});
-  const [date, onDateChange] = React.useState(new Date());
-  const [placeholderDate, onPlaceHolderDate] = React.useState(
+  const [status, onStatusChanged] = useStateIfMounted("commission");
+  const [sales, onSalesChanged] = useStateIfMounted({});
+  const [saleHtml, onSaleHtmlChanged] = useStateIfMounted(<View></View>);
+  const [commissions, onCommissionsChanged] = useStateIfMounted({});
+  const [date, onDateChange] = useStateIfMounted(new Date());
+  const [placeholderDate, onPlaceHolderDate] = useStateIfMounted(
     year + "年" + month + "月"
   );
-  const [commissionHtml, onComissionHtmlChanged] = React.useState(
+  const [commissionHtml, onComissionHtmlChanged] = useStateIfMounted(
     <View></View>
   );
-  const [user, onUserChanged] = React.useState({});
-  const [saleLoaded, onSaleLoaded] = React.useState(false);
-  const [commissionLoaded, onCommissionLoaded] = React.useState(false);
-  const [totalCommission, onTotalCommissionChanged] = React.useState(0);
-  const [totalSale, onTotalSaleChanged] = React.useState(0);
-  const [total, onTotalChanged] = React.useState(0);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [saleLoaded, onSaleLoaded] = useStateIfMounted(false);
+  const [commissionLoaded, onCommissionLoaded] = useStateIfMounted(false);
+  const [totalCommission, onTotalCommissionChanged] = useStateIfMounted(0);
+  const [totalSale, onTotalSaleChanged] = useStateIfMounted(0);
+  const [total, onTotalChanged] = useStateIfMounted(0);
 
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {

@@ -11,6 +11,8 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -43,9 +45,9 @@ let tmpFriend = [];
 let tmpFriendIds = [];
 let users = [];
 export default function FolderMemberSelection(props) {
-  const [searchText, onSearchTextChanged] = React.useState("");
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
+  const [searchText, onSearchTextChanged] = useStateIfMounted("");
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
     ids = [];

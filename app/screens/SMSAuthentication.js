@@ -12,6 +12,8 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import Spinner from "react-native-loading-spinner-overlay";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -42,9 +44,9 @@ auth().setLanguageCode(Localization.locale);
 export default function SMSAuthentication(props) {
   const win = Dimensions.get("window");
   const ratioKinujo = win.width / 1.6 / 151;
-  const [code, onCodeChanged] = React.useState("");
-  const [confirm, setConfirm] = React.useState(null);
-  const [spinner, onSpinnerChanged] = React.useState(false);
+  const [code, onCodeChanged] = useStateIfMounted("");
+  const [confirm, setConfirm] = useStateIfMounted(null);
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
 
   async function signInWithPhoneNumber(phoneNumber) {
     // console.log(phoneNumber);

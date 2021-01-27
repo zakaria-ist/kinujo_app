@@ -13,6 +13,8 @@ import {
   Platform,
   Modal,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import Share from "react-native-share";
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import { Picker } from "@react-native-picker/picker";
@@ -60,25 +62,25 @@ let janCodes = {};
 let janCodeNames = {};
 
 export default function HomeStoreList(props) {
-  const [name, setName] = React.useState("");
-  const [favourite, setFavourite] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
-  const [userAuthorityID, onUserAuthorityIDChanged] = React.useState(0);
-  const [product, onProductChanged] = React.useState({});
-  const [selectedJanCode, onSelectedJanCodeChanged] = React.useState(null);
-  const [selectedName, onSelectedNameChanged] = React.useState("");
-  const [images, onImagesChanged] = React.useState({});
-  const [show, onShowChanged] = React.useState({});
-  const [showText, onShowText] = React.useState(false);
-  const [time, setTimePassed] = React.useState(false);
-  const [XsShow, onXsShow] = React.useState(true);
-  const [sShow, onSShow] = React.useState(true);
-  const [quantity, onQuantityChanged] = React.useState(1);
-  const [mShow, onMShow] = React.useState(true);
-  const [popupHtml, onPopupHtmlChanged] = React.useState([]);
-  const [cartCount, onCartCountChanged] = React.useState(0);
-  // const [userAuthorityId, setUserAuthorityId] = React.useState(0);
-  const [paymentMethodShow, onPaymentMethodShow] = React.useState(true);
+  const [name, setName] = useStateIfMounted("");
+  const [favourite, setFavourite] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [userAuthorityID, onUserAuthorityIDChanged] = useStateIfMounted(0);
+  const [product, onProductChanged] = useStateIfMounted({});
+  const [selectedJanCode, onSelectedJanCodeChanged] = useStateIfMounted(null);
+  const [selectedName, onSelectedNameChanged] = useStateIfMounted("");
+  const [images, onImagesChanged] = useStateIfMounted({});
+  const [show, onShowChanged] = useStateIfMounted({});
+  const [showText, onShowText] = useStateIfMounted(false);
+  const [time, setTimePassed] = useStateIfMounted(false);
+  const [XsShow, onXsShow] = useStateIfMounted(true);
+  const [sShow, onSShow] = useStateIfMounted(true);
+  const [quantity, onQuantityChanged] = useStateIfMounted(1);
+  const [mShow, onMShow] = useStateIfMounted(true);
+  const [popupHtml, onPopupHtmlChanged] = useStateIfMounted([]);
+  const [cartCount, onCartCountChanged] = useStateIfMounted(0);
+  // const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
+  const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
   const XSOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
   const sOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
@@ -417,7 +419,7 @@ export default function HomeStoreList(props) {
   }, [isFocused]);
   const { width } = Dimensions.get("window");
   const { height } = Dimensions.get("window");
-  const [favoriteText, showFavoriteText] = React.useState(false);
+  const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const ratioFavorite = width / 29 / 12;
   return (
     <SafeAreaView>
@@ -586,7 +588,8 @@ export default function HomeStoreList(props) {
                 }}
               >
                 <Image
-                  style={{ width: RFValue(25), height: RFValue(25) }}
+                  style={{ width: RFValue(25), height: RFValue(25), 
+                    resizeMode: 'contain' }}
                   source={require("../assets/Images/share.png")}
                 />
               </TouchableWithoutFeedback>

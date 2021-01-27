@@ -9,7 +9,9 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
 import { Colors } from "../assets/Colors.js";
+import CachedImage from 'react-native-expo-cached-image';
 import {
   widthPercentageToDP,
   heightPercentageToDP,

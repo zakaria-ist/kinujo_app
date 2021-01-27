@@ -1,0 +1,8 @@
+/* 
+  InfoPlist.strings
+  kinujo
+
+  Created by Lee Guan Chuan on 21/01/2021.
+  
+*/
+NSCameraUsageDescription = "このアプリでは、QRコードをスキャンして写真をアップロードするためにカメラにアクセスする必要があります。";

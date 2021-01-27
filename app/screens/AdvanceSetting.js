@@ -10,6 +10,8 @@ import {
   TextInput,
   Modal,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -75,16 +77,16 @@ const updateDeleteUser = (ownUserID, chatPersonID) => {
     });
 };
 export default function AdvanceSetting(props) {
-  const [userId, onUserIdChanged] = React.useState("");
-  const [customerId, onCustomerIdChanged] = React.useState("");
-  const [customer, setCustomer] = React.useState({});
-  const [firebaseUser, onFirebaseUserChanged] = React.useState({});
-  const [secretMode, onSecretModeChanged] = React.useState(false);
-  const [blockMode, onBlockModeChanged] = React.useState(false);
-  const [editDisplayName, onEditDisplayNameChanged] = React.useState(false);
-  const [displayName, onDisplayNameChanged] = React.useState("");
-  const [firstLoaded, onFirstLoadedChanged] = React.useState(false);
-  const [showDeletePopUp, onShowDeletePopUp] = React.useState(false);
+  const [userId, onUserIdChanged] = useStateIfMounted("");
+  const [customerId, onCustomerIdChanged] = useStateIfMounted("");
+  const [customer, setCustomer] = useStateIfMounted({});
+  const [firebaseUser, onFirebaseUserChanged] = useStateIfMounted({});
+  const [secretMode, onSecretModeChanged] = useStateIfMounted(false);
+  const [blockMode, onBlockModeChanged] = useStateIfMounted(false);
+  const [editDisplayName, onEditDisplayNameChanged] = useStateIfMounted(false);
+  const [displayName, onDisplayNameChanged] = useStateIfMounted("");
+  const [firstLoaded, onFirstLoadedChanged] = useStateIfMounted(false);
+  const [showDeletePopUp, onShowDeletePopUp] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
     if (!isFocused) {

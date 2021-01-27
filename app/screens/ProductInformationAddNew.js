@@ -15,6 +15,8 @@ import {
   TouchableWithoutFeedback,
   Platform,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
 import { RadioButton } from "react-native-paper";
@@ -63,34 +65,34 @@ let choices = [];
 export default function ProductInformationAddNew(props) {
   const scrollViewReference = React.useRef();
   const isFocused = useIsFocused();
-  const [user, onUserChanged] = React.useState({});
-  const [productName, onProductNameChanged] = React.useState("");
-  const [noneVariationItems, onNoneVariationItemsChanged] = React.useState([]);
-  const [oneVariationItems, onOneVariationItemsChanged] = React.useState([]);
-  const [twoVariationItems, onTwoVariationItemsChanged] = React.useState([]);
-  const [brandName, onBrandNameChanged] = React.useState("");
-  const [pr, onPrChanged] = React.useState("");
-  const [productId, onProductIdChanged] = React.useState("");
-  const [productCategory, onProductCategoryChanged] = React.useState("");
-  const [productVariation, onProductVariationChanged] = React.useState("none");
-  const [publishState, onPublishStateChanged] = React.useState("");
-  const [publishDate, onPublishDateChanged] = React.useState("");
-  const [productStatus, onProductStatusChanged] = React.useState("");
-  const [targetUser, onTargetUserChanged] = React.useState("");
-  const [price, onPriceChanged] = React.useState("");
-  const [storePrice, onStorePriceChanged] = React.useState("");
-  const [shipping, onShippingChanged] = React.useState("");
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [productName, onProductNameChanged] = useStateIfMounted("");
+  const [noneVariationItems, onNoneVariationItemsChanged] = useStateIfMounted([]);
+  const [oneVariationItems, onOneVariationItemsChanged] = useStateIfMounted([]);
+  const [twoVariationItems, onTwoVariationItemsChanged] = useStateIfMounted([]);
+  const [brandName, onBrandNameChanged] = useStateIfMounted("");
+  const [pr, onPrChanged] = useStateIfMounted("");
+  const [productId, onProductIdChanged] = useStateIfMounted("");
+  const [productCategory, onProductCategoryChanged] = useStateIfMounted("");
+  const [productVariation, onProductVariationChanged] = useStateIfMounted("none");
+  const [publishState, onPublishStateChanged] = useStateIfMounted("");
+  const [publishDate, onPublishDateChanged] = useStateIfMounted("");
+  const [productStatus, onProductStatusChanged] = useStateIfMounted("");
+  const [targetUser, onTargetUserChanged] = useStateIfMounted("");
+  const [price, onPriceChanged] = useStateIfMounted("");
+  const [storePrice, onStorePriceChanged] = useStateIfMounted("");
+  const [shipping, onShippingChanged] = useStateIfMounted("");
   const [
     productPageDisplayMethod,
     onProductPageDisplayMethodChanged,
-  ] = React.useState("");
-  const [productImages, onProductImagesChanged] = React.useState([]);
-  const [productImageHtml, onProductImageHtmlChanged] = React.useState([]);
-  const [productDescription, onProductDescriptionChanged] = React.useState("");
-  const [spinner, onSpinnerChanged] = React.useState(false);
-  const [product, onProductChanged] = React.useState(false);
-  const [productCategories, onProductCategoriesChanged] = React.useState([]);
-  const [show, setShow] = React.useState(false);
+  ] = useStateIfMounted("");
+  const [productImages, onProductImagesChanged] = useStateIfMounted([]);
+  const [productImageHtml, onProductImageHtmlChanged] = useStateIfMounted([]);
+  const [productDescription, onProductDescriptionChanged] = useStateIfMounted("");
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
+  const [product, onProductChanged] = useStateIfMounted(false);
+  const [productCategories, onProductCategoriesChanged] = useStateIfMounted([]);
+  const [show, setShow] = useStateIfMounted(false);
   const onChange = (event, selectedDate) => {
     if (selectedDate) {
       const currentDate = selectedDate;

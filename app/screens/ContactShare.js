@@ -12,6 +12,8 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -113,9 +115,9 @@ export default function ContactShare(props) {
     });
     return tmpUserHtml;
   }
-  const [userHtml, onUserHtmlChanged] = React.useState(<View></View>);
-  const [loaded, onLoaded] = React.useState(false);
-  const [user, onUserChanged] = React.useState({});
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [loaded, onLoaded] = useStateIfMounted(false);
+  const [user, onUserChanged] = useStateIfMounted({});
 
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {

@@ -11,6 +11,8 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import { Colors } from "../assets/Colors";
@@ -39,8 +41,8 @@ const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 19 / 19;
 
 export default function FriendSearch(props) {
-  const [searchText, onSearchTextChanged] = React.useState("");
-  const [friendHtml, onFriendHtmlChanged] = React.useState(<View></View>);
+  const [searchText, onSearchTextChanged] = useStateIfMounted("");
+  const [friendHtml, onFriendHtmlChanged] = useStateIfMounted(<View></View>);
   AsyncStorage.getItem("user").then(function (url) {
     let urls = url.split("/");
     urls = urls.filter((url) => {

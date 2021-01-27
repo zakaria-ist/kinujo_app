@@ -14,6 +14,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
 } from "react-native";
+import { useStateIfMounted } from "use-state-if-mounted";
+import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -35,19 +37,19 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 let controller;
 export default function BankAccountRegistration(props) {
-  const [financialAccount, onFinancialAccountChanged] = React.useState({
+  const [financialAccount, onFinancialAccountChanged] = useStateIfMounted({
     financial_name: "test",
   });
-  const [financialName, onFinancialNameChanged] = React.useState("");
-  const [branchName, onBranchNameChanged] = React.useState("");
-  const [accountType, onAccountTypeChanged] = React.useState("1");
-  const [accountNumber, onAccountNumberChanged] = React.useState("");
-  const [accountHolder, onAccountHolderChanged] = React.useState("");
-  const [bankCode, onBankCodeChanged] = React.useState("");
-  const [branchCode, onBranckCodeChanged] = React.useState("");
-  const [loaded, onLoaded] = React.useState("");
-  const [user, onUserChanged] = React.useState({});
-  const [financialUrl, setUrl] = React.useState({});
+  const [financialName, onFinancialNameChanged] = useStateIfMounted("");
+  const [branchName, onBranchNameChanged] = useStateIfMounted("");
+  const [accountType, onAccountTypeChanged] = useStateIfMounted("1");
+  const [accountNumber, onAccountNumberChanged] = useStateIfMounted("");
+  const [accountHolder, onAccountHolderChanged] = useStateIfMounted("");
+  const [bankCode, onBankCodeChanged] = useStateIfMounted("");
+  const [branchCode, onBranckCodeChanged] = useStateIfMounted("");
+  const [loaded, onLoaded] = useStateIfMounted("");
+  const [user, onUserChanged] = useStateIfMounted({});
+  const [financialUrl, setUrl] = useStateIfMounted({});
   const isFocused = useIsFocused();
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
