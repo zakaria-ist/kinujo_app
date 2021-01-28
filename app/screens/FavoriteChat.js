@@ -11,6 +11,7 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
@@ -70,45 +71,49 @@ function getDate(string) {
 }
 
 async function getDetail(ownId, data) {
-  if (data.type && data.type == "group") {
-    return {
-      name: data.groupName,
-      image: "",
-    };
-  }
-  if (data.users.length > 2) {
-    return {
-      name: data.groupName,
-      image: "",
-    };
-  }
-
-  let users = data.users.filter((user) => {
-    return user != ownId;
-  });
-  let snapShot = await db
-    .collection("users")
-    .doc(ownId)
-    .collection("FavoriteChat")
-    .get();
-
-  firebaseName = "";
-  snapShot.forEach((docRef) => {
-    if (docRef.data().displayName && docRef.id == users) {
-      console.log(docRef.data());
-      firebaseName = docRef.data().displayName;
+  try{
+    if (data.type && data.type == "group") {
+      return {
+        name: data.groupName,
+        image: "",
+      };
     }
-  });
-
-  if (users.length > 0) {
-    let user = users[0];
-    user = await request.get("profiles/" + user);
-    user = user.data;
-    djangoName = user.nickname;
-    return {
-      name: firebaseName ? firebaseName : djangoName,
-      image: user.image ? user.image.image : "",
-    };
+    if (data.users.length > 2) {
+      return {
+        name: data.groupName,
+        image: "",
+      };
+    }
+  
+    let users = data.users.filter((user) => {
+      return user != ownId;
+    });
+    let snapShot = await db
+      .collection("users")
+      .doc(ownId)
+      .collection("FavoriteChat")
+      .get();
+  
+    firebaseName = "";
+    snapShot.forEach((docRef) => {
+      if (docRef.data().displayName && docRef.id == users) {
+        console.log(docRef.data());
+        firebaseName = docRef.data().displayName;
+      }
+    });
+  
+    if (users.length > 0) {
+      let user = users[0];
+      user = await request.get("profiles/" + user);
+      user = user.data;
+      djangoName = user.nickname;
+      return {
+        name: firebaseName ? firebaseName : djangoName,
+        image: user.image ? user.image.image : "",
+      };
+    }
+  }catch(e){
+    
   }
   return {
     name: "",
@@ -116,6 +121,7 @@ async function getDetail(ownId, data) {
   };
 }
 
+let unsubscribe = null;
 export default function FavoriteChat(props) {
   const isFocused = useIsFocused();
   const [show, onShowChanged] = useStateIfMounted(false);
@@ -406,6 +412,44 @@ export default function FavoriteChat(props) {
     });
     setTotalUnread(unreadMessage);
   }
+
+  async function processQuerySnapshot(querySnapShot){
+    let tmpSnapshots = []
+    querySnapShot.forEach((snapShot) => {
+      tmpSnapshots.push(snapShot);
+    });
+
+    for(let i=0; i<tmpSnapshots.length; i++){
+      let snapShot = tmpSnapshots[i];
+      if (snapShot && snapShot.exists) {
+        if (snapShot.data()["favourite_" + ownUserID]) {
+          let tmpChats = chats.filter((chat) => {
+            return chat.id == snapShot.id;
+          });
+          if (tmpChats.length == 0) {
+            getDetail(ownUserID, snapShot.data()).then(function (detail) {
+              chats.push({
+                id: snapShot.id,
+                data: snapShot.data(),
+                name: detail.name,
+                image: detail.image,
+              });
+              processChat(chats, ownUserID);
+            });
+          } else {
+            chats = chats.map((chat) => {
+              if (chat.id == snapShot.id) {
+                chat.data = snapShot.data();
+              }
+              return chat;
+            });
+            processChat(chats, ownUserID);
+          }
+        }
+      }
+    }
+  }
+
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
     let urls = url.split("/");
@@ -414,53 +458,34 @@ export default function FavoriteChat(props) {
     });
     // onChatHtmlChanged([]);
     ownUserID = urls[urls.length - 1];
-    const unsubscribe = chatRef
+    this.unsub = chatRef
       .where("users", "array-contains", String(ownUserID))
       .onSnapshot((querySnapShot) => {
-        querySnapShot.forEach((snapShot) => {
-          if (snapShot && snapShot.exists) {
-            if (snapShot.data()["favourite_" + ownUserID]) {
-              let tmpChats = chats.filter((chat) => {
-                return chat.id == snapShot.id;
-              });
-              if (tmpChats.length == 0) {
-                getDetail(ownUserID, snapShot.data()).then(function (detail) {
-                  chats.push({
-                    id: snapShot.id,
-                    data: snapShot.data(),
-                    name: detail.name,
-                    image: detail.image,
-                  });
-                  processChat(chats, ownUserID);
-                });
-              } else {
-                chats = chats.map((chat) => {
-                  if (chat.id == snapShot.id) {
-                    chat.data = snapShot.data();
-                  }
-                  return chat;
-                });
-                processChat(chats, ownUserID);
-              }
-            }
-          }
-        });
+        processQuerySnapshot(querySnapShot)
       });
     return unsubscribe;
   }
 
   React.useEffect(() => {
-    let unsubscribe;
-    chats = [];
-    firstLoad().then((unsub) => {
-      unsubscribe = unsub;
+    if(!isFocused){
+      if(this.unsub){
+        this.unsub();
+      }
+    }
+
+    InteractionManager.runAfterInteractions(() => {
+      gUnsubscribe = null
+      chats = [];
+      firstLoad().then((unsub) => {
+        gUnsubscribe = unsub;
+      });
     });
 
     return function () {
       chats = [];
       onChatHtmlChanged([]);
-      if (unsubscribe) {
-        unsubscribe();
+      if (gUnsubscribe) {
+        gUnsubscribe();
       }
     };
   }, [isFocused]);

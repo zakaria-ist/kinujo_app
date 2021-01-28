@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
+import { InteractionManager } from 'react-native';
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -42,21 +43,24 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = useStateIfMounted({});
   const [userAuthorityID, onUserAuthorityIDChanged] = useStateIfMounted(0);
-  React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      request.get(url).then((response) => {
-        onUserChanged(response.data);
-        onUserAuthorityIDChanged(response.data.authority.id);
 
-        const subscriber = db
-          .collection("users")
-          .doc(String(response.data.id))
-          .collection("carts")
-          .get()
-          .then((querySnapShot) => {
-            onCartChanged(0);
-            onCartChanged(querySnapShot.docs.length);
-          });
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        request.get(url).then((response) => {
+          onUserChanged(response.data);
+          onUserAuthorityIDChanged(response.data.authority.id);
+  
+          const subscriber = db
+            .collection("users")
+            .doc(String(response.data.id))
+            .collection("carts")
+            .get()
+            .then((querySnapShot) => {
+              onCartChanged(0);
+              onCartChanged(querySnapShot.docs.length);
+            });
+        });
       });
     });
   }, [isFocused]);

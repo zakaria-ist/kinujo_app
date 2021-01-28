@@ -19,6 +19,7 @@ import {
   SafeAreaView,
   PixelRatio,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -132,17 +133,17 @@ export default function ChatScreen(props) {
   const [loaded, onLoadedChanged] = useStateIfMounted(false);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
   const [messages, setMessages] = useStateIfMounted("");
-  const [showEmoji, onShowEmojiChanged] = useState(false);
-  const [prevEmoji, setPrevEmoji] = useState("");
-  const [showCheckBox, onShowCheckBoxChanged] = useState(false);
+  const [showEmoji, onShowEmojiChanged] = useStateIfMounted(false);
+  const [prevEmoji, setPrevEmoji] = useStateIfMounted("");
+  const [showCheckBox, onShowCheckBoxChanged] = useStateIfMounted(false);
   const [users, onUserChanged] = useStateIfMounted("");
   const [userUrl, onUserUrlChanged] = useStateIfMounted("group");
   const [images, setImages] = useStateIfMounted([]);
   const [friendImage, onFriendImageChanged] = useStateIfMounted("");
-  const [copiedText, setCopiedText] = useState("");
+  const [copiedText, setCopiedText] = useStateIfMounted("");
   const [multiSelect, setMultiSelect] = useStateIfMounted(false);
-  // const [user, processUser] = useState("");
-  const [inputBarPosition, setInputBarPosition] = useState(0);
+  // const [user, processUser] = useStateIfMounted("");
+  const [inputBarPosition, setInputBarPosition] = useStateIfMounted(0);
   const scrollViewReference = useRef();
   const isFocused = useIsFocused();
   groupID = props.route.params.groupID;
@@ -1198,7 +1199,7 @@ export default function ChatScreen(props) {
                   onChangeText={(value) => setMessages(value)}
                   placeholder="Type a message"
                   style={{
-                    fontSize: RFValue(9.5),
+                    fontSize: RFValue(15),
                     width: widthPercentageToDP("15%"),
                     flexGrow: 1,
                     color: "black",

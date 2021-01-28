@@ -155,7 +155,7 @@ export default function AdvanceSetting(props) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <CustomHeader
         text="详细设定"
         onBack={() => {
@@ -232,7 +232,7 @@ export default function AdvanceSetting(props) {
         <View style={styles.tabContainer}>
           <Text style={styles.textInTabs}>Secret mode</Text>
           <Switch
-            trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
+            trackColor={{ true: Colors.F0EEE9, false: Colors.white }}
             thumbColor={secretMode ? Colors.D7CCA6 : "grey"}
             style={{
               position: "absolute",

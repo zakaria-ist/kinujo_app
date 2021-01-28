@@ -76,17 +76,17 @@ async function buildLink(userId, is_store) {
 export default function CustomerInformation(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = useStateIfMounted({});
-  const [inviteShow, setInviteShow] = useState(false);
+  const [inviteShow, setInviteShow] = useStateIfMounted(false);
   const [firebaseUser, onFirebaseUserChanged] = useStateIfMounted({});
   const [userId, onUserIdChanged] = useStateIfMounted("");
   const [customerId, onCustomerIdChanged] = useStateIfMounted("");
   const [memo, onMemoChanged] = useStateIfMounted("");
   const [modal, onModalChanged] = useStateIfMounted(false);
-  const [popupQR, setPopupQR] = useState(false);
-  const [storeLink, onStoreLinkChanged] = useState("");
+  const [popupQR, setPopupQR] = useStateIfMounted(false);
+  const [storeLink, onStoreLinkChanged] = useStateIfMounted("");
   const [existsFlag, onExistsFlag] = useStateIfMounted(false);
-  const [store, onStoreChanged] = useState(0);
-  const [userLink, onUserLinkChanged] = useState("");
+  const [store, onStoreChanged] = useStateIfMounted(0);
+  const [userLink, onUserLinkChanged] = useStateIfMounted("");
 
   React.useEffect(() => {
     setPopupQR(false);

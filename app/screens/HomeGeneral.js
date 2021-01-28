@@ -16,6 +16,7 @@ import {
   TextInput,
   Platform,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import SplashScreen from 'react-native-splash-screen'
@@ -80,19 +81,21 @@ export default function Home(props) {
       }
     });
   React.useEffect(() => {
-    AsyncStorage.getItem("product").then((product_id) => {
-      AsyncStorage.removeItem("product").then(() => {
-        let tmpProductId = product_id;
-        if (tmpProductId) {
-          let apiUrl = request.getApiUrl() + "products/" + tmpProductId;
-          props.navigation.navigate("HomeStoreList", {
-            url: apiUrl,
-          });
-        }
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("product").then((product_id) => {
+        AsyncStorage.removeItem("product").then(() => {
+          let tmpProductId = product_id;
+          if (tmpProductId) {
+            let apiUrl = request.getApiUrl() + "products/" + tmpProductId;
+            props.navigation.navigate("HomeStoreList", {
+              url: apiUrl,
+            });
+          }
+        });
       });
+  
+      AsyncStorage.removeItem("product");
     });
-
-    AsyncStorage.removeItem("product");
   }, []);
 
   React.useEffect(() => {
@@ -187,7 +190,7 @@ export default function Home(props) {
           name={product.name}
           seller={product.user.shop_name}
           price={
-            (user.is_seller
+            (user.is_seller && user.is_approved
               ? format.separator(product.store_price)
               : format.separator(product.price)) + " 円"
           }
@@ -270,7 +273,7 @@ export default function Home(props) {
           name={product.name}
           seller={product.user.shop_name}
           price={
-            (user.is_seller
+            (user.is_seller && user.is_approved
               ? format.separator(product.store_price)
               : format.separator(product.price)) + " 円"
           }
@@ -330,20 +333,68 @@ export default function Home(props) {
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
-
-    setTimeout(function(){
+    InteractionManager.runAfterInteractions(() => {
       SplashScreen.hide();
-    }, 1000)
     
-    onFeaturedHtmlChanged([]);
-    onKinujoHtmlChanged([]);
-    requestUserPermission();
-    AsyncStorage.getItem("user").then(function (url) {
+      // onFeaturedHtmlChanged([]);
+      // onKinujoHtmlChanged([]);
+      requestUserPermission();
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            setUserAuthorityId(response.data.authority.id);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
+      request.get("product_categories/").then(function (response) {
+        onCategoryHtmlChanged(processCategoryHtml(response.data));
+      });
       request
-        .get(url)
+        .get("simple_products/")
         .then(function (response) {
-          onUserChanged(response.data);
-          setUserAuthorityId(response.data.authority.id);
+          let products = response.data;
+          // console.log(products)
+          products = products.sort((p1, p2) => {
+            if (p1.created > p2.created) {
+              return -1;
+            }
+            return 1;
+          });
+  
+          products = products.filter((product) => {
+            let date = new Date(product.is_opened);
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0
+            );
+          });
+  
+          kinujoProducts = products.filter((product) => {
+            return product.user.authority.id == 1;
+          });
+          featuredProducts = products.filter((product) => {
+            return product.user.authority.id != 1;
+          });
+          onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
+          onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
         })
         .catch(function (error) {
           if (
@@ -361,55 +412,6 @@ export default function Home(props) {
           }
         });
     });
-    request.get("product_categories/").then(function (response) {
-      onCategoryHtmlChanged(processCategoryHtml(response.data));
-    });
-    request
-      .get("simple_products/")
-      .then(function (response) {
-        let products = response.data;
-        // console.log(products)
-        products = products.sort((p1, p2) => {
-          if (p1.created > p2.created) {
-            return -1;
-          }
-          return 1;
-        });
-
-        products = products.filter((product) => {
-          let date = new Date(product.is_opened);
-          return (
-            product.is_opened == 1 &&
-            new Date() > date &&
-            product.is_hidden == 0 &&
-            product.is_draft == 0
-          );
-        });
-
-        kinujoProducts = products.filter((product) => {
-          return product.user.authority.id == 1;
-        });
-        featuredProducts = products.filter((product) => {
-          return product.user.authority.id != 1;
-        });
-        onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
-        onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
-      });
   }, [isFocused]);
   function showCategoryAnimation() {
     onCategoryShow(true);

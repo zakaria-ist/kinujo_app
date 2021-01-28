@@ -11,6 +11,7 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
@@ -74,62 +75,68 @@ function getDate(string) {
 }
 
 async function getDetail(ownId, data) {
-  if (data.type && data.type == "group") {
-    images = await request.post("user/images", {
-      users: data.users,
-    });
-    return {
-      name: data.groupName,
-      images: images.data.images,
-    };
-  }
-  if (data.users.length > 2) {
-    images = await request.post("user/images", {
-      users: data.users,
-    });
-    return {
-      name: data.groupName,
-      images: images.data.images,
-    };
-  }
-
-  let users = data.users.filter((user) => {
-    return user != ownId;
-  });
-  let snapShot = await db
-    .collection("users")
-    .doc(ownId)
-    .collection("customers")
-    .get();
-
-  firebaseName = "";
-  let isBlock = false;
-  let isHide = false;
-  snapShot.forEach((docRef) => {
-    if (docRef.data().displayName && docRef.id == JSON.parse(users)) {
-      firebaseName = docRef.data().displayName;
-      isBlock = docRef.data().blockMode ? true : false;
-      isHide = docRef.data().secretMode ? true : false;
+  try{
+    if (data.type && data.type == "group") {
+      images = await request.post("user/images", {
+        users: data.users,
+      });
+      return {
+        name: data.groupName,
+        images: images.data.images,
+      };
     }
-  });
+    if (data.users.length > 2) {
+      images = await request.post("user/images", {
+        users: data.users,
+      });
+      return {
+        name: data.groupName,
+        images: images.data.images,
+      };
+    }
 
-  if (users.length > 0) {
-    let user = users[0];
-    user = await request.get("profiles/" + user);
-    user = user.data;
-    djangoName = user.nickname;
-    return {
-      name: firebaseName ? firebaseName : djangoName,
-      images: [user.image ? user.image.image : ""],
-      block: isBlock,
-      hide: isHide,
-    };
+    let users = data.users.filter((user) => {
+      return user != ownId;
+    });
+    let snapShot = await db
+      .collection("users")
+      .doc(ownId)
+      .collection("customers")
+      .get();
+
+    firebaseName = "";
+    let isBlock = false;
+    let isHide = false;
+    snapShot.forEach((docRef) => {
+      if (docRef.data().displayName && docRef.id == JSON.parse(users)) {
+        firebaseName = docRef.data().displayName;
+        isBlock = docRef.data().blockMode ? true : false;
+        isHide = docRef.data().secretMode ? true : false;
+      }
+    });
+
+    if (users.length > 0) {
+      let user = users[0];
+      user = await request.get("profiles/" + user);
+      user = user.data;
+      djangoName = user.nickname;
+      return {
+        name: firebaseName ? firebaseName : djangoName,
+        images: [user.image ? user.image.image : ""],
+        block: isBlock,
+        hide: isHide,
+      };
+    }
+  }catch(e){
+
   }
   return {
     name: "",
     images: [],
   };
 }
+
+let gUnsubscribe = null;
 
 export default function ChatList(props) {
   const isFocused = useIsFocused();
@@ -164,7 +171,40 @@ export default function ChatList(props) {
         });
       });
   }
-
+  
+  async function processQuerySnapshot(querySnapShot){
+    let tmpSnapshots = [];
+    querySnapShot.forEach((snapshot)=>{
+      tmpSnapshots.push(snapshot);
+    })
+    for (let i=0; i<tmpSnapshots.length; i++) {
+      let snapShot = tmpSnapshots[i];
+      if (snapShot && snapShot.exists) {
+        let tmpChats = chats.filter((chat) => {
+          return chat.id == snapShot.id;
+        });
+        if (tmpChats.length == 0) {
+          let detail = await getDetail(ownUserID, snapShot.data());
+          chats.push({
+            id: snapShot.id,
+            data: snapShot.data(),
+            name: detail.name,
+            images: detail.images,
+            block: detail.block,
+            hide: detail.hide,
+          });
+        } else {
+          chats = chats.map((chat) => {
+            if (chat.id == snapShot.id) {
+              chat.data = snapShot.data();
+            }
+            return chat;
+          });
+        }
+      }
+    }
+    processChat(chats, ownUserID);
+  }
   function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
@@ -379,7 +419,6 @@ export default function ChatList(props) {
             }}
           >
             <View style={styles.tabContainer}>
-              {/*console.log(chat)*/}
               {images ? (
                 <GroupImages
                   width={RFValue(40)}
@@ -470,61 +509,46 @@ export default function ChatList(props) {
     });
     // onChatHtmlChanged([]);
     ownUserID = urls[urls.length - 1];
-    const unsubscribe = chatRef
+    this.unsub = chatRef
       .where("users", "array-contains", String(ownUserID))
       .onSnapshot((querySnapShot) => {
-        querySnapShot.forEach((snapShot) => {
-          if (snapShot && snapShot.exists) {
-            let tmpChats = chats.filter((chat) => {
-              return chat.id == snapShot.id;
-            });
-            if (tmpChats.length == 0) {
-              getDetail(ownUserID, snapShot.data()).then(function (detail) {
-                chats.push({
-                  id: snapShot.id,
-                  data: snapShot.data(),
-                  name: detail.name,
-                  images: detail.images,
-                  block: detail.block,
-                  hide: detail.hide,
-                });
-                processChat(chats, ownUserID);
-              });
-            } else {
-              chats = chats.map((chat) => {
-                if (chat.id == snapShot.id) {
-                  chat.data = snapShot.data();
-                }
-                return chat;
-              });
-              processChat(chats, ownUserID);
-            }
-          }
-        });
+        processQuerySnapshot(querySnapShot).then(()=>{
+
+        }).catch((error)=>{
+          console.log("ERROR: " + error);
+        })
       });
-    return unsubscribe;
+    return ()=>{};
   }
 
   React.useEffect(() => {
-    AsyncStorage.getItem("chat").then((item) => {
-      if (item) {
-        AsyncStorage.removeItem("chat");
-        item = JSON.parse(item);
-        props.navigation.push("ChatScreen", item);
-      }
-    });
+    if(!isFocused){
+        if(this.unsub){
+          this.unsub();
+        }
+      // }
+    }
 
-    let unsubscribe;
-    chats = [];
-    firstLoad().then((unsub) => {
-      unsubscribe = unsub;
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("chat").then((item) => {
+        if (item) {
+          AsyncStorage.removeItem("chat");
+          item = JSON.parse(item);
+          props.navigation.push("ChatScreen", item);
+        }
+      });
+
+      gUnsubscribe = null;
+      chats = [];
+      firstLoad().then((unsub) => {
+      });
     });
 
     return function () {
       chats = [];
       onChatHtmlChanged([]);
-      if (unsubscribe) {
-        unsubscribe();
+      if (gUnsubscribe) {
+        gUnsubscribe();
       }
     };
   }, [isFocused]);

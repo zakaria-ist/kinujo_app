@@ -12,6 +12,7 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
@@ -91,31 +92,33 @@ export default function SettingStore(props) {
     }
   });
   React.useEffect(() => {
-    // if (!user.url) {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          console.log("1");
-          console.log(user.nickname);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            console.log("1");
+            console.log(user.nickname);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
     });
+    // if (!user.url) {
     // }
   }, [isFocused]);
 

@@ -202,7 +202,7 @@ export default function Setting(props) {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <ScrollView keyboardShouldPersistTaps="always" style={{ flex: 1 }}>
         <CustomHeader
           onFavoriteChanged="noFavorite"

@@ -325,7 +325,7 @@ export default function ProfileEditingGeneral(props) {
     onCallingCodeChanged(tmpItem[1]);
   }
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <Modal visible={showCountry}>
         <SafeAreaView>
           <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
@@ -561,6 +561,7 @@ export default function ProfileEditingGeneral(props) {
                   borderWidth: 1,
                   backgroundColor: "white",
                   borderColor: Colors.E6DADE,
+                  borderRadius: 5
                 }}
                 source={{ uri: user.image.image }}
               >
@@ -583,6 +584,7 @@ export default function ProfileEditingGeneral(props) {
                   borderWidth: 1,
                   backgroundColor: "white",
                   borderColor: Colors.E6DADE,
+                  borderRadius: 5
                 }}
                 source={require("../assets/Images/avatar.jpg")}
               >

@@ -38,8 +38,8 @@ import QRFrame from "../assets/icons/scan_qr.svg";
 const ratioBackArrow = width / 18 / 20;
 
 export default function QRCodeTemp(props) {
-  const [inviteShow, setInviteShow] = useState(false);
-  const [popupQR, setPopupQR] = useState(false);
+  const [inviteShow, setInviteShow] = useStateIfMounted(false);
+  const [popupQR, setPopupQR] = useStateIfMounted(false);
   const onSuccess = (e) => {
     Linking.openURL(e.data).catch((err) =>
       console.error("An error occured", err)
