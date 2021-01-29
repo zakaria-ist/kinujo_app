@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -77,19 +79,21 @@ export default function ProductList(props) {
     .current;
 
   React.useEffect(() => {
-    AsyncStorage.getItem("product").then((product_id) => {
-      AsyncStorage.removeItem("product").then(() => {
-        let tmpProductId = product_id;
-        if (tmpProductId) {
-          let apiUrl = request.getApiUrl() + "products/" + tmpProductId;
-          props.navigation.navigate("HomeStoreList", {
-            url: apiUrl,
-          });
-        }
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("product").then((product_id) => {
+        AsyncStorage.removeItem("product").then(() => {
+          let tmpProductId = product_id;
+          if (tmpProductId) {
+            let apiUrl = request.getApiUrl() + "products/" + tmpProductId;
+            props.navigation.navigate("HomeStoreList", {
+              url: apiUrl,
+            });
+          }
+        });
       });
-    });
 
-    AsyncStorage.removeItem("product");
+      AsyncStorage.removeItem("product");
+    });
   }, []);
 
   React.useEffect(() => {
@@ -244,12 +248,98 @@ export default function ProductList(props) {
   React.useEffect(() => {
     onFeaturedHtmlChanged([]);
     onKinujoHtmlChanged([]);
-    AsyncStorage.getItem("user").then(function (url) {
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            setUserAuthorityId(response.data.authority.id);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
+      request.get("product_categories/").then(function (response) {
+        onCategoryHtmlChanged(processCategoryHtml(response.data));
+      });
       request
-        .get(url)
+        .get("simple_products/")
         .then(function (response) {
-          onUserChanged(response.data);
-          setUserAuthorityId(response.data.authority.id);
+          let products = response.data;
+          // console.log(products)
+          products = products.sort((p1, p2) => {
+            if (p1.created > p2.created) {
+              return -1;
+            }
+            return 1;
+          });
+
+          products = products.filter((product) => {
+            let date = new Date(product.is_opened);
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0
+            );
+          });
+          //filter janCode
+          console.log(janCodes);
+          kinujoProducts = products.filter((product) => {
+            let found = false;
+            product.productVarieties.map((productVariety) => {
+              productVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map((horizontal) => {
+                    if (janCodes.includes(horizontal.jan_code)) {
+                      found = true;
+                    }
+                  });
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    if (janCodes.includes(vertical.jan_code)) {
+                      found = true;
+                    }
+                  });
+                }
+              );
+            });
+            return found;
+          });
+          featuredProducts = products.filter((product) => {
+            let found = false;
+            product.productVarieties.map((productVariety) => {
+              productVariety.productVarietySelections.map(
+                (productVarietySelection) => {
+                  productVarietySelection.jancode_horizontal.map((horizontal) => {
+                    if (janCodes.includes(horizontal.jancode)) {
+                      found = true;
+                    }
+                  });
+                  productVarietySelection.jancode_vertical.map((vertical) => {
+                    if (janCodes.includes(vertical.jancode)) {
+                      found = true;
+                    }
+                  });
+                }
+              );
+            });
+            return found;
+          });
+          onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
+          onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
         })
         .catch(function (error) {
           if (
@@ -266,90 +356,6 @@ export default function ProductList(props) {
             );
           }
         });
-    });
-    request.get("product_categories/").then(function (response) {
-      onCategoryHtmlChanged(processCategoryHtml(response.data));
-    });
-    request
-      .get("simple_products/")
-      .then(function (response) {
-        let products = response.data;
-        // console.log(products)
-        products = products.sort((p1, p2) => {
-          if (p1.created > p2.created) {
-            return -1;
-          }
-          return 1;
-        });
-
-        products = products.filter((product) => {
-          let date = new Date(product.is_opened);
-          return (
-            product.is_opened == 1 &&
-            new Date() > date &&
-            product.is_hidden == 0 &&
-            product.is_draft == 0
-          );
-        });
-        //filter janCode
-        console.log(janCodes);
-        kinujoProducts = products.filter((product) => {
-          let found = false;
-          product.productVarieties.map((productVariety) => {
-            productVariety.productVarietySelections.map(
-              (productVarietySelection) => {
-                productVarietySelection.jancode_horizontal.map((horizontal) => {
-                  if (janCodes.includes(horizontal.jan_code)) {
-                    found = true;
-                  }
-                });
-                productVarietySelection.jancode_vertical.map((vertical) => {
-                  if (janCodes.includes(vertical.jan_code)) {
-                    found = true;
-                  }
-                });
-              }
-            );
-          });
-          return found;
-        });
-        featuredProducts = products.filter((product) => {
-          let found = false;
-          product.productVarieties.map((productVariety) => {
-            productVariety.productVarietySelections.map(
-              (productVarietySelection) => {
-                productVarietySelection.jancode_horizontal.map((horizontal) => {
-                  if (janCodes.includes(horizontal.jancode)) {
-                    found = true;
-                  }
-                });
-                productVarietySelection.jancode_vertical.map((vertical) => {
-                  if (janCodes.includes(vertical.jancode)) {
-                    found = true;
-                  }
-                });
-              }
-            );
-          });
-          return found;
-        });
-        onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
-        onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
       });
   }, [isFocused]);
   function showCategoryAnimation() {

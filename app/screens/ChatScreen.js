@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -19,7 +20,7 @@ import {
   SafeAreaView,
   PixelRatio,
 } from "react-native";
-import { InteractionManager } from 'react-native';
+
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -909,17 +910,19 @@ export default function ChatScreen(props) {
       onNameChanged(props.route.params.groupName);
     }
 
-    chatsRef
-      .doc(groupID)
-      .get()
-      .then(function (doc) {
-        if (doc.exists) {
-          if (doc.id == groupID) {
-            firstLoad(doc.data());
+    InteractionManager.runAfterInteractions(() => {
+      chatsRef
+        .doc(groupID)
+        .get()
+        .then(function (doc) {
+          if (doc.exists) {
+            if (doc.id == groupID) {
+              firstLoad(doc.data());
+            }
           }
-        }
-      })
-      .then(function () {});
+        })
+        .then(function () {});
+      });
 
     return function () {
       if (unsubscribe) {

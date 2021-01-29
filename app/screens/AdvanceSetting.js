@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -89,64 +91,66 @@ export default function AdvanceSetting(props) {
   const [showDeletePopUp, onShowDeletePopUp] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    if (!isFocused) {
-      onEditDisplayNameChanged(false);
-    }
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
+    InteractionManager.runAfterInteractions(() => {
+      if (!isFocused) {
+        onEditDisplayNameChanged(false);
+      }
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        let userId = urls[urls.length - 1];
 
-      let customerUrls = props.route.params.url.split("/");
-      customerUrls = customerUrls.filter((url) => {
-        return url;
-      });
-      let customerId = customerUrls[customerUrls.length - 1];
-      onUserIdChanged(userId);
-      onCustomerIdChanged(customerId);
+        let customerUrls = props.route.params.url.split("/");
+        customerUrls = customerUrls.filter((url) => {
+          return url;
+        });
+        let customerId = customerUrls[customerUrls.length - 1];
+        onUserIdChanged(userId);
+        onCustomerIdChanged(customerId);
 
-      request.get("profiles/" + customerId).then((response) => {
-        console.log(response.data);
-        setCustomer(response.data);
+        request.get("profiles/" + customerId).then((response) => {
+          console.log(response.data);
+          setCustomer(response.data);
 
-        const subscriber = db
-          .collection("users")
-          .doc(userId)
-          .collection("customers")
-          .doc(customerId)
-          .onSnapshot((documentSnapshot) => {
-            if (documentSnapshot.data()) {
-              let tmpUser = documentSnapshot.data();
-              onFirebaseUserChanged(documentSnapshot.data());
-              if (!firstLoaded) {
-                onBlockModeChanged(tmpUser.blockMode);
-                onSecretModeChanged(tmpUser.secretMode);
-                if (!tmpUser.displayName) {
-                  onDisplayNameChanged(
-                    response.data.nickname ? response.data.nickname : ""
-                  );
-                } else {
-                  onDisplayNameChanged(tmpUser.displayName);
+          const subscriber = db
+            .collection("users")
+            .doc(userId)
+            .collection("customers")
+            .doc(customerId)
+            .onSnapshot((documentSnapshot) => {
+              if (documentSnapshot.data()) {
+                let tmpUser = documentSnapshot.data();
+                onFirebaseUserChanged(documentSnapshot.data());
+                if (!firstLoaded) {
+                  onBlockModeChanged(tmpUser.blockMode);
+                  onSecretModeChanged(tmpUser.secretMode);
+                  if (!tmpUser.displayName) {
+                    onDisplayNameChanged(
+                      response.data.nickname ? response.data.nickname : ""
+                    );
+                  } else {
+                    onDisplayNameChanged(tmpUser.displayName);
+                  }
                 }
+                onFirstLoadedChanged(true);
+              } else {
+                onFirebaseUserChanged({
+                  memo: "",
+                  displayName: "",
+                  secret_mode: false,
+                  block: false,
+                });
+                if (!firstLoaded) {
+                  onBlockModeChanged(false);
+                  onSecretModeChanged(false);
+                  onDisplayNameChanged("");
+                }
+                onFirstLoadedChanged(true);
               }
-              onFirstLoadedChanged(true);
-            } else {
-              onFirebaseUserChanged({
-                memo: "",
-                displayName: "",
-                secret_mode: false,
-                block: false,
-              });
-              if (!firstLoaded) {
-                onBlockModeChanged(false);
-                onSecretModeChanged(false);
-                onDisplayNameChanged("");
-              }
-              onFirstLoadedChanged(true);
-            }
-          });
+            });
+        });
       });
     });
   }, [isFocused]);

@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -16,7 +18,7 @@ import {
   TextInput,
   Platform,
 } from "react-native";
-import { InteractionManager } from 'react-native';
+
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import SplashScreen from 'react-native-splash-screen'

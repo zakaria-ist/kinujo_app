@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -75,42 +76,44 @@ export default function ProductTwoVariations({
   );
 
   React.useEffect(() => {
-    if (pItems && pItems.mappingValue && pItems.items) {
-      globalMappingValue = pItems.mappingValue;
-      items = pItems.items;
-      onProcessVariationHtml(processVariationHtml(items));
-      onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
-    } else {
-      globalMappingValue = {};
-      items = [
-        {
-          index: 0,
-          horizontalItem: "",
-          choices: [
-            {
-              choiceIndex: 1,
-              choiceItem: "",
-              janCode: "",
-              stock: "",
-            },
-          ],
-        },
-        {
-          index: 1,
-          horizontalItem: "",
-          choices: [
-            {
-              choiceIndex: 1,
-              choiceItem: "",
-              janCode: "",
-              stock: "",
-            },
-          ],
-        },
-      ];
-      onProcessVariationHtml(processVariationHtml(items));
-      onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (pItems && pItems.mappingValue && pItems.items) {
+        globalMappingValue = pItems.mappingValue;
+        items = pItems.items;
+        onProcessVariationHtml(processVariationHtml(items));
+        onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+      } else {
+        globalMappingValue = {};
+        items = [
+          {
+            index: 0,
+            horizontalItem: "",
+            choices: [
+              {
+                choiceIndex: 1,
+                choiceItem: "",
+                janCode: "",
+                stock: "",
+              },
+            ],
+          },
+          {
+            index: 1,
+            horizontalItem: "",
+            choices: [
+              {
+                choiceIndex: 1,
+                choiceItem: "",
+                janCode: "",
+                stock: "",
+              },
+            ],
+          },
+        ];
+        onProcessVariationHtml(processVariationHtml(items));
+        onProcessVariationDetailsHtml(processDetailsVariationHtml(items));
+      }
+    });
   }, [pItems]);
 
   function populateMapping() {

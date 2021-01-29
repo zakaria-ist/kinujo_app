@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   SafeAreaView,
@@ -11,7 +12,7 @@ import {
   Animated,
   TouchableWithoutFeedback,
 } from "react-native";
-import { InteractionManager } from 'react-native';
+
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";

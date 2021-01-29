@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -82,12 +84,15 @@ export default function BankAccountRegistration(props) {
   }
 
   React.useEffect(()=>{
-    AsyncStorage.getItem("user").then(function(url) {
-      request.get(url).then((response)=>{
-        console.log(response.data)
-        setUser(response.data)
+
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function(url) {
+        request.get(url).then((response)=>{
+          console.log(response.data)
+          setUser(response.data)
+        })
       })
-    })
+    });
   }, [])
 
   return (
@@ -129,7 +134,9 @@ export default function BankAccountRegistration(props) {
         <TouchableOpacity onPress={
           ()=>{
             props.navigation.navigate("BankAccountRegistration", {
-              is_store: true
+              is_store: true,
+              authority: props.route.params.authority,
+              register: true
             })
           }
         }>

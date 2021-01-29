@@ -9,11 +9,11 @@ class CustomAlert {
         text,
         [
           {
-            text: "OK",
+            text: Translate.t("ok"),
             onPress: () => {
               func();
             },
-          },
+          }
         ],
         { cancelable: false }
       );
@@ -31,8 +31,25 @@ class CustomAlert {
     }
   }
 
-  async prompt() {
-    Alert.alert("test", <View></View>);
+  async ask(text, func) {
+    Alert.alert(
+      Translate.t("warning"),
+      text,
+      [
+        {
+          text: Translate.t("ok"),
+          onPress: () => {
+            func();
+          },
+        },
+        {
+          text: Translate.t("cancel"),
+          onPress: () => {
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   }
 }
 

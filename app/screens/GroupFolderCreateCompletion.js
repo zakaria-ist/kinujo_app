@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -133,42 +135,44 @@ export default function GroupFolderCreateCompletion(props) {
   // if (!loaded) {
   //   console.log("" + friendIds.length);
   React.useEffect(() => {
-    let tmpUserListHtml = [];
-    for (var i = 0; i < friendIds.length; i++) {
-      console.log(friendNames[i]);
-      tmpUserListHtml.push(
-        <View
-          key={friendIds[i]}
-          style={{
-            alignItems: "center",
-            // justifyContent: "center",
-            // backgroundColor: "orange",
-            height: heightPercentageToDP("15%"),
-            width: widthPercentageToDP("25%"),
-          }}
-        >
-          <Image
-          style={{
-            width: RFValue(50),
-            height: RFValue(50),
-            borderRadius: win.width / 2,
-          }}    
-          source={require("../assets/Images/profileEditingIcon.png")}
-        />
-          <Text
+    InteractionManager.runAfterInteractions(() => {
+      let tmpUserListHtml = [];
+      for (var i = 0; i < friendIds.length; i++) {
+        console.log(friendNames[i]);
+        tmpUserListHtml.push(
+          <View
+            key={friendIds[i]}
             style={{
-              textAlign: "center",
-              fontSize: RFValue(11),
-              marginTop: heightPercentageToDP("1.5%"),
-              alignSelf: "center",
+              alignItems: "center",
+              // justifyContent: "center",
+              // backgroundColor: "orange",
+              height: heightPercentageToDP("15%"),
+              width: widthPercentageToDP("25%"),
             }}
           >
-            {friendNames[i]}
-          </Text>
-        </View>
-      );
-    }
-    onUserListHtml(tmpUserListHtml);
+            <Image
+            style={{
+              width: RFValue(50),
+              height: RFValue(50),
+              borderRadius: win.width / 2,
+            }}    
+            source={require("../assets/Images/profileEditingIcon.png")}
+          />
+            <Text
+              style={{
+                textAlign: "center",
+                fontSize: RFValue(11),
+                marginTop: heightPercentageToDP("1.5%"),
+                alignSelf: "center",
+              }}
+            >
+              {friendNames[i]}
+            </Text>
+          </View>
+        );
+      }
+      onUserListHtml(tmpUserListHtml);
+    });
   }, [isFocused]);
 
   //   onLoaded(true);

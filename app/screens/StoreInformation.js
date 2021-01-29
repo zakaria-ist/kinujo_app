@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -82,46 +83,48 @@ export default function StoreInformation(props) {
       onEditPrefectureChanged(false);
       onEditRepresentativeNameChanged(false);
     }
-    request.get("prefectures/").then(function (response) {
-      let tmpPrefectures = response.data.map((prefecture) => {
-        return {
-          label: prefecture.name,
-          value: prefecture.url,
-        };
-      });
-      tmpPrefectures.push({
-        label: "Prefecture",
-        value: "",
-      });
-      onPrefecturesChanged(tmpPrefectures);
+    InteractionManager.runAfterInteractions(() => {
+      request.get("prefectures/").then(function (response) {
+        let tmpPrefectures = response.data.map((prefecture) => {
+          return {
+            label: prefecture.name,
+            value: prefecture.url,
+          };
+        });
+        tmpPrefectures.push({
+          label: "Prefecture",
+          value: "",
+        });
+        onPrefecturesChanged(tmpPrefectures);
 
-      AsyncStorage.getItem("user").then(function (url) {
-        request
-          .get(url)
-          .then(function (response) {
-            onUserChanged(response.data);
-            onCorporateNameChanged(response.data.corporate_name);
-            onRepresentativeNameChanged(response.data.representative_name);
-            onPostalCodeChanged(response.data.zipcode);
-            onPrefectureChanged(response.data.prefecture_id);
-            onAddress1Changed(response.data.address1);
-            onAddress2Changed(response.data.address2);
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
+        AsyncStorage.getItem("user").then(function (url) {
+          request
+            .get(url)
+            .then(function (response) {
+              onUserChanged(response.data);
+              onCorporateNameChanged(response.data.corporate_name);
+              onRepresentativeNameChanged(response.data.representative_name);
+              onPostalCodeChanged(response.data.zipcode);
+              onPrefectureChanged(response.data.prefecture_id);
+              onAddress1Changed(response.data.address1);
+              onAddress2Changed(response.data.address2);
+            })
+            .catch(function (error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
+        });
       });
     });
   }, [isFocused]);

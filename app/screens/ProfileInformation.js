@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -61,22 +62,24 @@ export default function ProfileInformation(props) {
   const [prefectures, onPrefecturesChanged] = useStateIfMounted([]);
   const [address1, onAddress1Changed] = useStateIfMounted("");
   const [address2, onAddress2Changed] = useStateIfMounted("");
-  const [date, setDate] = useStateIfMounted(day + "-" + month + "-" + year);
+  const [date, setDate] = useStateIfMounted(year + "-" + month + "-" + day);
   const [pickerShow, onPickerShow] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    request.get("prefectures/").then(function (response) {
-      let tmpPrefectures = response.data.map((prefecture) => {
-        return {
-          label: prefecture.name,
-          value: prefecture.url,
-        };
+    InteractionManager.runAfterInteractions(() => {
+      request.get("prefectures/").then(function (response) {
+        let tmpPrefectures = response.data.map((prefecture) => {
+          return {
+            label: prefecture.name,
+            value: prefecture.url,
+          };
+        });
+        tmpPrefectures.push({
+          label: "Prefecture",
+          value: "",
+        });
+        onPrefecturesChanged(tmpPrefectures);
       });
-      tmpPrefectures.push({
-        label: "Prefecture",
-        value: "",
-      });
-      onPrefecturesChanged(tmpPrefectures);
     });
   }, []);
   function updateUser(user, field, value) {
@@ -149,7 +152,9 @@ export default function ProfileInformation(props) {
       onEditPostalCodeChanged(false);
       onEditPrefectureChanged(false);
     }
-    loadUser();
+    InteractionManager.runAfterInteractions(() => {
+      loadUser();
+    });
   }, [isFocused]);
   function loadUser() {
     if (!user.url) {
@@ -368,11 +373,11 @@ export default function ProfileInformation(props) {
                 }}
                 items={[
                   {
-                    label: "Female",
+                    label: Translate.t('female'),
                     value: "1",
                   },
                   {
-                    label: "Male",
+                    label: Translate.t("male"),
                     value: "0",
                   },
                 ]}

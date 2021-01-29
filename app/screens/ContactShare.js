@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   SafeAreaView,
@@ -120,81 +121,83 @@ export default function ContactShare(props) {
   const [user, onUserChanged] = useStateIfMounted({});
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
-      db.collection("users")
-        .doc(userId)
-        .collection("friends")
-        .get()
-        .then((querySnapshot) => {
-          let ids = [];
-          let items = [];
-          let deleteIds = [];
-          querySnapshot.forEach((documentSnapshot) => {
-            let item = documentSnapshot.data();
-            if (item.type == "user") {
-              ids.push(item.id);
-            }
-
-            if(item.cancel || item.delete){
-              deleteIds.push(item.id);
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
             }
           });
-          request
-            .get("user/byIds/", {
-              ids: ids,
-              userId: userId,
-              type: "contact",
-            })
-            .then(function (response) {
-              let users = response.data.users;
-              users = users.filter((user) => {
-                return !deleteIds.includes(user.id) && !deleteIds.includes(String(user.id)) && user.id != userId
-              })
-              onUserHtmlChanged(processUserHtml(props, users));
-            })
-            .catch(function (error) {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
+
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
+        db.collection("users")
+          .doc(userId)
+          .collection("friends")
+          .get()
+          .then((querySnapshot) => {
+            let ids = [];
+            let items = [];
+            let deleteIds = [];
+            querySnapshot.forEach((documentSnapshot) => {
+              let item = documentSnapshot.data();
+              if (item.type == "user") {
+                ids.push(item.id);
+              }
+
+              if(item.cancel || item.delete){
+                deleteIds.push(item.id);
               }
             });
-        });
-      onLoaded(true);
+            request
+              .get("user/byIds/", {
+                ids: ids,
+                userId: userId,
+                type: "contact",
+              })
+              .then(function (response) {
+                let users = response.data.users;
+                users = users.filter((user) => {
+                  return !deleteIds.includes(user.id) && !deleteIds.includes(String(user.id)) && user.id != userId
+                })
+                onUserHtmlChanged(processUserHtml(props, users));
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
+          });
+        onLoaded(true);
+      });
     });
   }, [isFocused]);
 

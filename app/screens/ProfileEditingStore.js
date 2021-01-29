@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -91,17 +92,19 @@ export default function ProfileEditingGeneral(props) {
   const [user, onUserChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    AsyncStorage.getItem("selectedCountry").then((val) => {
-      if (val) {
-        // onCountryChanged(val);
-        setCountryCode(val);
-        onCallingCodeChanged(val);
-        AsyncStorage.removeItem("selectedCountry");
-      } else {
-        // onCountryChanged("+81");
-        setCountryCode("+81");
-        onCallingCodeChanged("+81");
-      }
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("selectedCountry").then((val) => {
+        if (val) {
+          // onCountryChanged(val);
+          setCountryCode(val);
+          onCallingCodeChanged(val);
+          AsyncStorage.removeItem("selectedCountry");
+        } else {
+          // onCountryChanged("+81");
+          setCountryCode("+81");
+          onCallingCodeChanged("+81");
+        }
+      });
     });
   }, [isFocused]);
   function processCountryHtml(countries) {
@@ -137,9 +140,11 @@ export default function ProfileEditingGeneral(props) {
     return html;
   }
   React.useEffect(() => {
-    request.get("country_codes/").then(function (response) {
-      countries = response.data;
-      setCountryHtml(processCountryHtml(countries));
+    InteractionManager.runAfterInteractions(() => {
+      request.get("country_codes/").then(function (response) {
+        countries = response.data;
+        setCountryHtml(processCountryHtml(countries));
+      });
     });
   }, [true]);
   async function loadUser() {
@@ -217,15 +222,17 @@ export default function ProfileEditingGeneral(props) {
       });
     }
 
-    loadUser();
-    request.get("country_codes/").then(function (response) {
-      let tmpCountry = response.data.map((country) => {
-        return {
-          id: country.tel_code,
-          name: country.tel_code,
-        };
+    InteractionManager.runAfterInteractions(() => {
+      loadUser();
+      request.get("country_codes/").then(function (response) {
+        let tmpCountry = response.data.map((country) => {
+          return {
+            id: country.tel_code,
+            name: country.tel_code,
+          };
+        });
+        onCountryCodeHtmlChanged(tmpCountry);
       });
-      onCountryCodeHtmlChanged(tmpCountry);
     });
   }, [isFocused]);
   function processCountryCode(val) {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -11,7 +12,7 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
-import { InteractionManager } from 'react-native';
+
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
@@ -422,28 +423,32 @@ export default function FavoriteChat(props) {
     for(let i=0; i<tmpSnapshots.length; i++){
       let snapShot = tmpSnapshots[i];
       if (snapShot && snapShot.exists) {
-        if (snapShot.data()["favourite_" + ownUserID]) {
-          let tmpChats = chats.filter((chat) => {
-            return chat.id == snapShot.id;
-          });
-          if (tmpChats.length == 0) {
-            getDetail(ownUserID, snapShot.data()).then(function (detail) {
-              chats.push({
-                id: snapShot.id,
-                data: snapShot.data(),
-                name: detail.name,
-                image: detail.image,
+        if(!snapShot.data()["delete_" + ownUserID] &&
+        !snapShot.data()["hide_" + ownUserID] &&
+        !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
+          if (snapShot.data()["favourite_" + ownUserID]) {
+            let tmpChats = chats.filter((chat) => {
+              return chat.id == snapShot.id;
+            });
+            if (tmpChats.length == 0) {
+              getDetail(ownUserID, snapShot.data()).then(function (detail) {
+                chats.push({
+                  id: snapShot.id,
+                  data: snapShot.data(),
+                  name: detail.name,
+                  image: detail.image,
+                });
+                processChat(chats, ownUserID);
+              });
+            } else {
+              chats = chats.map((chat) => {
+                if (chat.id == snapShot.id) {
+                  chat.data = snapShot.data();
+                }
+                return chat;
               });
               processChat(chats, ownUserID);
-            });
-          } else {
-            chats = chats.map((chat) => {
-              if (chat.id == snapShot.id) {
-                chat.data = snapShot.data();
-              }
-              return chat;
-            });
-            processChat(chats, ownUserID);
+            }
           }
         }
       }

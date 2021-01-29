@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -52,18 +54,64 @@ export default function BankAccountRegistration(props) {
   const [financialUrl, setUrl] = useStateIfMounted({});
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
 
-      if (!user.url) {
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        let userId = urls[urls.length - 1];
+
+        if (!user.url) {
+          request
+            .get(url)
+            .then(function (response) {
+              onUserChanged(response.data);
+            })
+            .catch(function (error) {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
+        }
+
         request
-          .get(url)
+          .get("financial-account/" + userId + "/")
           .then(function (response) {
-            onUserChanged(response.data);
+            console.log(response.data.financialAccount);
+            setUrl(response.data.financialAccount.url);
+            onFinancialAccountChanged(response.data.financialAccount);
+            onBranckCodeChanged(response.data.financialAccount.branch_code);
+            onBankCodeChanged(response.data.financialAccount.financial_code);
+            onFinancialNameChanged(
+              String(response.data.financialAccount.financial_name)
+            );
+            onBranchNameChanged(
+              String(response.data.financialAccount.branch_name)
+            );
+            onAccountTypeChanged(
+              response.data.financialAccount.account_type
+                ? response.data.financialAccount.account_type
+                : "1"
+            );
+            console.log(response.data.financialAccount.account_number);
+            onAccountNumberChanged(
+              String(response.data.financialAccount.account_number)
+            );
+            onAccountHolderChanged(
+              String(response.data.financialAccount.account_name)
+            );
           })
           .catch(function (error) {
             if (
@@ -80,50 +128,7 @@ export default function BankAccountRegistration(props) {
               );
             }
           });
-      }
-
-      request
-        .get("financial-account/" + userId + "/")
-        .then(function (response) {
-          console.log(response.data.financialAccount);
-          setUrl(response.data.financialAccount.url);
-          onFinancialAccountChanged(response.data.financialAccount);
-          onBranckCodeChanged(response.data.financialAccount.branch_code);
-          onBankCodeChanged(response.data.financialAccount.financial_code);
-          onFinancialNameChanged(
-            String(response.data.financialAccount.financial_name)
-          );
-          onBranchNameChanged(
-            String(response.data.financialAccount.branch_name)
-          );
-          onAccountTypeChanged(
-            response.data.financialAccount.account_type
-              ? response.data.financialAccount.account_type
-              : "1"
-          );
-          console.log(response.data.financialAccount.account_number);
-          onAccountNumberChanged(
-            String(response.data.financialAccount.account_number)
-          );
-          onAccountHolderChanged(
-            String(response.data.financialAccount.account_name)
-          );
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
+      });
     });
   }, [isFocused]);
 
@@ -312,7 +317,13 @@ export default function BankAccountRegistration(props) {
                               onBranchNameChanged("");
                               onFinancialNameChanged("");
                               onAccountTypeChanged("");
-                              props.navigation.goBack();
+                              if(props.route.params.register){
+                                props.navigation.navigate("AccountExamination", {
+                                  "authority" : props.route.params.authority
+                                })
+                              } else {
+                                props.navigation.goBack();
+                              }
                             })
                             .catch(function (error) {
                               alert.warning(
@@ -340,7 +351,13 @@ export default function BankAccountRegistration(props) {
                               onBranchNameChanged("");
                               onFinancialNameChanged("");
                               onAccountTypeChanged("");
-                              props.navigation.goBack();
+                              if(props.route.params.register){
+                                props.navigation.navigate("AccountExamination", {
+                                  "authority" : props.route.params.authority
+                                })
+                              } else {
+                                props.navigation.goBack();
+                              }
                             })
                             .catch(function (error) {
                               alert.warning(

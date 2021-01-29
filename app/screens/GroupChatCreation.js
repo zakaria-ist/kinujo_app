@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -67,93 +69,95 @@ export default function GroupChatCreation(props) {
 
   React.useEffect(() => {
 
-    if(isFocused){
-      AsyncStorage.getItem("groupName").then((val) => {
-        if(val){
-          setGroupName(val);
-        }
-        AsyncStorage.removeItem("groupName");
-      });
-      // AsyncStorage.getItem("tmpIds").then((friendsIds) => {
-      //   if(friendIds){
-          
-      //   }
-      //   AsyncStorage.removeItem("tmpIds");
-      // });
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if(isFocused){
+        AsyncStorage.getItem("groupName").then((val) => {
+          if(val){
+            setGroupName(val);
+          }
+          AsyncStorage.removeItem("groupName");
+        });
+        // AsyncStorage.getItem("tmpIds").then((friendsIds) => {
+        //   if(friendIds){
+            
+        //   }
+        //   AsyncStorage.removeItem("tmpIds");
+        // });
+      }
 
-    if(!isFocused){
-      friendIds = []
-    }
+      if(!isFocused){
+        friendIds = []
+      }
 
-    AsyncStorage.getItem("user").then((url) => {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
+      AsyncStorage.getItem("user").then((url) => {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
 
-      AsyncStorage.getItem("ids").then((val) => {
-        friendIds = JSON.parse(val);
-        console.log(friendIds)
-        dbFriendIds = JSON.parse(val);
-        if (friendIds != null) {
-          memberCount = friendIds.length;
-        } else {
-          friendIds = [];
-        }
+        AsyncStorage.getItem("ids").then((val) => {
+          friendIds = JSON.parse(val);
+          console.log(friendIds)
+          dbFriendIds = JSON.parse(val);
+          if (friendIds != null) {
+            memberCount = friendIds.length;
+          } else {
+            friendIds = [];
+          }
 
-        request
-          .get("user/byIds/", {
-            ids: friendIds,
-          })
-          .then(function (response) {
-            let tmpUserHtml2 = [];
-            let users = response.data.users.filter((user) => {
-              return friendIds.includes(String(user.id));
+          request
+            .get("user/byIds/", {
+              ids: friendIds,
             })
-            users.map((user) => {
-              friendNames.push(user.nickname);
-              tmpUserHtml2.push(
-                <TouchableWithoutFeedback key={String(user.id)}>
-                  <View style={styles.memberTabsContainer}>
-                    {user && user.image && user.image.image ? (
-                      <Image
+            .then(function (response) {
+              let tmpUserHtml2 = [];
+              let users = response.data.users.filter((user) => {
+                return friendIds.includes(String(user.id));
+              })
+              users.map((user) => {
+                friendNames.push(user.nickname);
+                tmpUserHtml2.push(
+                  <TouchableWithoutFeedback key={String(user.id)}>
+                    <View style={styles.memberTabsContainer}>
+                      {user && user.image && user.image.image ? (
+                        <Image
+                          style={{
+                            width: RFValue(38),
+                            height: RFValue(38),
+                            borderRadius: win.width / 2,
+                            backgroundColor: Colors.DCDCDC,
+                          }}
+                          source={{ uri: user.image.image }}
+                        />
+                      ) : (
+                        <Image
                         style={{
                           width: RFValue(38),
                           height: RFValue(38),
                           borderRadius: win.width / 2,
-                          backgroundColor: Colors.DCDCDC,
-                        }}
-                        source={{ uri: user.image.image }}
+                        }}    
+                        source={require("../assets/Images/profileEditingIcon.png")}
                       />
-                    ) : (
-                      <Image
-                      style={{
-                        width: RFValue(38),
-                        height: RFValue(38),
-                        borderRadius: win.width / 2,
-                      }}    
-                      source={require("../assets/Images/profileEditingIcon.png")}
-                    />
-                      // <Image
-                      //   style={{
-                      //     width: RFValue(38),
-                      //     height: RFValue(38),
-                      //     borderRadius: win.width / 2,
-                      //     backgroundColor: Colors.DCDCDC,
-                      //   }}
-                      // />
-                    )}
+                        // <Image
+                        //   style={{
+                        //     width: RFValue(38),
+                        //     height: RFValue(38),
+                        //     borderRadius: win.width / 2,
+                        //     backgroundColor: Colors.DCDCDC,
+                        //   }}
+                        // />
+                      )}
 
-                    <Text style={styles.folderText}>{user.nickname}</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              );
+                      <Text style={styles.folderText}>{user.nickname}</Text>
+                    </View>
+                  </TouchableWithoutFeedback>
+                );
+              });
+              tmpUserHtml = tmpUserHtml2;
+              onUserHtmlChanged(tmpUserHtml);
             });
-            tmpUserHtml = tmpUserHtml2;
-            onUserHtmlChanged(tmpUserHtml);
-          });
+        });
       });
     });
   }, [isFocused]);

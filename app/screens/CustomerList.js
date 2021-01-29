@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -137,38 +139,40 @@ export default function CustomerList(props) {
 
   // if (!loaded) {
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
-      request
-        .get("customers/" + userId + "/")
-        .then(function (response) {
-          console.log(response.data.customers);
-          onCustomersChanged(response.data.customers);
-          onCustomerHtmlChanged(
-            processCustomerHtml(props, response.data.customers, "")
-          );
-          onLoaded(true);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-          onLoaded(true);
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
         });
+        let userId = urls[urls.length - 1];
+        request
+          .get("customers/" + userId + "/")
+          .then(function (response) {
+            console.log(response.data.customers);
+            onCustomersChanged(response.data.customers);
+            onCustomerHtmlChanged(
+              processCustomerHtml(props, response.data.customers, "")
+            );
+            onLoaded(true);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+            onLoaded(true);
+          });
+      });
     });
   }, [isFocused]);
   // }

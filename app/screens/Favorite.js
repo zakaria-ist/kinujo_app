@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -260,107 +262,109 @@ export default function Favorite(props) {
     hideSortingAnimation();
   }
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
-
-      request
-        .get(url)
-        .then(function (response) {
-          let tmpUser = response.data;
-          users = response.data;
-          onUserChanged(response.data);
-
-          db.collection("users")
-            .doc(userId)
-            .collection("favourite")
-            .get()
-            .then((querySnapshot) => {
-              let idsKinujo = [];
-              let idsFeatured = [];
-              querySnapshot.forEach((documentSnapshot) => {
-                // console.log(documentSnapshot.data().type);
-                if (documentSnapshot.data().type == 1) {
-                  idsKinujo.push(documentSnapshot.id);
-                } else {
-                  idsFeatured.push(documentSnapshot.id);
-                }
-              });
-              request
-                .get("product/byIds/", {
-                  ids: idsKinujo,
-                })
-                .then(function (response) {
-                  kinujoProducts = response.data.products;
-                  onFavouriteHtmlChanged(
-                    processFavouriteHtml(props, tmpUser, response.data.products)
-                  );
-                })
-                .catch(function (error) {
-                  if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    Object.keys(error.response.data).length > 0
-                  ) {
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0] +
-                        "(" +
-                        Object.keys(error.response.data)[0] +
-                        ")"
-                    );
-                  }
-                });
-              request
-                .get("product/byIds/", {
-                  ids: idsFeatured,
-                })
-                .then(function (response) {
-                  // console.log(response.data.products);
-                  featuredProducts = response.data.products;
-                  onFeaturedHtmlChanged(
-                    processFeatured(props, tmpUser, response.data.products)
-                  );
-                })
-                .catch(function (error) {
-                  if (
-                    error &&
-                    error.response &&
-                    error.response.data &&
-                    Object.keys(error.response.data).length > 0
-                  ) {
-                    alert.warning(
-                      error.response.data[
-                        Object.keys(error.response.data)[0]
-                      ][0] +
-                        "(" +
-                        Object.keys(error.response.data)[0] +
-                        ")"
-                    );
-                  }
-                });
-            });
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
         });
+        let userId = urls[urls.length - 1];
+
+        request
+          .get(url)
+          .then(function (response) {
+            let tmpUser = response.data;
+            users = response.data;
+            onUserChanged(response.data);
+
+            db.collection("users")
+              .doc(userId)
+              .collection("favourite")
+              .get()
+              .then((querySnapshot) => {
+                let idsKinujo = [];
+                let idsFeatured = [];
+                querySnapshot.forEach((documentSnapshot) => {
+                  // console.log(documentSnapshot.data().type);
+                  if (documentSnapshot.data().type == 1) {
+                    idsKinujo.push(documentSnapshot.id);
+                  } else {
+                    idsFeatured.push(documentSnapshot.id);
+                  }
+                });
+                request
+                  .get("product/byIds/", {
+                    ids: idsKinujo,
+                  })
+                  .then(function (response) {
+                    kinujoProducts = response.data.products;
+                    onFavouriteHtmlChanged(
+                      processFavouriteHtml(props, tmpUser, response.data.products)
+                    );
+                  })
+                  .catch(function (error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0] +
+                          "(" +
+                          Object.keys(error.response.data)[0] +
+                          ")"
+                      );
+                    }
+                  });
+                request
+                  .get("product/byIds/", {
+                    ids: idsFeatured,
+                  })
+                  .then(function (response) {
+                    // console.log(response.data.products);
+                    featuredProducts = response.data.products;
+                    onFeaturedHtmlChanged(
+                      processFeatured(props, tmpUser, response.data.products)
+                    );
+                  })
+                  .catch(function (error) {
+                    if (
+                      error &&
+                      error.response &&
+                      error.response.data &&
+                      Object.keys(error.response.data).length > 0
+                    ) {
+                      alert.warning(
+                        error.response.data[
+                          Object.keys(error.response.data)[0]
+                        ][0] +
+                          "(" +
+                          Object.keys(error.response.data)[0] +
+                          ")"
+                      );
+                    }
+                  });
+              });
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
     });
   }, [isFocused]);
   return (

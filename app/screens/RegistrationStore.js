@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -52,19 +54,21 @@ export default function RegistrationStore(props) {
     SplashScreen.hide();
   }, 1000);
   React.useEffect(()=>{
-    request.get("country_codes/").then(function (response) {
-        let tmpCountry = response.data.map((country) => {
-          return {
-            id: country.tel_code,
-            name: country.tel_code,
-          };
+    InteractionManager.runAfterInteractions(() => {
+      request.get("country_codes/").then(function (response) {
+          let tmpCountry = response.data.map((country) => {
+            return {
+              id: country.tel_code,
+              name: country.tel_code,
+            };
+          });
+          onCountryCodeHtmlChanged(tmpCountry);
+          if(!callingCode){
+            onCallingCodeChanged(81);
+          }
         });
-        onCountryCodeHtmlChanged(tmpCountry);
-        if(!callingCode){
-          onCallingCodeChanged(81);
-        }
-      });
-      onLoaded(true);
+        onLoaded(true);
+    });
   }, [isFocused])
 
   function processCountryCode(val) {

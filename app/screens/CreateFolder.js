@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -52,82 +54,85 @@ export default function CreateFolder(props) {
   const [loaded, onLoaded] = useStateIfMounted(false);
   const [friendName, onFriendNameChanged] = useStateIfMounted([]);
   React.useEffect(() => {
-    friendNames = [];
-    let routes = props.navigation.dangerouslyGetState().routes;
-    AsyncStorage.getItem("user").then((url) => {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
 
-      AsyncStorage.getItem("ids").then((val) => {
-        friendIds = JSON.parse(val);
-        dbFriendIds = JSON.parse(val);
-        if (friendIds != null) {
-          memberCount = friendIds.length;
-        } else {
-          friendIds = [];
-        }
+    InteractionManager.runAfterInteractions(() => {
+      friendNames = [];
+      let routes = props.navigation.dangerouslyGetState().routes;
+      AsyncStorage.getItem("user").then((url) => {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
 
-        request
-          .get("user/byIds/", {
-            ids: friendIds,
-          })
-          .then(function (response) {
-            let tmpUserHtml2 = [];
-            response.data.users.map((user) => {
-              // friendNames = [];
-              friendNames.push(user.nickname);
-              // console.log(friendNames);
-              tmpUserHtml2.push(
-                <TouchableWithoutFeedback
-                  key={String(user.id)}
-                  userId={user.id}
-                >
-                  <View style={styles.memberTabsContainer}>
-                    {user && user.image && user.image.image ? (
-                      <Image
-                        style={{
-                          width: RFValue(38),
-                          height: RFValue(38),
-                          borderRadius: win.width / 2,
-                          backgroundColor: Colors.DCDCDC,
-                        }}
-                        source={{ uri: user.image.image }}
-                      />
-                    ) : (
-                      <Image
-                        style={{
-                          width: win.width / 9,
-                          height: 512 * ratioProfile,
-                          borderRadius: win.width / 2,
-                        }}
-                        source={require("../assets/Images/profileEditingIconLarge.png")}
-                      />
-                    )}
+        AsyncStorage.getItem("ids").then((val) => {
+          friendIds = JSON.parse(val);
+          dbFriendIds = JSON.parse(val);
+          if (friendIds != null) {
+            memberCount = friendIds.length;
+          } else {
+            friendIds = [];
+          }
 
-                    <Text style={styles.folderText}>{user.nickname}</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              );
+          request
+            .get("user/byIds/", {
+              ids: friendIds,
+            })
+            .then(function (response) {
+              let tmpUserHtml2 = [];
+              response.data.users.map((user) => {
+                // friendNames = [];
+                friendNames.push(user.nickname);
+                // console.log(friendNames);
+                tmpUserHtml2.push(
+                  <TouchableWithoutFeedback
+                    key={String(user.id)}
+                    userId={user.id}
+                  >
+                    <View style={styles.memberTabsContainer}>
+                      {user && user.image && user.image.image ? (
+                        <Image
+                          style={{
+                            width: RFValue(38),
+                            height: RFValue(38),
+                            borderRadius: win.width / 2,
+                            backgroundColor: Colors.DCDCDC,
+                          }}
+                          source={{ uri: user.image.image }}
+                        />
+                      ) : (
+                        <Image
+                          style={{
+                            width: win.width / 9,
+                            height: 512 * ratioProfile,
+                            borderRadius: win.width / 2,
+                          }}
+                          source={require("../assets/Images/profileEditingIconLarge.png")}
+                        />
+                      )}
+
+                      <Text style={styles.folderText}>{user.nickname}</Text>
+                    </View>
+                  </TouchableWithoutFeedback>
+                );
+              });
+              tmpUserHtml = tmpUserHtml2;
+              onUserHtmlChanged(tmpUserHtml);
             });
-            tmpUserHtml = tmpUserHtml2;
-            onUserHtmlChanged(tmpUserHtml);
-          });
-        onLoaded(true);
+          onLoaded(true);
+        });
       });
-    });
 
-    // return ()=> {
-    //   AsyncStorage.removeItem("ids").then(function () {
-    //     memberCount = 0;
-    //     tmpUserHtml = [];
-    //     onUserHtmlChanged([]);
-    //     friendNames = [];
-    //     friendIds = null;
-    //   });
-    // }
+      // return ()=> {
+      //   AsyncStorage.removeItem("ids").then(function () {
+      //     memberCount = 0;
+      //     tmpUserHtml = [];
+      //     onUserHtmlChanged([]);
+      //     friendNames = [];
+      //     friendIds = null;
+      //   });
+      // }
+    });
   }, [isFocused]);
 
   function folderCreate() {

@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -49,6 +51,7 @@ export default function SMSAuthentication(props) {
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
 
   async function signInWithPhoneNumber(phoneNumber) {
+    console.log(phoneNumber)
     // console.log(phoneNumber);
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
 
@@ -65,7 +68,9 @@ export default function SMSAuthentication(props) {
   }
   const phone = props.route.params.username;
   React.useEffect(() => {
-    signInWithPhoneNumber2("+" + props.route.params.username);
+    InteractionManager.runAfterInteractions(() => {
+      signInWithPhoneNumber2("+" + props.route.params.username.replace("+", ""));
+    });
   }, []);
   return (
     <LinearGradient

@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -70,112 +71,114 @@ export default function FolderMemberSelection(props) {
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
   React.useEffect(() => {
-    ids = [];
-    let deleteIds = [];
-    AsyncStorage.getItem("tmpIds").then((friendIds) => {
-      if (friendIds) {
-        tmpFriendIds = JSON.parse(friendIds);
-      }
-      AsyncStorage.getItem("user").then(function (url) {
-        request.get(url);
-        let urls = url.split("/");
-        urls = urls.filter((url) => {
-          return url;
-        });
-        userId = urls[urls.length - 1];
-        db.collection("users")
-          .doc(userId)
-          .collection("friends")
-          .get()
-          .then((querySnapshot) => {
-            let items = [];
-            querySnapshot.forEach((documentSnapshot) => {
-              let item = documentSnapshot.data();
-              if(item.cancel || item.delete){
-                deleteIds.push(item.id);
-              }
-              if (item.type == "user") {
-                if (tmpFriendIds == null) {
-                  ids.push(item.id);
-                  items.push({
-                    id: item.id,
-                    checkStatus: false,
-                  });
-                } else {
-                  if (tmpFriendIds.includes(item.id)) {
-                    ids.push(item.id);
-                    items.push({
-                      id: item.id,
-                      checkStatus: true,
-                    });
-                  } else {
+    InteractionManager.runAfterInteractions(() => {
+      ids = [];
+      let deleteIds = [];
+      AsyncStorage.getItem("tmpIds").then((friendIds) => {
+        if (friendIds) {
+          tmpFriendIds = JSON.parse(friendIds);
+        }
+        AsyncStorage.getItem("user").then(function (url) {
+          request.get(url);
+          let urls = url.split("/");
+          urls = urls.filter((url) => {
+            return url;
+          });
+          userId = urls[urls.length - 1];
+          db.collection("users")
+            .doc(userId)
+            .collection("friends")
+            .get()
+            .then((querySnapshot) => {
+              let items = [];
+              querySnapshot.forEach((documentSnapshot) => {
+                let item = documentSnapshot.data();
+                if(item.cancel || item.delete){
+                  deleteIds.push(item.id);
+                }
+                if (item.type == "user") {
+                  if (tmpFriendIds == null) {
                     ids.push(item.id);
                     items.push({
                       id: item.id,
                       checkStatus: false,
                     });
+                  } else {
+                    if (tmpFriendIds.includes(item.id)) {
+                      ids.push(item.id);
+                      items.push({
+                        id: item.id,
+                        checkStatus: true,
+                      });
+                    } else {
+                      ids.push(item.id);
+                      items.push({
+                        id: item.id,
+                        checkStatus: false,
+                      });
+                    }
                   }
                 }
-              }
-              //item to indicate checkbox status and id
-            });
+                //item to indicate checkbox status and id
+              });
 
-            tmpFriendIds.map((id) => {
-              if (
-                items.filter((item) => {
-                  return item.id == id;
-                }).length == 0
-              ) {
-                items.push({
-                  id: id,
-                  checkStatus: true,
-                });
-              }
-            });
-
-            ids.filter((item) => {
-              console.log(item + " " + userId);
-              return item != userId;
-            });
-            console.log(ids);
-            tmpFriend = items;
-
-            request
-              .get("user/byIds/", {
-                ids: ids,
-                userId: userId,
-                type: "contact",
-              })
-              .then(function (response) {
-                // console.log(response.data.users.length);
-                //response = get use details from url
-                onUserHtmlChanged(
-                  processUserHtml(props, response.data.users.filter((user) => {
-                    return !deleteIds.includes(user.id) && user.id != userId;
-                  }), tmpFriend)
-                );
-              })
-              .catch(function (error) {
+              tmpFriendIds.map((id) => {
                 if (
-                  error &&
-                  error.response &&
-                  error.response.data &&
-                  Object.keys(error.response.data).length > 0
+                  items.filter((item) => {
+                    return item.id == id;
+                  }).length == 0
                 ) {
-                  alert.warning(
-                    error.response.data[
-                      Object.keys(error.response.data)[0]
-                    ][0] +
-                      "(" +
-                      Object.keys(error.response.data)[0] +
-                      ")"
-                  );
+                  items.push({
+                    id: id,
+                    checkStatus: true,
+                  });
                 }
               });
-          });
-        onLoaded(true);
 
-        tmpFriendIds.map((id) => {});
+              ids.filter((item) => {
+                console.log(item + " " + userId);
+                return item != userId;
+              });
+              console.log(ids);
+              tmpFriend = items;
+
+              request
+                .get("user/byIds/", {
+                  ids: ids,
+                  userId: userId,
+                  type: "contact",
+                })
+                .then(function (response) {
+                  // console.log(response.data.users.length);
+                  //response = get use details from url
+                  onUserHtmlChanged(
+                    processUserHtml(props, response.data.users.filter((user) => {
+                      return !deleteIds.includes(user.id) && user.id != userId;
+                    }), tmpFriend)
+                  );
+                })
+                .catch(function (error) {
+                  if (
+                    error &&
+                    error.response &&
+                    error.response.data &&
+                    Object.keys(error.response.data).length > 0
+                  ) {
+                    alert.warning(
+                      error.response.data[
+                        Object.keys(error.response.data)[0]
+                      ][0] +
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
+                    );
+                  }
+                });
+            });
+          onLoaded(true);
+
+          tmpFriendIds.map((id) => {});
+        });
       });
     });
 

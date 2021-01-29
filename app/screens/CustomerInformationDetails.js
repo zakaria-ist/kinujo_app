@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import { StyleSheet, Text, Image, View, Dimensions, SafeAreaView } from "react-native";
 import { Colors } from "../assets/Colors.js";
 import {

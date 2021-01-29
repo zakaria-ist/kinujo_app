@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   SafeAreaView,
@@ -167,11 +168,35 @@ export default function SearchProducts(props) {
     onFeaturedHtmlChanged(tmpFeaturedHtml);
   }
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
       request
-        .get(url)
+        .get("simple_products/")
         .then(function (response) {
-          onUserChanged(response.data);
+          let products = response.data;
+          onProductsChanged(products);
+          performProductHtml(products);
         })
         .catch(function (error) {
           if (
@@ -188,28 +213,6 @@ export default function SearchProducts(props) {
             );
           }
         });
-    });
-    request
-      .get("simple_products/")
-      .then(function (response) {
-        let products = response.data;
-        onProductsChanged(products);
-        performProductHtml(products);
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
       });
   }, [useIsFocused]);
   return (

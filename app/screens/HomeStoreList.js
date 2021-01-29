@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -201,223 +202,225 @@ export default function HomeStoreList(props) {
   }
 
   React.useEffect(() => {
-    onSelectedJanCodeChanged("")
-    for (var i = 1; i < 10; i++) {
-      if (
-        cartItems.filter((item) => {
-          return item.value == i;
-        }).length == 0
-      ) {
-        cartItems.push({
-          value: i + "",
-          label: i + "",
-        });
+    InteractionManager.runAfterInteractions(() => {
+      onSelectedJanCodeChanged("")
+      for (var i = 1; i < 10; i++) {
+        if (
+          cartItems.filter((item) => {
+            return item.value == i;
+          }).length == 0
+        ) {
+          cartItems.push({
+            value: i + "",
+            label: i + "",
+          });
+        }
       }
-    }
 
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
-
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-          onUserAuthorityIDChanged(response.data.authority.id);
-          request
-            .get(props.route.params.url.replace("simple_products", "products"))
-            .then(function (response) {
-              onProductChanged(response.data);
-
-              db.collection("products")
-                .doc(String(response.data.id))
-                .get()
-                .then(function (doc) {
-                  if (doc.exists) {
-                    db.collection("products")
-                      .doc(String(response.data.id))
-                      .update({
-                        view: firebase.firestore.FieldValue.increment(1),
-                      });
-                  } else {
-                    db.collection("products")
-                      .doc(String(response.data.id))
-                      .set({
-                        view: 1,
-                      });
-                  }
-                });
-
-              db.collection("users")
-                .doc(userId)
-                .collection("favourite")
-                .doc(response.data.id.toString())
-                .get()
-                .then(function (doc) {
-                  if (doc.exists) {
-                    setFavourite(true);
-                  }
-                });
-
-              let tmpVarieties = [];
-              response.data.productVarieties.map((productVariety) => {
-                if (!tmpVarieties.includes(productVariety.name)) {
-                  tmpVarieties.push(productVariety.name);
-                }
-                if (!productVariety.is_hidden) {
-                  productVariety.productVarietySelections.map(
-                    (productVarietySelection) => {
-                      if (!productVarietySelection.is_hidden) {
-                        janCodeNames[productVarietySelection.url] =
-                          productVarietySelection.selection;
-                      }
-                    }
-                  );
-                }
-              });
-
-              tmpVariety = tmpVarieties.filter((item) => {
-                return item;
-              });
-              if (tmpVariety.length > 1) {
-                setName(tmpVariety.join(" x "));
-              } else {
-                setName(tmpVariety);
-              }
-              janCodes = {};
-              response.data.productVarieties.map((productVariety) => {
-                if (!productVariety.is_hidden) {
-                  productVariety.productVarietySelections.map(
-                    (productVarietySelection) => {
-                      if (!productVarietySelection.is_hidden) {
-                        if (
-                          !productVarietySelection.jancode_horizontal.is_hidden
-                        ) {
-                          productVarietySelection.jancode_horizontal.map(
-                            (horizontal) => {
-                              if (!horizontal.is_hidden) {
-                                let hoName = horizontal.horizontal
-                                  ? janCodeNames[horizontal.horizontal]
-                                  : "none";
-                                let veName = horizontal.vertical
-                                  ? janCodeNames[horizontal.vertical]
-                                  : "none";
-                                if (janCodes[hoName]) {
-                                  janCodes[hoName][veName] = {
-                                    stock: horizontal.stock,
-                                    url: horizontal.url,
-                                    id: horizontal.id,
-                                    is_hidden: horizontal.is_hidden,
-                                  };
-                                } else {
-                                  janCodes[hoName] = {};
-                                  janCodes[hoName][veName] = {
-                                    stock: horizontal.stock,
-                                    url: horizontal.url,
-                                    id: horizontal.id,
-                                    is_hidden: horizontal.is_hidden,
-                                  };
-                                }
-                              }
-                            }
-                          );
-                        }
-
-                        if (
-                          !productVarietySelection.jancode_vertical.is_hidden
-                        ) {
-                          productVarietySelection.jancode_vertical.map(
-                            (vertical) => {
-                              if (!vertical.is_hidden) {
-                                let hoName = vertical.horizontal
-                                  ? janCodeNames[vertical.horizontal]
-                                  : "none";
-                                let veName = vertical.vertical
-                                  ? janCodeNames[vertical.vertical]
-                                  : "none";
-                                if (janCodes[hoName]) {
-                                  janCodes[hoName][veName] = {
-                                    stock: vertical.stock,
-                                    url: vertical.url,
-                                    id: vertical.id,
-                                    is_hidden: vertical.is_hidden,
-                                  };
-                                } else {
-                                  janCodes[hoName] = {};
-                                  janCodes[hoName][veName] = {
-                                    stock: vertical.stock,
-                                    url: vertical.url,
-                                    id: vertical.id,
-                                    is_hidden: vertical.is_hidden,
-                                  };
-                                }
-                              }
-                            }
-                          );
-                        }
-                      }
-                    }
-                  );
-                }
-              });
-              onPopupHtmlChanged(
-                populatePopupHtml(props, response.data, janCodes, "")
-              );
-
-              if (response.data.productImages.length > 0) {
-                let images = response.data.productImages.filter(
-                  (productImage) => {
-                    return productImage.is_hidden == 0;
-                  }
-                );
-                console.log(images.map((productImage) => {
-                  return productImage.image.image;
-                }))
-                onImagesChanged(
-                  images.map((productImage) => {
-                    return productImage.image.image;
-                  })
-                );
-              } else {
-                onImagesChanged([
-                  "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg",
-                ]);
-              }
-            })
-            .catch(function (error) {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
-            });
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
         });
+        let userId = urls[urls.length - 1];
+
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            onUserAuthorityIDChanged(response.data.authority.id);
+            request
+              .get(props.route.params.url.replace("simple_products", "products"))
+              .then(function (response) {
+                onProductChanged(response.data);
+
+                db.collection("products")
+                  .doc(String(response.data.id))
+                  .get()
+                  .then(function (doc) {
+                    if (doc.exists) {
+                      db.collection("products")
+                        .doc(String(response.data.id))
+                        .update({
+                          view: firebase.firestore.FieldValue.increment(1),
+                        });
+                    } else {
+                      db.collection("products")
+                        .doc(String(response.data.id))
+                        .set({
+                          view: 1,
+                        });
+                    }
+                  });
+
+                db.collection("users")
+                  .doc(userId)
+                  .collection("favourite")
+                  .doc(response.data.id.toString())
+                  .get()
+                  .then(function (doc) {
+                    if (doc.exists) {
+                      setFavourite(true);
+                    }
+                  });
+
+                let tmpVarieties = [];
+                response.data.productVarieties.map((productVariety) => {
+                  if (!tmpVarieties.includes(productVariety.name)) {
+                    tmpVarieties.push(productVariety.name);
+                  }
+                  if (!productVariety.is_hidden) {
+                    productVariety.productVarietySelections.map(
+                      (productVarietySelection) => {
+                        if (!productVarietySelection.is_hidden) {
+                          janCodeNames[productVarietySelection.url] =
+                            productVarietySelection.selection;
+                        }
+                      }
+                    );
+                  }
+                });
+
+                tmpVariety = tmpVarieties.filter((item) => {
+                  return item;
+                });
+                if (tmpVariety.length > 1) {
+                  setName(tmpVariety.join(" x "));
+                } else {
+                  setName(tmpVariety);
+                }
+                janCodes = {};
+                response.data.productVarieties.map((productVariety) => {
+                  if (!productVariety.is_hidden) {
+                    productVariety.productVarietySelections.map(
+                      (productVarietySelection) => {
+                        if (!productVarietySelection.is_hidden) {
+                          if (
+                            !productVarietySelection.jancode_horizontal.is_hidden
+                          ) {
+                            productVarietySelection.jancode_horizontal.map(
+                              (horizontal) => {
+                                if (!horizontal.is_hidden) {
+                                  let hoName = horizontal.horizontal
+                                    ? janCodeNames[horizontal.horizontal]
+                                    : "none";
+                                  let veName = horizontal.vertical
+                                    ? janCodeNames[horizontal.vertical]
+                                    : "none";
+                                  if (janCodes[hoName]) {
+                                    janCodes[hoName][veName] = {
+                                      stock: horizontal.stock,
+                                      url: horizontal.url,
+                                      id: horizontal.id,
+                                      is_hidden: horizontal.is_hidden,
+                                    };
+                                  } else {
+                                    janCodes[hoName] = {};
+                                    janCodes[hoName][veName] = {
+                                      stock: horizontal.stock,
+                                      url: horizontal.url,
+                                      id: horizontal.id,
+                                      is_hidden: horizontal.is_hidden,
+                                    };
+                                  }
+                                }
+                              }
+                            );
+                          }
+
+                          if (
+                            !productVarietySelection.jancode_vertical.is_hidden
+                          ) {
+                            productVarietySelection.jancode_vertical.map(
+                              (vertical) => {
+                                if (!vertical.is_hidden) {
+                                  let hoName = vertical.horizontal
+                                    ? janCodeNames[vertical.horizontal]
+                                    : "none";
+                                  let veName = vertical.vertical
+                                    ? janCodeNames[vertical.vertical]
+                                    : "none";
+                                  if (janCodes[hoName]) {
+                                    janCodes[hoName][veName] = {
+                                      stock: vertical.stock,
+                                      url: vertical.url,
+                                      id: vertical.id,
+                                      is_hidden: vertical.is_hidden,
+                                    };
+                                  } else {
+                                    janCodes[hoName] = {};
+                                    janCodes[hoName][veName] = {
+                                      stock: vertical.stock,
+                                      url: vertical.url,
+                                      id: vertical.id,
+                                      is_hidden: vertical.is_hidden,
+                                    };
+                                  }
+                                }
+                              }
+                            );
+                          }
+                        }
+                      }
+                    );
+                  }
+                });
+                onPopupHtmlChanged(
+                  populatePopupHtml(props, response.data, janCodes, "")
+                );
+
+                if (response.data.productImages.length > 0) {
+                  let images = response.data.productImages.filter(
+                    (productImage) => {
+                      return productImage.is_hidden == 0;
+                    }
+                  );
+                  console.log(images.map((productImage) => {
+                    return productImage.image.image;
+                  }))
+                  onImagesChanged(
+                    images.map((productImage) => {
+                      return productImage.image.image;
+                    })
+                  );
+                } else {
+                  onImagesChanged([
+                    "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg",
+                  ]);
+                }
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
     });
   }, [isFocused]);
   const { width } = Dimensions.get("window");
