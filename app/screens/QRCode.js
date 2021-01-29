@@ -17,6 +17,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import RNQRGenerator from "rn-qr-generator";
@@ -101,20 +102,26 @@ async function buildLink(userId, is_store) {
 
 export default function QRCode(props) {
   const isFocused = useIsFocused();
-  const [inviteShow, setInviteShow] = useState(false);
+  const [inviteShow, setInviteShow] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
-  const [popupQR, setPopupQR] = useState(false);
-  const [userId, onUserIDChanged] = useState(false);
-  const [store, onStoreChanged] = useState(0);
-  const [storeLink, onStoreLinkChanged] = useState("");
-  const [userLink, onUserLinkChanged] = useState("");
+  const [popupQR, setPopupQR] = useStateIfMounted(false);
+  const [userId, onUserIDChanged] = useStateIfMounted(false);
+  const [store, onStoreChanged] = useStateIfMounted(0);
+  const [storeLink, onStoreLinkChanged] = useStateIfMounted("");
+  const [userLink, onUserLinkChanged] = useStateIfMounted("");
+  const [interacted, setInteracted] = useStateIfMounted(false);
   React.useEffect(() => {
     if(!isFocused){
       setInviteShow(false);
+      setInteracted(false);
     }
-    AsyncStorage.getItem("user").then(function (url) {
-      request.get(url).then((response) => {
-        onUserChanged(response.data);
+
+    InteractionManager.runAfterInteractions(() => {
+      setInteracted(true);
+      AsyncStorage.getItem("user").then(function (url) {
+        request.get(url).then((response) => {
+          onUserChanged(response.data);
+        });
       });
     });
   }, [isFocused]);
@@ -149,30 +156,31 @@ export default function QRCode(props) {
   };
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        let userId = urls[urls.length - 1];
+  
+        buildLink(userId, "1").then(function (link) {
+          console.log(link);
+          onStoreLinkChanged(link);
+        });
+        buildLink(userId, "0").then(function (link) {
+          console.log(link);
+          onUserLinkChanged(link);
+        });
+        onUserIDChanged(userId);
       });
-      let userId = urls[urls.length - 1];
-
-      buildLink(userId, "1").then(function (link) {
-        console.log(link);
-        onStoreLinkChanged(link);
-      });
-      buildLink(userId, "0").then(function (link) {
-        console.log(link);
-        onUserLinkChanged(link);
-      });
-      onUserIDChanged(userId);
     });
-
     return () => {};
   }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <QRCodeScanner
+      {interacted ? (<QRCodeScanner
         onRead={onSuccess}
         showMarker={true}
         reactivate={true}
@@ -229,7 +237,8 @@ export default function QRCode(props) {
         flashMode={RNCamera.Constants.FlashMode.off}
         topViewStyle={styles.none}
         bottomViewStyle={styles.none}
-      />
+      />) : (<View></View>)}
+      
         <ScrollView style={{top:heightPercentageToDP("26%")}}>
           <View style={styles.qrcode_button}>
           <View style={inviteShow ? styles.none : null}>

@@ -94,15 +94,15 @@ export default function CustomKinujoWord({
               height: RFValue(50),
               flexWrap: "wrap",
               flexDirection: "row",
-              paddingVertical: heightPercentageToDP("1%"),
+              paddingVertical: heightPercentageToDP("0.2%"),
               borderRadius: localImages.length > 0 ? 5 : 0,
               backgroundColor:
                 localImages && localImages.length > 1
                   ? "#B3B3B3"
                   : "transparent",
             }}
-            width={RFValue(40)}
-            height={RFValue(40)}
+            width={RFValue(50)}
+            height={RFValue(50)}
             images={localImages}
           ></GroupImages>
         ) : user && user.image ? (

@@ -78,7 +78,7 @@ export default function Cart(props) {
   const [subtotal, onSubTotalChanged] = useStateIfMounted(0);
   const [shipping, onShippingChanged] = useStateIfMounted(0);
   const [tax, onTaxChanged] = useStateIfMounted(0);
-
+  const [user, onUserChanged] = useStateIfMounted({});
   let userId = 0;
   const isFocused = useIsFocused();
   const [selected, onSelectedChanged] = useStateIfMounted("");
@@ -342,7 +342,7 @@ export default function Cart(props) {
                                 return id != product.id;
                               });
                               ids = tmpIds;
-                              onUpdate(tmpIds, firebaseProducts, false);
+                              onUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
                               db.collection("users")
                                 .doc(userId.toString())
                                 .collection("carts")
@@ -400,17 +400,19 @@ export default function Cart(props) {
         let tmpProducts = response.data.products;
 
         total = 0;
+        tmpShipping = 0;
         firebaseProducts.filter((fbProduct) => {
           let quantity = fbProduct.quantity;
           let tmpProduct = tmpProducts.filter((product) => {
             return (product.id = fbProduct.id);
           });
           tmpProduct = tmpProduct[0];
-
           total +=
             (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
+          tmpShipping += tmpProduct.shipping_fee;
         });
 
+        onShippingChanged(tmpShipping)
         onSubTotalChanged(total);
       })
       .catch(function (error) {
@@ -468,7 +470,12 @@ export default function Cart(props) {
           });
           ids = tmpIds;
           firebaseProducts = items;
-          onUpdate(tmpIds, items, false);
+            request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            onUpdate(tmpIds, items, response.data.is_seller && response.data.is_approved);
+          })
         });
       AsyncStorage.getItem("defaultAddress").then((address) => {
         if (address != null) {

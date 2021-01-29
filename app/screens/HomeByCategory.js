@@ -114,7 +114,7 @@ export default function HomeByCategory(props) {
           name={product.name}
           seller={product.user.shop_name}
           price={
-            (user.is_seller
+            (user.is_seller && user.is_approved
               ? format.separator(product.store_price)
               : format.separator(product.price)) + " 円"
           }
@@ -168,7 +168,7 @@ export default function HomeByCategory(props) {
           // name={product.id}
           seller={product.user.shop_name}
           price={
-            (user.is_seller
+            (user.is_seller && user.is_approved
               ? format.separator(product.store_price)
               : format.separator(product.price)) + " 円"
           }

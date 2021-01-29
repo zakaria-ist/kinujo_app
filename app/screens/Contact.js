@@ -11,6 +11,7 @@ import {
   Animated,
   TouchableWithoutFeedback,
 } from "react-native";
+import { InteractionManager } from 'react-native';
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
@@ -519,12 +520,14 @@ export default function Contact(props) {
   }
 
   React.useEffect(() => {
-    selectedUserId = props.route.params ? props.route.params.user_id : "";
-    onShowFriendsChanged(true);
-    populateUser();
-    populateFolder();
-    populateGroup();
-    props.navigation.setParams({ user_id: "" });
+    InteractionManager.runAfterInteractions(() => {
+      selectedUserId = props.route.params ? props.route.params.user_id : "";
+      onShowFriendsChanged(true);
+      populateUser();
+      populateFolder();
+      populateGroup();
+      props.navigation.setParams({ user_id: "" });
+    });
   }, [isFocused]);
 
   return (

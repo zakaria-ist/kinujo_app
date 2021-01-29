@@ -10,4 +10,5 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 registerRootComponent(AppAndroid);
+console.log = console.warn = console.error = () => {};
 console.disableYellowBox = true;

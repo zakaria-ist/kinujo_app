@@ -69,7 +69,7 @@ export default function HomeStoreList(props) {
   const [product, onProductChanged] = useStateIfMounted({});
   const [selectedJanCode, onSelectedJanCodeChanged] = useStateIfMounted(null);
   const [selectedName, onSelectedNameChanged] = useStateIfMounted("");
-  const [images, onImagesChanged] = useStateIfMounted({});
+  const [images, onImagesChanged] = useStateIfMounted([]);
   const [show, onShowChanged] = useStateIfMounted({});
   const [showText, onShowText] = useStateIfMounted(false);
   const [time, setTimePassed] = useStateIfMounted(false);
@@ -228,7 +228,7 @@ export default function HomeStoreList(props) {
           onUserChanged(response.data);
           onUserAuthorityIDChanged(response.data.authority.id);
           request
-            .get(props.route.params.url)
+            .get(props.route.params.url.replace("simple_products", "products"))
             .then(function (response) {
               onProductChanged(response.data);
 
@@ -373,6 +373,9 @@ export default function HomeStoreList(props) {
                     return productImage.is_hidden == 0;
                   }
                 );
+                console.log(images.map((productImage) => {
+                  return productImage.image.image;
+                }))
                 onImagesChanged(
                   images.map((productImage) => {
                     return productImage.image.image;
@@ -624,7 +627,7 @@ export default function HomeStoreList(props) {
               {product && product.category ? product.category.name : ""}
             </Text>
             <Text style={styles.font_medium}>
-              {(user.is_seller
+              {(user.is_seller && user.is_approved
                 ? format.separator(product.store_price)
                 : format.separator(product.price)) +
                 "円" +
