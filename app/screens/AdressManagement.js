@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -69,23 +71,25 @@ export default function AddressManagement(props) {
     );
   }
   React.useEffect(() => {
-    AsyncStorage.getItem("selectedCountry").then((val) => {
-      if (val) {
-        onCountryChanged(val);
-        setCountryCode(val);
-        onCallingCodeChanged(val);
-        AsyncStorage.removeItem("selectedCountry");
-      } else {
-        if (defaultCountry) {
-          onCountryChanged(defaultCountry);
-          setCountryCode(defaultCountry);
-          onCallingCodeChanged(defaultCountry);
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("selectedCountry").then((val) => {
+        if (val) {
+          onCountryChanged(val);
+          setCountryCode(val);
+          onCallingCodeChanged(val);
+          AsyncStorage.removeItem("selectedCountry");
         } else {
-          onCountryChanged("+81");
-          setCountryCode("+81");
-          onCallingCodeChanged("+81");
+          if (defaultCountry) {
+            onCountryChanged(defaultCountry);
+            setCountryCode(defaultCountry);
+            onCallingCodeChanged(defaultCountry);
+          } else {
+            onCountryChanged("+81");
+            setCountryCode("+81");
+            onCallingCodeChanged("+81");
+          }
         }
-      }
+      });
     });
   }, [isFocused]);
   function processCountryHtml(countries) {
@@ -121,9 +125,12 @@ export default function AddressManagement(props) {
     return html;
   }
   React.useEffect(() => {
-    request.get("country_codes/").then(function (response) {
-      countries = response.data;
-      setCountryHtml(processCountryHtml(countries));
+
+    InteractionManager.runAfterInteractions(() => {
+      request.get("country_codes/").then(function (response) {
+        countries = response.data;
+        setCountryHtml(processCountryHtml(countries));
+      });
     });
   }, [true]);
   React.useEffect(() => {
@@ -141,7 +148,7 @@ export default function AddressManagement(props) {
     // onPrefecturesChanged([]);
     onPrefectureLoadedChanged(false);
 
-    postal_code.configure(
+    InteractionManager.runAfterInteractions(() => {postal_code.configure(
       "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
     );
 
@@ -237,6 +244,7 @@ export default function AddressManagement(props) {
           );
         }
       });
+    });
   }, [isFocused]);
 
   function handlePostalCode(value) {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -17,7 +18,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from "react-native";
-import { InteractionManager } from 'react-native';
+
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import RNQRGenerator from "rn-qr-generator";

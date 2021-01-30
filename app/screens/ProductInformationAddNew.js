@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -148,339 +149,341 @@ export default function ProductInformationAddNew(props) {
       // props.navigation.setParams({ url: "" });
     }
 
-    AsyncStorage.getItem("user").then(function (url) {
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-    });
-    request
-      .get("product_categories/")
-      .then((response) => {
-        let categories = response.data.map((category) => {
-          return {
-            label: category.name,
-            value: category.url,
-          };
-        });
-        onProductCategoriesChanged(categories);
-
-        if (props.route.params.url) {
-          request.get(props.route.params.url).then((response) => {
-            let tmpProduct = response.data;
-
-            onProductCategoryChanged(tmpProduct.category.url);
-            onProductChanged(response.data);
-            onProductNameChanged(response.data.name);
-            onBrandNameChanged(response.data.brand_name);
-            onPrChanged(response.data.pr);
-            onProductIdChanged(response.data.url_str);
-            onPublishDateChanged(response.data.opened_date);
-            onPublishStateChanged(
-              response.data.is_opened ? "published" : "unpublished"
-            );
-            onProductVariationChanged(
-              response.data.variety == 0
-                ? "none"
-                : response.data.variety == 1
-                ? "one"
-                : "two"
-            );
-            onProductStatusChanged(
-              response.data.is_used == 0 ? "new" : "secondHand"
-            );
-            onTargetUserChanged(
-              response.data.target == 0
-                ? "allUser"
-                : response.data.target == 1
-                ? "generalUser"
-                : "storeUser"
-            );
-            onPriceChanged(response.data.price.toString());
-            onStorePriceChanged(response.data.store_price);
-            onShippingChanged(response.data.shipping_fee + "");
-            onProductDescriptionChanged(response.data.description);
-            let oldImages = response.data.productImages.map((image) => {
-              let tmpImage = image.image;
-              tmpImage["is_old"] = true;
-              return tmpImage;
-            });
-            oldImages = oldImages.filter((image) => {
-              return !image.is_hidden;
-            });
-            onProductImagesChanged(oldImages);
-            onProductPageDisplayMethodChanged("slidingType");
-            let tmpImages = response.data.productImages;
-
-            let html = [];
-            tmpImages.map((image) => {
-              image = image.image;
-              if (!image.is_hidden) {
-                html.push(
-                  <View
-                    key={image.id}
-                    style={{
-                      marginTop: heightPercentageToDP("1%"),
-                      height: 1,
-                      width: "100%",
-                      height: heightPercentageToDP("30%"),
-                      borderRadius: 1,
-                      borderWidth: 1,
-                      borderColor: Colors.deepGrey,
-                      borderStyle: "dashed",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Image
-                      style={{
-                        width: "100%",
-                        height: heightPercentageToDP("30%"),
-                        position: "absolute",
-                      }}
-                      source={{ uri: image.image }}
-                    />
-                  </View>
-                );
-              }
-            });
-            onProductImageHtmlChanged(html);
-
-            if (response.data.variety == 0) {
-              let productVariety = response.data.productVarieties[0];
-              let productVarietySelection =
-                productVariety.productVarietySelections[0];
-              let horizontal = productVarietySelection.jancode_horizontal[0];
-              onNoneVariationItemsChanged({
-                id: horizontal.id,
-                janCode: horizontal.jan_code,
-                stock: horizontal.stock,
-              });
-            }
-            if (response.data.variety == 1) {
-              let tmpItems = {};
-              tmpItems["items"] = [];
-              // let productVariety = response.data.productVarieties[0];
-              response.data.productVarieties.map((productVariety) => {
-                if (!productVariety.is_hidden) {
-                  tmpItems["name"] = productVariety["name"];
-                  tmpItems["id"] = productVariety["id"];
-                  for (
-                    var i = 0;
-                    i < productVariety.productVarietySelections.length;
-                    i++
-                  ) {
-                    let productVarietySelection =
-                      productVariety.productVarietySelections[i];
-                    let vertical =
-                      productVarietySelection.jancode_horizontal[0];
-                    tmpItems["items"].push({
-                      id: vertical.id,
-                      index: tmpItems["items"].length,
-                      choice: productVarietySelection.selection,
-                      stock: vertical.stock + "",
-                      janCode: vertical.jan_code,
-                      hidden: vertical.is_hidden ? true : false,
-                      delete: vertical.is_hidden ? true : false,
-                    });
-                  }
-                }
-              });
-              onOneVariationItemsChanged(tmpItems);
-            }
-            if (response.data.variety == 2) {
-              let firstProductVariety = response.data.productVarieties[0];
-              let secondProductVariety = response.data.productVarieties[1];
-
-              let tmpItems = {
-                items: [
-                  {
-                    id: firstProductVariety["id"],
-                    index: 0,
-                    horizontalItem: firstProductVariety["name"],
-                    choices: [],
-                  },
-                  {
-                    id: secondProductVariety["id"],
-                    index: 1,
-                    horizontalItem: secondProductVariety["name"],
-                    choices: [],
-                  },
-                ],
-                mappingValue: {},
-              };
-
-              rawMapping = {};
-
-              firstProductVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  if (!productVarietySelection.is_hidden) {
-                    rawMapping[productVarietySelection.id] =
-                      productVarietySelection.selection;
-                    tmpItems["items"][0]["choices"].push({
-                      choiceIndex: tmpItems["items"][0]["choices"].length,
-                      choiceItem: productVarietySelection.selection,
-                      id: productVarietySelection.id,
-                    });
-                  }
-                }
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
               );
-              secondProductVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  if (!productVarietySelection.is_hidden) {
-                    rawMapping[productVarietySelection.id] =
-                      productVarietySelection.selection;
-                    tmpItems["items"][1]["choices"].push({
-                      choiceIndex: tmpItems["items"][1]["choices"].length,
-                      choiceItem: productVarietySelection.selection,
-                      id: productVarietySelection.id,
-                    });
-                  }
-                }
-              );
-
-              firstProductVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  if (!productVarietySelection.is_hidden) {
-                    productVarietySelection.jancode_horizontal.map(
-                      (horizontal) => {
-                        if (
-                          horizontal.horizontal &&
-                          horizontal.vertical &&
-                          !horizontal.is_hidden
-                        ) {
-                          let horizontalId = getId(horizontal.horizontal);
-                          let verticalId = getId(horizontal.vertical);
-                          if (
-                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                          ) {
-                            tmpItems["mappingValue"][
-                              rawMapping[horizontalId]
-                            ] = {};
-                          }
-                          tmpItems["mappingValue"][rawMapping[horizontalId]][
-                            rawMapping[verticalId]
-                          ] = {
-                            id: horizontal.id,
-                            stock: horizontal.stock + "",
-                            janCode: horizontal.jan_code,
-                            delete: horizontal.is_hidden ? true : false,
-                          };
-                        }
-                      }
-                    );
-                    productVarietySelection.jancode_vertical.map((vertical) => {
-                      if (
-                        vertical.horizontal &&
-                        vertical.vertical &&
-                        !vertical.is_hidden
-                      ) {
-                        let horizontalId = getId(vertical.horizontal);
-                        let verticalId = getId(vertical.vertical);
-                        if (
-                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                        ) {
-                          tmpItems["mappingValue"][
-                            rawMapping[horizontalId]
-                          ] = {};
-                        }
-                        tmpItems["mappingValue"][rawMapping[horizontalId]][
-                          rawMapping[verticalId]
-                        ] = {
-                          id: vertical.id,
-                          stock: vertical.stock + "",
-                          janCode: vertical.jan_code,
-                          delete: vertical.is_hidden ? true : false,
-                        };
-                      }
-                    });
-                  }
-                }
-              );
-              secondProductVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  if (!productVarietySelection.is_hidden) {
-                    productVarietySelection.jancode_horizontal.map(
-                      (horizontal) => {
-                        if (
-                          horizontal.horizontal &&
-                          horizontal.vertical &&
-                          !horizontal.is_hidden
-                        ) {
-                          let horizontalId = getId(horizontal.horizontal);
-                          let verticalId = getId(horizontal.vertical);
-                          if (
-                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                          ) {
-                            tmpItems["mappingValue"][
-                              rawMapping[horizontalId]
-                            ] = {};
-                          }
-                          tmpItems["mappingValue"][rawMapping[horizontalId]][
-                            rawMapping[verticalId]
-                          ] = {
-                            id: horizontal.id,
-                            stock: horizontal.stock + "",
-                            janCode: horizontal.jan_code,
-                            delete: horizontal.is_hidden ? true : false,
-                          };
-                        }
-                      }
-                    );
-                    productVarietySelection.jancode_vertical.map((vertical) => {
-                      if (
-                        vertical.horizontal &&
-                        vertical.vertical &&
-                        !vertical.is_hidden
-                      ) {
-                        let horizontalId = getId(vertical.horizontal);
-                        let verticalId = getId(vertical.vertical);
-                        if (
-                          !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                        ) {
-                          tmpItems["mappingValue"][
-                            rawMapping[horizontalId]
-                          ] = {};
-                        }
-                        tmpItems["mappingValue"][rawMapping[horizontalId]][
-                          rawMapping[verticalId]
-                        ] = {
-                          id: vertical.id,
-                          stock: vertical.stock + "",
-                          janCode: vertical.jan_code,
-                          delete: vertical.is_hidden ? true : false,
-                        };
-                      }
-                    });
-                  }
-                }
-              );
-              onTwoVariationItemsChanged(tmpItems);
             }
           });
-        } else {
-          let d = new Date();
-          onPublishDateChanged(Moment().format("YYYY-MM-DD"));
-        }
-      })
-      .catch((error) => {
-        // console.log(error);
+      });
+      request
+        .get("product_categories/")
+        .then((response) => {
+          let categories = response.data.map((category) => {
+            return {
+              label: category.name,
+              value: category.url,
+            };
+          });
+          onProductCategoriesChanged(categories);
+
+          if (props.route.params.url) {
+            request.get(props.route.params.url).then((response) => {
+              let tmpProduct = response.data;
+
+              onProductCategoryChanged(tmpProduct.category.url);
+              onProductChanged(response.data);
+              onProductNameChanged(response.data.name);
+              onBrandNameChanged(response.data.brand_name);
+              onPrChanged(response.data.pr);
+              onProductIdChanged(response.data.url_str);
+              onPublishDateChanged(response.data.opened_date);
+              onPublishStateChanged(
+                response.data.is_opened ? "published" : "unpublished"
+              );
+              onProductVariationChanged(
+                response.data.variety == 0
+                  ? "none"
+                  : response.data.variety == 1
+                  ? "one"
+                  : "two"
+              );
+              onProductStatusChanged(
+                response.data.is_used == 0 ? "new" : "secondHand"
+              );
+              onTargetUserChanged(
+                response.data.target == 0
+                  ? "allUser"
+                  : response.data.target == 1
+                  ? "generalUser"
+                  : "storeUser"
+              );
+              onPriceChanged(response.data.price.toString());
+              onStorePriceChanged(response.data.store_price);
+              onShippingChanged(response.data.shipping_fee + "");
+              onProductDescriptionChanged(response.data.description);
+              let oldImages = response.data.productImages.map((image) => {
+                let tmpImage = image.image;
+                tmpImage["is_old"] = true;
+                return tmpImage;
+              });
+              oldImages = oldImages.filter((image) => {
+                return !image.is_hidden;
+              });
+              onProductImagesChanged(oldImages);
+              onProductPageDisplayMethodChanged("slidingType");
+              let tmpImages = response.data.productImages;
+
+              let html = [];
+              tmpImages.map((image) => {
+                image = image.image;
+                if (!image.is_hidden) {
+                  html.push(
+                    <View
+                      key={image.id}
+                      style={{
+                        marginTop: heightPercentageToDP("1%"),
+                        height: 1,
+                        width: "100%",
+                        height: heightPercentageToDP("30%"),
+                        borderRadius: 1,
+                        borderWidth: 1,
+                        borderColor: Colors.deepGrey,
+                        borderStyle: "dashed",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Image
+                        style={{
+                          width: "100%",
+                          height: heightPercentageToDP("30%"),
+                          position: "absolute",
+                        }}
+                        source={{ uri: image.image }}
+                      />
+                    </View>
+                  );
+                }
+              });
+              onProductImageHtmlChanged(html);
+
+              if (response.data.variety == 0) {
+                let productVariety = response.data.productVarieties[0];
+                let productVarietySelection =
+                  productVariety.productVarietySelections[0];
+                let horizontal = productVarietySelection.jancode_horizontal[0];
+                onNoneVariationItemsChanged({
+                  id: horizontal.id,
+                  janCode: horizontal.jan_code,
+                  stock: horizontal.stock,
+                });
+              }
+              if (response.data.variety == 1) {
+                let tmpItems = {};
+                tmpItems["items"] = [];
+                // let productVariety = response.data.productVarieties[0];
+                response.data.productVarieties.map((productVariety) => {
+                  if (!productVariety.is_hidden) {
+                    tmpItems["name"] = productVariety["name"];
+                    tmpItems["id"] = productVariety["id"];
+                    for (
+                      var i = 0;
+                      i < productVariety.productVarietySelections.length;
+                      i++
+                    ) {
+                      let productVarietySelection =
+                        productVariety.productVarietySelections[i];
+                      let vertical =
+                        productVarietySelection.jancode_horizontal[0];
+                      tmpItems["items"].push({
+                        id: vertical.id,
+                        index: tmpItems["items"].length,
+                        choice: productVarietySelection.selection,
+                        stock: vertical.stock + "",
+                        janCode: vertical.jan_code,
+                        hidden: vertical.is_hidden ? true : false,
+                        delete: vertical.is_hidden ? true : false,
+                      });
+                    }
+                  }
+                });
+                onOneVariationItemsChanged(tmpItems);
+              }
+              if (response.data.variety == 2) {
+                let firstProductVariety = response.data.productVarieties[0];
+                let secondProductVariety = response.data.productVarieties[1];
+
+                let tmpItems = {
+                  items: [
+                    {
+                      id: firstProductVariety["id"],
+                      index: 0,
+                      horizontalItem: firstProductVariety["name"],
+                      choices: [],
+                    },
+                    {
+                      id: secondProductVariety["id"],
+                      index: 1,
+                      horizontalItem: secondProductVariety["name"],
+                      choices: [],
+                    },
+                  ],
+                  mappingValue: {},
+                };
+
+                rawMapping = {};
+
+                firstProductVariety.productVarietySelections.map(
+                  (productVarietySelection) => {
+                    if (!productVarietySelection.is_hidden) {
+                      rawMapping[productVarietySelection.id] =
+                        productVarietySelection.selection;
+                      tmpItems["items"][0]["choices"].push({
+                        choiceIndex: tmpItems["items"][0]["choices"].length,
+                        choiceItem: productVarietySelection.selection,
+                        id: productVarietySelection.id,
+                      });
+                    }
+                  }
+                );
+                secondProductVariety.productVarietySelections.map(
+                  (productVarietySelection) => {
+                    if (!productVarietySelection.is_hidden) {
+                      rawMapping[productVarietySelection.id] =
+                        productVarietySelection.selection;
+                      tmpItems["items"][1]["choices"].push({
+                        choiceIndex: tmpItems["items"][1]["choices"].length,
+                        choiceItem: productVarietySelection.selection,
+                        id: productVarietySelection.id,
+                      });
+                    }
+                  }
+                );
+
+                firstProductVariety.productVarietySelections.map(
+                  (productVarietySelection) => {
+                    if (!productVarietySelection.is_hidden) {
+                      productVarietySelection.jancode_horizontal.map(
+                        (horizontal) => {
+                          if (
+                            horizontal.horizontal &&
+                            horizontal.vertical &&
+                            !horizontal.is_hidden
+                          ) {
+                            let horizontalId = getId(horizontal.horizontal);
+                            let verticalId = getId(horizontal.vertical);
+                            if (
+                              !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                            ) {
+                              tmpItems["mappingValue"][
+                                rawMapping[horizontalId]
+                              ] = {};
+                            }
+                            tmpItems["mappingValue"][rawMapping[horizontalId]][
+                              rawMapping[verticalId]
+                            ] = {
+                              id: horizontal.id,
+                              stock: horizontal.stock + "",
+                              janCode: horizontal.jan_code,
+                              delete: horizontal.is_hidden ? true : false,
+                            };
+                          }
+                        }
+                      );
+                      productVarietySelection.jancode_vertical.map((vertical) => {
+                        if (
+                          vertical.horizontal &&
+                          vertical.vertical &&
+                          !vertical.is_hidden
+                        ) {
+                          let horizontalId = getId(vertical.horizontal);
+                          let verticalId = getId(vertical.vertical);
+                          if (
+                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                          ) {
+                            tmpItems["mappingValue"][
+                              rawMapping[horizontalId]
+                            ] = {};
+                          }
+                          tmpItems["mappingValue"][rawMapping[horizontalId]][
+                            rawMapping[verticalId]
+                          ] = {
+                            id: vertical.id,
+                            stock: vertical.stock + "",
+                            janCode: vertical.jan_code,
+                            delete: vertical.is_hidden ? true : false,
+                          };
+                        }
+                      });
+                    }
+                  }
+                );
+                secondProductVariety.productVarietySelections.map(
+                  (productVarietySelection) => {
+                    if (!productVarietySelection.is_hidden) {
+                      productVarietySelection.jancode_horizontal.map(
+                        (horizontal) => {
+                          if (
+                            horizontal.horizontal &&
+                            horizontal.vertical &&
+                            !horizontal.is_hidden
+                          ) {
+                            let horizontalId = getId(horizontal.horizontal);
+                            let verticalId = getId(horizontal.vertical);
+                            if (
+                              !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                            ) {
+                              tmpItems["mappingValue"][
+                                rawMapping[horizontalId]
+                              ] = {};
+                            }
+                            tmpItems["mappingValue"][rawMapping[horizontalId]][
+                              rawMapping[verticalId]
+                            ] = {
+                              id: horizontal.id,
+                              stock: horizontal.stock + "",
+                              janCode: horizontal.jan_code,
+                              delete: horizontal.is_hidden ? true : false,
+                            };
+                          }
+                        }
+                      );
+                      productVarietySelection.jancode_vertical.map((vertical) => {
+                        if (
+                          vertical.horizontal &&
+                          vertical.vertical &&
+                          !vertical.is_hidden
+                        ) {
+                          let horizontalId = getId(vertical.horizontal);
+                          let verticalId = getId(vertical.vertical);
+                          if (
+                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
+                          ) {
+                            tmpItems["mappingValue"][
+                              rawMapping[horizontalId]
+                            ] = {};
+                          }
+                          tmpItems["mappingValue"][rawMapping[horizontalId]][
+                            rawMapping[verticalId]
+                          ] = {
+                            id: vertical.id,
+                            stock: vertical.stock + "",
+                            janCode: vertical.jan_code,
+                            delete: vertical.is_hidden ? true : false,
+                          };
+                        }
+                      });
+                    }
+                  }
+                );
+                onTwoVariationItemsChanged(tmpItems);
+              }
+            });
+          } else {
+            let d = new Date();
+            onPublishDateChanged(Moment().format("YYYY-MM-DD"));
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+        });
       });
   }, [isFocused]);
   function onValueChanged(variant) {

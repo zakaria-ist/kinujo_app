@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   SafeAreaView,
@@ -165,25 +166,27 @@ export default function FolderContactList(props) {
   }
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let userId = getID(url);
-      firebase
-        .firestore()
-        .collection("users")
-        .doc(userId)
-        .collection("folders")
-        .doc(props.route.params.folderID)
-        .get()
-        .then(function (snapshot) {
-          request
-            .get("user/byIds/", {
-              ids: snapshot.data().users,
-            })
-            .then(function (response) {
-              globalUsers = response.data.users;
-              onUserHtmlChanged(processUserHtml(props, response.data.users));
-            });
-        });
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let userId = getID(url);
+        firebase
+          .firestore()
+          .collection("users")
+          .doc(userId)
+          .collection("folders")
+          .doc(props.route.params.folderID)
+          .get()
+          .then(function (snapshot) {
+            request
+              .get("user/byIds/", {
+                ids: snapshot.data().users,
+              })
+              .then(function (response) {
+                globalUsers = response.data.users;
+                onUserHtmlChanged(processUserHtml(props, response.data.users));
+              });
+          });
+      });
     });
   }, [useIsFocused]);
   return (

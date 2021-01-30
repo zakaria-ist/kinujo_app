@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -401,7 +402,9 @@ export default function PurchaseHistory(props) {
   }
 
   React.useEffect(() => {
-    load();
+    InteractionManager.runAfterInteractions(() => {
+      load();
+    });
   }, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>

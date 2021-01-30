@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -50,111 +52,113 @@ export default function FolderMemberSelection(props) {
   const [loaded, onLoaded] = useStateIfMounted(false);
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    ids = [];
-    AsyncStorage.getItem("tmpIds").then((friendIds) => {
-      tmpFriendIds = JSON.parse(friendIds);
-    });
-    AsyncStorage.getItem("user").then(function (url) {
-      request.get(url);
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
+
+    InteractionManager.runAfterInteractions(() => {
+      ids = [];
+      AsyncStorage.getItem("tmpIds").then((friendIds) => {
+        tmpFriendIds = JSON.parse(friendIds);
       });
-      userId = urls[urls.length - 1];
-      const subscriber = db
-        .collection("users")
-        .doc(String(userId))
-        .collection("friends")
-        .get()
-        .then((querySnapshot) => {
-          let items = [];
-          let deleteIds = [];
-          ids = [];
-          querySnapshot.forEach((documentSnapshot) => {
-            let item = documentSnapshot.data();
-            if (item.cancel || item.delete) {
-              deleteIds.push(item.id);
-            }
-            if (
-              item.type == "user" &&
-              !item.delete &&
-              !item.cancel &&
-              item.id != userId
-            ) {
-              if (tmpFriendIds == null) {
-                ids.push(item.id);
-                items.push({
-                  id: item.id,
-                  checkStatus: false,
-                });
-              } else {
-                if (tmpFriendIds.includes(item.id)) {
-                  ids.push(item.id);
-                  items.push({
-                    id: item.id,
-                    checkStatus: true,
-                  });
-                } else {
+      AsyncStorage.getItem("user").then(function (url) {
+        request.get(url);
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
+        const subscriber = db
+          .collection("users")
+          .doc(String(userId))
+          .collection("friends")
+          .get()
+          .then((querySnapshot) => {
+            let items = [];
+            let deleteIds = [];
+            ids = [];
+            querySnapshot.forEach((documentSnapshot) => {
+              let item = documentSnapshot.data();
+              if (item.cancel || item.delete) {
+                deleteIds.push(item.id);
+              }
+              if (
+                item.type == "user" &&
+                !item.delete &&
+                !item.cancel &&
+                item.id != userId
+              ) {
+                if (tmpFriendIds == null) {
                   ids.push(item.id);
                   items.push({
                     id: item.id,
                     checkStatus: false,
                   });
+                } else {
+                  if (tmpFriendIds.includes(item.id)) {
+                    ids.push(item.id);
+                    items.push({
+                      id: item.id,
+                      checkStatus: true,
+                    });
+                  } else {
+                    ids.push(item.id);
+                    items.push({
+                      id: item.id,
+                      checkStatus: false,
+                    });
+                  }
                 }
               }
-            }
-          });
+            });
 
-          tmpFriendIds.map((id) => {
-            if (
-              items.filter((item) => {
-                return item.id == id;
-              }).length == 0
-            ) {
-              items.push({
-                id: id,
-                checkStatus: true,
-              });
-            }
-          });
-          ids.filter((item) => {
-            console.log(item + " " + userId);
-            return item != userId;
-          });
-          console.log(ids);
-          tmpFriend = items;
-          request
-            .get("user/byIds/", {
-              ids: ids,
-              userId: userId,
-              type: "contact",
-            })
-            .then(function (response) {
-              users = response.data.users;
-              users = users.filter((user) => {
-                return !deleteIds.includes(user.id) && user.id != userId;
-              });
-              onUserHtmlChanged(processUserHtml(props, users, tmpFriend));
-            })
-            .catch(function (error) {
+            tmpFriendIds.map((id) => {
               if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
+                items.filter((item) => {
+                  return item.id == id;
+                }).length == 0
               ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
+                items.push({
+                  id: id,
+                  checkStatus: true,
+                });
               }
             });
-        });
-      onLoaded(true);
+            ids.filter((item) => {
+              console.log(item + " " + userId);
+              return item != userId;
+            });
+            console.log(ids);
+            tmpFriend = items;
+            request
+              .get("user/byIds/", {
+                ids: ids,
+                userId: userId,
+                type: "contact",
+              })
+              .then(function (response) {
+                users = response.data.users;
+                users = users.filter((user) => {
+                  return !deleteIds.includes(user.id) && user.id != userId;
+                });
+                onUserHtmlChanged(processUserHtml(props, users, tmpFriend));
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
+          });
+        onLoaded(true);
+      });
     });
-
     if (!isFocused) {
       onUserHtmlChanged(<View></View>);
     }

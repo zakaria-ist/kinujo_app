@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -67,16 +69,17 @@ export default function PasswordReset(props) {
     onLoaded(true);
   }
   React.useEffect(() => {
-    if (triggerTimer == true && timer > 0) {
-      setTimeout(() => setTimer(timer - 1), 1000);
-      onResendShow(true);
-    } else if (timer == 0) {
-      triggerResend(true);
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (triggerTimer == true && timer > 0) {
+        setTimeout(() => setTimer(timer - 1), 1000);
+        onResendShow(true);
+      } else if (timer == 0) {
+        triggerResend(true);
+      }
+    });
   });
 
   async function signInWithPhoneNumber(phoneNumber) {
-    console.log(phoneNumber)
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
     setConfirm(confirmation);
   }
@@ -172,7 +175,6 @@ export default function PasswordReset(props) {
             onPress={() => {
               if (phone != "") {
                 onVerficaitonButtonClicked(true);
-                console.log(callingCode + phone);
                 signInWithPhoneNumber("+" + callingCode + phone)
                   .then(() => {})
                   .catch((error) => {
@@ -209,11 +211,13 @@ export default function PasswordReset(props) {
             <TouchableWithoutFeedback
               disabled={timer == 0 ? false : true}
               onPress={() => {
-                if (phone != "") {
-                  setTimer(30);
-                  signInWithPhoneNumber(callingCode + phone);
-                } else {
-                  alert.warning(Translate.t("fieldNotFilled"));
+                if(timer == 0){
+                  if (phone != "") {
+                    setTimer(30);
+                    signInWithPhoneNumber("+" + callingCode + phone);
+                  } else {
+                    alert.warning(Translate.t("fieldNotFilled"));
+                  }
                 }
               }}
             >

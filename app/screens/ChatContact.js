@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -55,13 +57,15 @@ export default function ChatContact({
   const [contactImage, setContactImage] = useStateIfMounted("");
 
   React.useEffect(() => {
-    if (contactID) {
-      request.get("profiles/" + contactID).then((response) => {
-        if (response.data.image) {
-          setContactImage(response.data.image.image);
-        }
-      });
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (contactID) {
+        request.get("profiles/" + contactID).then((response) => {
+          if (response.data.image) {
+            setContactImage(response.data.image.image);
+          }
+        });
+      }
+    });
   }, [contactID]);
   return (
     <TouchableWithoutFeedback

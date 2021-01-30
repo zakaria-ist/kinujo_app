@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   SafeAreaView,
@@ -67,9 +69,11 @@ export default function CountrySearch(props) {
     return html;
   }
   React.useEffect(() => {
-    request.get("country_codes/").then(function (response) {
-      countries = response.data;
-      setCountryHtml(processCountryHtml(countries));
+    InteractionManager.runAfterInteractions(() => {
+      request.get("country_codes/").then(function (response) {
+        countries = response.data;
+        setCountryHtml(processCountryHtml(countries));
+      });
     });
   }, [true]);
   return (

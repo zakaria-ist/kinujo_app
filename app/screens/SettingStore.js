@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -12,7 +14,7 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
-import { InteractionManager } from 'react-native';
+
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
@@ -471,18 +473,20 @@ export default function SettingStore(props) {
                   elevation: -1,
                 }}
                 onPress={() => {
-                  AsyncStorage.removeItem("user").then(() => {
-                    db.collection("users")
-                      .doc(String(user.id))
-                      .collection("token")
-                      .doc(String(user.id))
-                      .delete();
-                    props.navigation.reset({
-                      index: 0,
-                      routes: [{ name: "LoginScreen" }],
+                  alert.ask(Translate.t("confirm_logout"), ()=>{
+                    AsyncStorage.removeItem("user").then(() => {
+                      db.collection("users")
+                        .doc(String(user.id))
+                        .collection("token")
+                        .doc(String(user.id))
+                        .delete();
+                      props.navigation.reset({
+                        index: 0,
+                        routes: [{ name: "LoginScreen" }],
+                      });
                     });
+                    AsyncStorage.removeItem("defaultAddress");
                   });
-                  AsyncStorage.removeItem("defaultAddress");
                 }}
               >
                 <View

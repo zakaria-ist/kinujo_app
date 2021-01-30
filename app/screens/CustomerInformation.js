@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -95,68 +96,70 @@ export default function CustomerInformation(props) {
   chatPersonID = user.id;
   groupName = user.real_name;
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let userId = urls[urls.length - 1];
-      onUserIdChanged(userId);
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        let userId = urls[urls.length - 1];
+        onUserIdChanged(userId);
 
-      let customerUrls = props.route.params.url.split("/");
-      customerUrls = customerUrls.filter((url) => {
-        return url;
-      });
-      let customerId = customerUrls[customerUrls.length - 1];
-      onCustomerIdChanged(customerId);
+        let customerUrls = props.route.params.url.split("/");
+        customerUrls = customerUrls.filter((url) => {
+          return url;
+        });
+        let customerId = customerUrls[customerUrls.length - 1];
+        onCustomerIdChanged(customerId);
 
 
-      buildLink(customerId, "1").then(function (link) {
-        onStoreLinkChanged(link);
-      });
-      buildLink(customerId, "0").then(function (link) {
-        onUserLinkChanged(link);
+        buildLink(customerId, "1").then(function (link) {
+          onStoreLinkChanged(link);
+        });
+        buildLink(customerId, "0").then(function (link) {
+          onUserLinkChanged(link);
+        });
+
+        const subscriber = db
+          .collection("users")
+          .doc(userId)
+          .collection("customers")
+          .doc(customerId)
+          .onSnapshot((documentSnapshot) => {
+            if (documentSnapshot.data()) {
+              onFirebaseUserChanged(documentSnapshot.data());
+              onMemoChanged(documentSnapshot.data().memo);
+            } else {
+              onFirebaseUserChanged({
+                memo: "",
+                displayName: "",
+                secret_mode: false,
+                block: false,
+              });
+            }
+          });
       });
 
-      const subscriber = db
-        .collection("users")
-        .doc(userId)
-        .collection("customers")
-        .doc(customerId)
-        .onSnapshot((documentSnapshot) => {
-          if (documentSnapshot.data()) {
-            onFirebaseUserChanged(documentSnapshot.data());
-            onMemoChanged(documentSnapshot.data().memo);
-          } else {
-            onFirebaseUserChanged({
-              memo: "",
-              displayName: "",
-              secret_mode: false,
-              block: false,
-            });
+      request
+        .get(props.route.params.url)
+        .then(function (response) {
+          onUserChanged(response.data);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
-    });
-
-    request
-      .get(props.route.params.url)
-      .then(function (response) {
-        onUserChanged(response.data);
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
       });
   }, [isFocused]);
   const sendMessageHandler = () => {

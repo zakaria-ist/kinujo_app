@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -83,9 +85,12 @@ export default function HomeProducts({
   }
   // console.log(productAuthorityId);
   React.useEffect(() => {
-    if (product_id) {
-      checkFavourite(product_id);
-    }
+
+    InteractionManager.runAfterInteractions(() => {
+      if (product_id) {
+        checkFavourite(product_id);
+      }
+    });
   }, [product_id, isFocused]);
   return (
     <SafeAreaView

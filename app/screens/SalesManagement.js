@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -159,88 +160,90 @@ export default function SalesManagement(props) {
   const [total, onTotalChanged] = useStateIfMounted(0);
 
   React.useEffect(() => {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("user").then(function (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        let userId = urls[urls.length - 1];
+        userID = userId;
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+
+        request
+          .get("commissionProducts/" + userId + "/")
+          .then(function (response) {
+            if (response.data.commissionProducts) {
+              commissionProducts = response.data.commissionProducts;
+            } else {
+              commissionProducts = [];
+            }
+            onUpdate();
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+            onCommissionLoaded(true);
+          });
+
+        request
+          .get("saleProducts/" + userId + "/")
+          .then(function (response) {
+            // salesProducts = [];
+            if (response.data.saleProducts) {
+              salesProducts = response.data.saleProducts;
+            } else {
+              salesProducts = [];
+            }
+            onUpdate();
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+            onSaleLoaded(true);
+          });
       });
-      let userId = urls[urls.length - 1];
-      userID = userId;
-      request
-        .get(url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-
-      request
-        .get("commissionProducts/" + userId + "/")
-        .then(function (response) {
-          if (response.data.commissionProducts) {
-            commissionProducts = response.data.commissionProducts;
-          } else {
-            commissionProducts = [];
-          }
-          onUpdate();
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-          onCommissionLoaded(true);
-        });
-
-      request
-        .get("saleProducts/" + userId + "/")
-        .then(function (response) {
-          // salesProducts = [];
-          if (response.data.saleProducts) {
-            salesProducts = response.data.saleProducts;
-          } else {
-            salesProducts = [];
-          }
-          onUpdate();
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-          onSaleLoaded(true);
-        });
     });
   }, [isFocused]);
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -166,25 +167,27 @@ export default function Setting(props) {
       onEditPhoneNumberChanged(false);
     }
 
-    if(isFocused){
-      AsyncStorage.getItem("tel-navigate").then((val) => {
-        if(val){
-          onPhoneNumberChanged(val);
-          AsyncStorage.removeItem("tel-navigate").then(()=>{
-            onEditPhoneNumberChanged(true);
-          });
-        }
-      })
-    }
-    load();
-    request.get("country_codes/").then(function (response) {
-      let tmpCountry = response.data.map((country) => {
-        return {
-          id: country.tel_code,
-          name: country.tel_code,
-        };
+    InteractionManager.runAfterInteractions(() => {
+      if(isFocused){
+        AsyncStorage.getItem("tel-navigate").then((val) => {
+          if(val){
+            onPhoneNumberChanged(val);
+            AsyncStorage.removeItem("tel-navigate").then(()=>{
+              onEditPhoneNumberChanged(true);
+            });
+          }
+        })
+      }
+      load();
+      request.get("country_codes/").then(function (response) {
+        let tmpCountry = response.data.map((country) => {
+          return {
+            id: country.tel_code,
+            name: country.tel_code,
+          };
+        });
+        onCountryCodeHtmlChanged(tmpCountry);
       });
-      onCountryCodeHtmlChanged(tmpCountry);
     });
   }, [isFocused]);
   function processCountryCode(val) {

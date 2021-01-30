@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -40,19 +41,21 @@ export default function ProductNoneVariations({
   const [editStock, setEditStock] = useStateIfMounted(0);
   const [id, setId] = useStateIfMounted("");
   React.useEffect(() => {
-    if (pItems) {
-      setJanCode(pItems.janCode);
-      if (pItems.editStock) {
-        console.log(pItems.editStock)
-        if(pItems.editStock != "+" && pItems.editStock != "-"){
-          if(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)){
-            setEditStock(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)[0]);
-          } else {
-            setEditStock("")
+    InteractionManager.runAfterInteractions(() => {
+      if (pItems) {
+        setJanCode(pItems.janCode);
+        if (pItems.editStock) {
+          console.log(pItems.editStock)
+          if(pItems.editStock != "+" && pItems.editStock != "-"){
+            if(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)){
+              setEditStock(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)[0]);
+            } else {
+              setEditStock("")
+            }
           }
         }
       }
-    }
+    });
   }, [pItems]);
   function handleStock(value) {
     if (onItemsChanged) {

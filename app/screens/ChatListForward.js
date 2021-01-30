@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -480,27 +481,29 @@ export default function ChatList(props) {
   }
 
   React.useEffect(() => {
-    AsyncStorage.getItem("chat").then((item) => {
-      if (item) {
-        AsyncStorage.removeItem("chat");
-        item = JSON.parse(item);
-        props.navigation.push("ChatScreen", item);
-      }
-    });
+    InteractionManager.runAfterInteractions(() => {
+      AsyncStorage.getItem("chat").then((item) => {
+        if (item) {
+          AsyncStorage.removeItem("chat");
+          item = JSON.parse(item);
+          props.navigation.push("ChatScreen", item);
+        }
+      });
 
-    let unsubscribe;
-    chats = [];
-    firstLoad().then((unsub) => {
-      unsubscribe = unsub;
-    });
-
-    return function () {
+      let unsubscribe;
       chats = [];
-      onChatHtmlChanged([]);
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+      firstLoad().then((unsub) => {
+        unsubscribe = unsub;
+      });
+
+      return function () {
+        chats = [];
+        onChatHtmlChanged([]);
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      };
+    });
   }, [isFocused]);
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>

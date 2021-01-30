@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -432,176 +433,179 @@ export default function Cart(props) {
       });
   }
   React.useEffect(() => {
-    for (var i = 1; i < 100; i++) {
-      if (
-        cartItems.filter((item) => {
-          return item.value == i;
-        }).length == 0
-      ) {
-        cartItems.push({
-          value: i + "",
-          label: i + "",
-        });
-      }
-    }
-    AsyncStorage.getItem("user").then((url) => {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      userId = urls[urls.length - 1];
 
-      db.collection("users")
-        .doc(userId)
-        .collection("carts")
-        .get()
-        .then((querySnapshot) => {
-          let tmpIds = [];
-          let items = [];
-          querySnapshot.forEach((documentSnapshot) => {
-            tmpIds = tmpIds.concat(documentSnapshot.data().id);
-            items.push({
-              product_id: documentSnapshot.data().id.toString(),
-              id: documentSnapshot.id.toString(),
-              quantity: documentSnapshot.data().quantity,
-              varietyId: documentSnapshot.data().url,
-              name: documentSnapshot.data().name,
-            });
+    InteractionManager.runAfterInteractions(() => {
+      for (var i = 1; i < 100; i++) {
+        if (
+          cartItems.filter((item) => {
+            return item.value == i;
+          }).length == 0
+        ) {
+          cartItems.push({
+            value: i + "",
+            label: i + "",
           });
-          ids = tmpIds;
-          firebaseProducts = items;
-            request
-          .get(url)
-          .then(function (response) {
-            onUserChanged(response.data);
-            onUpdate(tmpIds, items, response.data.is_seller && response.data.is_approved);
-          })
-        });
-      AsyncStorage.getItem("defaultAddress").then((address) => {
-        if (address != null) {
-          request.get(address).then((response) => {
-            onAddressHtmlChanged(getAddressHtml(response.data, ""));
-            onSelectedChanged(response.data.id);
-          });
-        } else {
-          request
-            .get("addressList/" + userId + "/")
-            .then((response) => {
-              if (response.data.addresses.length > 0) {
-                onAddressHtmlChanged(
-                  getAddressHtml(response.data.addresses[0], "")
-                );
-                onSelectedChanged(response.data.addresses[0].id);
-              } else {
-                let tmpAddresses = [];
-                tmpAddresses.push(
-                  <View style={styles.deliveryTabContainer}>
-                    <View
-                      style={{
-                        position: "absolute",
-                        marginLeft: widthPercentageToDP("4%"),
-                      }}
-                    >
-                      <Text style={{ fontSize: RFValue(12) }}>
-                        {Translate.t("destination")}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() =>
-                          props.navigation.navigate("ShippingList", {
-                            type: "cart",
-                          })
-                        }
-                      >
-                        <View style={styles.buttonContainer}>
-                          <Text
-                            style={{ fontSize: RFValue(11), color: "white" }}
-                          >
-                            {Translate.t("change")}
-                          </Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                    <View
-                      style={{
-                        // marginRight: widthPercentageToDP("5%"),
-                        position: "absolute",
-                        right: 0,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: RFValue(12),
-                          // backgroundColor: "orange",
-                          width: widthPercentageToDP("45%"),
-                        }}
-                      ></Text>
-                      <Text style={styles.textInTabContainer}></Text>
-                      <Text style={styles.textInTabContainer}></Text>
-                      <Text style={styles.textInTabContainer}></Text>
-                    </View>
-                  </View>
-                );
-                onAddressHtmlChanged(tmpAddresses);
-              }
-            })
-            .catch((error) => {
-              if (
-                error &&
-                error.response &&
-                error.response.data &&
-                Object.keys(error.response.data).length > 0
-              ) {
-                alert.warning(
-                  error.response.data[Object.keys(error.response.data)[0]][0] +
-                    "(" +
-                    Object.keys(error.response.data)[0] +
-                    ")"
-                );
-              }
-            });
         }
-      });
+      }
+      AsyncStorage.getItem("user").then((url) => {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
 
-      request
-        .get("tax_rates/")
-        .then((response) => {
-          let taxes = response.data.filter((item) => {
-            let nowDate = new Date();
-            if (item.start_date && item.end_date) {
-              if (
-                nowDate >= new Date(item.start_date) &&
-                nowDate <= new Date(item.end_date)
-              ) {
-                return true;
-              }
-            } else if (item.start_date) {
-              if (nowDate >= new Date(item.start_date)) {
-                return true;
-              }
-            }
-            return false;
+        db.collection("users")
+          .doc(userId)
+          .collection("carts")
+          .get()
+          .then((querySnapshot) => {
+            let tmpIds = [];
+            let items = [];
+            querySnapshot.forEach((documentSnapshot) => {
+              tmpIds = tmpIds.concat(documentSnapshot.data().id);
+              items.push({
+                product_id: documentSnapshot.data().id.toString(),
+                id: documentSnapshot.id.toString(),
+                quantity: documentSnapshot.data().quantity,
+                varietyId: documentSnapshot.data().url,
+                name: documentSnapshot.data().name,
+              });
+            });
+            ids = tmpIds;
+            firebaseProducts = items;
+              request
+            .get(url)
+            .then(function (response) {
+              onUserChanged(response.data);
+              onUpdate(tmpIds, items, response.data.is_seller && response.data.is_approved);
+            })
           });
-
-          if (taxes.length > 0) {
-            taxObj = taxes[0];
-          }
-        })
-        .catch((error) => {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
+        AsyncStorage.getItem("defaultAddress").then((address) => {
+          if (address != null) {
+            request.get(address).then((response) => {
+              onAddressHtmlChanged(getAddressHtml(response.data, ""));
+              onSelectedChanged(response.data.id);
+            });
+          } else {
+            request
+              .get("addressList/" + userId + "/")
+              .then((response) => {
+                if (response.data.addresses.length > 0) {
+                  onAddressHtmlChanged(
+                    getAddressHtml(response.data.addresses[0], "")
+                  );
+                  onSelectedChanged(response.data.addresses[0].id);
+                } else {
+                  let tmpAddresses = [];
+                  tmpAddresses.push(
+                    <View style={styles.deliveryTabContainer}>
+                      <View
+                        style={{
+                          position: "absolute",
+                          marginLeft: widthPercentageToDP("4%"),
+                        }}
+                      >
+                        <Text style={{ fontSize: RFValue(12) }}>
+                          {Translate.t("destination")}
+                        </Text>
+                        <TouchableWithoutFeedback
+                          onPress={() =>
+                            props.navigation.navigate("ShippingList", {
+                              type: "cart",
+                            })
+                          }
+                        >
+                          <View style={styles.buttonContainer}>
+                            <Text
+                              style={{ fontSize: RFValue(11), color: "white" }}
+                            >
+                              {Translate.t("change")}
+                            </Text>
+                          </View>
+                        </TouchableWithoutFeedback>
+                      </View>
+                      <View
+                        style={{
+                          // marginRight: widthPercentageToDP("5%"),
+                          position: "absolute",
+                          right: 0,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: RFValue(12),
+                            // backgroundColor: "orange",
+                            width: widthPercentageToDP("45%"),
+                          }}
+                        ></Text>
+                        <Text style={styles.textInTabContainer}></Text>
+                        <Text style={styles.textInTabContainer}></Text>
+                        <Text style={styles.textInTabContainer}></Text>
+                      </View>
+                    </View>
+                  );
+                  onAddressHtmlChanged(tmpAddresses);
+                }
+              })
+              .catch((error) => {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
           }
         });
+
+        request
+          .get("tax_rates/")
+          .then((response) => {
+            let taxes = response.data.filter((item) => {
+              let nowDate = new Date();
+              if (item.start_date && item.end_date) {
+                if (
+                  nowDate >= new Date(item.start_date) &&
+                  nowDate <= new Date(item.end_date)
+                ) {
+                  return true;
+                }
+              } else if (item.start_date) {
+                if (nowDate >= new Date(item.start_date)) {
+                  return true;
+                }
+              }
+              return false;
+            });
+
+            if (taxes.length > 0) {
+              taxObj = taxes[0];
+            }
+          })
+          .catch((error) => {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
     });
   }, [isFocused]);
 
@@ -741,9 +745,9 @@ export default function Cart(props) {
               </Text>
               <Text style={{ fontSize: RFValue(14) }}>
                 {format.separator(
-                  subtotal +
+                  (parseFloat(subtotal) +
                     (taxObj ? parseInt(taxObj.tax_rate * subtotal) : 0) +
-                    shipping
+                    parseFloat(shipping))
                 )}
                 円
               </Text>

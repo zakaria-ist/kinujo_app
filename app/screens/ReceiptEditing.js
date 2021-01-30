@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -43,56 +44,35 @@ export default function ReceiptView(props) {
   const [oldIssueName, onOldIssueNameChange] = useStateIfMounted("");
 
   React.useEffect(() => {
-    console.log(props.route.params.url);
-    request
-      .get(props.route.params.url)
-      .then(function (response) {
-        onOrderChanged(response.data);
-        lastId = 0;
-        lastOrderReceipt = {};
-        response.data.order.orderReceipts.map((tmpOrderReceipt) => {
-          if (tmpOrderReceipt.id > lastId) {
-            lastOrderReceipt = tmpOrderReceipt;
-            lastId = tmpOrderReceipt.id;
-          }
-        });
-        onOrderReceiptChanged(lastOrderReceipt);
-        onIssueNameChange(
-          lastOrderReceipt && lastOrderReceipt.to_name
-            ? lastOrderReceipt.to_name
-            : response.data.order.purchaser.real_name
-        );
-        onOldIssueNameChange(
-          lastOrderReceipt && lastOrderReceipt.to_name
-            ? lastOrderReceipt.to_name
-            : response.data.order.purchaser.real_name
-        );
-        onLoaded(true);
-      })
-      .catch(function (error) {
-        onLoaded(true);
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
-      });
-
-    AsyncStorage.getItem("user").then(function (url) {
+    InteractionManager.runAfterInteractions(() => {
+      console.log(props.route.params.url);
       request
-        .get(url)
+        .get(props.route.params.url)
         .then(function (response) {
-          onUserChanged(response.data);
+          onOrderChanged(response.data);
+          lastId = 0;
+          lastOrderReceipt = {};
+          response.data.order.orderReceipts.map((tmpOrderReceipt) => {
+            if (tmpOrderReceipt.id > lastId) {
+              lastOrderReceipt = tmpOrderReceipt;
+              lastId = tmpOrderReceipt.id;
+            }
+          });
+          onOrderReceiptChanged(lastOrderReceipt);
+          onIssueNameChange(
+            lastOrderReceipt && lastOrderReceipt.to_name
+              ? lastOrderReceipt.to_name
+              : response.data.order.purchaser.real_name
+          );
+          onOldIssueNameChange(
+            lastOrderReceipt && lastOrderReceipt.to_name
+              ? lastOrderReceipt.to_name
+              : response.data.order.purchaser.real_name
+          );
+          onLoaded(true);
         })
         .catch(function (error) {
+          onLoaded(true);
           if (
             error &&
             error.response &&
@@ -107,6 +87,29 @@ export default function ReceiptView(props) {
             );
           }
         });
+
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
     });
   }, [isFocused]);
   function issueClicked() {

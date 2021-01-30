@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -51,30 +52,32 @@ export default function ProductOneVariations({
   const [currentVariationCount, onCurrentVariationCount] = useStateIfMounted(1);
 
   React.useEffect(() => {
-    if (pItems && pItems.name) {
-      onItemNameChanged(pItems.name);
-      onIdChanged(pItems.id);
-    }
+    InteractionManager.runAfterInteractions(() => {
+      if (pItems && pItems.name) {
+        onItemNameChanged(pItems.name);
+        onIdChanged(pItems.id);
+      }
 
-    if (pItems && pItems.id) {
-      onItemNameChanged(pItems.name);
-    }
-    if (pItems && pItems.items) {
-      items = pItems.items;
-      onProcessVariationHtml(processVariationHtml(items));
-      onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
-    } else {
-      items = [];
-      items.push({
-        index: items.length,
-        choice: "",
-        stock: 0,
-        janCode: "",
-        editStock: ""
-      });
-      onProcessVariationHtml(processVariationHtml(items));
-      onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
-    }
+      if (pItems && pItems.id) {
+        onItemNameChanged(pItems.name);
+      }
+      if (pItems && pItems.items) {
+        items = pItems.items;
+        onProcessVariationHtml(processVariationHtml(items));
+        onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+      } else {
+        items = [];
+        items.push({
+          index: items.length,
+          choice: "",
+          stock: 0,
+          janCode: "",
+          editStock: ""
+        });
+        onProcessVariationHtml(processVariationHtml(items));
+        onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
+      }
+    });
   }, [pItems]);
 
   function onUpdate() {

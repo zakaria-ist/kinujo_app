@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -266,7 +268,9 @@ export default function ShippingList(props) {
   }
   const isFocused = useIsFocused();
   React.useEffect(() => {
-    load();
+    InteractionManager.runAfterInteractions(() => {
+      load();
+    });
   }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>

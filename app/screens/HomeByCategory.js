@@ -1,4 +1,6 @@
 import React from "react";
+import { InteractionManager } from 'react-native';
+
 import {
   StyleSheet,
   Text,
@@ -357,22 +359,85 @@ export default function HomeByCategory(props) {
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
-    onFeaturedHtmlChanged([]);
-    onKinujoHtmlChanged([]);
-    onCategoryName(props.route.params.categoryName);
+    InteractionManager.runAfterInteractions(() => {
+      onFeaturedHtmlChanged([]);
+      onKinujoHtmlChanged([]);
+      onCategoryName(props.route.params.categoryName);
 
-    db.collection("products").get().then((querySnapshot) => {
-      querySnapshot.forEach((documentSnapshot) => {
-        productsView[documentSnapshot.id] = documentSnapshot.data()['view']
+      db.collection("products").get().then((querySnapshot) => {
+        querySnapshot.forEach((documentSnapshot) => {
+          productsView[documentSnapshot.id] = documentSnapshot.data()['view']
+        });
       });
-    });
 
-    AsyncStorage.getItem("user").then(function (url) {
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            setUserAuthorityId(response.data.authority.id);
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+      });
+      request.get("product_categories/").then(function (response) {
+        onCategoryHtmlChanged(processCategoryHtml(response.data));
+      });
       request
-        .get(url)
+        .get("simple_products/")
         .then(function (response) {
-          onUserChanged(response.data);
-          setUserAuthorityId(response.data.authority.id);
+          let products = response.data;
+          products.push({
+            view: 0,
+          });
+          products = products.sort((p1, p2) => {
+            if (p1.created > p2.created) {
+              return -1;
+            }
+            return 1;
+          });
+
+          products = products.filter((product) => {
+            let date = new Date(product.is_opened);
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0
+            );
+          });
+
+          kinujoProducts = products.filter((product) => {
+            // if (product.category.id == categoryID) {
+            return product.user.authority.id == 1;
+            // }
+          });
+          featuredProducts = products.filter((product) => {
+            return product.user.authority.id != 1;
+          });
+          filteredFeaturedProducts = featuredProducts.filter((item) => {
+            return item.category.id == categoryID;
+          });
+          filteredKinujoProducts = kinujoProducts.filter((item) => {
+            return item.category.id == categoryID;
+          });
+          onKinujoHtmlChanged(processKinujoProductHtml(filteredKinujoProducts));
+          onFeaturedHtmlChanged(
+            processFeaturedProductHtml(filteredFeaturedProducts)
+          );
         })
         .catch(function (error) {
           if (
@@ -389,67 +454,6 @@ export default function HomeByCategory(props) {
             );
           }
         });
-    });
-    request.get("product_categories/").then(function (response) {
-      onCategoryHtmlChanged(processCategoryHtml(response.data));
-    });
-    request
-      .get("simple_products/")
-      .then(function (response) {
-        let products = response.data;
-        products.push({
-          view: 0,
-        });
-        products = products.sort((p1, p2) => {
-          if (p1.created > p2.created) {
-            return -1;
-          }
-          return 1;
-        });
-
-        products = products.filter((product) => {
-          let date = new Date(product.is_opened);
-          return (
-            product.is_opened == 1 &&
-            new Date() > date &&
-            product.is_hidden == 0 &&
-            product.is_draft == 0
-          );
-        });
-
-        kinujoProducts = products.filter((product) => {
-          // if (product.category.id == categoryID) {
-          return product.user.authority.id == 1;
-          // }
-        });
-        featuredProducts = products.filter((product) => {
-          return product.user.authority.id != 1;
-        });
-        filteredFeaturedProducts = featuredProducts.filter((item) => {
-          return item.category.id == categoryID;
-        });
-        filteredKinujoProducts = kinujoProducts.filter((item) => {
-          return item.category.id == categoryID;
-        });
-        onKinujoHtmlChanged(processKinujoProductHtml(filteredKinujoProducts));
-        onFeaturedHtmlChanged(
-          processFeaturedProductHtml(filteredFeaturedProducts)
-        );
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
       });
   }, [isFocused]);
   function showSortingAnimation() {
