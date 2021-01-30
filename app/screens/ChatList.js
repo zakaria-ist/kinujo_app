@@ -376,7 +376,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                  {chat.secret ? "" : chat.data.lastMessage}
+                {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
@@ -444,7 +444,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                  {chat.secret ? "" : chat.data.lastMessage}
+                {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>

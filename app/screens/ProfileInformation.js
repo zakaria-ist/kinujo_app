@@ -14,6 +14,7 @@ import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import DropDownPicker from "react-native-dropdown-picker";
+import postal_code from "japan-postal-code-oasis";
 import Moment from "moment";
 import {
   widthPercentageToDP,
@@ -67,6 +68,10 @@ export default function ProfileInformation(props) {
   const isFocused = useIsFocused();
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      postal_code.configure(
+        "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
+      );
+
       request.get("prefectures/").then(function (response) {
         let tmpPrefectures = response.data.map((prefecture) => {
           return {
@@ -82,7 +87,7 @@ export default function ProfileInformation(props) {
       });
     });
   }, []);
-  function updateUser(user, field, value) {
+  function updateUser(user, field, value, overrideObj = "") {
     if (!value) return;
     if (field == "birthday") {
       Moment.locale("en");
@@ -93,7 +98,7 @@ export default function ProfileInformation(props) {
     let obj = {};
     obj[field] = value;
     request
-      .patch(user.url, obj)
+      .patch(user.url, overrideObj ? overrideObj : obj)
       .then(function (response) {
         AsyncStorage.getItem("user").then(function (url) {
           request
@@ -105,7 +110,7 @@ export default function ProfileInformation(props) {
               onGenderChanged(response.data.gender);
               onBirthdayChanged(response.data.birthday);
               onPostalCodeChanged(response.data.zipcode);
-              onPrefectureChanged(response.data.prefecture_id);
+              onPrefectureChanged(response.data.prefecture);
               onAddress1Changed(response.data.address1);
               onAddress2Changed(response.data.address2);
             })
@@ -157,38 +162,36 @@ export default function ProfileInformation(props) {
     });
   }, [isFocused]);
   function loadUser() {
-    if (!user.url) {
-      AsyncStorage.getItem("user").then(function (url) {
-        request
-          .get(url)
-          .then(function (response) {
-            onUserChanged(response.data);
-            onNameChanged(response.data.real_name);
-            onNicknameChanged(response.data.nickname);
-            onGenderChanged(response.data.gender);
-            onBirthdayChanged(response.data.birthday);
-            onPostalCodeChanged(response.data.zipcode);
-            onPrefectureChanged(response.data.prefecture_id);
-            onAddress1Changed(response.data.address1);
-            onAddress2Changed(response.data.address2);
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-      });
-    }
+    AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          onUserChanged(response.data);
+          onNameChanged(response.data.real_name);
+          onNicknameChanged(response.data.nickname);
+          onGenderChanged(response.data.gender);
+          onBirthdayChanged(response.data.birthday);
+          onPostalCodeChanged(response.data.zipcode);
+          onPrefectureChanged(response.data.prefecture);
+          onAddress1Changed(response.data.address1);
+          onAddress2Changed(response.data.address2);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    });
   }
   if (
     editName == true ||
@@ -513,12 +516,32 @@ export default function ProfileInformation(props) {
                   reverseColor="black"
                   onPress={() => {
                     onEditPostalCodeChanged(false);
-                    updateUser(user, "zipcode", postalCode);
+                    console.log(postalCode)
+                    let tmpPrefecture = prefecture;
+                    updateUser(user, "", {
+                      "zipcode" : postalCode,
+                      "prefecture" : tmpPrefecture
+                    });
                   }}
                 />
                 <TextInput
                   value={postalCode}
-                  onChangeText={(value) => onPostalCodeChanged(value)}
+                  onChangeText={(value) => {
+                    onPostalCodeChanged(value);
+                    postal_code(value).then((address) => {
+                      console.log(address);
+                      if (address && address.prefecture) {
+                        let tmpPrefectures = prefectures.filter((prefecture) => {
+                          return prefecture.label == address.prefecture;
+                        });
+                
+                        if (tmpPrefectures.length > 0) {
+                          onPrefectureChanged(tmpPrefectures[0].value);
+                        }
+                        // onAddChanged(address.city + " " + address.area);
+                      }
+                    });
+                  }}
                   style={styles.textInput}
                 />
               </View>

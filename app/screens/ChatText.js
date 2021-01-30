@@ -37,6 +37,7 @@ const { leftMessageBackground } = "#fff";
 const { rightMessageBackground } = "#a0e75a";
 const ratioSeenTick = width / 35 / 13;
 const ratioImage = width / 250 / 3;
+const request = new Request();
 export default function ChatText({
   isSelf,
   text,
@@ -45,6 +46,7 @@ export default function ChatText({
   imageURL,
   showCheckBox,
   image,
+  props
 }) {
 
   function findParams(data, param) {
@@ -109,11 +111,17 @@ export default function ChatText({
               <Hyperlink
                 linkStyle={{ color: "#2980b9" }}
                 onPress={(url, text) => {
-                  if(findParams(url, "apn") && findParams(url, "product_id")){
-                    let apiUrl = request.getApiUrl() + "products/" + findParams(url, "product_id");
-                    props.navigation.navigate("HomeStoreList", {
-                      url: apiUrl,
-                    });
+                  if(findParams(url, "apn") && findParams(url, "link")){
+                    let link = decodeURIComponent(findParams(url, "link"));
+                    console.log(findParams(link, "product_id"));
+                    if(findParams(link, "product_id")){
+                      let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                      props.navigation.navigate("HomeStoreList", {
+                        url: apiUrl,
+                      });
+                    } else {
+                      Linking.openURL(url);
+                    }
                   } else {
                     Linking.openURL(url);
                   }
@@ -328,9 +336,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
-    borderRadius: 12,
+    borderRadius: 3,
     paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingVertical: 10,
     maxWidth: width - 160,
     minHeight: 20,
   },

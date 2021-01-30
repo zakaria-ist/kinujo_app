@@ -218,13 +218,13 @@ export default function ProductInformationAddNew(props) {
               onStorePriceChanged(response.data.store_price);
               onShippingChanged(response.data.shipping_fee + "");
               onProductDescriptionChanged(response.data.description);
-              let oldImages = response.data.productImages.map((image) => {
+              let oldImages = response.data.productImages.filter((image)=>{
+                console.log(image)
+                return !image.is_hidden && !image.image.is_hidden;
+              }).map((image) => {
                 let tmpImage = image.image;
                 tmpImage["is_old"] = true;
                 return tmpImage;
-              });
-              oldImages = oldImages.filter((image) => {
-                return !image.is_hidden;
               });
               onProductImagesChanged(oldImages);
               onProductPageDisplayMethodChanged("slidingType");
@@ -1192,6 +1192,7 @@ export default function ProductInformationAddNew(props) {
                     onPress={() => {
                       const options = {
                         mediaType: "photo",
+                        allowsEditing: true
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
                         if (response.uri) {

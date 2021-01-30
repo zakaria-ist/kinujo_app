@@ -161,6 +161,7 @@
   "mobile": "スマホ通知",
   "male" : "男性",
   "female" : "女性",
+  "askLogin": "既にアカウントをお持ちの方は下記よりログインしてください",
   "confirm_logout" : "ログアウトしますか？",
   "storeName,PersonInCharge,Address": "店舗名・担当者名・住所",
   "corporateName": "法人名",

@@ -507,8 +507,6 @@ export default function Setting(props) {
               justifyContent: "space-between",
               alignItems: "flex-end",
               marginHorizontal: widthPercentageToDP("4%"),
-              borderBottomWidth: 1,
-              borderColor: Colors.F0EEE9,
             }}
           >
             <Text
@@ -545,8 +543,6 @@ export default function Setting(props) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
-                borderBottomWidth: 1,
-                borderColor: Colors.F0EEE9,
                 position: "absolute",
                 right: 0,
               }}
@@ -556,7 +552,7 @@ export default function Setting(props) {
                 thumbColor={
                   messagedReceivedEmail == 1 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ position: "absolute", right: 0 }}
+                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
                   onMessagedReceivedEmailChanged(value);
 
@@ -590,7 +586,7 @@ export default function Setting(props) {
                 thumbColor={
                   messagedReceivedMobile == 0 ? Colors.D7CCA6 : "grey"
                 }
-                style={{ marginRight: widthPercentageToDP("17%") }}
+                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], marginRight: widthPercentageToDP("17%") }}
                 onValueChange={(value) => {
                   onMessagedReceivedMobileChanged(!value);
                   request
@@ -631,8 +627,6 @@ export default function Setting(props) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
-                borderBottomWidth: 1,
-                borderColor: Colors.F0EEE9,
                 position: "absolute",
                 right: 0,
               }}
@@ -642,7 +636,7 @@ export default function Setting(props) {
                 thumbColor={
                   otherNofiticationMobile == 0 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ position: "absolute", right: 0 }}
+                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
                   onOtherNofiticationMobileChanged(!value);
                   request
@@ -675,7 +669,7 @@ export default function Setting(props) {
                 thumbColor={
                   otherNofiticationEmail == 0 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ marginRight: widthPercentageToDP("17%") }}
+                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], marginRight: widthPercentageToDP("17%") }}
                 onValueChange={(value) => {
                   onOtherNofiticationEmailChanged(!value);
                   request
@@ -716,8 +710,6 @@ export default function Setting(props) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
-                borderBottomWidth: 1,
-                borderColor: Colors.F0EEE9,
                 position: "absolute",
                 right: 0,
               }}
@@ -727,6 +719,7 @@ export default function Setting(props) {
                 thumbColor={
                   addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey
                 }
+                style={{transform: [{ scaleX: .8 }, { scaleY: .8 }]}}
                 onValueChange={(value) => {
                   onAddingFriendsByIDChanged(!value);
                   request
@@ -767,8 +760,6 @@ export default function Setting(props) {
                 justifyContent: "space-between",
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
-                borderBottomWidth: 1,
-                borderColor: Colors.F0EEE9,
                 position: "absolute",
                 right: 0,
               }}
@@ -780,6 +771,7 @@ export default function Setting(props) {
                     ? Colors.D7CCA6
                     : Colors.grey
                 }
+                style={{transform: [{ scaleX: .8 }, { scaleY: .8 }]}}
                 onValueChange={(value) => {
                   onAllowAddingFriendsByPhoneNumber(!value);
                   request

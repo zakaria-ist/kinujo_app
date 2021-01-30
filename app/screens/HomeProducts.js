@@ -180,9 +180,13 @@ export default function HomeProducts({
             {Translate.t("seller")} : {seller}
           </Text>
         </TouchableWithoutFeedback>
-        <Text style={styles.product_price}>
-          {price}
-          {Translate.t("taxNotIncluded")}
+        <Text>
+          <Text style={styles.p_product_price}>
+            {price}
+          </Text>
+          <Text style={styles.product_price}>
+            {Translate.t("taxNotIncluded")}
+          </Text>
         </Text>
         <Text numberOfLines={2} style={styles.product_category}>
           {category}
@@ -238,11 +242,18 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   product_seller: {
-    fontSize: RFValue(9),
+    fontSize: RFValue(14),
     width: "100%",
+    color: "blue",
+    textDecorationLine: "underline"
   },
   product_price: {
     fontSize: RFValue(9),
+    width: "100%",
+  },
+  p_product_price: {
+    fontSize: RFValue(14),
+    color: "red",
     width: "100%",
   },
   product_category: {
