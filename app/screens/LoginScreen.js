@@ -198,6 +198,24 @@ export default function LoginScreen(props) {
             source={require("../assets/Images/kinujo.png")}
           />
         </ImageBackground>
+        <View>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              props.navigation.navigate("TermsOfCondition");
+            }}
+          >
+            <View style={styles.registerButton}>
+              <Text style={styles.registerButtonText}>
+                {Translate.t("newRegistration")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <View style={{width:widthPercentageToDP("80%"), alignContent:"center", alignSelf:"center"}}>
+            <Text style={{marginTop:10,fontSize: RFValue(12), textAlign:"center"}}>
+              {Translate.t("askLogin")}
+            </Text>
+          </View>
+        </View>
         <Image
           style={{
             alignSelf: "center",
@@ -422,17 +440,6 @@ export default function LoginScreen(props) {
               {Translate.t("forgetPasswordText")}
             </Text>
           </View>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              props.navigation.navigate("TermsOfCondition");
-            }}
-          >
-            <View style={styles.registerButton}>
-              <Text style={styles.registerButtonText}>
-                {Translate.t("newRegistration")}
-              </Text>
-            </View>
-          </TouchableWithoutFeedback>
         </View>
       </KeyboardAwareScrollView>
     </SafeAreaView>

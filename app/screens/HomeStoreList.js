@@ -610,15 +610,21 @@ export default function HomeStoreList(props) {
             <Text style={styles.font_medium}>
               {product ? product.name : ""}
             </Text>
-            <Text style={styles.font_small}>
-              {Translate.t("seller") +
-                ": " +
-                (product && product.user
-                  ? product.user.real_name
+            <TouchableWithoutFeedback onPress={()=>{
+              props.navigation.navigate("SellerProductList", {
+                sellerName: product.user.shop_name,
+              });
+            }}>
+              <Text style={styles.sellerFont}>
+                {Translate.t("seller") +
+                  ": " +
+                  (product && product.user
                     ? product.user.real_name
-                    : product.user.nickname
-                  : "")}
-            </Text>
+                      ? product.user.real_name
+                      : product.user.nickname
+                    : "")}
+              </Text>
+            </TouchableWithoutFeedback>
             <Text
               style={[
                 styles.font_small,
@@ -629,13 +635,19 @@ export default function HomeStoreList(props) {
             >
               {product && product.category ? product.category.name : ""}
             </Text>
-            <Text style={styles.font_medium}>
-              {(user.is_seller && user.is_approved
-                ? format.separator(product.store_price)
-                : format.separator(product.price)) +
-                "円" +
-                Translate.t("taxNotIncluded")}
-            </Text>
+            <View>
+              <Text>
+                <Text style={styles.priceFont}>
+                  {(user.is_seller && user.is_approved
+                    ? format.separator(product.store_price)
+                    : format.separator(product.price))}
+                </Text>
+                <Text style={styles.font_medium}>
+                {"円" +
+                  Translate.t("taxNotIncluded")}
+                </Text>
+              </Text>
+            </View>
             <Text style={styles.font_small}>
               {product.shipping_fee
                 ? Translate.t("shipping") +
@@ -1063,6 +1075,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flexWrap: "wrap",
+  },
+  sellerFont: {
+    width: "100%",
+    textAlign: "center",
+    overflow: "hidden",
+    fontSize: RFValue(14),
+    //fontFamily: "sans-serif",
+    padding: 2,
+    color: "blue"
+  },
+  priceFont: {
+    width: "100%",
+    textAlign: "center",
+    overflow: "hidden",
+    fontSize: RFValue(14),
+    //fontFamily: "sans-serif",
+    padding: 2,
+    color: "red"
   },
   font_small: {
     width: "100%",

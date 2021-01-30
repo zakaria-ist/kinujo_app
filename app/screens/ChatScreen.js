@@ -456,6 +456,7 @@ export default function ChatScreen(props) {
                 />
               ) : (
                 <ChatText
+                  props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
                   isSelf={
@@ -592,6 +593,7 @@ export default function ChatScreen(props) {
                 />
               ) : (
                 <ChatText
+                  props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
                   isSelf={
@@ -729,6 +731,7 @@ export default function ChatScreen(props) {
                 />
               ) : (
                 <ChatText
+                  props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
                   isSelf={
@@ -1272,6 +1275,7 @@ export default function ChatScreen(props) {
                 const options = {
                   noData: true,
                   mediaType: "photo",
+                  allowsEditing: true
                 };
                 ImagePicker.launchCamera(options, (response) => {
                   console.log(response)
@@ -1338,6 +1342,7 @@ export default function ChatScreen(props) {
               onPress={() => {
                 const options = {
                   mediaType: "photo",
+                  allowsEditing: true
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   if (response.uri) {

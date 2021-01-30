@@ -148,7 +148,8 @@ export default function AddressManagement(props) {
     // onPrefecturesChanged([]);
     onPrefectureLoadedChanged(false);
 
-    InteractionManager.runAfterInteractions(() => {postal_code.configure(
+    InteractionManager.runAfterInteractions(() => {
+    postal_code.configure(
       "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
     );
 

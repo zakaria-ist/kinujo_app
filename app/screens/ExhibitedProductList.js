@@ -59,7 +59,9 @@ function processProductHtml(props, products, status) {
 
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
-
+    let productImages = product.productImages.filter((image)=>{
+      return !image.is_hidden && !image.image.is_hidden;
+    });
     tmpProductHtml.push(
       <View key={i} style={styles.productTabContainer}>
         <TouchableWithoutFeedback
@@ -86,15 +88,15 @@ function processProductHtml(props, products, status) {
                 left: 0,
               }}
             >
-              {product.productImages.length > 0 &&
-              product.productImages[0].image.image &&
-              !product.productImages[0].is_hidden ? (
+              {productImages.length > 0 &&
+              productImages[0].image.image &&
+              !productImages[0].is_hidden ? (
                 <Image
                   style={{
                     width: RFValue(30),
                     height: RFValue(30),
                   }}
-                  source={{ uri: product.productImages[0].image.image }}
+                  source={{ uri: productImages[0].image.image }}
                 />
               ) : (
                 <Image
