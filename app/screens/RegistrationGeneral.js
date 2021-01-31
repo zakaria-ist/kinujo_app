@@ -81,6 +81,114 @@ export default function RegistrationGeneral(props) {
     onCallingCodeChanged(tmpItem[1]);
   }
 
+  function register(type){
+    if (
+      callingCode &&
+      nickname &&
+      phone &&
+      password &&
+      confirm_password
+    ) {
+      if (password == confirm_password) {
+        // console.log({
+        //   nickname: nickname,
+        //   username: callingCode + phone,
+        //   password: password,
+        //   authority: "general",
+        // });
+        request
+          .post("user/register/check", {
+            nickname: nickname,
+            username: callingCode + phone,
+            password: password,
+            authority: type,
+          })
+          .then(function (response) {
+            // console.log(response);
+            response = response.data;
+            if (response.success) {
+              // onConfirmPasswordChanged("")
+              // onNicknameChanged("")
+              // onPasswordChanged("")
+              // onPhoneChanged("")
+              AsyncStorage.getItem("referUser", function (item) {
+                props.navigation.navigate("SMSAuthentication", {
+                  nickname: nickname,
+                  real_name: nickname,
+                  username: callingCode + phone,
+                  password: password,
+                  authority: type,
+                  introducer: item,
+                  callingCode: callingCode,
+                });
+              });
+            } else {
+              if (
+                response.errors &&
+                Object.keys(response.errors).length > 0
+              ) {
+                let tmpErrorMessage =
+                  response.errors[
+                    Object.keys(response.errors)[0]
+                  ][0] +
+                  "(" +
+                  Object.keys(response.errors)[0] +
+                  ")";
+                // alert.warning(tmpErrorMessage);
+                let errorMessage = String(
+                  tmpErrorMessage.split("(").pop()
+                );
+                // alert.warning(
+                //   Translate.t("register-(" + errorMessage)
+                // );
+
+                Alert.alert(
+                  "",
+                  Translate.t("registerWarning"),
+                  // Translate.t("register-(" + errorMessage),
+                  [
+                    {
+                      text: "OK",
+                      onPress: () => {},
+                    },
+                  ],
+                  { cancelable: false }
+                );
+              }
+            }
+          })
+          .catch(function (error) {
+            alert.warning(JSON.stringify(error));
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              let tmpErrorMessage =
+                error.response.data[
+                  Object.keys(error.response.data)[0]
+                ][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")";
+              // alert.warning(tmpErrorMessage);
+              let errorMessage = String(
+                tmpErrorMessage.split("(").pop()
+              );
+              alert.warning(Translate.t("(" + errorMessage));
+            }
+          });
+      } else {
+        alert.warning(
+          Translate.t("passwordAndConfirmPasswordMustSame")
+        );
+      }
+    } else {
+      alert.warning(Translate.t("fieldNotFilled"));
+    }
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <LinearGradient
@@ -218,111 +326,7 @@ export default function RegistrationGeneral(props) {
           <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
             <TouchableOpacity
               onPress={() => {
-                if (
-                  callingCode &&
-                  nickname &&
-                  phone &&
-                  password &&
-                  confirm_password
-                ) {
-                  if (password == confirm_password) {
-                    // console.log({
-                    //   nickname: nickname,
-                    //   username: callingCode + phone,
-                    //   password: password,
-                    //   authority: "general",
-                    // });
-                    request
-                      .post("user/register/check", {
-                        nickname: nickname,
-                        username: callingCode + phone,
-                        password: password,
-                        authority: "general",
-                      })
-                      .then(function (response) {
-                        // console.log(response);
-                        response = response.data;
-                        if (response.success) {
-                          // onConfirmPasswordChanged("")
-                          // onNicknameChanged("")
-                          // onPasswordChanged("")
-                          // onPhoneChanged("")
-                          AsyncStorage.getItem("referUser", function (item) {
-                            props.navigation.navigate("SMSAuthentication", {
-                              nickname: nickname,
-                              real_name: nickname,
-                              username: callingCode + phone,
-                              password: password,
-                              authority: "general",
-                              introducer: item,
-                              callingCode: callingCode,
-                            });
-                          });
-                        } else {
-                          if (
-                            response.errors &&
-                            Object.keys(response.errors).length > 0
-                          ) {
-                            let tmpErrorMessage =
-                              response.errors[
-                                Object.keys(response.errors)[0]
-                              ][0] +
-                              "(" +
-                              Object.keys(response.errors)[0] +
-                              ")";
-                            // alert.warning(tmpErrorMessage);
-                            let errorMessage = String(
-                              tmpErrorMessage.split("(").pop()
-                            );
-                            // alert.warning(
-                            //   Translate.t("register-(" + errorMessage)
-                            // );
-
-                            Alert.alert(
-                              "",
-                              Translate.t("registerWarning"),
-                              // Translate.t("register-(" + errorMessage),
-                              [
-                                {
-                                  text: "OK",
-                                  onPress: () => {},
-                                },
-                              ],
-                              { cancelable: false }
-                            );
-                          }
-                        }
-                      })
-                      .catch(function (error) {
-                        alert.warning(JSON.stringify(error));
-                        if (
-                          error &&
-                          error.response &&
-                          error.response.data &&
-                          Object.keys(error.response.data).length > 0
-                        ) {
-                          let tmpErrorMessage =
-                            error.response.data[
-                              Object.keys(error.response.data)[0]
-                            ][0] +
-                            "(" +
-                            Object.keys(error.response.data)[0] +
-                            ")";
-                          // alert.warning(tmpErrorMessage);
-                          let errorMessage = String(
-                            tmpErrorMessage.split("(").pop()
-                          );
-                          alert.warning(Translate.t("(" + errorMessage));
-                        }
-                      });
-                  } else {
-                    alert.warning(
-                      Translate.t("passwordAndConfirmPasswordMustSame")
-                    );
-                  }
-                } else {
-                  alert.warning(Translate.t("fieldNotFilled"));
-                }
+                register("general")
               }}
             >
               <View style={styles.registerGeneralButton}>
@@ -333,7 +337,7 @@ export default function RegistrationGeneral(props) {
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                props.navigation.navigate("RegistrationStore");
+                register("store")
               }}
             >
               <View style={styles.registerBeauticianSalonButton}>

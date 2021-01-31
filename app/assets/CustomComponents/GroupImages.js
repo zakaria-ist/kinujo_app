@@ -37,35 +37,45 @@ export default function GroupImages({ props, style, width, height, images }) {
   React.useEffect(() => {
     let tmpHtml = [];
     if (images) {
+      console.log("W:" + width);
+      console.log("W2:" + getWidth(width * 0.94, images.length));
       images.map((image) => {
         if (tmpHtml.length < 9) {
           if (image) {
             tmpHtml.push(
-              <CachedImage
-                style={{
-                  width: getWidth(width, images.length),
-                  height: getHeight(width, images.length),
-                  borderRadius: images.length == 1 ? win.width / 2 : 0,
-                  padding: widthPercentageToDP("0.2%"),
-                  resizeMode: images.length == 1 ? "cover" : 'contain',
-                  marginTop: height/15,
-                }}
-                source={{ uri: image }}
-              />
+              <View style={{
+                width: getWidth(width, images.length),
+                height: getWidth(width, images.length),
+                padding: getWidth(width, images.length) * 0.1,
+              }}>
+                <CachedImage
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: images.length == 1 ? win.width / 2 : 0,
+                    resizeMode: images.length == 1 ? "cover" : 'contain',
+                  }}
+                  source={{ uri: image }}
+                />
+              </View>
             );
           } else {
             tmpHtml.push(
-              <Image
-                style={{
-                  width: getWidth(width, images.length),
-                  height: getHeight(width, images.length),
-                  borderRadius: images.length == 1 ? win.width / 2 : 0,
-                  padding: widthPercentageToDP("0.2%"),
-                  resizeMode: 'contain',
-                  marginTop: height/15,
-                }}
-                source={require("../Images/profileEditingIconLarge.png")}
-              />
+              <View style={{
+                width: getWidth(width, images.length),
+                height: getWidth(width, images.length),
+                padding: getWidth(width, images.length) * 0.1,
+              }}>
+                <Image
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: images.length == 1 ? win.width / 2 : 0,
+                    resizeMode: 'contain',
+                  }}
+                  source={require("../Images/profileEditingIconLarge.png")}
+                />
+              </View>
             );
           }
         }
@@ -104,11 +114,10 @@ export default function GroupImages({ props, style, width, height, images }) {
         style={ style ? style : {
           alignItems: "center",
           justifyContent: "center",
-          width: RFValue(50),
-          height: RFValue(50),
+          width: width,
+          height: height,
           flexWrap: "wrap",
           flexDirection: "row",
-          paddingVertical: heightPercentageToDP("0.2%"),
           borderRadius: images && images.length > 0 ? 5: 0,
           backgroundColor: (images && images.length > 1) ? "#B3B3B3" : "transparent"
           // alignSelf: "center",

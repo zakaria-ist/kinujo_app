@@ -423,6 +423,65 @@ export default function HomeStoreList(props) {
       });
     });
   }, [isFocused]);
+
+  function redirectToChat(friendID, friendName) {
+    let groupID = null;
+    let groupName;
+    let deleted = "delete_" + user.id;
+    db.collection("chat")
+      .where("users", "array-contains", user.id.toString())
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          if (snapShot.doc.data().type != "group") {
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == friendID) {
+                groupID = snapShot.doc.id;
+              }
+            }
+          }
+        });
+        if (groupID != null) {
+          db.collection("chat")
+            .doc(groupID)
+            .set(
+              {
+                [deleted]: false,
+              },
+              {
+                merge: true,
+              }
+            );
+          props.navigation.navigate("ChatScreen", {
+            groupID: groupID,
+            groupName: friendName,
+          });
+        } else {
+          let ownMessageUnseenField = "unseenMessageCount_" + user.id;
+          let friendMessageUnseenField = "unseenMessageCount_" + friendID;
+          let ownTotalMessageReadField = "totalMessageRead_" + user.id;
+          let friendTotalMessageReadField = "totalMessageRead_" + friendID;
+          db.collection("chat")
+            .add({
+              groupName: friendName,
+              users: [ownUserID, String(friendID)],
+              totalMessage: 0,
+              [ownMessageUnseenField]: 0,
+              [friendMessageUnseenField]: 0,
+              [ownTotalMessageReadField]: 0,
+              [friendTotalMessageReadField]: 0,
+            })
+            .then(function (docRef) {
+              props.navigation.navigate("ChatScreen", {
+                groupID: docRef.id,
+                groupName: friendName,
+              });
+            });
+        }
+      });
+  }
+
   const { width } = Dimensions.get("window");
   const { height } = Dimensions.get("window");
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
@@ -664,9 +723,27 @@ export default function HomeStoreList(props) {
               paddingTop: 20,
             }}
           >
-            <Text style={styles.product_title}>
-              {Translate.t("productFeatures")}
-            </Text>
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}>
+              <Text style={styles.product_title}>
+                {Translate.t("productFeatures")}
+              </Text>
+              <View style={{flexDirection: "row", flex:1, justifyContent:"flex-end"}}>
+                <TouchableWithoutFeedback onPress={()=>{
+                  request.addFriend(user.id, product.user.id).then(() => {
+                    request.addFriend(product.user.id, user.id).then(() => {
+                      redirectToChat(product.user.id, product.user.real_name);
+                    });
+                  });
+                }}>
+                    <View style={{backgroundColor:"lightgray", padding:10, marginBottom: 10, borderRadius: 5, color: "white"}}> 
+                      <Text style={styles.contact_us}>Contact Us</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+              </View>
+            </View>
             <View style={styles.line} />
             <Text style={styles.product_description}>{product.pr}</Text>
           </View>
@@ -961,6 +1038,7 @@ export default function HomeStoreList(props) {
       ) : (
         <CartFloating
           onPress={() => {
+            onQuantityChanged(1);
             onShowChanged(true);
             // db.collection("users")
             //   .doc(user.id.toString())
@@ -1115,6 +1193,12 @@ const styles = StyleSheet.create({
     fontSize: RFValue(13),
     paddingBottom: 5,
     marginBottom: 5,
+  },
+  contact_us: {
+    //fontFamily: "sans-serif",
+    fontSize: RFValue(13),
+    textAlign: "right",
+    alignSelf: "flex-end"
   },
   product_description: {
     overflow: "hidden",

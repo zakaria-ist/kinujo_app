@@ -46,7 +46,8 @@ export default function ChatText({
   imageURL,
   showCheckBox,
   image,
-  props
+  props,
+  longPress,
 }) {
 
   function findParams(data, param) {
@@ -110,6 +111,11 @@ export default function ChatText({
             >
               <Hyperlink
                 linkStyle={{ color: "#2980b9" }}
+                onLongPress={()=>{
+                  if(longPress){
+                    longPress();
+                  }
+                }}
                 onPress={(url, text) => {
                   if(findParams(url, "apn") && findParams(url, "link")){
                     let link = decodeURIComponent(findParams(url, "link"));
