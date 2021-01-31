@@ -514,7 +514,7 @@ export default function Setting(props) {
                 position: "absolute",
                 right: 0,
                 fontSize: RFValue(10),
-                marginRight: widthPercentageToDP("5%"),
+                marginRight: widthPercentageToDP("1%"),
                 marginBottom: heightPercentageToDP("1%"),
               }}
             >
@@ -525,7 +525,7 @@ export default function Setting(props) {
                 position: "absolute",
                 right: 0,
                 fontSize: RFValue(10),
-                marginRight: widthPercentageToDP("22%"),
+                marginRight: widthPercentageToDP("26%"),
                 marginBottom: heightPercentageToDP("1%"),
               }}
             >
@@ -544,7 +544,7 @@ export default function Setting(props) {
                 alignItems: "center",
                 marginHorizontal: widthPercentageToDP("4%"),
                 position: "absolute",
-                right: 0,
+                right: 0
               }}
             >
               <Switch
@@ -552,7 +552,7 @@ export default function Setting(props) {
                 thumbColor={
                   messagedReceivedEmail == 1 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], position: "absolute", right: 0 }}
+                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
                   onMessagedReceivedEmailChanged(value);
 
@@ -586,7 +586,7 @@ export default function Setting(props) {
                 thumbColor={
                   messagedReceivedMobile == 0 ? Colors.D7CCA6 : "grey"
                 }
-                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], marginRight: widthPercentageToDP("17%") }}
+                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("21%") }}
                 onValueChange={(value) => {
                   onMessagedReceivedMobileChanged(!value);
                   request
@@ -636,7 +636,7 @@ export default function Setting(props) {
                 thumbColor={
                   otherNofiticationMobile == 0 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], position: "absolute", right: 0 }}
+                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
                   onOtherNofiticationMobileChanged(!value);
                   request
@@ -669,7 +669,7 @@ export default function Setting(props) {
                 thumbColor={
                   otherNofiticationEmail == 0 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }], marginRight: widthPercentageToDP("17%") }}
+                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("21%") }}
                 onValueChange={(value) => {
                   onOtherNofiticationEmailChanged(!value);
                   request
@@ -719,7 +719,7 @@ export default function Setting(props) {
                 thumbColor={
                   addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{transform: [{ scaleX: .8 }, { scaleY: .8 }]}}
+                style={{transform: [{ scaleX: .6 }, { scaleY: .6 }]}}
                 onValueChange={(value) => {
                   onAddingFriendsByIDChanged(!value);
                   request
@@ -771,7 +771,7 @@ export default function Setting(props) {
                     ? Colors.D7CCA6
                     : Colors.grey
                 }
-                style={{transform: [{ scaleX: .8 }, { scaleY: .8 }]}}
+                style={{transform: [{ scaleX: .6 }, { scaleY: .6 }]}}
                 onValueChange={(value) => {
                   onAllowAddingFriendsByPhoneNumber(!value);
                   request

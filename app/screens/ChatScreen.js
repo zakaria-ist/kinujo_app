@@ -21,6 +21,7 @@ import {
   PixelRatio,
 } from "react-native";
 
+import Spinner from "react-native-loading-spinner-overlay";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -38,9 +39,9 @@ import Translate from "../assets/Translates/Translate";
 import ImagePicker from "react-native-image-picker";
 import { RFValue } from "react-native-responsive-fontsize";
 import AndroidKeyboardAdjust from "react-native-android-keyboard-adjust";
-import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
+import CustomHeader from "../assets/CustomComponents/ChatCustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
-import CustomSelectHeader from "../assets/CustomComponents/CustomSelectHeader";
+import CustomSelectHeader from "../assets/CustomComponents/ChatSelectHeader";
 import ChatText from "./ChatText";
 import ChatContact from "./ChatContact";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -93,6 +94,8 @@ let unsubscribe1;
 let finalGroupName;
 let chatPersonID;
 let chats = [];
+let old30Chats = [];
+let oldChats = [];
 let totalMessageRead = 0;
 let totalMessage = 0;
 let allUsers = [];
@@ -100,6 +103,8 @@ let imageMap = {};
 let selects = [];
 let day = new Date().getDate();
 let tmpMultiSelect = false;
+let lastDoc = null;
+let old30LastDoc = null;
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
     db.collection("users")
@@ -129,10 +134,13 @@ function getTime() {
 }
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = useStateIfMounted(false);
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   const [secretMode, setSecretMode] = useStateIfMounted(false);
   const [showPopUp, onShowPopUpChanged] = useStateIfMounted(false);
   const [loaded, onLoadedChanged] = useStateIfMounted(false);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
+  const [old30ChatHtml, onOld30ChatHtmlChanged] = useStateIfMounted([]);
+  const [oldChatHtml, onOldChatHtmlChanged] = useStateIfMounted([]);
   const [messages, setMessages] = useStateIfMounted("");
   const [showEmoji, onShowEmojiChanged] = useStateIfMounted(false);
   const [prevEmoji, setPrevEmoji] = useStateIfMounted("");
@@ -332,6 +340,947 @@ export default function ChatScreen(props) {
       tmpSeconds
     );
   }
+
+  function processOldChat(tmpChats) {
+    let tmpChatHtml = [];
+    index = 1;
+    // tmpChats = tmpChats.sort((a, b) => {
+
+    //   return a.data.timeStamp.nanoseconds <= b.data.timeStamp.nanoseconds;
+    // });
+    tmpChats.map((chat) => {
+      let date = chat.data.createdAt.split(":");
+      let tmpMonth = date[1];
+      let tmpDay = date[2]; //message created at
+      let tmpHours = date[3];
+      let tmpMinutes = date[4];
+      let tmpMessageID = messageID.filter((item) => {
+        return item == chat.id;
+      });
+      if (tmpDay == day) {
+        tmpChatHtml.push(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  });
+                } else {
+                  selects.push({
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                }
+                processOldChat(oldChats);
+              }
+            }}
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                message: chat.data.message,
+                data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName,
+                image: chat.data.image
+              });
+              onShowPopUpChanged(true);
+            }}
+          >
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
+              {previousMessageDateToday == null ? (
+                <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
+              ) : (
+                <Text style={[styles.chat_date]}>{""}</Text>
+              )}
+              {/*///////////////////////////////////////*/}
+              {chat.data.contactID ? (
+                <ChatContact
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
+                    } else {
+                      console.log("1");
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
+                        });
+                      }
+                      processOldChat(oldChats);
+                    }
+                  }}
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
+              ) : (
+                <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  props={props}
+                  showCheckBox={showCheckBox}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
+                />
+              )}
+              {/*///////////////////////////////////////*/}
+            </View>
+          </TouchableWithoutFeedback>
+        );
+        previousMessageDateToday = tmpDay;
+      } else if (tmpDay == day - 1) {
+        tmpChatHtml.push(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  });
+                } else {
+                  selects.push({
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                }
+                processOldChat(oldChats);
+              }
+            }}
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                message: chat.data.message,
+                data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName,
+                image: chat.data.image
+              });
+              onShowPopUpChanged(true);
+            }}
+          >
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
+              {previousMessageDateYesterday == null ? (
+                <Text style={[styles.chat_date]}>
+                  {Translate.t("yesterday")}
+                </Text>
+              ) : (
+                <Text style={[styles.chat_date]}>{""}</Text>
+              )}
+              {/*///////////////////////////////////////*/}
+              {chat.data.contactID ? (
+                <ChatContact
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
+                    } else {
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
+                        });
+                      }
+                      processOldChat(oldChats);
+                    }
+                  }}
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
+              ) : (
+                <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  props={props}
+                  showCheckBox={showCheckBox}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
+                />
+              )}
+              {/*///////////////////////////////////////*/}
+            </View>
+          </TouchableWithoutFeedback>
+        );
+        previousMessageDateYesterday = tmpDay;
+      } else if (tmpDay != day && tmpDay != day - 1) {
+        tmpChatHtml.push(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  });
+                } else {
+                  selects.push({
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                }
+                processOldChat(oldChats);
+              }
+            }}
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                message: chat.data.message,
+                data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName,
+                image: chat.data.image
+              });
+              onShowPopUpChanged(true);
+            }}
+          >
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
+              {previousMessageDateElse ==
+              chat.data.timeStamp.toDate().toDateString() ? (
+                <Text style={[styles.chat_date]}>{""}</Text>
+              ) : (
+                <Text style={[styles.chat_date]}>
+                  {tmpMonth + "/" + tmpDay}
+                </Text>
+              )}
+              {/*///////////////////////////////////////*/}
+              {chat.data.contactID ? (
+                <ChatContact
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
+                    } else {
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
+                        });
+                      }
+                      processOldChat(oldChats);
+                    }
+                  }}
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
+              ) : (
+                <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  props={props}
+                  showCheckBox={showCheckBox}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
+                />
+              )}
+              {/*///////////////////////////////////////*/}
+            </View>
+          </TouchableWithoutFeedback>
+        );
+
+        previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
+      }
+    });
+    const resultChatHtml = tmpChatHtml.filter((html) => {
+      return !html.props["delete"];
+    });
+    onOldChatHtmlChanged(resultChatHtml);
+    index++;
+  }
+
+  function processOld30Chat(tmpChats) {
+    let tmpChatHtml = [];
+    index = 1;
+    // tmpChats = tmpChats.sort((a, b) => {
+
+    //   return a.data.timeStamp.nanoseconds <= b.data.timeStamp.nanoseconds;
+    // });
+    tmpChats.map((chat) => {
+      let date = chat.data.createdAt.split(":");
+      let tmpMonth = date[1];
+      let tmpDay = date[2]; //message created at
+      let tmpHours = date[3];
+      let tmpMinutes = date[4];
+      let tmpMessageID = messageID.filter((item) => {
+        return item == chat.id;
+      });
+      if (tmpDay == day) {
+        tmpChatHtml.push(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  });
+                } else {
+                  selects.push({
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                }
+                processOld30Chat(old30Chats);
+              }
+            }}
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                message: chat.data.message,
+                data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName,
+                image: chat.data.image
+              });
+              onShowPopUpChanged(true);
+            }}
+          >
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
+              {previousMessageDateToday == null ? (
+                <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
+              ) : (
+                <Text style={[styles.chat_date]}>{""}</Text>
+              )}
+              {/*///////////////////////////////////////*/}
+              {chat.data.contactID ? (
+                <ChatContact
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
+                    } else {
+                      console.log("1");
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
+                        });
+                      }
+                      processOld30Chat(old30Chats);
+                    }
+                  }}
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
+              ) : (
+                <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  props={props}
+                  showCheckBox={showCheckBox}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
+                />
+              )}
+              {/*///////////////////////////////////////*/}
+            </View>
+          </TouchableWithoutFeedback>
+        );
+        previousMessageDateToday = tmpDay;
+      } else if (tmpDay == day - 1) {
+        tmpChatHtml.push(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  });
+                } else {
+                  selects.push({
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                }
+                processOld30Chat(old30Chats);
+              }
+            }}
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                message: chat.data.message,
+                data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName,
+                image: chat.data.image
+              });
+              onShowPopUpChanged(true);
+            }}
+          >
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
+              {previousMessageDateYesterday == null ? (
+                <Text style={[styles.chat_date]}>
+                  {Translate.t("yesterday")}
+                </Text>
+              ) : (
+                <Text style={[styles.chat_date]}>{""}</Text>
+              )}
+              {/*///////////////////////////////////////*/}
+              {chat.data.contactID ? (
+                <ChatContact
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
+                    } else {
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
+                        });
+                      }
+                      processOld30Chat(old30Chats);
+                    }
+                  }}
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
+              ) : (
+                <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  props={props}
+                  showCheckBox={showCheckBox}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
+                />
+              )}
+              {/*///////////////////////////////////////*/}
+            </View>
+          </TouchableWithoutFeedback>
+        );
+        previousMessageDateYesterday = tmpDay;
+      } else if (tmpDay != day && tmpDay != day - 1) {
+        tmpChatHtml.push(
+          <TouchableWithoutFeedback
+            key={chat.id}
+            delete={
+              chat.data["delete_" + userId] || chat.data["delete"]
+                ? true
+                : false
+            }
+            onPress={() => {
+              if (tmpMultiSelect) {
+                if (selectedChat(chat.id)) {
+                  selects = selects.filter((select) => {
+                    return select.id != chat.id;
+                  });
+                } else {
+                  selects.push({
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                }
+                processOld30Chat(old30Chats);
+              }
+            }}
+            onLongPress={() => {
+              onLongPressObjChanged({
+                id: chat.id,
+                message: chat.data.message,
+                data: chat.data,
+                contactID: chat.data.contactID,
+                contactName: chat.data.contactName,
+                image: chat.data.image
+              });
+              onShowPopUpChanged(true);
+            }}
+          >
+            <View
+              style={
+                selectedChat(chat.id) ? styles.selected : styles.non_selected
+              }
+              key={chat.id}
+            >
+              {previousMessageDateElse ==
+              chat.data.timeStamp.toDate().toDateString() ? (
+                <Text style={[styles.chat_date]}>{""}</Text>
+              ) : (
+                <Text style={[styles.chat_date]}>
+                  {tmpMonth + "/" + tmpDay}
+                </Text>
+              )}
+              {/*///////////////////////////////////////*/}
+              {chat.data.contactID ? (
+                <ChatContact
+                  press={() => {
+                    if (!tmpMultiSelect) {
+                      redirectToChat(
+                        chat.data.contactID,
+                        chat.data.contactName
+                      );
+                    } else {
+                      if (selectedChat(chat.id)) {
+                        selects = selects.filter((select) => {
+                          return select.id != chat.id;
+                        });
+                      } else {
+                        selects.push({
+                          id: chat.id,
+                          message: chat.data.message,
+                          contactID: chat.data.contactID,
+                          contactName: chat.data.contactName,
+                          image: chat.data.image
+                        });
+                      }
+                      processOld30Chat(old30Chats);
+                    }
+                  }}
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  showCheckBox={showCheckBox}
+                  props={props}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  contactID={chat.data.contactID}
+                  contactName={chat.data.contactName}
+                  image={imageMap[chat.data.userID]}
+                />
+              ) : (
+                <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
+                  props={props}
+                  showCheckBox={showCheckBox}
+                  date={tmpHours + ":" + tmpMinutes}
+                  isSelf={
+                    chat.data.userID == userId
+                      ? (isSelf = "true")
+                      : (isSelf = "")
+                  }
+                  // seen={
+                  //   totalMessage - index >= totalMessage - totalMessageRead &&
+                  //   chat.data.userID == userId
+                  //     ? (seen = "true")
+                  //     : (seen = "")
+                  // }
+                  text={
+                    chat.data.contactID == null && chat.data.image == null
+                      ? chat.data.message
+                      : ""
+                  }
+                  imageURL={chat.data.image ? chat.data.image : ""}
+                  image={imageMap[chat.data.userID]}
+                />
+              )}
+              {/*///////////////////////////////////////*/}
+            </View>
+          </TouchableWithoutFeedback>
+        );
+
+        previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
+      }
+    });
+    const resultChatHtml = tmpChatHtml.filter((html) => {
+      return !html.props["delete"];
+    });
+    onOld30ChatHtmlChanged(resultChatHtml);
+    index++;
+  }
+
   function processChat(tmpChats) {
     let tmpChatHtml = [];
     index = 1;
@@ -456,6 +1405,17 @@ export default function ChatScreen(props) {
                 />
               ) : (
                 <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -593,6 +1553,17 @@ export default function ChatScreen(props) {
                 />
               ) : (
                 <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -731,6 +1702,17 @@ export default function ChatScreen(props) {
                 />
               ) : (
                 <ChatText
+                  longPress={() => {
+                    onLongPressObjChanged({
+                      id: chat.id,
+                      message: chat.data.message,
+                      data: chat.data,
+                      contactID: chat.data.contactID,
+                      contactName: chat.data.contactName,
+                      image: chat.data.image
+                    });
+                    onShowPopUpChanged(true);
+                  }}  
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -828,7 +1810,7 @@ export default function ChatScreen(props) {
       previousMessageDateElse = null;
       tmpMessageCount = 0;
 
-      unsubscribe1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
+      this.unsub1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
         totalMessage = snapshot.data()["totalMessageRead"];
         totalMessageRead = snapshot.data()["totalMessage"];
         processChat(chats);
@@ -854,10 +1836,45 @@ export default function ChatScreen(props) {
           });
       });
 
-      unsubscribe = chatsRef
+      let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
+      lastQuerySnapshot.forEach((snapShot)=>{
+        lastDoc = snapShot;
+      })
+      let build = chatsRef
         .doc(groupID)
         .collection("messages")
-        .orderBy("timeStamp", "asc")
+        .orderBy("timeStamp", "asc");
+      
+      if(lastDoc){
+        build = build.startAfter(lastDoc);
+
+        chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
+          querySnapShot.forEach((snapShot) => {
+            if(!old30LastDoc){
+              old30LastDoc = snapShot;
+            }
+            let tmpChats = old30Chats.filter((chat) => {
+              return chat.id == snapShot.id;
+            });
+            if (tmpChats.length == 0) {
+              old30Chats.push({
+                id: snapShot.id,
+                data: snapShot.data(),
+              });
+            } else {
+              old30Chats = old30Chats.map((chat) => {
+                if (chat.id == snapShot.id) {
+                  chat.data = snapShot.data();
+                }
+                return chat;
+              });
+            }
+          })
+          processOld30Chat(old30Chats);
+        })
+      }
+
+      this.unsub = build
         .onSnapshot(
           {
             includeMetadataChanges: false,
@@ -886,6 +1903,30 @@ export default function ChatScreen(props) {
             processChat(chats);
           }
         );
+
+      if(old30LastDoc){
+        chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(old30LastDoc).get().then((querySnapShot)=>{
+          querySnapShot.forEach((snapShot) => {
+            let tmpChats = oldChats.filter((chat) => {
+              return chat.id == snapShot.id;
+            });
+            if (tmpChats.length == 0) {
+              oldChats.push({
+                id: snapShot.id,
+                data: snapShot.data(),
+              });
+            } else {
+              oldChats = oldChats.map((chat) => {
+                if (chat.id == snapShot.id) {
+                  chat.data = snapShot.data();
+                }
+                return chat;
+              });
+            }
+          })
+          processOldChat(oldChats);
+        })
+      }
     }
   }
 
@@ -900,13 +1941,15 @@ export default function ChatScreen(props) {
       onNameChanged("");
       setShouldShow(false);
       processChat([]);
+      processOld30Chat([]);
+      processOldChat([]);
       setImages([""]);
       chats = [];
-      if (unsubscribe) {
-        unsubscribe();
+      if (this.unsub) {
+        this.unsub();
       }
-      if (unsubscribe1) {
-        unsubscribe1();
+      if (this.unsub1) {
+        this.unsub1();
       }
     }
     if (props.route.params.groupName) {
@@ -928,28 +1971,36 @@ export default function ChatScreen(props) {
       });
 
     return function () {
-      if (unsubscribe) {
-        unsubscribe();
+      if (this.unsub) {
+        this.unsub();
       }
-      if (unsubscribe1) {
-        unsubscribe1();
+      if (this.unsub1) {
+        this.unsub1();
       }
       setShouldShow(false);
       onShowPopUpChanged(false);
       onChatHtmlChanged([]);
+      onOldChatHtmlChanged([]);
+      onOld30ChatHtmlChanged([]);
       tmpChatHtml = [];
     };
   }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <CustomHeader
-        text={Translate.t("chat")}
-        onBack={() => props.navigation.goBack()}
-        onFavoritePress={() => props.navigation.navigate("Favorite")}
-        onPress={() => props.navigation.navigate("Cart")}
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
       />
       {!multiSelect ? (
-        <CustomSecondaryHeader name={name} userUrl={userUrl} images={images} />
+        <CustomHeader
+          text={Translate.t("chat")}
+          onBack={() => props.navigation.goBack()}
+          images={images}
+          name={name} userUrl={userUrl}
+          onFavoritePress={() => props.navigation.navigate("Favorite")}
+          onPress={() => props.navigation.navigate("Cart")}
+        />
       ) : (
         <CustomSelectHeader
           onSend={() => {
@@ -964,9 +2015,9 @@ export default function ChatScreen(props) {
             tmpMultiSelect = false;
             selects = [];
             processChat(chats);
+            processOld30Chat(old30Chats);
+            processOldChat(oldChats);
           }}
-          name={name}
-          userUrl={userUrl}
         />
       )}
 
@@ -1006,6 +2057,8 @@ export default function ChatScreen(props) {
             }
           >
             {/* <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}> */}
+            {secretMode ? null : oldChatHtml}
+            {secretMode ? null : old30ChatHtml}
             {secretMode ? null : chatHtml}
             {/* </TouchableWithoutFeedback> */}
           </ScrollView>
@@ -1062,6 +2115,29 @@ export default function ChatScreen(props) {
                           .set(update, {
                             merge: true,
                           });
+
+                        chats = chats.map((chat) => {
+                          if(chat.id == longPressObj.id){
+                            chat.data["delete"] = update["delete"]
+                          }
+                          return chat;
+                        })
+                        oldChats = oldChats.map((chat) => {
+                          if(chat.id == longPressObj.id){
+                            chat.data["delete"] = update["delete"]
+                          }
+                          return chat;
+                        })
+                        old30Chats = old30Chats.map((chat) => {
+                          if(chat.id == longPressObj.id){
+                            chat.data["delete"] = update["delete"]
+                          }
+                          return chat;
+                        })
+
+                        processChat(chats);
+                        processOldChat(oldChats);
+                        processOld30Chat(old30Chats);
                         onShowPopUpChanged(false);
                       }}
                     >
@@ -1084,6 +2160,29 @@ export default function ChatScreen(props) {
                           .set(update, {
                             merge: true,
                           });
+
+                        chats = chats.map((chat) => {
+                          if(chat.id == longPressObj.id){
+                            chat.data["delete_" + userId] = update["delete_" + userId]
+                          }
+                          return chat;
+                        })
+                        oldChats = oldChats.map((chat) => {
+                          if(chat.id == longPressObj.id){
+                            chat.data["delete_" + userId] = update["delete_" + userId]
+                          }
+                          return chat;
+                        })
+                        old30Chats = old30Chats.map((chat) => {
+                          if(chat.id == longPressObj.id){
+                            chat.data["delete_" + userId] = update["delete_" + userId]
+                          }
+                          return chat;
+                        })
+
+                        processChat(chats);
+                        processOldChat(oldChats);
+                        processOld30Chat(old30Chats);
                         onShowPopUpChanged(false);
                       }}
                     >
@@ -1136,6 +2235,8 @@ export default function ChatScreen(props) {
                           image: longPressObj.image
                         });
                         processChat(chats);
+                        processOldChat(oldChats);
+                        processOld30Chat(old30Chats);
                         onShowPopUpChanged(false);
                       }}
                     >
@@ -1283,7 +2384,6 @@ export default function ChatScreen(props) {
                     const reference = storage().ref(uuid.v4() + ".png");
                     if (Platform.OS === "android") {
                       RNFetchBlob.fs.stat(response.path).then((stat) => {
-                        console.log(stat);
                         reference
                           .putFile(stat.path)
                           .then((response) => {
@@ -1347,6 +2447,7 @@ export default function ChatScreen(props) {
                 ImagePicker.launchImageLibrary(options, (response) => {
                   if (response.uri) {
                     const reference = storage().ref(uuid.v4() + ".png");
+                    onSpinnerChanged(true);
                     if (Platform.OS === "android") {
                       RNFetchBlob.fs.stat(response.uri).then((stat) => {
                         console.log(stat);
@@ -1366,10 +2467,18 @@ export default function ChatScreen(props) {
                                   timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                   image: url,
                                 })
-                                .then(function () {});
-                            });
+                                .then(function () {
+                                  onSpinnerChanged(false);
+                                }).catch(()=>{
+                                  onSpinnerChanged(false);
+                                })
+                            }).catch(()=>{
+                              onSpinnerChanged(false);
+                            })
                           })
-                          .catch((error) => {});
+                          .catch((error) => {
+                            onSpinnerChanged(false);
+                          });
                       });
                     } else {
                       reference
@@ -1388,10 +2497,18 @@ export default function ChatScreen(props) {
                                 timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
                                 image: url,
                               })
-                              .then(function () {});
-                          });
+                              .then(function () {
+                                onSpinnerChanged(false);
+                              }).catch(()=>{
+                                onSpinnerChanged(false);
+                              })
+                          }).catch(()=>{
+                            onSpinnerChanged(false);
+                          })
                         })
-                        .catch((error) => {});
+                        .catch((error) => {
+                          onSpinnerChanged(false);
+                        });
                     }
                   }
                 });

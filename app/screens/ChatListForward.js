@@ -215,6 +215,7 @@ export default function ChatList(props) {
               props.navigation.goBack();
             });
         } else if(messages){
+          const batch = db.batch();
           for(i=0; i<messages.length; i++){
             let message = messages[i];
 
@@ -233,13 +234,16 @@ export default function ChatList(props) {
             if(message["image"]){
               field['image'] = message["image"]
             }
-            await db.collection("chat")
+            let newDoc = db.collection("chat")
               .doc(chat.id)
               .collection("messages")
-              .add(field)
+              .doc();
+            batch.set(newDoc, field);
           }
-          onSpinnerChanged(false);
-          props.navigation.goBack();
+          batch.commit().then(()=>{
+            onSpinnerChanged(false);
+            props.navigation.goBack();
+          })
         }
       }
     }

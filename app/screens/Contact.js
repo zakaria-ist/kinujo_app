@@ -207,8 +207,8 @@ export default function Contact(props) {
               <CachedImage
                 style={{
                   borderRadius: win.width / 2,
-                  width: RFValue(40),
-                  height: RFValue(40),
+                  width: RFValue(30),
+                  height: RFValue(30),
                 }}
                 source={{ uri: user.image.image }}
               />
@@ -216,8 +216,8 @@ export default function Contact(props) {
               <Image
                 style={{
                   borderRadius: win.width / 2,
-                  width: RFValue(40),
-                  height: RFValue(40),
+                  width: RFValue(30),
+                  height: RFValue(30),
                 }}
                 source={require("../assets/Images/profileEditingIcon.png")}
               />
@@ -282,7 +282,7 @@ export default function Contact(props) {
               source={require("../assets/Images/profileEditingIcon.png")}
             /> */}
             <GroupImages
-              width={win.width / 13}
+              width={ratioProfile * 25}
               height={ratioProfile * 25}
               images={group["images"]}
             ></GroupImages>
@@ -1277,10 +1277,10 @@ const styles = StyleSheet.create({
   contactTabContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: heightPercentageToDP("3%"),
+    marginTop: heightPercentageToDP("1.5%"),
     borderBottomWidth: 1,
     borderBottomColor: Colors.F0EEE9,
-    paddingBottom: heightPercentageToDP("2%"),
+    paddingBottom: heightPercentageToDP("1.5%"),
     marginHorizontal: widthPercentageToDP("1%"),
     // backgroundColor: "orange",
   },
@@ -1315,7 +1315,7 @@ const styles = StyleSheet.create({
     marginRight: widthPercentageToDP("5%"),
   },
   searchInputContainer: {
-    marginTop: heightPercentageToDP("3%"),
+    marginTop: heightPercentageToDP("1%"),
     borderWidth: 1,
     borderColor: "white",
     backgroundColor: Colors.F6F6F6,
