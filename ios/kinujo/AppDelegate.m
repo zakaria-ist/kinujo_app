@@ -10,6 +10,8 @@
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 #import <Firebase.h>
+#import "RNFirebaseMessaging.h"
+#import "FirebasePushNotifications.h"
 #import <react-native-splash-screen/RNSplashScreen.h>
 
 #ifdef FB_SONARKIT_ENABLED
@@ -19,9 +21,6 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
-#import <Firebase.h>
-#import "RNFirebaseMessaging.h"
-#import "FirebasePushNotifications.h"
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
