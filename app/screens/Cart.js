@@ -343,22 +343,21 @@ export default function Cart(props) {
                                 return id != product.id;
                               });
                               ids = tmpIds;
-                              onUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
                               db.collection("users")
                                 .doc(userId.toString())
                                 .collection("carts")
                                 .doc(product.id.toString())
                                 .delete().then(()=>{
-                                  const subscriber = db
+                                  db
                                   .collection("users")
                                   .doc(userId.toString())
                                   .collection("carts")
                                   .get()
                                   .then((querySnapShot) => {
-                                    console.log(querySnapShot.size)
                                     onCartCountChanged(querySnapShot.size ? "clear" : querySnapShot.size);
                                   });
                                 })
+                              onUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
                             },
                           },
                           {

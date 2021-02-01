@@ -937,7 +937,10 @@ export default function HomeStoreList(props) {
                                 name: selectedName,
                               });
                           });
-                        onSelectedJanCodeChanged(null);
+
+                        if(product.variety != 0){
+                          onSelectedJanCodeChanged(null);
+                        }
                         onShowText(true);
                         setTimeout(
                           function () {

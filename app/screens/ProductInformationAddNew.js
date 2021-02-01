@@ -183,8 +183,8 @@ export default function ProductInformationAddNew(props) {
           });
           onProductCategoriesChanged(categories);
 
-          if (props.route.params.url) {
-            request.get(props.route.params.url).then((response) => {
+          if (props.route.params.url.replace("simple_products", "products")) {
+            request.get(props.route.params.url.replace("simple_products", "products")).then((response) => {
               let tmpProduct = response.data;
 
               onProductCategoryChanged(tmpProduct.category.url);
@@ -219,7 +219,6 @@ export default function ProductInformationAddNew(props) {
               onShippingChanged(response.data.shipping_fee + "");
               onProductDescriptionChanged(response.data.description);
               let oldImages = response.data.productImages.filter((image)=>{
-                console.log(image)
                 return !image.is_hidden && !image.image.is_hidden;
               }).map((image) => {
                 let tmpImage = image.image;
@@ -263,7 +262,7 @@ export default function ProductInformationAddNew(props) {
                 }
               });
               onProductImageHtmlChanged(html);
-
+              console.log(response.data)
               if (response.data.variety == 0) {
                 let productVariety = response.data.productVarieties[0];
                 let productVarietySelection =
@@ -1310,7 +1309,7 @@ export default function ProductInformationAddNew(props) {
             <View style={styles.allButtonContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  if (props.route.params.url) {
+                  if (props.route.params.url.replace("simple_products", "products")) {
                     saveProduct(1);
                   } else {
                     createProduct(1);
@@ -1338,7 +1337,7 @@ export default function ProductInformationAddNew(props) {
                       { cancelable: false }
                     );
                   } else {
-                    if (props.route.params.url) {
+                    if (props.route.params.url.replace("simple_products", "products")) {
                       saveProduct(0);
                     } else {
                       createProduct(0);
@@ -1363,10 +1362,10 @@ export default function ProductInformationAddNew(props) {
                       {
                         text: "YES",
                         onPress: () => {
-                          if (props.route.params.url) {
+                          if (props.route.params.url.replace("simple_products", "products")) {
                             // alert.warning("Z");
                             request
-                              .patch(props.route.params.url, {
+                              .patch(props.route.params.url.replace("simple_products", "products"), {
                                 is_hidden: 1,
                               })
                               .then((response) => {
@@ -1397,10 +1396,10 @@ export default function ProductInformationAddNew(props) {
                       {
                         text: "YES",
                         onPress: () => {
-                          if (props.route.params.url) {
+                          if (props.route.params.url.replace("simple_products", "products")) {
                             // alert.warning("Z");
                             request
-                              .patch(props.route.params.url, {
+                              .patch(props.route.params.url.replace("simple_products", "products"), {
                                 is_hidden: 1,
                               })
                               .then((response) => {
@@ -1424,10 +1423,10 @@ export default function ProductInformationAddNew(props) {
                     { cancelable: false }
                   );
                 }
-                // if (props.route.params.url) {
+                // if (props.route.params.url.replace("simple_products", "products")) {
                 //   // alert.warning("Z");
                 //   request
-                //     .patch(props.route.params.url, {
+                //     .patch(props.route.params.url.replace("simple_products", "products"), {
                 //       is_hidden: 1,
                 //     })
                 //     .then((response) => {
