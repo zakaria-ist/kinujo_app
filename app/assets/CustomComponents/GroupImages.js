@@ -37,8 +37,6 @@ export default function GroupImages({ props, style, width, height, images }) {
   React.useEffect(() => {
     let tmpHtml = [];
     if (images) {
-      console.log("W:" + width);
-      console.log("W2:" + getWidth(width * 0.94, images.length));
       images.map((image) => {
         if (tmpHtml.length < 9) {
           if (image) {

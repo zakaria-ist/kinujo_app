@@ -10,6 +10,7 @@ import {
   ImageBackground,
   Switch,
   TextInput,
+  KeyboardAvoidingView,
   TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
@@ -74,20 +75,12 @@ export default function AddressManagement(props) {
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("selectedCountry").then((val) => {
         if (val) {
-          onCountryChanged(val);
           setCountryCode(val);
           onCallingCodeChanged(val);
           AsyncStorage.removeItem("selectedCountry");
         } else {
-          if (defaultCountry) {
-            onCountryChanged(defaultCountry);
-            setCountryCode(defaultCountry);
-            onCallingCodeChanged(defaultCountry);
-          } else {
-            onCountryChanged("+81");
-            setCountryCode("+81");
-            onCallingCodeChanged("+81");
-          }
+          setCountryCode("+81");
+          onCallingCodeChanged("+81");
         }
       });
     });
@@ -327,197 +320,151 @@ export default function AddressManagement(props) {
           </ScrollView>
         </SafeAreaView>
       </Modal>
-      <ScrollView
-        style={{ paddingBottom: heightPercentageToDP("5%") }}
-        keyboardShouldPersistTaps="always"
+      <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.select({ ios: 135, android: 80 })}
       >
-        <View style={styles.textInputContainer}>
-          <TextInput
-            placeholder={Translate.t("addressName")}
-            placeholderTextColor={Colors.D7CCA6}
-            style={styles.textInput}
-            value={buildingName}
-            onChangeText={(text) => onBuildingNameChanged(text)}
-          ></TextInput>
-          <TextInput
-            placeholder={Translate.t("nameOfSeller")}
-            placeholderTextColor={Colors.D7CCA6}
-            style={styles.textInput}
-            value={name}
-            onChangeText={(text) => onNameChanged(text)}
-          ></TextInput>
-          <TextInput
-            placeholder={Translate.t("postalCode")}
-            placeholderTextColor={Colors.D7CCA6}
-            style={styles.textInput}
-            value={zipcode}
-            onChangeText={(text) => {
-              handlePostalCode(text);
-            }}
-          ></TextInput>
-          <DropDownPicker
-            // controller={(instance) => (controller = instance)}
-            style={styles.textInput}
-            items={prefectures ? prefectures : []}
-            defaultValue={prefecture ? prefecture : ""}
-            containerStyle={{ height: heightPercentageToDP("8%") }}
-            labelStyle={{
-              fontSize: RFValue(10),
-              color: Colors.D7CCA6,
-            }}
-            itemStyle={{
-              justifyContent: "flex-start",
-            }}
-            selectedtLabelStyle={{
-              color: Colors.D7CCA6,
-            }}
-            placeholder={Translate.t("prefecture")}
-            dropDownStyle={{ backgroundColor: "#000000" }}
-            onChangeItem={(item) => {
-              if (item) {
-                onPrefectureChanged(item.value);
-              }
-            }}
-          />
-          <TextInput
-            placeholder={Translate.t("address1")}
-            placeholderTextColor={Colors.D7CCA6}
-            style={styles.textInput}
-            value={add}
-            onChangeText={(text) => onAddChanged(text)}
-          ></TextInput>
-          <TextInput
-            placeholder={Translate.t("address2")}
-            placeholderTextColor={Colors.D7CCA6}
-            style={styles.textInput}
-            value={address2}
-            onChangeText={(text) => onAddress2Changed(text)}
-          ></TextInput>
-          <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
-            {/* <CountrySearch
-              // props={props}
-              // defaultCountry={"+" + callingCode}
-              // onCountryChanged={(val) => {
-              //   if (val) {
-              //     processCountryCode(val);
-              //   }
-              // }}
-
-            ></CountrySearch> */}
-            <TouchableWithoutFeedback
-              onPress={() => {
-                onShowCountryChanged(true);
-              }}
-            >
-              <View
-                style={{
-                  //   alignItems: "center",
-                  justifyContent: "center",
-                  padding: 5,
-                  borderWidth: 1,
-                  borderRadius: 5,
-                  width: widthPercentageToDP("23%"),
-                  height: heightPercentageToDP("6%"),
-                  marginRight: widthPercentageToDP("1%"),
-                  backgroundColor: "white"
-                }}
-              >
-                <Text
-                  style={{
-                    // alignSelf: "center",
-                    fontSize: RFValue(10),
-                    paddingLeft: widthPercentageToDP("3%"),
-                  }}
-                >
-                  {countryCode}
-                </Text>
-              </View>
-            </TouchableWithoutFeedback>
+        <ScrollView
+          style={{ paddingBottom: heightPercentageToDP("5%") }}
+          keyboardShouldPersistTaps="always"
+        >
+          <View style={styles.textInputContainer}>
             <TextInput
-              keyboardType={"numeric"}
-              placeholder={Translate.t("profileEditPhoneNumber")}
+              placeholder={Translate.t("addressName")}
               placeholderTextColor={Colors.D7CCA6}
               style={styles.textInput}
-              value={phoneNumber}
-              onChangeText={(text) => handlePhone(text)}
+              value={buildingName}
+              onChangeText={(text) => onBuildingNameChanged(text)}
             ></TextInput>
+            <TextInput
+              placeholder={Translate.t("nameOfSeller")}
+              placeholderTextColor={Colors.D7CCA6}
+              style={styles.textInput}
+              value={name}
+              onChangeText={(text) => onNameChanged(text)}
+            ></TextInput>
+            <TextInput
+              placeholder={Translate.t("postalCode")}
+              placeholderTextColor={Colors.D7CCA6}
+              style={styles.textInput}
+              value={zipcode}
+              onChangeText={(text) => {
+                handlePostalCode(text);
+              }}
+            ></TextInput>
+            <DropDownPicker
+              // controller={(instance) => (controller = instance)}
+              style={styles.textInput}
+              items={prefectures ? prefectures : []}
+              defaultValue={prefecture ? prefecture : ""}
+              containerStyle={{ height: heightPercentageToDP("8%") }}
+              labelStyle={{
+                fontSize: RFValue(10),
+                color: Colors.D7CCA6,
+              }}
+              itemStyle={{
+                justifyContent: "flex-start",
+              }}
+              selectedtLabelStyle={{
+                color: Colors.D7CCA6,
+              }}
+              placeholder={Translate.t("prefecture")}
+              dropDownStyle={{ backgroundColor: "#000000" }}
+              onChangeItem={(item) => {
+                if (item) {
+                  onPrefectureChanged(item.value);
+                }
+              }}
+            />
+            <TextInput
+              placeholder={Translate.t("address1")}
+              placeholderTextColor={Colors.D7CCA6}
+              style={styles.textInput}
+              value={add}
+              onChangeText={(text) => onAddChanged(text)}
+            ></TextInput>
+            <TextInput
+              placeholder={Translate.t("address2")}
+              placeholderTextColor={Colors.D7CCA6}
+              style={styles.textInput}
+              value={address2}
+              onChangeText={(text) => onAddress2Changed(text)}
+            ></TextInput>
+            <View style={{ flexDirection: "row", flex: 1, alignItems: "center" }}>
+              {/* <CountrySearch
+                // props={props}
+                // defaultCountry={"+" + callingCode}
+                // onCountryChanged={(val) => {
+                //   if (val) {
+                //     processCountryCode(val);
+                //   }
+                // }}
+
+              ></CountrySearch> */}
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  onShowCountryChanged(true);
+                }}
+              >
+                <View
+                  style={{
+                    //   alignItems: "center",
+                    justifyContent: "center",
+                    padding: 5,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    width: widthPercentageToDP("23%"),
+                    height: heightPercentageToDP("6%"),
+                    marginRight: widthPercentageToDP("1%"),
+                    backgroundColor: "white"
+                  }}
+                >
+                  <Text
+                    style={{
+                      // alignSelf: "center",
+                      fontSize: RFValue(10),
+                      paddingLeft: widthPercentageToDP("3%"),
+                    }}
+                  >
+                    {countryCode}
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+              <TextInput
+                keyboardType={"numeric"}
+                placeholder={Translate.t("profileEditPhoneNumber")}
+                placeholderTextColor={Colors.D7CCA6}
+                style={styles.textInput}
+                value={phoneNumber}
+                onChangeText={(text) => handlePhone(text)}
+              ></TextInput>
+            </View>
           </View>
-        </View>
-        <TouchableWithoutFeedback
-          onPress={() => {
-            if (props.route.params && props.route.params.url) {
-              data = {
-                address1: add,
-                address2: address2 ? address2 : "",
-                address_name: buildingName,
-                name: name,
-                prefecture: prefecture,
-                tel: phoneNumber,
-                zip1: zipcode,
-                tel_code: "+" + callingCode,
-              };
-              // if (address2) data["address2"] = address2;
-              if (callingCode && phoneNumber) {
-                request
-                  .patch(
-                    props.route.params.url.replace(
-                      "addresses",
-                      "insertAddresses"
-                    ),
-                    data
-                  )
-                  .then(function (response) {
-                    props.navigation.goBack();
-                  })
-                  .catch(function (error) {
-                    if (
-                      error &&
-                      error.response &&
-                      error.response.data &&
-                      Object.keys(error.response.data).length > 0
-                    ) {
-                      // alert.warning("3");
-                      alert.warning(
-                        error.response.data[
-                          Object.keys(error.response.data)[0]
-                        ][0] +
-                          "(" +
-                          Object.keys(error.response.data)[0] +
-                          ")"
-                      );
-                    }
-                  });
-              } else if (callingCode == "") {
-                alert.warning(Translate.t("callingCode"));
-              } else if (phoneNumber == "") {
-                alert.warning(Translate.t("(tel)"));
-              }
-            } else {
-              AsyncStorage.getItem("user").then(function (url) {
-                console.log(callingCode + phoneNumber);
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if (props.route.params && props.route.params.url) {
                 data = {
                   address1: add,
+                  address2: address2 ? address2 : "",
                   address_name: buildingName,
                   name: name,
                   prefecture: prefecture,
                   tel: phoneNumber,
-                  user: url,
                   zip1: zipcode,
-                  address2: address2,
                   tel_code: "+" + callingCode,
                 };
+                // if (address2) data["address2"] = address2;
                 if (callingCode && phoneNumber) {
                   request
-                    .post("insertAddresses/", data)
+                    .patch(
+                      props.route.params.url.replace(
+                        "addresses",
+                        "insertAddresses"
+                      ),
+                      data
+                    )
                     .then(function (response) {
-                      // onNameChanged("");
-                      // onZipcodeChanged("");
-                      // onPrefectureChanged(null);
-                      // onAddChanged("");
-                      // onBuildingNameChanged("");
-                      // onPhoneNumberChanged("");
-                      // onPrefecturesChanged([]);
-                      // onPrefectureLoadedChanged(false);
                       props.navigation.goBack();
                     })
                     .catch(function (error) {
@@ -527,20 +474,15 @@ export default function AddressManagement(props) {
                         error.response.data &&
                         Object.keys(error.response.data).length > 0
                       ) {
-                        let tmpErrorMessage =
+                        // alert.warning("3");
+                        alert.warning(
                           error.response.data[
                             Object.keys(error.response.data)[0]
                           ][0] +
-                          "(" +
-                          Object.keys(error.response.data)[0] +
-                          ")";
-                        // alert.warning(tmpErrorMessage);
-                        let errorMessage = String(
-                          tmpErrorMessage.split("(").pop()
+                            "(" +
+                            Object.keys(error.response.data)[0] +
+                            ")"
                         );
-                        alert.warning(Translate.t("(" + errorMessage));
-                      } else if (callingCode == "") {
-                        alert.warning(Translate.t("callingCode"));
                       }
                     });
                 } else if (callingCode == "") {
@@ -548,17 +490,74 @@ export default function AddressManagement(props) {
                 } else if (phoneNumber == "") {
                   alert.warning(Translate.t("(tel)"));
                 }
-              });
-            }
-          }}
-        >
-          <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>
-              {Translate.t("addressRegister")}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+              } else {
+                AsyncStorage.getItem("user").then(function (url) {
+                  console.log(callingCode + phoneNumber);
+                  data = {
+                    address1: add,
+                    address_name: buildingName,
+                    name: name,
+                    prefecture: prefecture,
+                    tel: phoneNumber,
+                    user: url,
+                    zip1: zipcode,
+                    address2: address2,
+                    tel_code: "+" + callingCode,
+                  };
+                  if (callingCode && phoneNumber) {
+                    request
+                      .post("insertAddresses/", data)
+                      .then(function (response) {
+                        // onNameChanged("");
+                        // onZipcodeChanged("");
+                        // onPrefectureChanged(null);
+                        // onAddChanged("");
+                        // onBuildingNameChanged("");
+                        // onPhoneNumberChanged("");
+                        // onPrefecturesChanged([]);
+                        // onPrefectureLoadedChanged(false);
+                        props.navigation.goBack();
+                      })
+                      .catch(function (error) {
+                        if (
+                          error &&
+                          error.response &&
+                          error.response.data &&
+                          Object.keys(error.response.data).length > 0
+                        ) {
+                          let tmpErrorMessage =
+                            error.response.data[
+                              Object.keys(error.response.data)[0]
+                            ][0] +
+                            "(" +
+                            Object.keys(error.response.data)[0] +
+                            ")";
+                          // alert.warning(tmpErrorMessage);
+                          let errorMessage = String(
+                            tmpErrorMessage.split("(").pop()
+                          );
+                          alert.warning(Translate.t("(" + errorMessage));
+                        } else if (callingCode == "") {
+                          alert.warning(Translate.t("callingCode"));
+                        }
+                      });
+                  } else if (callingCode == "") {
+                    alert.warning(Translate.t("callingCode"));
+                  } else if (phoneNumber == "") {
+                    alert.warning(Translate.t("(tel)"));
+                  }
+                });
+              }
+            }}
+          >
+            <View style={styles.buttonContainer}>
+              <Text style={styles.buttonText}>
+                {Translate.t("addressRegister")}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

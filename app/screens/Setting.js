@@ -542,7 +542,7 @@ export default function Setting(props) {
                 height: heightPercentageToDP("5.2%"),
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginHorizontal: widthPercentageToDP("4%"),
+                marginHorizontal: widthPercentageToDP("0%"),
                 position: "absolute",
                 right: 0
               }}
@@ -586,7 +586,7 @@ export default function Setting(props) {
                 thumbColor={
                   messagedReceivedMobile == 0 ? Colors.D7CCA6 : "grey"
                 }
-                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("21%") }}
+                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("25%") }}
                 onValueChange={(value) => {
                   onMessagedReceivedMobileChanged(!value);
                   request
@@ -626,7 +626,7 @@ export default function Setting(props) {
                 height: heightPercentageToDP("5.2%"),
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginHorizontal: widthPercentageToDP("4%"),
+                marginHorizontal: widthPercentageToDP("0%"),
                 position: "absolute",
                 right: 0,
               }}
@@ -669,7 +669,7 @@ export default function Setting(props) {
                 thumbColor={
                   otherNofiticationEmail == 0 ? Colors.D7CCA6 : Colors.grey
                 }
-                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("21%") }}
+                style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("25%") }}
                 onValueChange={(value) => {
                   onOtherNofiticationEmailChanged(!value);
                   request
@@ -709,7 +709,7 @@ export default function Setting(props) {
                 height: heightPercentageToDP("5.2%"),
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginHorizontal: widthPercentageToDP("4%"),
+                marginHorizontal: widthPercentageToDP("0%"),
                 position: "absolute",
                 right: 0,
               }}
@@ -759,7 +759,7 @@ export default function Setting(props) {
                 height: heightPercentageToDP("5.2%"),
                 justifyContent: "space-between",
                 alignItems: "center",
-                marginHorizontal: widthPercentageToDP("4%"),
+                marginHorizontal: widthPercentageToDP("0%"),
                 position: "absolute",
                 right: 0,
               }}

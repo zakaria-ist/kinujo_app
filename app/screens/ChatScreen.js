@@ -1810,36 +1810,11 @@ export default function ChatScreen(props) {
       previousMessageDateElse = null;
       tmpMessageCount = 0;
 
-      this.unsub1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
-        totalMessage = snapshot.data()["totalMessageRead"];
-        totalMessageRead = snapshot.data()["totalMessage"];
-        processChat(chats);
-        if (
-          snapshot.data()["totalMessageRead_" + userId] !=
-          snapshot.data()["totalMessage"]
-        ) {
-          chatsRef.doc(groupID).collection("read").add({
-            user_id: userId,
-          });
-        }
-
-        request
-          .get("user/byIds/", {
-            ids: snapshot.data()["users"],
-          })
-          .then((response) => {
-            allUsers = response.data.users;
-            allUsers.map((user) => {
-              imageMap[user.id] = user.image ? user.image.image : "";
-            });
-            processChat(chats);
-          });
-      });
-
       let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
       lastQuerySnapshot.forEach((snapShot)=>{
         lastDoc = snapShot;
       })
+
       let build = chatsRef
         .doc(groupID)
         .collection("messages")
@@ -1904,6 +1879,32 @@ export default function ChatScreen(props) {
           }
         );
 
+      this.unsub1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
+        totalMessage = snapshot.data()["totalMessageRead"];
+        totalMessageRead = snapshot.data()["totalMessage"];
+        processChat(chats);
+        if (
+          snapshot.data()["totalMessageRead_" + userId] !=
+          snapshot.data()["totalMessage"]
+        ) {
+          chatsRef.doc(groupID).collection("read").add({
+            user_id: userId,
+          });
+        }
+
+        request
+          .get("user/byIds/", {
+            ids: snapshot.data()["users"],
+          })
+          .then((response) => {
+            allUsers = response.data.users;
+            allUsers.map((user) => {
+              imageMap[user.id] = user.image ? user.image.image : "";
+            });
+            processChat(chats);
+          });
+      });
+      
       if(old30LastDoc){
         chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(old30LastDoc).get().then((querySnapShot)=>{
           querySnapShot.forEach((snapShot) => {

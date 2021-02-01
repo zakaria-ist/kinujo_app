@@ -15,6 +15,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "permissions" : [
+      "CAMERA",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "WRITE_SETTINGS"],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
