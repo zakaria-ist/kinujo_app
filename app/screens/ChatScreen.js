@@ -2380,13 +2380,35 @@ export default function ChatScreen(props) {
                   allowsEditing: true
                 };
                 ImagePicker.launchCamera(options, (response) => {
-                  console.log(response)
-                  if (response.uri) {
-                    const reference = storage().ref(uuid.v4() + ".png");
-                    if (Platform.OS === "android") {
-                      RNFetchBlob.fs.stat(response.path).then((stat) => {
+                  if(response.type.includes("image")){
+                    if (response.uri) {
+                      const reference = storage().ref(uuid.v4() + ".png");
+                      if (Platform.OS === "android") {
+                        RNFetchBlob.fs.stat(response.path).then((stat) => {
+                          reference
+                            .putFile(stat.path)
+                            .then((response) => {
+                              reference.getDownloadURL().then((url) => {
+                                let createdAt = getTime();
+
+                                chatsRef
+                                  .doc(groupID)
+                                  .collection("messages")
+                                  .add({
+                                    userID: userId,
+                                    createdAt: createdAt,
+                                    message: "Photo",
+                                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                    image: url,
+                                  })
+                                  .then(function () {});
+                              });
+                            })
+                            .catch((error) => {});
+                        });
+                      } else {
                         reference
-                          .putFile(stat.path)
+                          .putFile(response.uri.replace("file://", ""))
                           .then((response) => {
                             reference.getDownloadURL().then((url) => {
                               let createdAt = getTime();
@@ -2405,29 +2427,10 @@ export default function ChatScreen(props) {
                             });
                           })
                           .catch((error) => {});
-                      });
-                    } else {
-                      reference
-                        .putFile(response.uri.replace("file://", ""))
-                        .then((response) => {
-                          reference.getDownloadURL().then((url) => {
-                            let createdAt = getTime();
-
-                            chatsRef
-                              .doc(groupID)
-                              .collection("messages")
-                              .add({
-                                userID: userId,
-                                createdAt: createdAt,
-                                message: "Photo",
-                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                image: url,
-                              })
-                              .then(function () {});
-                          });
-                        })
-                        .catch((error) => {});
+                      }
                     }
+                  } else {
+                    alert.warning(Translate.t("image_allowed"))
                   }
                 });
               }}
@@ -2446,18 +2449,49 @@ export default function ChatScreen(props) {
                   allowsEditing: true
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
-                  if (response.uri) {
-                    const reference = storage().ref(uuid.v4() + ".png");
-                    onSpinnerChanged(true);
-                    if (Platform.OS === "android") {
-                      RNFetchBlob.fs.stat(response.uri).then((stat) => {
-                        console.log(stat);
+                  if(response.type.includes("image")){
+                    if (response.uri) {
+                      const reference = storage().ref(uuid.v4() + ".png");
+                      onSpinnerChanged(true);
+                      if (Platform.OS === "android") {
+                        RNFetchBlob.fs.stat(response.uri).then((stat) => {
+                          console.log(stat);
+                          reference
+                            .putFile(stat.path)
+                            .then((response) => {
+                              reference.getDownloadURL().then((url) => {
+                                let createdAt = getTime();
+  
+                                chatsRef
+                                  .doc(groupID)
+                                  .collection("messages")
+                                  .add({
+                                    userID: userId,
+                                    createdAt: createdAt,
+                                    message: "Photo",
+                                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                    image: url,
+                                  })
+                                  .then(function () {
+                                    onSpinnerChanged(false);
+                                  }).catch(()=>{
+                                    onSpinnerChanged(false);
+                                  })
+                              }).catch(()=>{
+                                onSpinnerChanged(false);
+                              })
+                            })
+                            .catch((error) => {
+                              onSpinnerChanged(false);
+                            });
+                        });
+                      } else {
                         reference
-                          .putFile(stat.path)
+                          .putFile(response.uri.replace("file://", ""))
                           .then((response) => {
                             reference.getDownloadURL().then((url) => {
                               let createdAt = getTime();
-
+  
                               chatsRef
                                 .doc(groupID)
                                 .collection("messages")
@@ -2480,37 +2514,10 @@ export default function ChatScreen(props) {
                           .catch((error) => {
                             onSpinnerChanged(false);
                           });
-                      });
-                    } else {
-                      reference
-                        .putFile(response.uri.replace("file://", ""))
-                        .then((response) => {
-                          reference.getDownloadURL().then((url) => {
-                            let createdAt = getTime();
-
-                            chatsRef
-                              .doc(groupID)
-                              .collection("messages")
-                              .add({
-                                userID: userId,
-                                createdAt: createdAt,
-                                message: "Photo",
-                                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                                image: url,
-                              })
-                              .then(function () {
-                                onSpinnerChanged(false);
-                              }).catch(()=>{
-                                onSpinnerChanged(false);
-                              })
-                          }).catch(()=>{
-                            onSpinnerChanged(false);
-                          })
-                        })
-                        .catch((error) => {
-                          onSpinnerChanged(false);
-                        });
+                      }
                     }
+                  } else {
+                    alert.warning(Translate.t("image_allowed"))
                   }
                 });
               }}

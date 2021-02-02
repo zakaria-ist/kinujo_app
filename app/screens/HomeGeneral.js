@@ -153,29 +153,30 @@ export default function Home(props) {
           }}
           //pass janCode
           onProductNamePress={() => {
-            let janCodes = [];
-            product.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map(
-                    (horizontal) => {
-                      console.log(horizontal);
-                      if (horizontal.jan_code) {
-                        janCodes.push(horizontal.jan_code);
-                      }
-                    }
-                  );
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    if (vertical.jan_code) {
-                      janCodes.push(vertical.jan_code);
-                    }
-                  });
-                }
-              );
-            });
+            // let janCodes = [];
+            // product.productVarieties.map((productVariety) => {
+            //   productVariety.productVarietySelections.map(
+            //     (productVarietySelection) => {
+            //       productVarietySelection.jancode_horizontal.map(
+            //         (horizontal) => {
+            //           console.log(horizontal);
+            //           if (horizontal.jan_code) {
+            //             janCodes.push(horizontal.jan_code);
+            //           }
+            //         }
+            //       );
+            //       productVarietySelection.jancode_vertical.map((vertical) => {
+            //         if (vertical.jan_code) {
+            //           janCodes.push(vertical.jan_code);
+            //         }
+            //       });
+            //     }
+            //   );
+            // });
+            console.log(product)
             props.navigation.navigate("ProductList", {
-              janCodes: janCodes,
-              productName: product.name,
+              "id": product.id,
+              "productName" : product.name
             });
           }}
           onPress={() => {
@@ -241,29 +242,29 @@ export default function Home(props) {
           }}
           onProductNamePress={() => {
             let janCodes = [];
-            product.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map(
-                    (horizontal) => {
-                      console.log(horizontal);
-                      if (horizontal.jan_code) {
-                        janCodes.push(horizontal.jan_code);
-                      }
-                    }
-                  );
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    console.log(vertical);
-                    if (vertical.jan_code) {
-                      janCodes.push(vertical.jan_code);
-                    }
-                  });
-                }
-              );
-            });
+            // product.productVarieties.map((productVariety) => {
+            //   productVariety.productVarietySelections.map(
+            //     (productVarietySelection) => {
+            //       productVarietySelection.jancode_horizontal.map(
+            //         (horizontal) => {
+            //           console.log(horizontal);
+            //           if (horizontal.jan_code) {
+            //             janCodes.push(horizontal.jan_code);
+            //           }
+            //         }
+            //       );
+            //       productVarietySelection.jancode_vertical.map((vertical) => {
+            //         console.log(vertical);
+            //         if (vertical.jan_code) {
+            //           janCodes.push(vertical.jan_code);
+            //         }
+            //       });
+            //     }
+            //   );
+            // });
             props.navigation.navigate("ProductList", {
-              janCodes: janCodes,
-              productName: product.name,
+              "id": product.id,
+              "productName" : product.name
             });
           }}
           idx={idx++}

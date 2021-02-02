@@ -334,8 +334,6 @@ export default function Cart(props) {
                             onPress: () => {
                               firebaseProducts = firebaseProducts.filter(
                                 (firebaseProduct) => {
-                                  console.log(firebaseProduct);
-                                  console.log(item);
                                   return firebaseProduct.id != item.id;
                                 }
                               );
@@ -403,8 +401,9 @@ export default function Cart(props) {
         tmpShipping = 0;
         firebaseProducts.filter((fbProduct) => {
           let quantity = fbProduct.quantity;
+          console.log(fbProduct)
           let tmpProduct = tmpProducts.filter((product) => {
-            return (product.id = fbProduct.id);
+            return (product.id == fbProduct.product_id);
           });
           tmpProduct = tmpProduct[0];
           total +=
