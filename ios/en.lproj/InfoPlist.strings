@@ -1,8 +1,0 @@
-/* 
-  InfoPlist.strings
-  kinujo
-
-  Created by Lee Guan Chuan on 21/01/2021.
-  
-*/
-NSCameraUsageDescription = "This app requires camera access to scan QR code and upload photo.";
