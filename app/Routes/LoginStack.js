@@ -74,7 +74,7 @@ import CustomerInformationDetails from "../Screens/CustomerInformationDetails";
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 import HomeLogo from "../assets/icons/home.svg";
-import PersonLogo from "../assets/icons/person.svg";
+import PersonLogo from "../assets/icons/bottomPerson.svg";
 import ChatLogo from "../assets/icons/chat.svg";
 import QRCodeLogo from "../assets/icons/qrcode.svg";
 import SettingLogo from "../assets/icons/setting.svg";

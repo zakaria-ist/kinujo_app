@@ -177,7 +177,7 @@ export default function HomeProducts({
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={onSellerNamePress}>
           <Text style={styles.product_seller}>
-            {Translate.t("seller")} : {seller}
+            {Translate.t("seller")} : <Text style={styles.product_sellerName}>{seller}</Text>
           </Text>
         </TouchableWithoutFeedback>
         <Text>
@@ -242,10 +242,13 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   product_seller: {
-    fontSize: RFValue(14),
+    fontSize: RFValue(9),
     width: "100%",
     color: "blue",
     textDecorationLine: "underline"
+  },
+  product_sellerName: {
+    fontSize: RFValue(14),
   },
   product_price: {
     fontSize: RFValue(9),

@@ -918,11 +918,11 @@ export default function ProductInformationAddNew(props) {
               </View>
 
               <Text style={styles.text}>{Translate.t("publishState")}</Text>
-              <RadioButton.Group
-                onValueChange={(newValue) => onPublishStateChanged(newValue)}
-                value={publishState}
-              >
-                <View style={styles.radioGroupContainer}>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  onValueChange={(newValue) => onPublishStateChanged(newValue)}
+                  value={publishState}
+                >
                   <RadioButton.Android
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -939,8 +939,8 @@ export default function ProductInformationAddNew(props) {
                   <Text style={styles.radioButtonText}>
                     {Translate.t("nonPublished")}
                   </Text>
-                </View>
-              </RadioButton.Group>
+                </RadioButton.Group>
+              </View>
               <View style={styles.releaseDateContainer}>
                 <Text style={styles.radioButtonText}>
                   {Translate.t("publishedDate")} :
@@ -1022,11 +1022,11 @@ export default function ProductInformationAddNew(props) {
                 {Translate.t("publishWarning")}
               </Text>
               <Text style={styles.text}>{Translate.t("productStatus")}</Text>
-              <RadioButton.Group
-                onValueChange={(newValue) => onProductStatusChanged(newValue)}
-                value={productStatus}
-              >
-                <View style={styles.radioGroupContainer}>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  onValueChange={(newValue) => onProductStatusChanged(newValue)}
+                  value={productStatus}
+                >
                   <RadioButton.Android
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -1043,14 +1043,14 @@ export default function ProductInformationAddNew(props) {
                   <Text style={styles.radioButtonText}>
                     {Translate.t("secondHand")}
                   </Text>
-                </View>
-              </RadioButton.Group>
+                </RadioButton.Group>
+              </View>
               <Text style={styles.text}>{Translate.t("targetUser")}</Text>
-              <RadioButton.Group
-                onValueChange={(newValue) => onTargetUserChanged(newValue)}
-                value={targetUser}
-              >
-                <View style={styles.radioGroupContainer}>
+              <View style={styles.radioGroupContainer}>
+                <RadioButton.Group
+                  onValueChange={(newValue) => onTargetUserChanged(newValue)}
+                  value={targetUser}
+                >
                   <RadioButton.Android
                     uncheckedColor="#FFF"
                     color="#BD9848"
@@ -1075,8 +1075,8 @@ export default function ProductInformationAddNew(props) {
                   <Text style={styles.radioButtonText}>
                     {Translate.t("storeUser")}
                   </Text>
-                </View>
-              </RadioButton.Group>
+                </RadioButton.Group>
+              </View>
               <Text style={styles.releaseDateWarningText}>
                 {Translate.t("notVisibleToUser")}
               </Text>
@@ -1194,74 +1194,78 @@ export default function ProductInformationAddNew(props) {
                         allowsEditing: true
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
-                        if (response.uri) {
-                          onSpinnerChanged(true);
-                          const formData = new FormData();
-                          formData.append("image", {
-                            ...response,
-                            uri:
-                              Platform.OS === "android"
-                                ? response.uri
-                                : response.uri.replace("file://", ""),
-                            name: "mobile-" + uuid.v4() + ".jpg",
-                            type: "image/jpeg", // it may be necessary in Android.
-                          });
-                          request
-                            .post("images/", formData, {
-                              "Content-Type": "multipart/form-data",
-                            })
-                            .then((response) => {
-                              onSpinnerChanged(false);
-                              let tmpImages = productImages;
-                              tmpImages.push(response.data);
-                              onProductImagesChanged(tmpImages);
-                              let html = [];
-                              tmpImages.map((image) => {
-                                html.push(
-                                  <View
-                                    key={image.id}
-                                    style={{
-                                      marginTop: heightPercentageToDP("1%"),
-                                      height: 1,
-                                      width: "100%",
-                                      height: heightPercentageToDP("30%"),
-                                      borderRadius: 1,
-                                      borderWidth: 1,
-                                      borderColor: Colors.deepGrey,
-                                      borderStyle: "dashed",
-                                      justifyContent: "center",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Image
+                        if(response.type.includes("image")){
+                          if (response.uri) {
+                            onSpinnerChanged(true);
+                            const formData = new FormData();
+                            formData.append("image", {
+                              ...response,
+                              uri:
+                                Platform.OS === "android"
+                                  ? response.uri
+                                  : response.uri.replace("file://", ""),
+                              name: "mobile-" + uuid.v4() + ".jpg",
+                              type: "image/jpeg", // it may be necessary in Android.
+                            });
+                            request
+                              .post("images/", formData, {
+                                "Content-Type": "multipart/form-data",
+                              })
+                              .then((response) => {
+                                onSpinnerChanged(false);
+                                let tmpImages = productImages;
+                                tmpImages.push(response.data);
+                                onProductImagesChanged(tmpImages);
+                                let html = [];
+                                tmpImages.map((image) => {
+                                  html.push(
+                                    <View
+                                      key={image.id}
                                       style={{
+                                        marginTop: heightPercentageToDP("1%"),
+                                        height: 1,
                                         width: "100%",
                                         height: heightPercentageToDP("30%"),
-                                        position: "absolute",
+                                        borderRadius: 1,
+                                        borderWidth: 1,
+                                        borderColor: Colors.deepGrey,
+                                        borderStyle: "dashed",
+                                        justifyContent: "center",
+                                        alignItems: "center",
                                       }}
-                                      source={{ uri: image.image }}
-                                    />
-                                  </View>
-                                );
+                                    >
+                                      <Image
+                                        style={{
+                                          width: "100%",
+                                          height: heightPercentageToDP("30%"),
+                                          position: "absolute",
+                                        }}
+                                        source={{ uri: image.image }}
+                                      />
+                                    </View>
+                                  );
+                                });
+                                onProductImageHtmlChanged(html);
+                              })
+                              .catch((error) => {
+                                onSpinnerChanged(false);
+                                alert.warning(JSON.stringify(error));
+                                if (
+                                  error &&
+                                  error.response &&
+                                  error.response.data &&
+                                  Object.keys(error.response.data).length > 0
+                                ) {
+                                  alert.warning(
+                                    error.response.data[
+                                      Object.keys(error.response.data)[0]
+                                    ][0]
+                                  );
+                                }
                               });
-                              onProductImageHtmlChanged(html);
-                            })
-                            .catch((error) => {
-                              onSpinnerChanged(false);
-                              alert.warning(JSON.stringify(error));
-                              if (
-                                error &&
-                                error.response &&
-                                error.response.data &&
-                                Object.keys(error.response.data).length > 0
-                              ) {
-                                alert.warning(
-                                  error.response.data[
-                                    Object.keys(error.response.data)[0]
-                                  ][0]
-                                );
-                              }
-                            });
+                          }
+                        } else {
+                          alert.warning(Translate.t("image_allowed"))
                         }
                       });
                     }}

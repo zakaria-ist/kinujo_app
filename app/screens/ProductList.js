@@ -118,17 +118,14 @@ export default function ProductList(props) {
             });
           }}
           onSellerNamePress={() => {
-            // console.log("zz");
             props.navigation.navigate("SellerProductList", {
               sellerName: product.user.shop_name,
             });
           }}
           onProductNamePress={() => {
             props.navigation.navigate("ProductList", {
-              janCode:
-                product.productVarieties[0].productVarietySelections[0]
-                  .jancode_horizontal[0].jan_code,
-              productName: product.name,
+              "id": product.id,
+              "productName" : product.name
             });
           }}
           idx={idx++}
@@ -248,6 +245,7 @@ export default function ProductList(props) {
   React.useEffect(() => {
     onFeaturedHtmlChanged([]);
     onKinujoHtmlChanged([]);
+    console.log(props.route.params.url)
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("user").then(function (url) {
         request
@@ -276,10 +274,9 @@ export default function ProductList(props) {
         onCategoryHtmlChanged(processCategoryHtml(response.data));
       });
       request
-        .get("simple_products/")
+        .get("getProductByVariety?productId=" + props.route.params.id)
         .then(function (response) {
-          let products = response.data;
-          // console.log(products)
+          let products = response.data.products;
           products = products.sort((p1, p2) => {
             if (p1.created > p2.created) {
               return -1;
@@ -297,46 +294,11 @@ export default function ProductList(props) {
             );
           });
           //filter janCode
-          console.log(janCodes);
           kinujoProducts = products.filter((product) => {
-            let found = false;
-            product.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map((horizontal) => {
-                    if (janCodes.includes(horizontal.jan_code)) {
-                      found = true;
-                    }
-                  });
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    if (janCodes.includes(vertical.jan_code)) {
-                      found = true;
-                    }
-                  });
-                }
-              );
-            });
-            return found;
+            return product.user.authority.id == 1;
           });
           featuredProducts = products.filter((product) => {
-            let found = false;
-            product.productVarieties.map((productVariety) => {
-              productVariety.productVarietySelections.map(
-                (productVarietySelection) => {
-                  productVarietySelection.jancode_horizontal.map((horizontal) => {
-                    if (janCodes.includes(horizontal.jancode)) {
-                      found = true;
-                    }
-                  });
-                  productVarietySelection.jancode_vertical.map((vertical) => {
-                    if (janCodes.includes(vertical.jancode)) {
-                      found = true;
-                    }
-                  });
-                }
-              );
-            });
-            return found;
+            return product.user.authority.id != 1;
           });
           onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
           onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));

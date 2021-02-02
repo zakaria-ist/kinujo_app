@@ -266,37 +266,40 @@ export default function QRCode(props) {
                     allowsEditing: true
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
-                    console.log(response);
-                    RNQRGenerator.detect({
-                      base64: response.data,
-                      // uri: Platform.OS === "android"
-                      // ? response.uri
-                      // : response.uri.replace("file://", ""), // local path of the image. Can be skipped if base64 is passed.
-                    })
-                      .then((response) => {
-                        const { values } = response; // Array of detected QR code values. Empty if nothing found.
-                        const code = findParams(values[0], "kinujoId");
-                        if (code) {
-                          request.addFriend(userId, code).then(() => {
-                            Alert.alert(
-                              Translate.t("information"),
-                              Translate.t("friendAdded"),
-                              [
-                                {
-                                  text: "OK",
-                                  onPress: () => {},
-                                },
-                              ],
-                              { cancelable: false }
-                            );
-                          });
-                        } else {
-                          alert.warning(Translate.t("invalidQRcode"));
-                        }
+                    if(response.type.includes("image")){
+                      RNQRGenerator.detect({
+                        base64: response.data,
+                        // uri: Platform.OS === "android"
+                        // ? response.uri
+                        // : response.uri.replace("file://", ""), // local path of the image. Can be skipped if base64 is passed.
                       })
-                      .catch((error) =>
-                        console.log("Cannot detect QR code in image", error)
-                      );
+                        .then((response) => {
+                          const { values } = response; // Array of detected QR code values. Empty if nothing found.
+                          const code = findParams(values[0], "kinujoId");
+                          if (code) {
+                            request.addFriend(userId, code).then(() => {
+                              Alert.alert(
+                                Translate.t("information"),
+                                Translate.t("friendAdded"),
+                                [
+                                  {
+                                    text: "OK",
+                                    onPress: () => {},
+                                  },
+                                ],
+                                { cancelable: false }
+                              );
+                            });
+                          } else {
+                            alert.warning(Translate.t("invalidQRcode"));
+                          }
+                        })
+                        .catch((error) =>
+                          console.log("Cannot detect QR code in image", error)
+                        );
+                      } else {
+                        alert.warning(Translate.t("image_allowed"))
+                      }
                   });
                 }}
                 style={[

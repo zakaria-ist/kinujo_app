@@ -265,58 +265,62 @@ export default function ProfileEditingGeneral(props) {
       allowsEditing: true
     };
     ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.uri) {
-        const formData = new FormData();
-        formData.append("image", {
-          ...response,
-          uri:
-            Platform.OS == "android"
-              ? response.uri
-              : response.uri.replace("file://", ""),
-          name: name ? name : "mobile-" + uuid.v4() + ".jpg",
-          type: "image/jpeg", // it may be necessary in Android.
-        });
-        request
-          .post("images/", formData, {
-            "Content-Type": "multipart/form-data",
-          })
-          .then((response) => {
-            request
-              .post(user.url.replace("profiles", "updateProfileImage"), {
-                image_id: response.data.id,
-                type: type,
-              })
-              .then(function (response) {
-                loadUser();
-              })
-              .catch(function (error) {
-                if (
-                  error &&
-                  error.response &&
-                  error.response.data &&
-                  Object.keys(error.response.data).length > 0
-                ) {
-                  alert.warning(
-                    error.response.data[
-                      Object.keys(error.response.data)[0]
-                    ][0] +
-                      "(" +
-                      Object.keys(error.response.data)[0] +
-                      ")"
-                  );
-                }
-              });
-          })
-          .catch((error) => {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(error);
-            }
+      if(response.type.includes("image")){
+        if (response.uri) {
+          const formData = new FormData();
+          formData.append("image", {
+            ...response,
+            uri:
+              Platform.OS == "android"
+                ? response.uri
+                : response.uri.replace("file://", ""),
+            name: name ? name : "mobile-" + uuid.v4() + ".jpg",
+            type: "image/jpeg", // it may be necessary in Android.
           });
+          request
+            .post("images/", formData, {
+              "Content-Type": "multipart/form-data",
+            })
+            .then((response) => {
+              request
+                .post(user.url.replace("profiles", "updateProfileImage"), {
+                  image_id: response.data.id,
+                  type: type,
+                })
+                .then(function (response) {
+                  loadUser();
+                })
+                .catch(function (error) {
+                  if (
+                    error &&
+                    error.response &&
+                    error.response.data &&
+                    Object.keys(error.response.data).length > 0
+                  ) {
+                    alert.warning(
+                      error.response.data[
+                        Object.keys(error.response.data)[0]
+                      ][0] +
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
+                    );
+                  }
+                });
+            })
+            .catch((error) => {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(error);
+              }
+            });
+        }
+      } else {
+        alert.warning(Translate.t("image_allowed"))
       }
     });
   };

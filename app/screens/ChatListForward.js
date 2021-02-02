@@ -213,7 +213,10 @@ export default function ChatList(props) {
             .then(function () {
               onSpinnerChanged(false);
               props.navigation.goBack();
-            });
+            }).catch(()=>{
+              onSpinnerChanged(false);
+              props.navigation.goBack();
+            })
         } else if(messages){
           const batch = db.batch();
           for(i=0; i<messages.length; i++){
