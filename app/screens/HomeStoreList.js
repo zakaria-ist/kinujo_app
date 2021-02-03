@@ -739,7 +739,7 @@ export default function HomeStoreList(props) {
                   });
                 }}>
                     <View style={{backgroundColor:"lightgray", padding:10, marginBottom: 10, borderRadius: 5, color: "white"}}> 
-                      <Text style={styles.contact_us}>Contact Us</Text>
+                      <Text style={styles.contact_us}>{Translate.t("contact_us")}</Text>
                     </View>
                 </TouchableWithoutFeedback>
               </View>

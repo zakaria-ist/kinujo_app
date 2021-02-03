@@ -177,7 +177,7 @@ export default function HomeProducts({
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={onSellerNamePress}>
           <Text style={styles.product_seller}>
-            {Translate.t("seller")} : <Text style={styles.product_sellerName}>{seller}</Text>
+            {Translate.t("seller")} : {seller}
           </Text>
         </TouchableWithoutFeedback>
         <Text>
