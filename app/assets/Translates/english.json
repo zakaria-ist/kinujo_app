@@ -301,6 +301,7 @@
   "pass_reset_success" : "Password reset successfully.",
   "cartUpdated": "Cart Updated.",
   "fieldEmpty": "The field can't be empty.",
+  "contact_us" : "Contact Us",
   "(username)": "The contact number is registered. Please insert another number.",
   "(address_name)": "The adress name can't be empty.",
   "(name)": "The real name can't be empty.",

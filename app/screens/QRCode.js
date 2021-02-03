@@ -110,7 +110,7 @@ export default function QRCode(props) {
   const [store, onStoreChanged] = useStateIfMounted(0);
   const [storeLink, onStoreLinkChanged] = useStateIfMounted("");
   const [userLink, onUserLinkChanged] = useStateIfMounted("");
-  const [interacted, setInteracted] = useStateIfMounted(false);
+  const [interacted, setInteracted] = useState(false);
   React.useEffect(() => {
     if(!isFocused){
       setInviteShow(false);
