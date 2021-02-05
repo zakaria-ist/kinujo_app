@@ -344,7 +344,7 @@ export default function Cart(props) {
                               db.collection("users")
                                 .doc(userId.toString())
                                 .collection("carts")
-                                .doc(product.id.toString())
+                                .doc(item.varietyId.toString())
                                 .delete().then(()=>{
                                   db
                                   .collection("users")
