@@ -161,6 +161,26 @@ export default function ChatScreen(props) {
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
   const insets = useSafeAreaInsets();
+
+  function findParams(data, param) {
+    let tmps = data.split("?");
+    if (tmps.length > 0) {
+      let tmp = tmps[1];
+      let params = tmp.split("&");
+      let searchParams = params.filter((tmpParam) => {
+        return tmpParam.indexOf(param) >= 0;
+      });
+      if (searchParams.length > 0) {
+        let foundParam = searchParams[0];
+        let foundParams = foundParam.split("=");
+        if (foundParams.length > 0) {
+          return foundParams[1];
+        }
+      }
+    }
+    return "";
+  }
+
   React.useEffect(() => {
     hideEmoji();
     setMultiSelect(false);
@@ -476,6 +496,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -623,6 +661,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -772,6 +828,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -946,6 +1020,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -1093,6 +1185,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1242,6 +1352,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1416,6 +1544,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -1563,6 +1709,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1713,6 +1877,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}  
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -2376,8 +2558,7 @@ export default function ChatScreen(props) {
               onPress={() => {
                 const options = {
                   noData: true,
-                  mediaType: "photo",
-                  allowsEditing: true
+                  mediaType: "photo"
                 };
                 ImagePicker.launchCamera(options, (response) => {
                   if(response.type.includes("image")){
@@ -2445,8 +2626,7 @@ export default function ChatScreen(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 const options = {
-                  mediaType: "photo",
-                  allowsEditing: true
+                  mediaType: "photo"
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   if(response.type.includes("image")){

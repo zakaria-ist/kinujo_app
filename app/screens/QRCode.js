@@ -184,7 +184,7 @@ export default function QRCode(props) {
       {interacted ? (<QRCodeScanner
         onRead={onSuccess}
         showMarker={true}
-        reactivate={true}
+        reactivate={interacted}
         reactivateTimeout={5000}
         buttonPositive={Translate.t("ok")}
         cameraStyle={
@@ -266,7 +266,7 @@ export default function QRCode(props) {
                     allowsEditing: true
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
-                    if(response.type.includes("image")){
+                    if(response && response.type && response.type.includes("image")){
                       RNQRGenerator.detect({
                         base64: response.data,
                         // uri: Platform.OS === "android"
@@ -461,7 +461,7 @@ export default function QRCode(props) {
               <View style={[styles.qr_image]}>
                 <QRCodeIcon
                   size={
-                    widthPercentageToDP(60) > 500 ? 500 : widthPercentageToDP(60)
+                    widthPercentageToDP(50)
                   }
                   value={
                     store

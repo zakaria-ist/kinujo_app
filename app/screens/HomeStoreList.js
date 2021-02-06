@@ -935,7 +935,16 @@ export default function HomeStoreList(props) {
                                 quantity: tmpQuantity,
                                 url: selectedJanCode,
                                 name: selectedName,
-                              });
+                              }).then(()=>{
+                                const subscriber = db
+                                  .collection("users")
+                                  .doc(user.id.toString())
+                                  .collection("carts")
+                                  .get()
+                                  .then((querySnapShot) => {
+                                    onCartCountChanged(querySnapShot.size + 1);
+                                  });
+                              })
                           });
 
                         if(product.variety != 0){
@@ -948,17 +957,6 @@ export default function HomeStoreList(props) {
                           }.bind(this),
                           2000
                         );
-
-                        const subscriber = db
-                          .collection("users")
-                          .doc(user.id.toString())
-                          .collection("carts")
-                          .get()
-                          .then((querySnapShot) => {
-                            // console.log(querySnapShot);
-                            console.log("444" + querySnapShot.size);
-                            onCartCountChanged(querySnapShot.size + 1);
-                          });
                       } else {
                         alert.warning(
                           Translate.t("no_select_jancode")
