@@ -110,7 +110,7 @@ export default function ReceiptView(props) {
           }}
           onBack={() => props.navigation.goBack()}
         />
-        <CustomSecondaryHeader
+        <CustomSecondaryHeader outUser={user} props={props}
           name={user.nickname}
           accountType={Translate.t("storeAccount")}
         />

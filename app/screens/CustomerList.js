@@ -188,7 +188,7 @@ export default function CustomerList(props) {
         }}
         text={Translate.t("customerList")}
       />
-      <CustomSecondaryHeader
+      <CustomSecondaryHeader outUser={user} props={props}
         name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />

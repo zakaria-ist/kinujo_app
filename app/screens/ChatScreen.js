@@ -19,6 +19,7 @@ import {
   Keyboard,
   SafeAreaView,
   PixelRatio,
+  FlatList
 } from "react-native";
 
 import Spinner from "react-native-loading-spinner-overlay";
@@ -138,6 +139,7 @@ export default function ChatScreen(props) {
   const [secretMode, setSecretMode] = useStateIfMounted(false);
   const [showPopUp, onShowPopUpChanged] = useStateIfMounted(false);
   const [loaded, onLoadedChanged] = useStateIfMounted(false);
+  const [newChats, setChats] = useStateIfMounted([]);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
   const [old30ChatHtml, onOld30ChatHtmlChanged] = useStateIfMounted([]);
   const [oldChatHtml, onOldChatHtmlChanged] = useStateIfMounted([]);
@@ -161,11 +163,32 @@ export default function ChatScreen(props) {
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
   const insets = useSafeAreaInsets();
+
+  function findParams(data, param) {
+    let tmps = data.split("?");
+    if (tmps.length > 0) {
+      let tmp = tmps[1];
+      let params = tmp.split("&");
+      let searchParams = params.filter((tmpParam) => {
+        return tmpParam.indexOf(param) >= 0;
+      });
+      if (searchParams.length > 0) {
+        let foundParam = searchParams[0];
+        let foundParams = foundParam.split("=");
+        if (foundParams.length > 0) {
+          return foundParams[1];
+        }
+      }
+    }
+    return "";
+  }
+
   React.useEffect(() => {
     hideEmoji();
     setMultiSelect(false);
     tmpMultiSelect = false;
     selects = []
+    setChats([]);
   }, [!isFocused]);
   function redirectToChat(contactID, contactName) {
     AsyncStorage.getItem("user").then((url) => {
@@ -342,6 +365,7 @@ export default function ChatScreen(props) {
   }
 
   function processOldChat(tmpChats) {
+    return
     let tmpChatHtml = [];
     index = 1;
     // tmpChats = tmpChats.sort((a, b) => {
@@ -475,6 +499,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -624,6 +666,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -772,6 +832,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -812,6 +890,7 @@ export default function ChatScreen(props) {
   }
 
   function processOld30Chat(tmpChats) {
+    return;
     let tmpChatHtml = [];
     index = 1;
     // tmpChats = tmpChats.sort((a, b) => {
@@ -945,6 +1024,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1093,6 +1190,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1243,6 +1358,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -1282,6 +1415,7 @@ export default function ChatScreen(props) {
   }
 
   function processChat(tmpChats) {
+    return;
     let tmpChatHtml = [];
     index = 1;
     // tmpChats = tmpChats.sort((a, b) => {
@@ -1415,6 +1549,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1563,6 +1715,24 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
+                  }}
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
                   }}
                   props={props}
                   showCheckBox={showCheckBox}
@@ -1713,6 +1883,24 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}  
+                  hyperLinkClicked={(url, text)=>{
+                    if(!tmpMultiSelect){
+                      if(findParams(url, "apn") && findParams(url, "link")){
+                        let link = decodeURIComponent(findParams(url, "link"));
+                        console.log(findParams(link, "product_id"));
+                        if(findParams(link, "product_id")){
+                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                          props.navigation.navigate("HomeStoreList", {
+                            url: apiUrl,
+                          });
+                        } else {
+                          Linking.openURL(url);
+                        }
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    }
+                  }}
                   props={props}
                   showCheckBox={showCheckBox}
                   date={tmpHours + ":" + tmpMinutes}
@@ -1822,7 +2010,6 @@ export default function ChatScreen(props) {
       
       if(lastDoc){
         build = build.startAfter(lastDoc);
-
         chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
           querySnapShot.forEach((snapShot) => {
             if(!old30LastDoc){
@@ -1845,7 +2032,7 @@ export default function ChatScreen(props) {
               });
             }
           })
-          processOld30Chat(old30Chats);
+          setChats(oldChats.concat(old30Chats, chats))
         })
       }
 
@@ -1876,34 +2063,35 @@ export default function ChatScreen(props) {
               }
             });
             processChat(chats);
+            setChats(oldChats.concat(old30Chats, chats))
           }
         );
 
-      this.unsub1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
-        totalMessage = snapshot.data()["totalMessageRead"];
-        totalMessageRead = snapshot.data()["totalMessage"];
-        processChat(chats);
-        if (
-          snapshot.data()["totalMessageRead_" + userId] !=
-          snapshot.data()["totalMessage"]
-        ) {
-          chatsRef.doc(groupID).collection("read").add({
-            user_id: userId,
-          });
-        }
+      // this.unsub1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
+      //   totalMessage = snapshot.data()["totalMessageRead"];
+      //   totalMessageRead = snapshot.data()["totalMessage"];
+      //   processChat(chats);
+      //   if (
+      //     snapshot.data()["totalMessageRead_" + userId] !=
+      //     snapshot.data()["totalMessage"]
+      //   ) {
+      //     chatsRef.doc(groupID).collection("read").add({
+      //       user_id: userId,
+      //     });
+      //   }
 
-        request
-          .get("user/byIds/", {
-            ids: snapshot.data()["users"],
-          })
-          .then((response) => {
-            allUsers = response.data.users;
-            allUsers.map((user) => {
-              imageMap[user.id] = user.image ? user.image.image : "";
-            });
-            processChat(chats);
-          });
-      });
+      //   request
+      //     .get("user/byIds/", {
+      //       ids: snapshot.data()["users"],
+      //     })
+      //     .then((response) => {
+      //       allUsers = response.data.users;
+      //       allUsers.map((user) => {
+      //         imageMap[user.id] = user.image ? user.image.image : "";
+      //       });
+      //       processChat(chats);
+      //     });
+      // });
       
       if(old30LastDoc){
         chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(old30LastDoc).get().then((querySnapShot)=>{
@@ -1926,6 +2114,7 @@ export default function ChatScreen(props) {
             }
           })
           processOldChat(oldChats);
+          setChats(oldChats.concat(old30Chats, chats))
         })
       }
     }
@@ -1946,6 +2135,7 @@ export default function ChatScreen(props) {
       processOldChat([]);
       setImages([""]);
       chats = [];
+      old30Chats = [];
       if (this.unsub) {
         this.unsub();
       }
@@ -1986,6 +2176,534 @@ export default function ChatScreen(props) {
       tmpChatHtml = [];
     };
   }, [isFocused]);
+
+  const DATA = [
+    {
+      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+      title: 'First Item',
+    },
+    {
+      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+      title: 'Second Item',
+    },
+    {
+      id: '58694a0f-3da1-471f-bd96-145571e29d72',
+      title: 'Third Item',
+    },
+  ];
+
+  function renderItem(item){
+    let chat = item["item"];
+    let date = chat.data.createdAt.split(":");
+    let tmpMonth = date[1];
+    let tmpDay = date[2]; //message created at
+    let tmpHours = date[3];
+    let tmpMinutes = date[4];
+    let tmpMessageID = messageID.filter((item) => {
+      return item == chat.id;
+    });
+    if (tmpDay == day) {
+      return (
+        <TouchableWithoutFeedback
+          key={chat.id}
+          delete={
+            chat.data["delete_" + userId] || chat.data["delete"]
+              ? true
+              : false
+          }
+          onPress={() => {
+            if (tmpMultiSelect) {
+              if (selectedChat(chat.id)) {
+                selects = selects.filter((select) => {
+                  return select.id != chat.id;
+                });
+              } else {
+                selects.push({
+                  id: chat.id,
+                  message: chat.data.message,
+                  contactID: chat.data.contactID,
+                  contactName: chat.data.contactName,
+                  image: chat.data.image
+                });
+              }
+              processOldChat(oldChats);
+            }
+          }}
+          onLongPress={() => {
+            onLongPressObjChanged({
+              id: chat.id,
+              message: chat.data.message,
+              data: chat.data,
+              contactID: chat.data.contactID,
+              contactName: chat.data.contactName,
+              image: chat.data.image
+            });
+            onShowPopUpChanged(true);
+          }}
+        >
+          <View
+            style={
+              selectedChat(chat.id) ? styles.selected : styles.non_selected
+            }
+            key={chat.id}
+          >
+            {previousMessageDateToday == null ? (
+              <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
+            ) : (
+              <Text style={[styles.chat_date]}>{""}</Text>
+            )}
+            {/*///////////////////////////////////////*/}
+            {chat.data.contactID ? (
+              <ChatContact
+                press={() => {
+                  if (!tmpMultiSelect) {
+                    redirectToChat(
+                      chat.data.contactID,
+                      chat.data.contactName
+                    );
+                  } else {
+                    console.log("1");
+                    if (selectedChat(chat.id)) {
+                      selects = selects.filter((select) => {
+                        return select.id != chat.id;
+                      });
+                    } else {
+                      selects.push({
+                        id: chat.id,
+                        message: chat.data.message,
+                        contactID: chat.data.contactID,
+                        contactName: chat.data.contactName,
+                        image: chat.data.image
+                      });
+                    }
+                    processOldChat(oldChats);
+                  }
+                }}
+                longPress={() => {
+                  onLongPressObjChanged({
+                    id: chat.id,
+                    message: chat.data.message,
+                    data: chat.data,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                  onShowPopUpChanged(true);
+                }}
+                showCheckBox={showCheckBox}
+                props={props}
+                date={tmpHours + ":" + tmpMinutes}
+                isSelf={
+                  chat.data.userID == userId
+                    ? (isSelf = "true")
+                    : (isSelf = "")
+                }
+                // seen={
+                //   totalMessage - index >= totalMessage - totalMessageRead &&
+                //   chat.data.userID == userId
+                //     ? (seen = "true")
+                //     : (seen = "")
+                // }
+                contactID={chat.data.contactID}
+                contactName={chat.data.contactName}
+                image={imageMap[chat.data.userID]}
+              />
+            ) : (
+              <ChatText
+                longPress={() => {
+                  onLongPressObjChanged({
+                    id: chat.id,
+                    message: chat.data.message,
+                    data: chat.data,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                  onShowPopUpChanged(true);
+                }}
+                hyperLinkClicked={(url, text)=>{
+                  if(!tmpMultiSelect){
+                    if(findParams(url, "apn") && findParams(url, "link")){
+                      let link = decodeURIComponent(findParams(url, "link"));
+                      console.log(findParams(link, "product_id"));
+                      if(findParams(link, "product_id")){
+                        let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                        props.navigation.navigate("HomeStoreList", {
+                          url: apiUrl,
+                        });
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    } else {
+                      Linking.openURL(url);
+                    }
+                  }
+                }}
+                props={props}
+                showCheckBox={showCheckBox}
+                date={tmpHours + ":" + tmpMinutes}
+                isSelf={
+                  chat.data.userID == userId
+                    ? (isSelf = "true")
+                    : (isSelf = "")
+                }
+                // seen={
+                //   totalMessage - index >= totalMessage - totalMessageRead &&
+                //   chat.data.userID == userId
+                //     ? (seen = "true")
+                //     : (seen = "")
+                // }
+                text={
+                  chat.data.contactID == null && chat.data.image == null
+                    ? chat.data.message
+                    : ""
+                }
+                imageURL={chat.data.image ? chat.data.image : ""}
+                image={imageMap[chat.data.userID]}
+              />
+            )}
+            {/*///////////////////////////////////////*/}
+          </View>
+        </TouchableWithoutFeedback>
+      );
+      previousMessageDateToday = tmpDay;
+    } else if (tmpDay == day - 1) {
+      return (
+        <TouchableWithoutFeedback
+          key={chat.id}
+          delete={
+            chat.data["delete_" + userId] || chat.data["delete"]
+              ? true
+              : false
+          }
+          onPress={() => {
+            if (tmpMultiSelect) {
+              if (selectedChat(chat.id)) {
+                selects = selects.filter((select) => {
+                  return select.id != chat.id;
+                });
+              } else {
+                selects.push({
+                  id: chat.id,
+                  message: chat.data.message,
+                  contactID: chat.data.contactID,
+                  contactName: chat.data.contactName,
+                  image: chat.data.image
+                });
+              }
+              processOldChat(oldChats);
+            }
+          }}
+          onLongPress={() => {
+            onLongPressObjChanged({
+              id: chat.id,
+              message: chat.data.message,
+              data: chat.data,
+              contactID: chat.data.contactID,
+              contactName: chat.data.contactName,
+              image: chat.data.image
+            });
+            onShowPopUpChanged(true);
+          }}
+        >
+          <View
+            style={
+              selectedChat(chat.id) ? styles.selected : styles.non_selected
+            }
+            key={chat.id}
+          >
+            {previousMessageDateYesterday == null ? (
+              <Text style={[styles.chat_date]}>
+                {Translate.t("yesterday")}
+              </Text>
+            ) : (
+              <Text style={[styles.chat_date]}>{""}</Text>
+            )}
+            {/*///////////////////////////////////////*/}
+            {chat.data.contactID ? (
+              <ChatContact
+                press={() => {
+                  if (!tmpMultiSelect) {
+                    redirectToChat(
+                      chat.data.contactID,
+                      chat.data.contactName
+                    );
+                  } else {
+                    if (selectedChat(chat.id)) {
+                      selects = selects.filter((select) => {
+                        return select.id != chat.id;
+                      });
+                    } else {
+                      selects.push({
+                        id: chat.id,
+                        message: chat.data.message,
+                        contactID: chat.data.contactID,
+                        contactName: chat.data.contactName,
+                        image: chat.data.image
+                      });
+                    }
+                    processOldChat(oldChats);
+                  }
+                }}
+                longPress={() => {
+                  onLongPressObjChanged({
+                    id: chat.id,
+                    message: chat.data.message,
+                    data: chat.data,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                  onShowPopUpChanged(true);
+                }}
+                showCheckBox={showCheckBox}
+                props={props}
+                date={tmpHours + ":" + tmpMinutes}
+                isSelf={
+                  chat.data.userID == userId
+                    ? (isSelf = "true")
+                    : (isSelf = "")
+                }
+                // seen={
+                //   totalMessage - index >= totalMessage - totalMessageRead &&
+                //   chat.data.userID == userId
+                //     ? (seen = "true")
+                //     : (seen = "")
+                // }
+                contactID={chat.data.contactID}
+                contactName={chat.data.contactName}
+                image={imageMap[chat.data.userID]}
+              />
+            ) : (
+              <ChatText
+                longPress={() => {
+                  onLongPressObjChanged({
+                    id: chat.id,
+                    message: chat.data.message,
+                    data: chat.data,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                  onShowPopUpChanged(true);
+                }}
+                hyperLinkClicked={(url, text)=>{
+                  if(!tmpMultiSelect){
+                    if(findParams(url, "apn") && findParams(url, "link")){
+                      let link = decodeURIComponent(findParams(url, "link"));
+                      console.log(findParams(link, "product_id"));
+                      if(findParams(link, "product_id")){
+                        let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                        props.navigation.navigate("HomeStoreList", {
+                          url: apiUrl,
+                        });
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    } else {
+                      Linking.openURL(url);
+                    }
+                  }
+                }}
+                props={props}
+                showCheckBox={showCheckBox}
+                date={tmpHours + ":" + tmpMinutes}
+                isSelf={
+                  chat.data.userID == userId
+                    ? (isSelf = "true")
+                    : (isSelf = "")
+                }
+                // seen={
+                //   totalMessage - index >= totalMessage - totalMessageRead &&
+                //   chat.data.userID == userId
+                //     ? (seen = "true")
+                //     : (seen = "")
+                // }
+                text={
+                  chat.data.contactID == null && chat.data.image == null
+                    ? chat.data.message
+                    : ""
+                }
+                imageURL={chat.data.image ? chat.data.image : ""}
+                image={imageMap[chat.data.userID]}
+              />
+            )}
+            {/*///////////////////////////////////////*/}
+          </View>
+        </TouchableWithoutFeedback>
+      );
+      previousMessageDateYesterday = tmpDay;
+    } else if (tmpDay != day && tmpDay != day - 1) {
+      return (
+        <TouchableWithoutFeedback
+          key={chat.id}
+          delete={
+            chat.data["delete_" + userId] || chat.data["delete"]
+              ? true
+              : false
+          }
+          onPress={() => {
+            if (tmpMultiSelect) {
+              if (selectedChat(chat.id)) {
+                selects = selects.filter((select) => {
+                  return select.id != chat.id;
+                });
+              } else {
+                selects.push({
+                  id: chat.id,
+                  message: chat.data.message,
+                  contactID: chat.data.contactID,
+                  contactName: chat.data.contactName,
+                  image: chat.data.image
+                });
+              }
+              processOldChat(oldChats);
+            }
+          }}
+          onLongPress={() => {
+            onLongPressObjChanged({
+              id: chat.id,
+              message: chat.data.message,
+              data: chat.data,
+              contactID: chat.data.contactID,
+              contactName: chat.data.contactName,
+              image: chat.data.image
+            });
+            onShowPopUpChanged(true);
+          }}
+        >
+          <View
+            style={
+              selectedChat(chat.id) ? styles.selected : styles.non_selected
+            }
+            key={chat.id}
+          >
+            {previousMessageDateElse ==
+            chat.data.timeStamp.toDate().toDateString() ? (
+              <Text style={[styles.chat_date]}>{""}</Text>
+            ) : (
+              <Text style={[styles.chat_date]}>
+                {tmpMonth + "/" + tmpDay}
+              </Text>
+            )}
+            {/*///////////////////////////////////////*/}
+            {chat.data.contactID ? (
+              <ChatContact
+                press={() => {
+                  if (!tmpMultiSelect) {
+                    redirectToChat(
+                      chat.data.contactID,
+                      chat.data.contactName
+                    );
+                  } else {
+                    if (selectedChat(chat.id)) {
+                      selects = selects.filter((select) => {
+                        return select.id != chat.id;
+                      });
+                    } else {
+                      selects.push({
+                        id: chat.id,
+                        message: chat.data.message,
+                        contactID: chat.data.contactID,
+                        contactName: chat.data.contactName,
+                        image: chat.data.image
+                      });
+                    }
+                    processOldChat(oldChats);
+                  }
+                }}
+                longPress={() => {
+                  onLongPressObjChanged({
+                    id: chat.id,
+                    message: chat.data.message,
+                    data: chat.data,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                  onShowPopUpChanged(true);
+                }}
+                showCheckBox={showCheckBox}
+                props={props}
+                date={tmpHours + ":" + tmpMinutes}
+                isSelf={
+                  chat.data.userID == userId
+                    ? (isSelf = "true")
+                    : (isSelf = "")
+                }
+                // seen={
+                //   totalMessage - index >= totalMessage - totalMessageRead &&
+                //   chat.data.userID == userId
+                //     ? (seen = "true")
+                //     : (seen = "")
+                // }
+                contactID={chat.data.contactID}
+                contactName={chat.data.contactName}
+                image={imageMap[chat.data.userID]}
+              />
+            ) : (
+              <ChatText
+                longPress={() => {
+                  onLongPressObjChanged({
+                    id: chat.id,
+                    message: chat.data.message,
+                    data: chat.data,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                  });
+                  onShowPopUpChanged(true);
+                }}
+                hyperLinkClicked={(url, text)=>{
+                  if(!tmpMultiSelect){
+                    if(findParams(url, "apn") && findParams(url, "link")){
+                      let link = decodeURIComponent(findParams(url, "link"));
+                      console.log(findParams(link, "product_id"));
+                      if(findParams(link, "product_id")){
+                        let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                        props.navigation.navigate("HomeStoreList", {
+                          url: apiUrl,
+                        });
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    } else {
+                      Linking.openURL(url);
+                    }
+                  }
+                }}
+                props={props}
+                showCheckBox={showCheckBox}
+                date={tmpHours + ":" + tmpMinutes}
+                isSelf={
+                  chat.data.userID == userId
+                    ? (isSelf = "true")
+                    : (isSelf = "")
+                }
+                // seen={
+                //   totalMessage - index >= totalMessage - totalMessageRead &&
+                //   chat.data.userID == userId
+                //     ? (seen = "true")
+                //     : (seen = "")
+                // }
+                text={
+                  chat.data.contactID == null && chat.data.image == null
+                    ? chat.data.message
+                    : ""
+                }
+                imageURL={chat.data.image ? chat.data.image : ""}
+                image={imageMap[chat.data.userID]}
+              />
+            )}
+            {/*///////////////////////////////////////*/}
+          </View>
+        </TouchableWithoutFeedback>
+      );
+
+      previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
+    }
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Spinner
@@ -2045,24 +2763,16 @@ export default function ChatScreen(props) {
           end={[1, 0.6]}
           style={{ flex: 1 }}
         >
-          <ScrollView
-            keyboardShouldPersistTaps={"handled"}
+          <FlatList
             ref={scrollViewReference}
+            data={newChats}
+            extraData={newChats}
+            renderItem={renderItem}
             onContentSizeChange={() =>
               scrollViewReference.current.scrollToEnd({ animated: true })
             }
-            style={
-              showEmoji == true
-                ? styles.scrollViewStyleWithEmoji
-                : styles.scrollViewStyleWithoutEmoji
-            }
-          >
-            {/* <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}> */}
-            {secretMode ? null : oldChatHtml}
-            {secretMode ? null : old30ChatHtml}
-            {secretMode ? null : chatHtml}
-            {/* </TouchableWithoutFeedback> */}
-          </ScrollView>
+            keyExtractor={chat=> groupID + "_chat_" + chat.id}>
+          </FlatList>
         </LinearGradient>
         <Modal
           presentationStyle={"overFullScreen"}
@@ -2296,11 +3006,11 @@ export default function ChatScreen(props) {
             <View style={styles.input_bar_text}>
               <View style={styles.input_bar_text_border}>
                 <TextInput
-                  onContentSizeChange={() =>
+                  onContentSizeChange={() => {
                     scrollViewReference.current.scrollToEnd({
                       animated: true,
                     })
-                  }
+                  }}
                   onFocus={() => hideEmoji()}
                   multiline={true}
                   value={messages}
@@ -2376,8 +3086,7 @@ export default function ChatScreen(props) {
               onPress={() => {
                 const options = {
                   noData: true,
-                  mediaType: "photo",
-                  allowsEditing: true
+                  mediaType: "photo"
                 };
                 ImagePicker.launchCamera(options, (response) => {
                   if(response.type.includes("image")){
@@ -2445,8 +3154,7 @@ export default function ChatScreen(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 const options = {
-                  mediaType: "photo",
-                  allowsEditing: true
+                  mediaType: "photo"
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   if(response.type.includes("image")){

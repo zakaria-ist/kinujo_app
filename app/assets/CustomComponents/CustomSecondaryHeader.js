@@ -31,6 +31,8 @@ export default function CustomKinujoWord({
   editProfile,
   userUrl,
   images,
+  props,
+  outUser
 }) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = useStateIfMounted({});
@@ -106,15 +108,23 @@ export default function CustomKinujoWord({
             images={localImages}
           ></GroupImages>
         ) : user && user.image ? (
-          <Image
-            style={{
-              borderRadius: win.width / 2,
-              marginLeft: widthPercentageToDP("5%"),
-            }}
-            source={{ uri: user.image.image }}
-            width={RFValue(40)}
-            height={RFValue(40)}
-          />
+          <TouchableWithoutFeedback onPress={()=>{
+            if((user.is_store && user.is_approved) || user.is_master){
+              props.navigation.navigate("ProfileEditingStore"); 
+            } else {
+              props.navigation.navigate("ProfileEditingGeneral"); 
+            }
+          }}>
+            <Image
+              style={{
+                borderRadius: win.width / 2,
+                marginLeft: widthPercentageToDP("5%"),
+              }}
+              source={{ uri: user.image.image }}
+              width={RFValue(40)}
+              height={RFValue(40)}
+            />
+          </TouchableWithoutFeedback>
         ) : (
           <PersonIcon
             style={{

@@ -125,7 +125,7 @@ export default function SettingGeneral(props) {
           }}
           text={Translate.t("setting")}
         ></CustomHeader>
-        <CustomSecondaryHeader
+        <CustomSecondaryHeader outUser={user} props={props}
           editProfile="editProfile"
           onPress={() => {
             props.navigation.navigate("ProfileEditingGeneral", {

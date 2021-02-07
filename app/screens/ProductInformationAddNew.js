@@ -183,7 +183,7 @@ export default function ProductInformationAddNew(props) {
           });
           onProductCategoriesChanged(categories);
 
-          if (props.route.params.url.replace("simple_products", "products")) {
+          if (props.route.params.url) {
             request.get(props.route.params.url.replace("simple_products", "products")).then((response) => {
               let tmpProduct = response.data;
 
@@ -769,7 +769,7 @@ export default function ProductInformationAddNew(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader name={user.nickname} accountType={""} />
+      <CustomSecondaryHeader outUser={user} props={props} name={user.nickname} accountType={""} />
       <View style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -1313,7 +1313,7 @@ export default function ProductInformationAddNew(props) {
             <View style={styles.allButtonContainer}>
               <TouchableOpacity
                 onPress={() => {
-                  if (props.route.params.url.replace("simple_products", "products")) {
+                  if (props.route.params.url) {
                     saveProduct(1);
                   } else {
                     createProduct(1);
@@ -1341,7 +1341,7 @@ export default function ProductInformationAddNew(props) {
                       { cancelable: false }
                     );
                   } else {
-                    if (props.route.params.url.replace("simple_products", "products")) {
+                    if (props.route.params.url) {
                       saveProduct(0);
                     } else {
                       createProduct(0);
@@ -1366,7 +1366,7 @@ export default function ProductInformationAddNew(props) {
                       {
                         text: "YES",
                         onPress: () => {
-                          if (props.route.params.url.replace("simple_products", "products")) {
+                          if (props.route.params.url) {
                             // alert.warning("Z");
                             request
                               .patch(props.route.params.url.replace("simple_products", "products"), {
@@ -1400,7 +1400,7 @@ export default function ProductInformationAddNew(props) {
                       {
                         text: "YES",
                         onPress: () => {
-                          if (props.route.params.url.replace("simple_products", "products")) {
+                          if (props.route.params.url) {
                             // alert.warning("Z");
                             request
                               .patch(props.route.params.url.replace("simple_products", "products"), {

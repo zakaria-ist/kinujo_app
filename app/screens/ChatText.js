@@ -48,6 +48,7 @@ export default function ChatText({
   image,
   props,
   longPress,
+  hyperLinkClicked
 }) {
 
   function findParams(data, param) {
@@ -117,20 +118,6 @@ export default function ChatText({
                   }
                 }}
                 onPress={(url, text) => {
-                  if(findParams(url, "apn") && findParams(url, "link")){
-                    let link = decodeURIComponent(findParams(url, "link"));
-                    console.log(findParams(link, "product_id"));
-                    if(findParams(link, "product_id")){
-                      let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                      props.navigation.navigate("HomeStoreList", {
-                        url: apiUrl,
-                      });
-                    } else {
-                      Linking.openURL(url);
-                    }
-                  } else {
-                    Linking.openURL(url);
-                  }
                 }}
               >
                 <Text>{text}</Text>
@@ -146,13 +133,8 @@ export default function ChatText({
               <Hyperlink
                 linkStyle={{ color: "#2980b9" }}
                 onPress={(url, text) => {
-                  if(findParams(url, "apn") && findParams(url, "product_id")){
-                    let apiUrl = request.getApiUrl() + "products/" + findParams(url, "product_id");
-                    props.navigation.navigate("HomeStoreList", {
-                      url: apiUrl,
-                    });
-                  } else {
-                    Linking.openURL(url);
+                  if(hyperLinkClicked){
+                    hyperLinkClicked(url, text);
                   }
                 }}
               >

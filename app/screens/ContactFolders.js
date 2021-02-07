@@ -41,7 +41,7 @@ export default function Contact() {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
-      <CustomSecondaryHeader name="髪長絹子 さん" />
+      <CustomSecondaryHeader outUser={user} props={props} name="髪長絹子 さん" />
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TextInput

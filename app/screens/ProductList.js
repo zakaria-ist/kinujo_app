@@ -369,7 +369,7 @@ export default function ProductList(props) {
           }}
         />
 
-        <CustomSecondaryHeader
+        <CustomSecondaryHeader outUser={user} props={props}
           name={user.nickname}
           accountType={
             user.is_seller && user.is_master ? Translate.t("storeAccount") : ""
