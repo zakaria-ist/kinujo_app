@@ -218,7 +218,7 @@ export default function ProfileInformation(props) {
           }}
           text={Translate.t("personalInformation")}
         />
-        <CustomSecondaryHeader name={user.nickname} />
+        <CustomSecondaryHeader outUser={user} props={props} name={user.nickname} />
         <View
           style={{
             marginTop: heightPercentageToDP("2%"),

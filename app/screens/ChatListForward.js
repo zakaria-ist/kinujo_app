@@ -246,6 +246,9 @@ export default function ChatList(props) {
           batch.commit().then(()=>{
             onSpinnerChanged(false);
             props.navigation.goBack();
+          }).catch((error)=>{
+            onSpinnerChanged(false);
+            props.navigation.goBack();
           })
         }
       }

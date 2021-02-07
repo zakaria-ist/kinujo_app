@@ -141,7 +141,7 @@ export default function SettingStore(props) {
           }}
           text={Translate.t("setting")}
         />
-        <CustomSecondaryHeader
+        <CustomSecondaryHeader outUser={user} props={props}
           editProfile="editProfile"
           onPress={() => {
             props.navigation.navigate("ProfileEditingStore", {

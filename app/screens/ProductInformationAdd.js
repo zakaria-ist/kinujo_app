@@ -89,7 +89,7 @@ export default function ProductInformationAdd(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader
+      <CustomSecondaryHeader outUser={user} props={props}
         name={user.nickname}
         accountType={
           props.route.params.is_store ? Translate.t("storeAccount") : ""

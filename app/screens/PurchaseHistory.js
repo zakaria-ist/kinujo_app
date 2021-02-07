@@ -428,7 +428,7 @@ export default function PurchaseHistory(props) {
             }}
             text={Translate.t("purchaseHistory")}
           />
-          <CustomSecondaryHeader
+          <CustomSecondaryHeader outUser={user} props={props}
             name={user.nickname}
             accountType={
               props.route.params.is_store ? Translate.t("storeAccount") : ""

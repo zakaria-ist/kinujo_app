@@ -306,7 +306,7 @@ export default function SalesManagement(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader name={user.nickname} />
+      <CustomSecondaryHeader outUser={user} props={props} name={user.nickname} />
 
       <ScrollView
         style={{

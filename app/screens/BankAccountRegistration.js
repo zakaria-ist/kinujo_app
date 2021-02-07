@@ -148,7 +148,7 @@ export default function BankAccountRegistration(props) {
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           text={Translate.t("bankAccount")}
         />
-        <CustomSecondaryHeader
+        <CustomSecondaryHeader outUser={user} props={props}
           name={user.nickname}
           accountType={
             props.route.params.is_store ? Translate.t("storeAccount") : ""

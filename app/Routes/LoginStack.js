@@ -395,7 +395,7 @@ function BottomNavigationGeneral(props) {
           name="ContactSearch"
           component={ContactSearch}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           options={{
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
@@ -403,7 +403,7 @@ function BottomNavigationGeneral(props) {
           }}
           name="ChatScreen"
           component={ChatScreen}
-        />
+        /> */}
         <Tab.Screen
           options={{
             tabBarButton: (props) => (
@@ -874,7 +874,7 @@ function BottomNavigationGeneral(props) {
           name="ContactSearch"
           component={ContactSearch}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           options={{
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
@@ -882,7 +882,7 @@ function BottomNavigationGeneral(props) {
           }}
           name="ChatScreen"
           component={ChatScreen}
-        />
+        /> */}
         <Tab.Screen
           options={{
             tabBarButton: (props) => (
@@ -1390,7 +1390,7 @@ function BottomNavigationStore(props) {
           name="ContactSearch"
           component={ContactSearch}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           options={{
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
@@ -1398,7 +1398,7 @@ function BottomNavigationStore(props) {
           }}
           name="ChatScreen"
           component={ChatScreen}
-        />
+        /> */}
         <Tab.Screen
           options={{
             tabBarButton: (props) => (
@@ -1884,7 +1884,7 @@ function BottomNavigationStore(props) {
           name="ContactSearch"
           component={ContactSearch}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           options={{
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
@@ -1892,7 +1892,7 @@ function BottomNavigationStore(props) {
           }}
           name="ChatScreen"
           component={ChatScreen}
-        />
+        /> */}
         <Tab.Screen
           options={{
             tabBarButton: (props) => (

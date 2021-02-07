@@ -769,7 +769,7 @@ export default function ProductInformationAddNew(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader name={user.nickname} accountType={""} />
+      <CustomSecondaryHeader outUser={user} props={props} name={user.nickname} accountType={""} />
       <View style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}

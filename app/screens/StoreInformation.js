@@ -140,7 +140,7 @@ export default function StoreInformation(props) {
         }}
         text={Translate.t("storeInformation")}
       />
-      <CustomSecondaryHeader
+      <CustomSecondaryHeader outUser={user} props={props}
         name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />

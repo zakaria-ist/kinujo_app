@@ -29,7 +29,7 @@ export default function CustomerInformationDetails(props) {
         }}
         text={Translate.t("setting")}
       />
-      <CustomSecondaryHeader
+      <CustomSecondaryHeader outUser={user} props={props}
         name="髪長絹子 さん"
         accountType={Translate.t("storeAccount")}
       />

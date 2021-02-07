@@ -222,7 +222,7 @@ export default function ExhibitedProductList(props) {
         }}
         text={Translate.t("productManagement")}
       />
-      <CustomSecondaryHeader
+      <CustomSecondaryHeader outUser={user} props={props}
         name={user.nickname}
         accountType={
           props.route.params.is_store ? Translate.t("storeAccount") : ""

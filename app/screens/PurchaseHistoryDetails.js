@@ -143,7 +143,7 @@ export default function PurchaseHistoryDetails(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader
+      <CustomSecondaryHeader outUser={user} props={props}
         name={
           order && order.order
             ? order.order.purchaser.real_name
