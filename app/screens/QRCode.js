@@ -266,7 +266,7 @@ export default function QRCode(props) {
                     allowsEditing: true
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
-                    if(response && response.type && response.type.includes("image")){
+                    if(response.uri){if(response && response.type && response.type.includes("image")){
                       RNQRGenerator.detect({
                         base64: response.data,
                         // uri: Platform.OS === "android"
@@ -300,6 +300,7 @@ export default function QRCode(props) {
                       } else {
                         alert.warning(Translate.t("image_allowed"))
                       }
+                    }
                   });
                 }}
                 style={[

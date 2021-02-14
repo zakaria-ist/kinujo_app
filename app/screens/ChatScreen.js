@@ -3089,8 +3089,8 @@ export default function ChatScreen(props) {
                   mediaType: "photo"
                 };
                 ImagePicker.launchCamera(options, (response) => {
+                  if (response.uri) {
                   if(response.type.includes("image")){
-                    if (response.uri) {
                       const reference = storage().ref(uuid.v4() + ".png");
                       if (Platform.OS === "android") {
                         RNFetchBlob.fs.stat(response.path).then((stat) => {
@@ -3137,10 +3137,10 @@ export default function ChatScreen(props) {
                           })
                           .catch((error) => {});
                       }
-                    }
                   } else {
                     alert.warning(Translate.t("image_allowed"))
                   }
+                }
                 });
               }}
             >
@@ -3157,8 +3157,8 @@ export default function ChatScreen(props) {
                   mediaType: "photo"
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
+                  if (response.uri) {
                   if(response.type.includes("image")){
-                    if (response.uri) {
                       const reference = storage().ref(uuid.v4() + ".png");
                       onSpinnerChanged(true);
                       if (Platform.OS === "android") {
@@ -3223,10 +3223,10 @@ export default function ChatScreen(props) {
                             onSpinnerChanged(false);
                           });
                       }
-                    }
                   } else {
                     alert.warning(Translate.t("image_allowed"))
                   }
+                }
                 });
               }}
             >

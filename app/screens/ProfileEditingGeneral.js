@@ -265,8 +265,8 @@ export default function ProfileEditingGeneral(props) {
       allowsEditing: true
     };
     ImagePicker.launchImageLibrary(options, (response) => {
+      if (response.uri) {
       if(response.type.includes("image")){
-        if (response.uri) {
           const formData = new FormData();
           formData.append("image", {
             ...response,
@@ -318,10 +318,10 @@ export default function ProfileEditingGeneral(props) {
                 alert.warning(error);
               }
             });
-        }
       } else {
         alert.warning(Translate.t("image_allowed"))
       }
+    }
     });
   };
   function validateEmail(address) {
