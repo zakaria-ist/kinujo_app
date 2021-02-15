@@ -674,6 +674,22 @@ export default function ProductInformationAddNew(props) {
                   ]["editStock"]
                 );
             }
+
+            
+            if(
+              (tmpTwoVariation['items'][0]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice1.choiceItem && !choice['delete'];
+              }).length == 0 && tmpTwoVariation['items'][1]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice1.choiceItem && !choice['delete'];
+              }).length == 0) || (tmpTwoVariation['items'][0]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice2.choiceItem && !choice['delete'];
+              }).length == 0 && tmpTwoVariation['items'][1]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice2.choiceItem && !choice['delete'];
+              }).length == 0)){
+                tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                  choice2.choiceItem
+                ]["delete"] = true;
+              }
           });
         });
       }
