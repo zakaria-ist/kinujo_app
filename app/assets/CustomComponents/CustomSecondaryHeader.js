@@ -126,14 +126,22 @@ export default function CustomKinujoWord({
             />
           </TouchableWithoutFeedback>
         ) : (
-          <PersonIcon
-            style={{
-              borderRadius: win.width / 2,
-              marginLeft: widthPercentageToDP("8%"),
-            }}
-            width={RFValue(40)}
-            height={RFValue(40)}
-          />
+          <TouchableWithoutFeedback onPress={()=>{
+            if((user.is_store && user.is_approved) || user.is_master){
+              props.navigation.navigate("ProfileEditingStore"); 
+            } else {
+              props.navigation.navigate("ProfileEditingGeneral"); 
+            }
+          }}>
+              <PersonIcon
+              style={{
+                borderRadius: win.width / 2,
+                marginLeft: widthPercentageToDP("8%"),
+              }}
+              width={RFValue(40)}
+              height={RFValue(40)}
+            />
+          </TouchableWithoutFeedback>
         )}
 
         {/* {user && user.image ? (

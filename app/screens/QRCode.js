@@ -200,6 +200,19 @@ export default function QRCode(props) {
               justifyContent: "center",
             }}
           >
+            {inviteShow ? (<TouchableWithoutFeedback onPress={()=>{
+              setInviteShow(false);
+            }}>
+              <CloseWhiteIcon
+                style={{
+                  alignSelf: "flex-start",
+                  width: width / 18,
+                  height: 20 * ratioBackArrow,
+                  marginLeft: widthPercentageToDP("5%"),
+                  marginTop: widthPercentageToDP("5%"),
+                }}
+              />
+            </TouchableWithoutFeedback>) : (<View></View>)}
             <View style={styles.header}>
               <View
                 style={{
@@ -239,7 +252,6 @@ export default function QRCode(props) {
         topViewStyle={styles.none}
         bottomViewStyle={styles.none}
       />) : (<View></View>)}
-      
         <ScrollView style={{top:heightPercentageToDP("26%")}}>
           <View style={styles.qrcode_button}>
           <View style={inviteShow ? styles.none : null}>
