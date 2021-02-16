@@ -44,9 +44,10 @@ var sharedBlacklist = [
 
 5. the no.4 process must be done manually everytime you re-install your node_modules
 6. go to the project root, run `gradle wrapper`
-2. cd android, run `gradle wrapper`
-3. run `./gradlew clean`
-4. cd ..
-5. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
-6. npm run android or npm run ios
-7. you can also run it with android studio
+7. run `cd android`
+8. run `gradle wrapper`
+9. run `./gradlew clean`
+10. run `cd ..`
+11. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
+12. run `npm run android` or `npm run ios`
+13. you can also run it with android studio
