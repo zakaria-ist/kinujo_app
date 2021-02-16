@@ -341,6 +341,7 @@ export default function Cart(props) {
                                 return id != product.id;
                               });
                               ids = tmpIds;
+                              console.log(firebaseProducts)
                               db.collection("users")
                                 .doc(userId.toString())
                                 .collection("carts")
