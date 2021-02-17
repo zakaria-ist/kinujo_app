@@ -129,6 +129,7 @@ export default function QRCode(props) {
   React.useEffect(() => {
     setPopupQR(false);
     setInviteShow(false);
+    setInteracted(false);
   }, [!isFocused]);
 
   const onSuccess = (e) => {
