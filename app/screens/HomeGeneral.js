@@ -45,6 +45,7 @@ import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
 import { hide } from "expo-splash-screen";
+import { EventRegister } from 'react-native-event-listeners'
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
