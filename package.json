@@ -44,6 +44,7 @@
     "lodash": "^4.17.20",
     "lodash.memoize": "^4.1.2",
     "moment": "^2.29.1",
+    "npm": "^7.5.4",
     "popup-ui": "^1.2.0",
     "react": "16.13.1",
     "react-calendar": "^3.2.1",

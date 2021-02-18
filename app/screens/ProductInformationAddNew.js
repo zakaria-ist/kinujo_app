@@ -674,6 +674,22 @@ export default function ProductInformationAddNew(props) {
                   ]["editStock"]
                 );
             }
+
+            
+            if(
+              (tmpTwoVariation['items'][0]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice1.choiceItem && !choice['delete'];
+              }).length == 0 && tmpTwoVariation['items'][1]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice1.choiceItem && !choice['delete'];
+              }).length == 0) || (tmpTwoVariation['items'][0]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice2.choiceItem && !choice['delete'];
+              }).length == 0 && tmpTwoVariation['items'][1]['choices'].filter((choice)=>{
+                return choice.choiceItem == choice2.choiceItem && !choice['delete'];
+              }).length == 0)){
+                tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                  choice2.choiceItem
+                ]["delete"] = true;
+              }
           });
         });
       }
@@ -709,7 +725,7 @@ export default function ProductInformationAddNew(props) {
           response = response.data;
           // console.log(response);
           if (response.success) {
-            // props.navigation.goBack();
+            props.navigation.goBack();
           } else {
             if (response.errors && Object.keys(response.errors).length > 0) {
               alert.warning(
@@ -1194,8 +1210,8 @@ export default function ProductInformationAddNew(props) {
                         allowsEditing: true
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
+                        if (response.uri) {
                         if(response.type.includes("image")){
-                          if (response.uri) {
                             onSpinnerChanged(true);
                             const formData = new FormData();
                             formData.append("image", {
@@ -1263,10 +1279,10 @@ export default function ProductInformationAddNew(props) {
                                   );
                                 }
                               });
-                          }
                         } else {
                           alert.warning(Translate.t("image_allowed"))
                         }
+                      }
                       });
                     }}
                   >

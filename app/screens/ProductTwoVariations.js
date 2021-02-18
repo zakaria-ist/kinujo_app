@@ -175,8 +175,11 @@ export default function ProductTwoVariations({
   function deleteChoice(index, choiceIndex) {
     items.map((product) => {
       if (index == product.index) {
-        product.choices = product.choices.filter((choice) => {
-          return choice.choiceItem != choiceIndex;
+        product.choices = product.choices.map((choice) => {
+          if(choice.choiceItem == choiceIndex){
+            choice['delete'] = true;
+          }
+          return choice;
         });
 
         let choices = [];
@@ -205,6 +208,14 @@ export default function ProductTwoVariations({
   }
   function processChoiceHtml(index, choices) {
     let tmpChoiceHtml = [];
+    console.log(choices);
+    choices = choices.filter((choice) => {
+      return !choice['delete'];
+    })
+    let higherChoice = -1;
+    choices.map((choice) => {
+      higherChoice = Math.max(choice.choiceIndex, higherChoice);
+    })
     choices.map((choice) => {
       tmpChoiceHtml.push(
         <View style={styles.multiVariant} key={choice.choiceIndex}>
@@ -225,7 +236,7 @@ export default function ProductTwoVariations({
             >
               <View
                 style={
-                  choice.choiceIndex == choices.length
+                  choice.choiceIndex == higherChoice
                     ? styles.addNewChoice
                     : styles.none
                 }
@@ -344,7 +355,7 @@ export default function ProductTwoVariations({
   function processDetailsVariationHtml(items) {
     let tmpVariationDetailsHtml = [];
     items[0].choices.map((choice) => {
-      if (choice.choiceItem) {
+      if (choice.choiceItem && !choice['delete']) {
         tmpVariationDetailsHtml.push(
           <View style={{ width: "100%" }} key={choice.choiceIndex}>
             <View style={styles.icon_title_wrapper}>
@@ -373,6 +384,9 @@ export default function ProductTwoVariations({
   }
   function populateChoiceDetailsHtml(choice1Item, choices) {
     let tmpChoiceDetailsHtml = [];
+    choices = choices.filter((choice) => {
+      return !choice['delete'];
+    })
     choices.map((choice) => {
       let isDelete =
         globalMappingValue[choice1Item][choice.choiceItem]["delete"];

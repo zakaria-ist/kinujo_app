@@ -129,6 +129,7 @@ export default function QRCode(props) {
   React.useEffect(() => {
     setPopupQR(false);
     setInviteShow(false);
+    setInteracted(false);
   }, [!isFocused]);
 
   const onSuccess = (e) => {
@@ -200,6 +201,19 @@ export default function QRCode(props) {
               justifyContent: "center",
             }}
           >
+            {inviteShow ? (<TouchableWithoutFeedback onPress={()=>{
+              setInviteShow(false);
+            }}>
+              <CloseWhiteIcon
+                style={{
+                  alignSelf: "flex-start",
+                  width: width / 18,
+                  height: 20 * ratioBackArrow,
+                  marginLeft: widthPercentageToDP("5%"),
+                  marginTop: widthPercentageToDP("5%"),
+                }}
+              />
+            </TouchableWithoutFeedback>) : (<View></View>)}
             <View style={styles.header}>
               <View
                 style={{
@@ -239,7 +253,6 @@ export default function QRCode(props) {
         topViewStyle={styles.none}
         bottomViewStyle={styles.none}
       />) : (<View></View>)}
-      
         <ScrollView style={{top:heightPercentageToDP("26%")}}>
           <View style={styles.qrcode_button}>
           <View style={inviteShow ? styles.none : null}>
@@ -266,7 +279,7 @@ export default function QRCode(props) {
                     allowsEditing: true
                   };
                   ImagePicker.launchImageLibrary(options, (response) => {
-                    if(response && response.type && response.type.includes("image")){
+                    if(response.uri){if(response && response.type && response.type.includes("image")){
                       RNQRGenerator.detect({
                         base64: response.data,
                         // uri: Platform.OS === "android"
@@ -300,6 +313,7 @@ export default function QRCode(props) {
                       } else {
                         alert.warning(Translate.t("image_allowed"))
                       }
+                    }
                   });
                 }}
                 style={[
