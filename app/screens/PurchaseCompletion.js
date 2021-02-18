@@ -66,10 +66,11 @@ export default function PurchaseCompletion(props) {
         </Text>
         <TouchableOpacity
           onPress={() => {
+            console.log(user.is_seller)
             if (user.is_seller) {
               props.navigation.navigate("HomeStore");
             } else {
-              props.navigation.navigate("HomeGeneral");
+              props.navigation.navigate("HomeStore");
             }
           }}
         >
