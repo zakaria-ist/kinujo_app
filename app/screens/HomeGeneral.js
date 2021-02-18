@@ -57,6 +57,7 @@ const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 let kinujoProducts;
 let featuredProducts;
+let taxRate = 0;
 export default function Home(props) {
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
@@ -195,8 +196,8 @@ export default function Home(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price)
-              : format.separator(product.price)) + " 円"
+              ? format.separator(product.store_price + (product.store_price * taxRate))
+              : format.separator(product.price + (product.price * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -278,8 +279,8 @@ export default function Home(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price)
-              : format.separator(product.price)) + " 円"
+              ? format.separator(product.store_price + (product.store_price * taxRate))
+              : format.separator(product.price + (product.price * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -401,6 +402,46 @@ export default function Home(props) {
           onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
         })
         .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+
+      request
+        .get("tax_rates/")
+        .then((response) => {
+          let taxes = response.data.filter((item) => {
+            let nowDate = new Date();
+            if (item.start_date && item.end_date) {
+              if (
+                nowDate >= new Date(item.start_date) &&
+                nowDate <= new Date(item.end_date)
+              ) {
+                return true;
+              }
+            } else if (item.start_date) {
+              if (nowDate >= new Date(item.start_date)) {
+                return true;
+              }
+            }
+            return false;
+          });
+
+          if (taxes.length > 0) {
+            taxRate = taxes[0].tax_rate;
+          }
+        })
+        .catch((error) => {
           if (
             error &&
             error.response &&
