@@ -79,9 +79,38 @@ import ChatLogo from "../assets/icons/chat.svg";
 import QRCodeLogo from "../assets/icons/qrcode.svg";
 import SettingLogo from "../assets/icons/setting.svg";
 import StarLogo from "../assets/icons/star.svg";
+import Request from "../lib/request";
 import MoneyLogo from "../assets/icons/money.svg";
+import { EventRegister } from 'react-native-event-listeners';
+import Translate from "../assets/Translates/Translate";
+import AsyncStorage from "@react-native-community/async-storage";
+import { useIsFocused } from "@react-navigation/native";
+
+const request = new Request();
+let lastRoute = "";
 
 function BottomNavigationGeneral(props) {
+  if (props && props.route && props.route.state) {
+    if(lastRoute != props.route.state.routeNames[props.route.state.index]){
+      AsyncStorage.getItem("user").then(function (url) {
+        request
+          .get(url)
+          .then(function (response) {
+            console.log(response.data)
+            if(response.data.is_approved && response.data.is_seller){
+              alert.warning(Translate.t("account_approved"), ()=>{
+                // props.navigation.navigate("HomeStore");
+                props.navigation.reset({
+                  index: 0,
+                  routes: [{ name: "HomeStore" }],
+                });
+              })
+            }
+          })
+        })
+      lastRoute = props.route.state.routeNames[props.route.state.index];
+    }
+  }
   let isShow = false;
 
   if (props && props.route && props.route.state) {

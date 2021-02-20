@@ -45,6 +45,7 @@ import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
 import { hide } from "expo-splash-screen";
+import { EventRegister } from 'react-native-event-listeners'
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -85,7 +86,7 @@ export default function Home(props) {
             });
           }
         });
-        
+
       AsyncStorage.getItem("product").then((product_id) => {
         AsyncStorage.removeItem("product").then(() => {
           let tmpProductId = product_id;
@@ -97,7 +98,7 @@ export default function Home(props) {
           }
         });
       });
-  
+
       AsyncStorage.removeItem("product");
     });
   }, []);
@@ -340,7 +341,7 @@ export default function Home(props) {
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       SplashScreen.hide();
-    
+
       // onFeaturedHtmlChanged([]);
       // onKinujoHtmlChanged([]);
       requestUserPermission();
@@ -381,7 +382,7 @@ export default function Home(props) {
             }
             return 1;
           });
-  
+
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
             return (
@@ -391,7 +392,7 @@ export default function Home(props) {
               product.is_draft == 0
             );
           });
-  
+
           kinujoProducts = products.filter((product) => {
             return product.user.authority.id == 1;
           });
