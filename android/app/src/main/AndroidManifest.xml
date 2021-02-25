@@ -1,6 +1,6 @@
 <manifest
   xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.example.kinujo"
+  package="net.c2sg.kinujo"
   xmlns:tools="http://schemas.android.com/tools"
 >
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -64,7 +64,7 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="com.example.kinujo"/>
+        <data android:scheme="net.c2sg.kinujo"/>
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
