@@ -18,7 +18,7 @@ export default function AppIos() {
   enableScreens();
   return (
     <BackdropProvider>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="default" />
       <Navigator />
     </BackdropProvider>
   );

@@ -165,7 +165,7 @@ export default function QRCode(props) {
           return url;
         });
         let userId = urls[urls.length - 1];
-  
+
         buildLink(userId, "1").then(function (link) {
           console.log(link);
           onStoreLinkChanged(link);
