@@ -1939,6 +1939,25 @@ export default function ChatScreen(props) {
     index++;
   }
 
+  async function updateChats(chats){
+    chats = chats.map((chat) => {
+      chat.first = false;
+      return chat;
+    });
+
+    let last = "";
+    for(let i=0; i<chats.length; i++){
+      let chat = chats[i];
+      let dates = chat.data.createdAt.split(":");
+      let date = dates[0] + ":" + dates[1] + ":" + dates[2];
+      if(date != last){
+        chats[i].first = true;
+        last = date;
+      }
+    }
+    setChats(chats);
+  }
+
   async function firstLoad(data) {
     chats = [];
     const updateHtml = [];
@@ -2032,7 +2051,7 @@ export default function ChatScreen(props) {
               });
             }
           })
-          setChats(oldChats.concat(old30Chats, chats))
+          updateChats(oldChats.concat(old30Chats, chats))
         })
       }
 
@@ -2063,7 +2082,7 @@ export default function ChatScreen(props) {
               }
             });
             processChat(chats);
-            setChats(oldChats.concat(old30Chats, chats))
+            updateChats(oldChats.concat(old30Chats, chats))
           }
         );
 
@@ -2114,7 +2133,7 @@ export default function ChatScreen(props) {
             }
           })
           processOldChat(oldChats);
-          setChats(oldChats.concat(old30Chats, chats))
+          updateChats(oldChats.concat(old30Chats, chats))
         })
       }
     }
@@ -2247,7 +2266,7 @@ export default function ChatScreen(props) {
             }
             key={chat.id}
           >
-            {previousMessageDateToday == null ? (
+            {chat.first ? (
               <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
             ) : (
               <Text style={[styles.chat_date]}>{""}</Text>
@@ -2412,7 +2431,7 @@ export default function ChatScreen(props) {
             }
             key={chat.id}
           >
-            {previousMessageDateYesterday == null ? (
+            {chat.first ? (
               <Text style={[styles.chat_date]}>
                 {Translate.t("yesterday")}
               </Text>
@@ -2557,7 +2576,7 @@ export default function ChatScreen(props) {
                   image: chat.data.image
                 });
               }
-              processOldChat(oldChats);
+              onShowPopUpChanged(false);
             }
           }}
           onLongPress={() => {
@@ -2578,8 +2597,7 @@ export default function ChatScreen(props) {
             }
             key={chat.id}
           >
-            {previousMessageDateElse ==
-            chat.data.timeStamp.toDate().toDateString() ? (
+            {!chat.first ? (
               <Text style={[styles.chat_date]}>{""}</Text>
             ) : (
               <Text style={[styles.chat_date]}>
@@ -2590,6 +2608,7 @@ export default function ChatScreen(props) {
             {chat.data.contactID ? (
               <ChatContact
                 press={() => {
+                  console.log("ERE");
                   if (!tmpMultiSelect) {
                     redirectToChat(
                       chat.data.contactID,
@@ -2608,8 +2627,8 @@ export default function ChatScreen(props) {
                         contactName: chat.data.contactName,
                         image: chat.data.image
                       });
+                      console.log(selects.length)
                     }
-                    processOldChat(oldChats);
                   }
                 }}
                 longPress={() => {
@@ -2945,9 +2964,6 @@ export default function ChatScreen(props) {
                           contactName: longPressObj.contactName,
                           image: longPressObj.image
                         });
-                        processChat(chats);
-                        processOldChat(oldChats);
-                        processOld30Chat(old30Chats);
                         onShowPopUpChanged(false);
                       }}
                     >

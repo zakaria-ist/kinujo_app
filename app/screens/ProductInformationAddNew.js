@@ -723,17 +723,21 @@ export default function ProductInformationAddNew(props) {
         .then((response) => {
           onSpinnerChanged(false);
           response = response.data;
-          // console.log(response);
           if (response.success) {
             props.navigation.goBack();
           } else {
+
             if (response.errors && Object.keys(response.errors).length > 0) {
-              alert.warning(
-                response.errors[Object.keys(response.errors)[0]][0] +
-                  "(" +
-                  Object.keys(response.errors)[0] +
-                  ")"
-              );
+              if(Object.keys(response.errors)[0] != "0"){
+                alert.warning(
+                  response.errors[Object.keys(response.errors)[0]][0] +
+                    "(" +
+                    Object.keys(response.errors)[0] +
+                    ")"
+                );
+              } else {
+                alert.warning(response.errors[0]);
+              }
             } else if (response.error) {
               alert.warning(response.error);
             }

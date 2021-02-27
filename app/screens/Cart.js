@@ -843,7 +843,7 @@ export default function Cart(props) {
                   });
                 } else {
                   alert.warning(
-                    "You must have items in cart and select an address."
+                    Translate.t("must_have_item")
                   );
                 }
               }}
