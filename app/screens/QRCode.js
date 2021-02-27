@@ -391,7 +391,7 @@ export default function QRCode(props) {
                 </Text>
               </TouchableOpacity>
             </View>
-            {user.is_seller ? (
+            {user && user.authority && (user.authority.id == 1 || user.authority.id == 3) ? (
               <View style={styles.button_frame}>
                 <TouchableOpacity
                   style={[

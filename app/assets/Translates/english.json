@@ -15,6 +15,7 @@
   "ambassadorAccount":"Ambassador account",
   "specialAccount":"Special account",
   "proceedToSMSAuthentication": "Proceed to SMS authentication",
+  "must_have_item" : "You must have items in cart and select an address.",
   "smsVerification": "SMS Verification",
   "smsAuthentication": "Authenticate",
   "account_approved": "Your seller account has been approved",

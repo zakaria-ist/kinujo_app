@@ -497,7 +497,7 @@ export default function ProfileEditingGeneral(props) {
           text={Translate.t("profile")}
         />
         <View>
-          {user && user.image ? (
+          {user && user.background_img && user.background_img.image ? (
             <ImageBackground
               style={{
                 width: widthPercentageToDP("100%"),

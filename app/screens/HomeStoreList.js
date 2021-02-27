@@ -79,6 +79,7 @@ export default function HomeStoreList(props) {
   const [quantity, onQuantityChanged] = useStateIfMounted(1);
   const [mShow, onMShow] = useStateIfMounted(true);
   const [popupHtml, onPopupHtmlChanged] = useStateIfMounted([]);
+  const [taxObj, setTaxObj] = useStateIfMounted([]);
   const [cartCount, onCartCountChanged] = useStateIfMounted(0);
   // const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
   const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
@@ -203,6 +204,48 @@ export default function HomeStoreList(props) {
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+
+      request
+      .get("tax_rates/")
+      .then((response) => {
+        let taxes = response.data.filter((item) => {
+          let nowDate = new Date();
+          if (item.start_date && item.end_date) {
+            if (
+              nowDate >= new Date(item.start_date) &&
+              nowDate <= new Date(item.end_date)
+            ) {
+              return true;
+            }
+          } else if (item.start_date) {
+            if (nowDate >= new Date(item.start_date)) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        if (taxes.length > 0) {
+          console.log(taxes[0])
+          setTaxObj(taxes[0])
+        }
+      })
+      .catch((error) => {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
+
       onSelectedJanCodeChanged("")
       for (var i = 1; i < 10; i++) {
         if (
@@ -698,8 +741,8 @@ export default function HomeStoreList(props) {
               <Text>
                 <Text style={styles.priceFont}>
                   {(user.is_seller && user.is_approved
-                    ? format.separator(product.store_price)
-                    : format.separator(product.price))}
+                    ? format.separator(taxObj ? (parseFloat(product.store_price) + parseInt(product.store_price * taxObj.tax_rate)) : product.store_price)
+                    : format.separator(taxObj ? (parseFloat(product.price) + parseInt(product.price * taxObj.tax_rate)) : product.price))}
                 </Text>
                 <Text style={styles.font_medium}>
                 {"円" +
