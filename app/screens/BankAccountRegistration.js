@@ -299,7 +299,6 @@ export default function BankAccountRegistration(props) {
                         });
 
                         if (financialUrl) {
-                          console.log(financialUrl);
                           request
                             .patch(financialUrl, {
                               financial_name: financialName,
@@ -311,7 +310,6 @@ export default function BankAccountRegistration(props) {
                               financial_code: bankCode,
                             })
                             .then(function (response) {
-                              console.log(response);
                               onAccountHolderChanged("");
                               onAccountNumberChanged("");
                               onBranchNameChanged("");
