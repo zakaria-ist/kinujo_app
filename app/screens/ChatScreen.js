@@ -9,7 +9,7 @@ import {
   Switch,
   TouchableOpacity,
   TouchableHighlight,
-  TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   KeyboardAvoidingView,
   TextInput,
   Platform,
@@ -383,7 +383,7 @@ export default function ChatScreen(props) {
       });
       if (tmpDay == day) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -543,12 +543,12 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
         previousMessageDateToday = tmpDay;
       } else if (tmpDay == day - 1) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -709,12 +709,12 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
         previousMessageDateYesterday = tmpDay;
       } else if (tmpDay != day && tmpDay != day - 1) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -876,7 +876,7 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
 
         previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
@@ -908,7 +908,7 @@ export default function ChatScreen(props) {
       });
       if (tmpDay == day) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -1068,12 +1068,12 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
         previousMessageDateToday = tmpDay;
       } else if (tmpDay == day - 1) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -1234,12 +1234,12 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
         previousMessageDateYesterday = tmpDay;
       } else if (tmpDay != day && tmpDay != day - 1) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -1401,7 +1401,7 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
 
         previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
@@ -1433,7 +1433,7 @@ export default function ChatScreen(props) {
       });
       if (tmpDay == day) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -1593,12 +1593,12 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
         previousMessageDateToday = tmpDay;
       } else if (tmpDay == day - 1) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -1759,12 +1759,12 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
         previousMessageDateYesterday = tmpDay;
       } else if (tmpDay != day && tmpDay != day - 1) {
         tmpChatHtml.push(
-          <TouchableWithoutFeedback
+          <TouchableNativeFeedback
             key={chat.id}
             delete={
               chat.data["delete_" + userId] || chat.data["delete"]
@@ -1926,7 +1926,7 @@ export default function ChatScreen(props) {
               )}
               {/*///////////////////////////////////////*/}
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         );
 
         previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
@@ -1942,8 +1942,13 @@ export default function ChatScreen(props) {
   async function updateChats(chats){
     chats = chats.map((chat) => {
       chat.first = false;
+
+      if(selects.includes(chat.id)){
+        chat.selected = true;
+      }
       return chat;
     });
+
 
     let last = "";
     for(let i=0; i<chats.length; i++){
@@ -2223,7 +2228,7 @@ export default function ChatScreen(props) {
     });
     if (tmpDay == day) {
       return (
-        <TouchableWithoutFeedback
+        <TouchableNativeFeedback
           key={chat.id}
           delete={
             chat.data["delete_" + userId] || chat.data["delete"]
@@ -2383,12 +2388,12 @@ export default function ChatScreen(props) {
             )}
             {/*///////////////////////////////////////*/}
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableNativeFeedback>
       );
       previousMessageDateToday = tmpDay;
     } else if (tmpDay == day - 1) {
       return (
-        <TouchableWithoutFeedback
+        <TouchableNativeFeedback
           key={chat.id}
           delete={
             chat.data["delete_" + userId] || chat.data["delete"]
@@ -2410,6 +2415,7 @@ export default function ChatScreen(props) {
                   image: chat.data.image
                 });
               }
+              updateChats(newChats);
               processOldChat(oldChats);
             }
           }}
@@ -2460,6 +2466,7 @@ export default function ChatScreen(props) {
                         contactName: chat.data.contactName,
                         image: chat.data.image
                       });
+                      updateChats(newChats);
                     }
                     processOldChat(oldChats);
                   }
@@ -2474,6 +2481,24 @@ export default function ChatScreen(props) {
                     image: chat.data.image
                   });
                   onShowPopUpChanged(true);
+                }}
+                hyperLinkClicked={(url, text)=>{
+                  if(!tmpMultiSelect){
+                    if(findParams(url, "apn") && findParams(url, "link")){
+                      let link = decodeURIComponent(findParams(url, "link"));
+                      console.log(findParams(link, "product_id"));
+                      if(findParams(link, "product_id")){
+                        let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                        props.navigation.navigate("HomeStoreList", {
+                          url: apiUrl,
+                        });
+                      } else {
+                        Linking.openURL(url);
+                      }
+                    } else {
+                      Linking.openURL(url);
+                    }
+                  }
                 }}
                 showCheckBox={showCheckBox}
                 props={props}
@@ -2549,12 +2574,12 @@ export default function ChatScreen(props) {
             )}
             {/*///////////////////////////////////////*/}
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableNativeFeedback>
       );
       previousMessageDateYesterday = tmpDay;
     } else if (tmpDay != day && tmpDay != day - 1) {
       return (
-        <TouchableWithoutFeedback
+        <TouchableNativeFeedback
           key={chat.id}
           delete={
             chat.data["delete_" + userId] || chat.data["delete"]
@@ -2562,7 +2587,7 @@ export default function ChatScreen(props) {
               : false
           }
           onPress={() => {
-            if (tmpMultiSelect) {
+            if (multiSelect) {
               if (selectedChat(chat.id)) {
                 selects = selects.filter((select) => {
                   return select.id != chat.id;
@@ -2576,6 +2601,7 @@ export default function ChatScreen(props) {
                   image: chat.data.image
                 });
               }
+              updateChats(newChats);
               onShowPopUpChanged(false);
             }
           }}
@@ -2716,7 +2742,7 @@ export default function ChatScreen(props) {
             )}
             {/*///////////////////////////////////////*/}
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableNativeFeedback>
       );
 
       previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
@@ -2798,7 +2824,7 @@ export default function ChatScreen(props) {
           visible={showPopUp}
           transparent={true}
         >
-          <TouchableWithoutFeedback onPress={() => onShowPopUpChanged(false)}>
+          <TouchableNativeFeedback onPress={() => onShowPopUpChanged(false)}>
             <View style={{ flex: 1, backgroundColor: "transparent" }}>
               <View style={showPopUp == true ? styles.popUpView : styles.none}>
                 <View
@@ -2810,15 +2836,15 @@ export default function ChatScreen(props) {
                   }}
                 >
                   <View>
-                    <TouchableWithoutFeedback
+                    <TouchableNativeFeedback
                       onPress={() => Clipboard.setString(longPressObj.message)}
                       onPressIn={() => onShowPopUpChanged(false)}
                     >
                       <Text style={styles.popUpText}>
                         {Translate.t("copy")}
                       </Text>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
+                    </TouchableNativeFeedback>
+                    <TouchableNativeFeedback
                       onPress={() =>
                         props.navigation.navigate("ChatListForward", {
                           message: longPressObj.message,
@@ -2831,8 +2857,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("forward")}
                       </Text>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
+                    </TouchableNativeFeedback>
+                    <TouchableNativeFeedback
                       onPress={() => {
                         let update = {};
                         update["delete"] = longPressObj.data["delete"]
@@ -2874,8 +2900,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("cancelOnlyMe")}
                       </Text>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
+                    </TouchableNativeFeedback>
+                    <TouchableNativeFeedback
                       onPress={() => {
                         let update = {};
                         update["delete_" + userId] = longPressObj.data[
@@ -2919,8 +2945,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("remove")}
                       </Text>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
+                    </TouchableNativeFeedback>
+                    <TouchableNativeFeedback
                       onPress={() => {
                         let update = {};
                         update["favourite_" + userId] = true;
@@ -2952,8 +2978,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("addToFav")}
                       </Text>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback
+                    </TouchableNativeFeedback>
+                    <TouchableNativeFeedback
                       onPress={() => {
                         setMultiSelect(true);
                         tmpMultiSelect = true;
@@ -2970,12 +2996,12 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("multiSelect")}
                       </Text>
-                    </TouchableWithoutFeedback>
+                    </TouchableNativeFeedback>
                   </View>
                 </View>
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableNativeFeedback>
         </Modal>
         {/* Bottom Area */}
         <View
@@ -2996,7 +3022,7 @@ export default function ChatScreen(props) {
             }}
           >
             <View style={styles.input_bar_file}>
-              <TouchableWithoutFeedback
+              <TouchableNativeFeedback
                 onPress={() => {
                   hideEmoji();
                   setShouldShow(!shouldShow);
@@ -3017,7 +3043,7 @@ export default function ChatScreen(props) {
                     }}
                   />
                 )}
-              </TouchableWithoutFeedback>
+              </TouchableNativeFeedback>
             </View>
             <View style={styles.input_bar_text}>
               <View style={styles.input_bar_text_border}>
@@ -3043,7 +3069,7 @@ export default function ChatScreen(props) {
                   }}
                 ></TextInput>
 
-                <TouchableWithoutFeedback
+                <TouchableNativeFeedback
                   onPress={() => handleEmojiIconPressed()}
                 >
                   <View style={styles.user_emoji_input}>
@@ -3055,11 +3081,11 @@ export default function ChatScreen(props) {
                       }}
                     />
                   </View>
-                </TouchableWithoutFeedback>
+                </TouchableNativeFeedback>
               </View>
             </View>
             {/* SEND BUTTON */}
-            <TouchableWithoutFeedback
+            <TouchableNativeFeedback
               onPress={() => {
                 let tmpMessage = messages;
                 setMessages("");
@@ -3093,12 +3119,12 @@ export default function ChatScreen(props) {
                   // resizeMode="contain"
                 />
               </View>
-            </TouchableWithoutFeedback>
+            </TouchableNativeFeedback>
           </View>
           <Animated.View
             style={[shouldShow ? styles.input_bar_widget : styles.none]}
           >
-            <TouchableWithoutFeedback
+            <TouchableNativeFeedback
               onPress={() => {
                 const options = {
                   noData: true,
@@ -3166,8 +3192,8 @@ export default function ChatScreen(props) {
                   {Translate.t("camera")}
                 </Text>
               </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
+            </TouchableNativeFeedback>
+            <TouchableNativeFeedback
               onPress={() => {
                 const options = {
                   mediaType: "photo"
@@ -3252,8 +3278,8 @@ export default function ChatScreen(props) {
                   {Translate.t("gallery")}
                 </Text>
               </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
+            </TouchableNativeFeedback>
+            <TouchableNativeFeedback
               onPress={() =>
                 props.navigation.navigate("ContactShare", {
                   groupID: groupID,
@@ -3266,13 +3292,13 @@ export default function ChatScreen(props) {
                   {Translate.t("contact")}
                 </Text>
               </View>
-            </TouchableWithoutFeedback>
+            </TouchableNativeFeedback>
           </Animated.View>
           <View style={{ flex : 1 }} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
-    // </TouchableWithoutFeedback>
+    // </TouchableNativeFeedback>
   );
 }
 
