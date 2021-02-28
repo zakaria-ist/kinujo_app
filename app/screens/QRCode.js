@@ -188,6 +188,7 @@ export default function QRCode(props) {
         showMarker={true}
         reactivate={interacted}
         reactivateTimeout={5000}
+        cameraTimeout={2000}
         buttonPositive={Translate.t("ok")}
         cameraStyle={
           {
