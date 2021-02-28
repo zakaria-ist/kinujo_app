@@ -121,6 +121,35 @@ export default function Home(props) {
         });
     }
   }
+
+  async function createNotificationListeners() {
+    // If your app is in Foreground
+    notificationListener = firebase.notifications().onNotification((notification) => {
+        const localNotification = new firebase.notifications.Notification({
+          show_in_foreground: true,
+        })
+        .setNotificationId(notification.notificationId)
+        .setTitle(notification.title)
+        .setBody(notification.body)
+        .android.setChannelId("chat")
+        .android.setPriority(firebase.notifications.Android.Priority.High);
+
+        firebase.notifications()
+          .displayNotification(localNotification)
+          .catch(err => console.error(err));
+    });
+    //If your app is in background
+    notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+      const { title, body } = notificationOpen.notification;
+      console.log('onNotificationOpened:');
+      Alert.alert(title, body);
+    });
+    // If your app is closed
+    const notificationOpen = await firebase.notifications().getInitialNotification();
+    if (notificationOpen) {
+      console.log('getInitialNotification:');
+    }
+  }
   // function featuredProductNavigation(seller, userShopName) {
   //   console.log(seller);
   //   if (seller) {
@@ -344,6 +373,7 @@ export default function Home(props) {
       // onFeaturedHtmlChanged([]);
       // onKinujoHtmlChanged([]);
       requestUserPermission();
+      createNotificationListeners();
       AsyncStorage.getItem("user").then(function (url) {
         request
           .get(url)
