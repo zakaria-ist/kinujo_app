@@ -213,10 +213,10 @@ export default function HomeByCategory(props) {
         let date1 = new Date(a.opened_date);
         let date2 = new Date(b.opened_date);
 
-        if (date1 > date2) {
+        if (date1 < date2) {
           return 1;
         }
-        if (date1 < date2) {
+        if (date1 > date2) {
           return -1;
         }
         return 0;
@@ -224,10 +224,10 @@ export default function HomeByCategory(props) {
       tmpKinujoProducts = tmpKinujoProducts.sort((a, b) => {
         let date1 = new Date(a.opened_date);
         let date2 = new Date(b.opened_date);
-        if (date1 > date2) {
+        if (date1 < date2) {
           return 1;
         }
-        if (date1 < date2) {
+        if (date1 > date2) {
           return -1;
         }
         return 0;
