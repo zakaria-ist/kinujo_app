@@ -175,6 +175,8 @@ export default function ChatList(props) {
   
   async function processQuerySnapshot(querySnapShot){
     let tmpSnapshots = [];
+    let unreadMessage = 0;
+    let tmpChatHtml = [];
     querySnapShot.forEach((snapshot)=>{
       tmpSnapshots.push(snapshot);
     })
@@ -200,10 +202,36 @@ export default function ChatList(props) {
               block: detail.block,
               hide: detail.hide,
             });
+            let chat_obj_array = [{
+              id: snapShot.id,
+              data: snapShot.data(),
+              name: detail.name,
+              images: detail.images,
+              block: detail.block,
+              hide: detail.hide,
+            }]
+            let t_result = processChat(chat_obj_array, ownUserID);
+            unreadMessage = unreadMessage + t_result[0]
+            for (var j = 0; j < t_result[1].length; j++) {
+              tmpChatHtml.push(t_result[1][j]);
+            }
+            let resultChatHtm = tmpChatHtml.filter((html) => {
+              return !html.props["hide"] && !html.props["delete"];
+            });
+            onChatHtmlChanged(resultChatHtm);
           } else {
             chats = chats.map((chat) => {
               if (chat.id == snapShot.id) {
                 chat.data = snapShot.data();
+                let t_result = processChat(chat.data, ownUserID);
+                unreadMessage = unreadMessage + t_result[0]
+                for (var j = 0; j < t_result[1].length; j++) {
+                  tmpChatHtml.push(t_result[1][j]);
+                }
+                let resultChatHtm = tmpChatHtml.filter((html) => {
+                  return !html.props["hide"] && !html.props["delete"];
+                });
+                onChatHtmlChanged(resultChatHtm);
               }
               return chat;
             });
@@ -211,10 +239,52 @@ export default function ChatList(props) {
         }
       }
     }
+
+    tmpChatHtml.sort((html1, html2) => {
+      if (html1.props["pinned"] && !html2.props["pinned"]) {
+        return 1;
+      }
+
+      if (!html1.props["pinned"] && html2.props["pinned"]) {
+        return -1;
+      }
+
+      if (html1.props["pinned"] && html2.props["pinned"]) {
+        let date1 = getDate(html1.props["date"]);
+        let date2 = getDate(html2.props["date"]);
+
+        if (date1 > date2) {
+          return -1;
+        }
+        if (date1 < date2) {
+          return 1;
+        }
+      }
+
+      if (!html1.props["pinned"] && !html2.props["pinned"]) {
+        let date1 = getDate(html1.props["date"]);
+        let date2 = getDate(html2.props["date"]);
+
+        if (date1 > date2) {
+          return -1;
+        }
+        if (date1 < date2) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+    const resultChatHtml = tmpChatHtml.filter((html) => {
+      return !html.props["hide"] && !html.props["delete"];
+    });
+    onChatHtmlChanged(resultChatHtml);
+    setTotalUnread(unreadMessage);
     console.log("CHATS" + chats.length)
-    processChat(chats, ownUserID);
+    // processChat(chats, ownUserID);
   }
+
   function processChat(tmpChats, ownUserID) {
+    console.log("processChat");
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
@@ -469,46 +539,47 @@ export default function ChatList(props) {
       for (var i in unseenObj) {
         totalUnseenMessage += unseenObj[i];
       }
-      tmpChatHtml.sort((html1, html2) => {
-        if (html1.props["pinned"] && !html2.props["pinned"]) {
-          return 1;
-        }
+      // tmpChatHtml.sort((html1, html2) => {
+      //   if (html1.props["pinned"] && !html2.props["pinned"]) {
+      //     return 1;
+      //   }
 
-        if (!html1.props["pinned"] && html2.props["pinned"]) {
-          return -1;
-        }
+      //   if (!html1.props["pinned"] && html2.props["pinned"]) {
+      //     return -1;
+      //   }
 
-        if (html1.props["pinned"] && html2.props["pinned"]) {
-          let date1 = getDate(html1.props["date"]);
-          let date2 = getDate(html2.props["date"]);
+      //   if (html1.props["pinned"] && html2.props["pinned"]) {
+      //     let date1 = getDate(html1.props["date"]);
+      //     let date2 = getDate(html2.props["date"]);
 
-          if (date1 > date2) {
-            return -1;
-          }
-          if (date1 < date2) {
-            return 1;
-          }
-        }
+      //     if (date1 > date2) {
+      //       return -1;
+      //     }
+      //     if (date1 < date2) {
+      //       return 1;
+      //     }
+      //   }
 
-        if (!html1.props["pinned"] && !html2.props["pinned"]) {
-          let date1 = getDate(html1.props["date"]);
-          let date2 = getDate(html2.props["date"]);
+      //   if (!html1.props["pinned"] && !html2.props["pinned"]) {
+      //     let date1 = getDate(html1.props["date"]);
+      //     let date2 = getDate(html2.props["date"]);
 
-          if (date1 > date2) {
-            return -1;
-          }
-          if (date1 < date2) {
-            return 1;
-          }
-        }
-        return 0;
-      });
-      const resultChatHtml = tmpChatHtml.filter((html) => {
-        return !html.props["hide"] && !html.props["delete"];
-      });
-      onChatHtmlChanged(resultChatHtml);
+      //     if (date1 > date2) {
+      //       return -1;
+      //     }
+      //     if (date1 < date2) {
+      //       return 1;
+      //     }
+      //   }
+      //   return 0;
+      // });
+      // const resultChatHtml = tmpChatHtml.filter((html) => {
+      //   return !html.props["hide"] && !html.props["delete"];
+      // });
+      // onChatHtmlChanged(resultChatHtml);
     });
-    setTotalUnread(unreadMessage);
+    // setTotalUnread(unreadMessage);
+    return [unreadMessage, tmpChatHtml];
   }
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
