@@ -488,6 +488,30 @@ export default function Home(props) {
           }
         });
     });
+    // chat users
+    request
+      .post("user/alluser/data")
+      .then((response) => {
+        console.log(response.data.users);
+        AsyncStorage.setItem("chatuserlist", JSON.stringify(response.data.users)).then(
+          () => {
+        });
+      })
+      .catch((error) => {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+      });
   }, [isFocused]);
   function showCategoryAnimation() {
     onCategoryShow(true);
