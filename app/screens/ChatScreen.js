@@ -2223,8 +2223,14 @@ export default function ChatScreen(props) {
 
   function renderItem(item){
     let chat = item["item"];
-    let tStamps = chat.data.timeStamp.toDate();
-    let created = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
+    let created = chat.data.createdAt;
+    try{
+      let tStamps = chat.data.timeStamp.toDate();
+      created = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
+    } catch(e){
+      console.log('ERROR', e);
+    }
+    
     // let date = chat.data.createdAt.split(":");
     let date = created.split(":");
     let tmpMonth = date[1];
