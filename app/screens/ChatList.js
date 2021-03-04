@@ -36,6 +36,8 @@ import { block } from "react-native-reanimated";
 import CustomAlert from "../lib/alert";
 import Request from "../lib/request";
 import Clipboard from "@react-native-community/clipboard";
+import moment from 'moment-timezone';
+import * as Localization from "expo-localization";
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -62,6 +64,8 @@ const request = new Request();
 let tmpCreatedAt =
   year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds;
 let otherUsersID = [];
+let allUserImage = [];
+const myTimeZone = Localization.timezone;
 
 function getDate(string) {
   let items = string.split(":");
@@ -75,24 +79,41 @@ function getDate(string) {
   );
 }
 
-async function getDetail(ownId, data) {
+async function getDetail(ownId, snapShotId, data) {
   try{
+    let timeStamp;
+    chatRef.doc(snapShotId).collection("messages").orderBy("timeStamp", "desc").limit(1).get()
+      .then((querySnapShot)=>{
+        querySnapShot.forEach((snapShot) => {
+          let tStamps = snapShot.data().timeStamp.toDate();
+          timeStamp = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
+        })
+      })
+
     if (data.type && data.type == "group") {
-      images = await request.post("user/images", {
-        users: data.users,
+      let grpImages = [];
+      allUserImage.forEach((item) => {
+        if (data.users.length && data.users.includes(item.id)) {
+          grpImages.push(item.image);
+        }
       });
       return {
         name: data.groupName,
-        images: images.data.images,
+        images: grpImages,
+        timeStamp: timeStamp,
       };
     }
     if (data.users.length > 2) {
-      images = await request.post("user/images", {
-        users: data.users,
+      let usrImages = [];
+      allUserImage.forEach((item) => {
+        if (data.users.includes(item.id)) {
+          usrImages.push(item.image);
+        }
       });
       return {
         name: data.groupName,
-        images: images.data.images,
+        images: usrImages,
+        timeStamp: timeStamp
       };
     }
 
@@ -118,18 +139,24 @@ async function getDetail(ownId, data) {
 
     if (users.length > 0) {
       let user = users[0];
-      user = await request.get("profiles/" + user);
-      user = user.data;
-      djangoName = user.nickname;
+      let img = [];
+      let djangoName = "";
+      allUserImage.forEach((item) => {
+        if (user == item.id) {
+          img.push(item.image);
+          djangoName = item.name;
+        }
+      });
       return {
         name: firebaseName ? firebaseName : djangoName,
-        images: [user.image ? user.image.image : ""],
+        images: img,
         block: isBlock,
         hide: isHide,
+        timeStamp: timeStamp
       };
     }
   }catch(e){
-
+    console.log('ERORROROROROROR', e);
   }
   return {
     name: "",
@@ -177,10 +204,9 @@ export default function ChatList(props) {
     let tmpSnapshots = [];
     querySnapShot.forEach((snapshot)=>{
       tmpSnapshots.push(snapshot);
-    })
-    console.log(tmpSnapshots.length)
-
-    
+    });
+    // looping two times for improving UI response
+    // One without user detail, next with the detail
     for (let i=0; i<tmpSnapshots.length; i++) {
       let snapShot = tmpSnapshots[i];
       if (snapShot && snapShot.exists) {
@@ -191,14 +217,13 @@ export default function ChatList(props) {
             return chat.id == snapShot.id;
           });
           if (tmpChats.length == 0) {
-            let detail = await getDetail(ownUserID, snapShot.data());
             chats.push({
               id: snapShot.id,
               data: snapShot.data(),
-              name: detail.name,
-              images: detail.images,
-              block: detail.block,
-              hide: detail.hide,
+              name: "",
+              images: [""],
+              block: false,
+              hide: false,
             });
           } else {
             chats = chats.map((chat) => {
@@ -211,9 +236,43 @@ export default function ChatList(props) {
         }
       }
     }
-    console.log("CHATS" + chats.length)
+    processChat(chats, ownUserID);
+
+    chats = [];
+    for (let i=0; i<tmpSnapshots.length; i++) {
+      let snapShot = tmpSnapshots[i];
+      if (snapShot && snapShot.exists) {
+        if(!snapShot.data()["delete_" + ownUserID] &&
+        !snapShot.data()["hide_" + ownUserID] &&
+        !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
+          let tmpChats = chats.filter((chat) => {
+            return chat.id == snapShot.id;
+          });
+          if (tmpChats.length == 0) {
+            let detail = await getDetail(ownUserID, snapShot.id, snapShot.data());
+            chats.push({
+              id: snapShot.id,
+              data: snapShot.data(),
+              name: detail.name,
+              images: detail.images,
+              block: detail.block,
+              hide: detail.hide,
+              timeStamp: detail.timeStamp,
+            });
+          } else {
+            chats = chats.map((chat) => {
+              if (chat.id == snapShot.id) {
+                chat.data = snapShot.data();
+              }
+              return chat;
+            });
+          }
+        }
+      }
+    }
     processChat(chats, ownUserID);
   }
+
   function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
@@ -250,7 +309,7 @@ export default function ChatList(props) {
         tmpChatHtml = _.without(tmpChatHtml, chat.id);
       }
       getUnseenMessageCount(chat.id, ownUserID);
-      let date = chat.data.lastMessageTime
+      let date = chat.timeStamp ? chat.timeStamp.split(':') : chat.data.lastMessageTime
         ? chat.data.lastMessageTime.split(":")
         : tmpCreatedAt.split(":");
       let tmpMonth = date[1];
@@ -311,11 +370,11 @@ export default function ChatList(props) {
               </View>
               <View style={styles.tabRightContainer}>
                 {tmpDay == today ? (
-                  <Text style={styles.tabText}>
+                  <Text style={styles.tabTextTime}>
                     {tmpHours + ":" + tmpMinutes}
                   </Text>
                 ) : (
-                  <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
+                  <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
                 {chat.data[unseenMessageCountField] &&
                 chat.data[unseenMessageCountField] > 0 ? (
@@ -381,9 +440,9 @@ export default function ChatList(props) {
               </View>
               <View style={styles.tabRightContainer}>
                 {tmpDay == today - 1 ? (
-                  <Text style={styles.tabText}>{"Yesterday"}</Text>
+                  <Text style={styles.tabTextTime}>{"Yesterday"}</Text>
                 ) : (
-                  <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
+                  <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
                 {chat.data[unseenMessageCountField] &&
                 chat.data[unseenMessageCountField] > 0 ? (
@@ -448,7 +507,7 @@ export default function ChatList(props) {
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
-                <Text style={styles.tabText}>{tmpMonth + "/" + tmpDay}</Text>
+                <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 {chat.data[unseenMessageCountField] &&
                 chat.data[unseenMessageCountField] > 0 ? (
                   <View style={styles.notificationNumberContainer}>
@@ -528,6 +587,7 @@ export default function ChatList(props) {
         })
       });
     return ()=>{};
+    
   }
 
   React.useEffect(() => {
@@ -537,13 +597,17 @@ export default function ChatList(props) {
         }
       // }
     }
-
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("chat").then((item) => {
         if (item) {
           AsyncStorage.removeItem("chat");
           item = JSON.parse(item);
           props.navigation.push("ChatScreen", item);
+        }
+      });
+      AsyncStorage.getItem("chatuserlist").then((item) => {
+        if (item) {
+          allUserImage = JSON.parse(item);
         }
       });
 
@@ -799,6 +863,11 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: RFValue(12),
+  },
+  tabTextTime: {
+    fontSize: RFValue(12),
+    width: widthPercentageToDP("15%"),
+    textAlign: "right"
   },
   descriptionContainer: {
     justifyContent: "center",
