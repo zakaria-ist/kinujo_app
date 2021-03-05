@@ -2011,6 +2011,7 @@ export default function ChatScreen(props) {
         checkUpdateFriend(userId, users[1]);
       }
       totalMessageCount = documentSnapshot.data().totalMessage;
+
       for (var i = 0; i < users.length; i++) {
         totalMessageSeenCount = "totalMessageRead_" + users[i];
         seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
@@ -2031,6 +2032,11 @@ export default function ChatScreen(props) {
       // lastQuerySnapshot.forEach((snapShot)=>{
       //   lastDoc = snapShot;
       // })
+
+      // Read all message
+      chatsRef.doc(groupID).update({
+        [userTotalReadMessageField]: totalMessageCount
+      })
 
       let build = chatsRef
         .doc(groupID)
@@ -2191,10 +2197,10 @@ export default function ChatScreen(props) {
       });
 
     return function () {
-      if (this.unsub) {
+      if (this?.unsub) {
         this.unsub();
       }
-      if (this.unsub1) {
+      if (this?.unsub1) {
         this.unsub1();
       }
       setShouldShow(false);
