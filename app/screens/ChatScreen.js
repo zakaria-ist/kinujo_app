@@ -201,8 +201,8 @@ export default function ChatScreen(props) {
       });
       userId = urls[urls.length - 1];
 
-      let groupId;
-      // let groupName;
+      let groupID;
+      let groupName;
       let deleted = "delete_" + userId;
       db.collection("chat")
         .where("users", "array-contains", userId)
@@ -216,14 +216,14 @@ export default function ChatScreen(props) {
               let users = snapShot.doc.data().users;
               for (var i = 0; i < users.length; i++) {
                 if (users[i] == contactID) {
-                  groupId = snapShot.doc.id;
+                  groupID = snapShot.doc.id;
                 }
               }
             }
           });
-          if (groupId != null) {
+          if (groupID != null) {
             db.collection("chat")
-              .doc(groupId)
+              .doc(groupID)
               .set(
                 {
                   [deleted]: false,
@@ -235,7 +235,7 @@ export default function ChatScreen(props) {
             AsyncStorage.setItem(
               "chat",
               JSON.stringify({
-                groupID: groupId,
+                groupID: groupID,
                 groupName: contactName,
               })
             ).then(() => {
@@ -1952,8 +1952,7 @@ export default function ChatScreen(props) {
       return chat;
     });
 
-    //remove duplicates
-    // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
+
     let last = "";
     for(let i=0; i<chats.length; i++){
       let chat = chats[i];
@@ -2011,6 +2010,7 @@ export default function ChatScreen(props) {
         checkUpdateFriend(userId, users[1]);
       }
       totalMessageCount = documentSnapshot.data().totalMessage;
+
       for (var i = 0; i < users.length; i++) {
         totalMessageSeenCount = "totalMessageRead_" + users[i];
         seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
@@ -2027,43 +2027,48 @@ export default function ChatScreen(props) {
       previousMessageDateElse = null;
       tmpMessageCount = 0;
 
-      // let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
-      // lastQuerySnapshot.forEach((snapShot)=>{
-      //   lastDoc = snapShot;
-      // })
+      let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
+      lastQuerySnapshot.forEach((snapShot)=>{
+        lastDoc = snapShot;
+      })
+
+      // Read all message
+      chatsRef.doc(groupID).update({
+        [userTotalReadMessageField]: totalMessageCount
+      })
 
       let build = chatsRef
         .doc(groupID)
         .collection("messages")
         .orderBy("timeStamp", "asc");
       
-      // if(lastDoc){
-      //   build = build.startAfter(lastDoc);
-      //   chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
-      //     querySnapShot.forEach((snapShot) => {
-      //       if(!old30LastDoc){
-      //         old30LastDoc = snapShot;
-      //       }
-      //       let tmpChats = old30Chats.filter((chat) => {
-      //         return chat.id == snapShot.id;
-      //       });
-      //       if (tmpChats.length == 0) {
-      //         old30Chats.push({
-      //           id: snapShot.id,
-      //           data: snapShot.data(),
-      //         });
-      //       } else {
-      //         old30Chats = old30Chats.map((chat) => {
-      //           if (chat.id == snapShot.id) {
-      //             chat.data = snapShot.data();
-      //           }
-      //           return chat;
-      //         });
-      //       }
-      //     })
-      //     updateChats(oldChats.concat(old30Chats, chats))
-      //   })
-      // }
+      if(lastDoc){
+        build = build.startAfter(lastDoc);
+        chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
+          querySnapShot.forEach((snapShot) => {
+            if(!old30LastDoc){
+              old30LastDoc = snapShot;
+            }
+            let tmpChats = old30Chats.filter((chat) => {
+              return chat.id == snapShot.id;
+            });
+            if (tmpChats.length == 0) {
+              old30Chats.push({
+                id: snapShot.id,
+                data: snapShot.data(),
+              });
+            } else {
+              old30Chats = old30Chats.map((chat) => {
+                if (chat.id == snapShot.id) {
+                  chat.data = snapShot.data();
+                }
+                return chat;
+              });
+            }
+          })
+          updateChats(oldChats.concat(old30Chats, chats))
+        })
+      }
 
       this.unsub = build
         .onSnapshot(
@@ -2191,10 +2196,10 @@ export default function ChatScreen(props) {
       });
 
     return function () {
-      if (this.unsub) {
+      if (this?.unsub) {
         this.unsub();
       }
-      if (this.unsub1) {
+      if (this?.unsub1) {
         this.unsub1();
       }
       setShouldShow(false);
