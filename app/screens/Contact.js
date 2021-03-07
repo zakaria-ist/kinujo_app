@@ -36,6 +36,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import Person from "../assets/icons/personPink.svg";
 import GroupImages from "../assets/CustomComponents/GroupImages";
+import { block } from "react-native-reanimated";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -53,6 +54,7 @@ let contactPinned = {};
 let contactNotify = {};
 let selectedUserId;
 let userId;
+let blocks = [];
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -412,6 +414,23 @@ export default function Contact(props) {
     onGroupHtmlChanged(processGroupHtml(props, groups, userId));
   }
 
+  async function getBlock(){
+    let snapShot = await db
+    .collection("users")
+    .doc(ownId)
+    .collection("customers")
+    .get();
+
+    firebaseName = "";
+    let isBlock = false;
+    let isHide = false;
+    snapShot.forEach((docRef) => {
+      if (docRef.id && docRef.data()['blockMode']) {
+        blocks.push(docRef.id);
+      }
+    });
+    return "";
+  }
   function populateUser() {
     AsyncStorage.getItem("user").then(function (url) {
       userId = getID(url);
@@ -435,7 +454,9 @@ export default function Contact(props) {
               deleteIds.push(item.id);
             }
           });
-          request
+
+          getBlock().then(()=>{
+            request
             .get("user/byIds/", {
               ids: ids,
               userId: userId,
@@ -448,6 +469,7 @@ export default function Contact(props) {
                 globalUsers = globalUsers.filter((user) => {
                   return (
                     !deleteIds.includes(user.id) &&
+                    !blocks.includes(user.id) && 
                     !deleteIds.includes(String(user.id))
                   );
                 });
@@ -488,6 +510,7 @@ export default function Contact(props) {
                 );
               }
             });
+          })
         });
       onFriendLoaded(true);
     });

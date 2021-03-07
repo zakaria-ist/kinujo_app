@@ -2182,6 +2182,7 @@ export default function ChatScreen(props) {
     }
 
     InteractionManager.runAfterInteractions(() => {
+      console.log(groupID);
       chatsRef
         .doc(groupID)
         .get()
