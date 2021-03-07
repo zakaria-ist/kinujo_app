@@ -71,22 +71,22 @@ export default function Home(props) {
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
   React.useEffect(() => {
+    messaging()
+      .getInitialNotification()
+      .then((remoteMessage) => {
+        if (remoteMessage) {
+          let groupID = remoteMessage.data.groupID;
+          let groupName = remoteMessage.data.groupName;
+          let groupType = remoteMessage.data.groupType;
+          props.navigation.navigate("ChatScreen", {
+            type: String(groupType),
+            groupID: String(groupID),
+            groupName: String(groupName),
+          });
+        }
+      });
+
     InteractionManager.runAfterInteractions(() => {
-      messaging()
-        .getInitialNotification()
-        .then((remoteMessage) => {
-          if (remoteMessage) {
-            let groupID = remoteMessage.data.groupID;
-            let groupName = remoteMessage.data.groupName;
-            let groupType = remoteMessage.data.groupType;
-            props.navigation.navigate("ChatScreen", {
-              type: String(groupType),
-              groupID: String(groupID),
-              groupName: String(groupName),
-            });
-          }
-        });
-        
       AsyncStorage.getItem("product").then((product_id) => {
         AsyncStorage.removeItem("product").then(() => {
           let tmpProductId = product_id;
