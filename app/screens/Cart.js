@@ -238,6 +238,7 @@ export default function Cart(props) {
                   円
                 </Text>
                 <Text style={styles.cartTabText}>{item.name}</Text>
+                <Text style={styles.cartTabText}>{product.shipping_fee}円</Text>
               </View>
               <View style={styles.tabRightContainer}>
                 <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
@@ -337,10 +338,21 @@ export default function Cart(props) {
                                   return firebaseProduct.id != item.id;
                                 }
                               );
-                              let tmpIds = ids.filter((id) => {
-                                return id != product.id;
-                              });
-                              ids = tmpIds;
+                              let deleted_product_count = 0;
+                              for (i = 0; i < maps.length; i++) {
+                                if (maps[i].product_id == item.product_id) {
+                                  deleted_product_count++;
+                                }
+                              }
+                              let tmpIds;
+                              if (deleted_product_count == 1) {
+                                tmpIds = ids.filter((id) => {
+                                  return id != product.id;
+                                });
+                                ids = tmpIds;
+                              } else {
+                                tmpIds = ids;
+                              }
                               console.log(firebaseProducts)
                               db.collection("users")
                                 .doc(userId.toString())
@@ -353,7 +365,7 @@ export default function Cart(props) {
                                   .collection("carts")
                                   .get()
                                   .then((querySnapShot) => {
-                                    onCartCountChanged(querySnapShot.size ? "clear" : querySnapShot.size);
+                                    onCartCountChanged(querySnapShot.size ? querySnapShot.size : "clear");
                                   });
                                 })
                               onUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
@@ -409,7 +421,9 @@ export default function Cart(props) {
           tmpProduct = tmpProduct[0];
           total +=
             (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
-          tmpShipping += tmpProduct.shipping_fee;
+          if (tmpProduct.shipping_fee > tmpShipping) {
+            tmpShipping = tmpProduct.shipping_fee;
+          }
         });
 
         onShippingChanged(tmpShipping)
@@ -990,7 +1004,8 @@ const styles = StyleSheet.create({
   removeIcon: {
     width: width / 19,
     height: 19 * ratioRemoveIcon,
-    marginRight: widthPercentageToDP("4%"),
+    marginRight: widthPercentageToDP("5%"),
+    bottom: -5
   },
   buttonContainer: {
     alignSelf: "flex-start",
@@ -1029,11 +1044,11 @@ const styles = StyleSheet.create({
     fontSize: RFValue(12),
     color: "white",
   },
-  removeIcon: {
-    width: win.width / 20,
-    height: 19 * ratioRemove,
-    marginRight: widthPercentageToDP("3%"),
-  },
+  // removeIcon: {
+  //   width: win.width / 20,
+  //   height: 19 * ratioRemove,
+  //   marginRight: widthPercentageToDP("3%"),
+  // },
   checkBoxContainer: {
     position: "absolute",
     right: 0,

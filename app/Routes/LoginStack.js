@@ -503,15 +503,6 @@ function BottomNavigationGeneral(props) {
               <CustomTabButton show={false} {...props} />
             ),
           }}
-          name="ContactShare"
-          component={ContactShare}
-        />
-        <Tab.Screen
-          options={{
-            tabBarButton: (props) => (
-              <CustomTabButton show={false} {...props} />
-            ),
-          }}
           name="SearchProducts"
           component={SearchProducts}
           tabBarOptions={{
@@ -966,15 +957,6 @@ function BottomNavigationGeneral(props) {
           }}
           name="ReceiptEditing"
           component={ReceiptEditing}
-        />
-        <Tab.Screen
-          options={{
-            tabBarButton: (props) => (
-              <CustomTabButton show={false} {...props} />
-            ),
-          }}
-          name="ContactShare"
-          component={ContactShare}
         />
         <Tab.Screen
           options={{
@@ -1498,15 +1480,6 @@ function BottomNavigationStore(props) {
               <CustomTabButton show={false} {...props} />
             ),
           }}
-          name="ContactShare"
-          component={ContactShare}
-        />
-        <Tab.Screen
-          options={{
-            tabBarButton: (props) => (
-              <CustomTabButton show={false} {...props} />
-            ),
-          }}
           name="SearchProducts"
           component={SearchProducts}
           tabBarOptions={{
@@ -1983,15 +1956,6 @@ function BottomNavigationStore(props) {
               <CustomTabButton show={false} {...props} />
             ),
           }}
-          name="ContactShare"
-          component={ContactShare}
-        />
-        <Tab.Screen
-          options={{
-            tabBarButton: (props) => (
-              <CustomTabButton show={false} {...props} />
-            ),
-          }}
           name="SearchProducts"
           component={SearchProducts}
           tabBarOptions={{
@@ -2115,6 +2079,7 @@ export default function LoginStack() {
         />
         <Stack.Screen name="HomeGeneral" component={BottomNavigationGeneral} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
+        <Stack.Screen name="ContactShare" component={ContactShare} />
         {/* <Stack.Screen name="CreateFolder" component={CreateFolder} />
         <Stack.Screen
           name="FolderMemberSelection"
