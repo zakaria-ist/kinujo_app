@@ -1,4 +1,4 @@
-package com.example.kinujo;
+package net.c2sg.kinujo;
 
 import android.os.Bundle;
 
@@ -11,6 +11,11 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import org.devio.rn.splashscreen.SplashScreen; // here
 import android.webkit.WebView;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.Notification;
+import android.os.Build;
+
 
 public class MainActivity extends ReactActivity {
   @Override
