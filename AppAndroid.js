@@ -21,26 +21,6 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-const channel = new Android.Channel(
-  "chat",
-  "Chat Channel",
-  Android.Importance.Max
-).setDescription("Chat Message Channel");
-channel.setShowBadge(true);
-channel.enableVibration(true);
-channel.enableLights(true);
-notifications.android().createChannel(channel);
-messaging().onMessage((payload) => {
-  // console.log("wew" + JSON.stringify(payload.data.groupName));
-  notifications.displayNotification(
-    new NotificationMessage()
-      .setNotificationId("chat")
-      .setTitle(payload.data.groupName)
-      .setBody(payload.notification.body)
-      .android.setChannelId("chat") //required for android
-  );
-});
-
 export default function AppAndroid() {
   enableScreens();
   return (
