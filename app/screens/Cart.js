@@ -45,7 +45,7 @@ const ratioUpWhiteArrow = width / 24 / 15;
 const ratioDownWhiteArrow = width / 24 / 10;
 const ratioRemoveIcon = width / 19 / 16;
 let firebaseProducts = [];
-let djangoProducts = [];
+// let shopProducts = [];
 let ids = [];
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -401,10 +401,12 @@ export default function Cart(props) {
     return tmpCartHtml;
   }
 
-  function processCartView(props, shop) {
+  function processCartView(props, shop, shopFirebaseProducts) {
     productLoaded = false;
     tempCartView.push(
-      <View>
+      <Animated.View
+              style={shop.cartItemShow == true ? styles.cartAnimation : styles.none}
+            >
         <TouchableWithoutFeedback
             onPress={() => {
               console.log('cartItemShow', shop.cartItemShow);
@@ -415,14 +417,16 @@ export default function Cart(props) {
                       duration: 100,
                       useNativeDriver: false,
                     }),
-                  ]).start(() => {}, shop.cartItemShow = false)
+                  ]).start(() => {}, shop.cartItemShow = false, onCartViewChanged(tempCartView))
+                  // ]).start(() => {}, onCartItemShowChanged(false))
                 : Animated.parallel([
                     Animated.timing(cartItemOpacity, {
                       toValue: heightPercentageToDP("100%"),
                       duration: 30000,
                       useNativeDriver: false,
                     }),
-                  ]).start(() => {}, shop.cartItemShow = true);
+                  ]).start(() => {}, shop.cartItemShow = true, onCartViewChanged(tempCartView));
+                  // ]).start(() => {}, onCartItemShowChanged(true));
             }}
           >
             <View
@@ -546,17 +550,17 @@ export default function Cart(props) {
 
                 </View>
               </TouchableWithoutFeedback>
-              <Animated.View
+              <View
                 style={paymentMethodShow == false ? styles.none : ""}
               >
                 {addressHtml}
-              </Animated.View>
+              </View>
             </View>
             <TouchableWithoutFeedback
               onPress={() => {
-                if (firebaseProducts.length > 0 && selected) {
+                if (shopFirebaseProducts.length > 0 && selected) {
                   props.navigation.navigate("Payment", {
-                    products: firebaseProducts,
+                    products: shopFirebaseProducts,
                     address: selected,
                     tax: taxObj.id,
                   });
@@ -576,7 +580,7 @@ export default function Cart(props) {
               </View>
             </TouchableWithoutFeedback>
           </View>
-        </View>
+      </Animated.View>
     );
 
     // console.log(tmpCartHtml);
@@ -637,21 +641,22 @@ export default function Cart(props) {
       })
       .then(function (response) {
         let idx = 0;
-        // let tmpShops = [];
+        let shopProducts = [];
         shops.forEach(shop => {
-            djangoProducts = response.data.products.filter((element) => {
+            shopProducts = response.data.products.filter((element) => {
               let seller = element.user.shop_name ? element.user.shop_name : element.user.real_name;
               return shop.seller == seller;
             });
             // onCartHtmlChanged(
-            //   processCartHtml(props, djangoProducts, items, is_store)
+            //   processCartHtml(props, shopProducts, items, is_store)
             // );
             // let tmpProducts = response.data.products;
-            let tmpProducts = djangoProducts;
+            let tmpProducts = shopProducts;
 
             total = 0;
             subTotal = 0;
             tmpShipping = 0;
+            let shopFirebaseProducts = [];
             firebaseProducts.filter((fbProduct) => {
               let quantity = fbProduct.quantity;
               console.log('fbProduct', fbProduct);
@@ -660,6 +665,7 @@ export default function Cart(props) {
               });
               if (tmpProduct && tmpProduct.length) {
                 tmpProduct = tmpProduct[0];
+                shopFirebaseProducts.push(tmpProduct);
                 subTotal +=
                   (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
                 if (parseInt(tmpProduct.shipping_fee) > parseInt(tmpShipping)) {
@@ -675,9 +681,8 @@ export default function Cart(props) {
             shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
             console.log('single', shop);
             
-            shop.shopHtml = processCartHtml(props, djangoProducts, items, is_store);
-            // tmpShops.push(shop);
-            processCartView(props, shop);
+            shop.shopHtml = processCartHtml(props, shopProducts, items, is_store);
+            processCartView(props, shop, shopFirebaseProducts);
         });
         // onShopsChanged(tmpShops);
         // console.log('onUpdate', shops)
