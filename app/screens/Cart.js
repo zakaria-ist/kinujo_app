@@ -87,7 +87,6 @@ export default function Cart(props) {
   const [addressHtml, onAddressHtmlChanged] = useStateIfMounted([]);
   const [dropDownPickerOpen, onDropDownPickerOpen] = useStateIfMounted(false);
   const cartItems = [];
-  // const [shops, onShopsChanged] = useStateIfMounted([]);
   let shops = [];
   let tempCartView = [];
   // if (this.controller.isOpen()) {
@@ -198,7 +197,6 @@ export default function Cart(props) {
     for (i = 0; i < maps.length; i++) {
       let item = maps[i];
       let tmpProducts = products.filter((product) => {
-        console.log(product.id + " = " + item.product_id);
         return product.id == item.product_id;
       });
       if (tmpProducts.length > 0) {
@@ -358,7 +356,6 @@ export default function Cart(props) {
                               } else {
                                 tmpIds = ids;
                               }
-                              console.log('firebaseProducts', firebaseProducts);
                               db.collection("users")
                                 .doc(userId.toString())
                                 .collection("carts")
@@ -404,12 +401,9 @@ export default function Cart(props) {
   function processCartView(props, shop, shopFirebaseProducts) {
     productLoaded = false;
     tempCartView.push(
-      <Animated.View
-              style={shop.cartItemShow == true ? styles.cartAnimation : styles.none}
-            >
-        <TouchableWithoutFeedback
+      <View>
+          <TouchableWithoutFeedback
             onPress={() => {
-              console.log('cartItemShow', shop.cartItemShow);
               shop.cartItemShow == true
                 ? Animated.parallel([
                     Animated.timing(cartItemOpacity, {
@@ -417,16 +411,14 @@ export default function Cart(props) {
                       duration: 100,
                       useNativeDriver: false,
                     }),
-                  ]).start(() => {}, shop.cartItemShow = false, onCartViewChanged(tempCartView))
-                  // ]).start(() => {}, onCartItemShowChanged(false))
+                  ]).start(() => {}, shop.cartItemShow = false, onUpdate(ids, firebaseProducts, user.is_seller && user.is_approved))
                 : Animated.parallel([
                     Animated.timing(cartItemOpacity, {
                       toValue: heightPercentageToDP("100%"),
                       duration: 30000,
                       useNativeDriver: false,
                     }),
-                  ]).start(() => {}, shop.cartItemShow = true, onCartViewChanged(tempCartView));
-                  // ]).start(() => {}, onCartItemShowChanged(true));
+                  ]).start(() => {}, shop.cartItemShow = true, onUpdate(ids, firebaseProducts, user.is_seller && user.is_approved));
             }}
           >
             <View
@@ -435,6 +427,7 @@ export default function Cart(props) {
                 backgroundColor: Colors.D7CCA6,
                 height: heightPercentageToDP("6%"),
                 alignItems: "center",
+                marginBottom: widthPercentageToDP("3%")
               }}
             >
               <Text
@@ -462,16 +455,17 @@ export default function Cart(props) {
             </View>
           </TouchableWithoutFeedback>
 
-          <View
+          <Animated.View
+              style={shop.cartItemShow == true ? styles.cartAnimation : styles.none}
+            >
+          {/* <View
             style={{
               marginHorizontal: widthPercentageToDP("5%"),
             }}
-          >
-            <Animated.View
-              style={shop.cartItemShow == true ? styles.cartAnimation : styles.none}
-            >
+          > */}
+            <View>
               <View>{shop.shopHtml}</View>
-            </Animated.View>
+            </View>
             <View>
               <View
                 style={{
@@ -571,7 +565,7 @@ export default function Cart(props) {
                 }
               }}
             >
-              <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
+              <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
                 <View style={styles.orderConfirmButtonContainer}>
                   <Text style={styles.orderConfirmButtonText}>
                     {Translate.t("confirmOrder")}
@@ -579,11 +573,11 @@ export default function Cart(props) {
                 </View>
               </View>
             </TouchableWithoutFeedback>
-          </View>
-      </Animated.View>
+          {/* </View> */}
+        </Animated.View>
+      </View>
     );
 
-    // console.log(tmpCartHtml);
   }
 
   function shopUpdate(tmpIds, firebaseProducts, is_seller) {
@@ -611,9 +605,7 @@ export default function Cart(props) {
             })
           }
         })
-        // onShopsChanged(tempShops);
         shops = tempShops;
-        console.log('shopUpdate', shops);
         onUpdate(tmpIds, firebaseProducts, is_seller)
       })
       .catch(function (error) {
@@ -647,10 +639,6 @@ export default function Cart(props) {
               let seller = element.user.shop_name ? element.user.shop_name : element.user.real_name;
               return shop.seller == seller;
             });
-            // onCartHtmlChanged(
-            //   processCartHtml(props, shopProducts, items, is_store)
-            // );
-            // let tmpProducts = response.data.products;
             let tmpProducts = shopProducts;
 
             total = 0;
@@ -659,7 +647,6 @@ export default function Cart(props) {
             let shopFirebaseProducts = [];
             firebaseProducts.filter((fbProduct) => {
               let quantity = fbProduct.quantity;
-              console.log('fbProduct', fbProduct);
               let tmpProduct = tmpProducts.filter((product) => {
                 return (product.id == fbProduct.product_id);
               });
@@ -679,16 +666,10 @@ export default function Cart(props) {
             let tax = taxObj ? taxObj.tax_rate * subTotal : 0;
             shop.tax = tax;
             shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
-            console.log('single', shop);
             
             shop.shopHtml = processCartHtml(props, shopProducts, items, is_store);
             processCartView(props, shop, shopFirebaseProducts);
         });
-        // onShopsChanged(tmpShops);
-        // console.log('onUpdate', shops)
-        // shops.forEach(shop => {
-        //   processCartView(props, shop);
-        // })
         productLoaded = true;
         onCartViewChanged(tempCartView);
 
@@ -752,7 +733,6 @@ export default function Cart(props) {
             });
             ids = tmpIds;
             firebaseProducts = items;
-            console.log('firebaseProducts:', firebaseProducts);
 
             request
               .get("product/byIds/", {
@@ -778,9 +758,7 @@ export default function Cart(props) {
                     })
                   }
                 })
-                // onShopsChanged(tempShops);
                 shops = tempShops;
-                console.log('shops', shops);
 
                 request
                   .get(url)
@@ -1369,9 +1347,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   cartAnimation: {
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     paddingBottom: heightPercentageToDP("5%"),
-    borderColor: Colors.deepGrey,
+    // borderColor: Colors.deepGrey,
+    marginHorizontal: widthPercentageToDP("5%"),
   },
   none: {
     display: "none",
