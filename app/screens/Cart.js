@@ -89,6 +89,7 @@ export default function Cart(props) {
   const cartItems = [];
   let shops = [];
   let tempCartView = [];
+  let cartProducts = [];
   // if (this.controller.isOpen()) {
   //   onDropDownPickerOpen(true);
   // }
@@ -213,7 +214,6 @@ export default function Cart(props) {
         //   }
         // }
         tmpCartHtml.push(
-          // <TouchableWithoutFeedback onPress={() => controller.close()}>
           <TouchableWithoutFeedback>
             <View
               key={i}
@@ -456,11 +456,6 @@ export default function Cart(props) {
           <Animated.View
               style={shop.cartItemShow == true ? styles.cartAnimation : styles.none}
             >
-          {/* <View
-            style={{
-              marginHorizontal: widthPercentageToDP("5%"),
-            }}
-          > */}
             <View>
               <View>{shop.shopHtml}</View>
             </View>
@@ -571,7 +566,6 @@ export default function Cart(props) {
                 </View>
               </View>
             </TouchableWithoutFeedback>
-          {/* </View> */}
         </Animated.View>
       </View>
     );
@@ -584,6 +578,7 @@ export default function Cart(props) {
         ids: tmpIds,
       })
       .then(function (response) {
+        cartProducts = response.data.products;
         let prods = response.data.products;
         let tempShops = [];
         prods.forEach((prod) => {
@@ -604,7 +599,7 @@ export default function Cart(props) {
           }
         })
         shops = tempShops;
-        onUpdate(tmpIds, is_seller, prods)
+        onUpdate(tmpIds, is_seller)
       })
       .catch(function (error) {
         if (
@@ -623,7 +618,7 @@ export default function Cart(props) {
       });
   }
 
-  function processCarts(is_store, cartProducts) {
+  function processCarts(is_store) {
       shops.forEach(shop => {
         let shopProducts = cartProducts.filter((element) => {
           let seller = element.user.shop_name ? element.user.shop_name : element.user.real_name;
@@ -662,7 +657,7 @@ export default function Cart(props) {
     onCartViewChanged(tempCartView);
   }
 
-  function onUpdate(ids, is_store, cartProducts=[]) {
+  function onUpdate(ids, is_store) {
     tempCartView = [];
     if (!cartProducts.length) {
       request
@@ -671,7 +666,7 @@ export default function Cart(props) {
         })
         .then(function (response) {
           cartProducts = response.data.products;
-          processCarts(is_store, cartProducts);
+          processCarts(is_store);
         })
         .catch(function (error) {
           if (
@@ -689,7 +684,7 @@ export default function Cart(props) {
           }
         });
     } else {
-      processCarts(is_store, cartProducts);
+      processCarts(is_store);
     }
   }
   React.useEffect(() => {
@@ -739,6 +734,7 @@ export default function Cart(props) {
                 ids: ids,
               })
               .then(function (response) {
+                cartProducts = response.data.products;
                 let prods = response.data.products;
                 let tempShops = [];
                 prods.forEach((prod) => {
@@ -764,7 +760,7 @@ export default function Cart(props) {
                   .get(url)
                   .then(function (response) {
                     onUserChanged(response.data);
-                    onUpdate(tmpIds, response.data.is_seller && response.data.is_approved, prods);
+                    onUpdate(tmpIds, response.data.is_seller && response.data.is_approved);
                   })
               })
               .catch(function (error) {
