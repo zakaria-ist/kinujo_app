@@ -187,8 +187,7 @@ export default function Cart(props) {
       }
       return product;
     });
-    // onUpdate(ids, firebaseProducts, is_store);
-    shopUpdate(ids, firebaseProducts, is_store);
+    shopUpdate(ids, is_store);
   }
   function processCartHtml(props, products, maps, is_store = false) {
     productLoaded = false;
@@ -370,8 +369,7 @@ export default function Cart(props) {
                                     onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
                                   });
                                 })
-                              // onUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
-                              shopUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
+                              shopUpdate(tmpIds, user.is_seller && user.is_approved);
                             },
                           },
                           {
@@ -411,14 +409,14 @@ export default function Cart(props) {
                       duration: 100,
                       useNativeDriver: false,
                     }),
-                  ]).start(() => {}, shop.cartItemShow = false, onUpdate(ids, firebaseProducts, user.is_seller && user.is_approved))
+                  ]).start(() => {}, shop.cartItemShow = false, onUpdate(ids, user.is_seller && user.is_approved))
                 : Animated.parallel([
                     Animated.timing(cartItemOpacity, {
                       toValue: heightPercentageToDP("100%"),
                       duration: 30000,
                       useNativeDriver: false,
                     }),
-                  ]).start(() => {}, shop.cartItemShow = true, onUpdate(ids, firebaseProducts, user.is_seller && user.is_approved));
+                  ]).start(() => {}, shop.cartItemShow = true, onUpdate(ids, user.is_seller && user.is_approved));
             }}
           >
             <View
@@ -580,10 +578,10 @@ export default function Cart(props) {
 
   }
 
-  function shopUpdate(tmpIds, firebaseProducts, is_seller) {
+  function shopUpdate(tmpIds, is_seller) {
     request
       .get("product/byIds/", {
-        ids: ids,
+        ids: tmpIds,
       })
       .then(function (response) {
         let prods = response.data.products;
@@ -606,7 +604,7 @@ export default function Cart(props) {
           }
         })
         shops = tempShops;
-        onUpdate(tmpIds, firebaseProducts, is_seller)
+        onUpdate(tmpIds, is_seller, prods)
       })
       .catch(function (error) {
         if (
@@ -625,72 +623,74 @@ export default function Cart(props) {
       });
   }
 
-  function onUpdate(ids, items, is_store) {
-    tempCartView = []
-    request
-      .get("product/byIds/", {
-        ids: ids,
-      })
-      .then(function (response) {
-        let idx = 0;
-        let shopProducts = [];
-        shops.forEach(shop => {
-            shopProducts = response.data.products.filter((element) => {
-              let seller = element.user.shop_name ? element.user.shop_name : element.user.real_name;
-              return shop.seller == seller;
-            });
-            let tmpProducts = shopProducts;
-
-            total = 0;
-            subTotal = 0;
-            tmpShipping = 0;
-            let shopFirebaseProducts = [];
-            firebaseProducts.filter((fbProduct) => {
-              let quantity = fbProduct.quantity;
-              let tmpProduct = tmpProducts.filter((product) => {
-                return (product.id == fbProduct.product_id);
-              });
-              if (tmpProduct && tmpProduct.length) {
-                tmpProduct = tmpProduct[0];
-                shopFirebaseProducts.push(tmpProduct);
-                subTotal +=
-                  (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
-                if (parseInt(tmpProduct.shipping_fee) > parseInt(tmpShipping)) {
-                  tmpShipping = tmpProduct.shipping_fee;
-                }
-              }
-            });
-            
-            shop.shipping = tmpShipping;
-            shop.subtotal = subTotal;
-            let tax = taxObj ? taxObj.tax_rate * subTotal : 0;
-            shop.tax = tax;
-            shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
-            
-            shop.shopHtml = processCartHtml(props, shopProducts, items, is_store);
-            processCartView(props, shop, shopFirebaseProducts);
+  function processCarts(is_store, cartProducts) {
+      shops.forEach(shop => {
+        let shopProducts = cartProducts.filter((element) => {
+          let seller = element.user.shop_name ? element.user.shop_name : element.user.real_name;
+          return shop.seller == seller;
         });
-        productLoaded = true;
-        onCartViewChanged(tempCartView);
+        let tmpProducts = shopProducts;
 
-        // onShippingChanged(tmpShipping)
-        // onSubTotalChanged(total);
-      })
-      .catch(function (error) {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
-      });
+        subTotal = 0;
+        tmpShipping = 0;
+        let shopFirebaseProducts = [];
+        firebaseProducts.filter((fbProduct) => {
+          let quantity = fbProduct.quantity;
+          let tmpProduct = tmpProducts.filter((product) => {
+            if (product.id == fbProduct.product_id) {shopFirebaseProducts.push(fbProduct);}
+            return (product.id == fbProduct.product_id);
+          });
+          if (tmpProduct && tmpProduct.length) {
+            tmpProduct = tmpProduct[0];
+            subTotal +=
+              (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
+            if (parseInt(tmpProduct.shipping_fee) > parseInt(tmpShipping)) {
+              tmpShipping = parseInt(tmpProduct.shipping_fee);
+            }
+          }
+        });
+        
+        shop.shipping = tmpShipping;
+        shop.subtotal = subTotal;
+        let tax = taxObj ? taxObj.tax_rate * subTotal : 0;
+        shop.tax = tax;
+        shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
+        shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store);
+        processCartView(props, shop, shopFirebaseProducts);
+    });
+    productLoaded = true;
+    onCartViewChanged(tempCartView);
+  }
+
+  function onUpdate(ids, is_store, cartProducts=[]) {
+    tempCartView = [];
+    if (!cartProducts.length) {
+      request
+        .get("product/byIds/", {
+          ids: ids,
+        })
+        .then(function (response) {
+          cartProducts = response.data.products;
+          processCarts(is_store, cartProducts);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    } else {
+      processCarts(is_store, cartProducts);
+    }
   }
   React.useEffect(() => {
 
@@ -764,7 +764,7 @@ export default function Cart(props) {
                   .get(url)
                   .then(function (response) {
                     onUserChanged(response.data);
-                    onUpdate(tmpIds, items, response.data.is_seller && response.data.is_approved);
+                    onUpdate(tmpIds, response.data.is_seller && response.data.is_approved, prods);
                   })
               })
               .catch(function (error) {
