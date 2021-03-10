@@ -100,7 +100,6 @@ export default function SettingStore(props) {
           .get(url)
           .then(function (response) {
             onUserChanged(response.data);
-            console.log("1");
             console.log(user.nickname);
           })
           .catch(function (error) {

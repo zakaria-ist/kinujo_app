@@ -181,7 +181,7 @@ let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
 let commissionProducts = [];
-let salesProducts = [];
+// let salesProducts = [];
 
 export default function SalesManagement(props) {
   const isFocused = useIsFocused();
@@ -260,33 +260,33 @@ export default function SalesManagement(props) {
             onCommissionLoaded(true);
           });
 
-        request
-          .get("saleProducts/" + userId + "/")
-          .then(function (response) {
-            // salesProducts = [];
-            if (response.data.saleProducts) {
-              salesProducts = response.data.saleProducts;
-            } else {
-              salesProducts = [];
-            }
-            onUpdate();
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-            onSaleLoaded(true);
-          });
+        // request
+        //   .get("saleProducts/" + userId + "/")
+        //   .then(function (response) {
+        //     // salesProducts = [];
+        //     if (response.data.saleProducts) {
+        //       salesProducts = response.data.saleProducts;
+        //     } else {
+        //       salesProducts = [];
+        //     }
+        //     onUpdate();
+        //   })
+        //   .catch(function (error) {
+        //     if (
+        //       error &&
+        //       error.response &&
+        //       error.response.data &&
+        //       Object.keys(error.response.data).length > 0
+        //     ) {
+        //       alert.warning(
+        //         error.response.data[Object.keys(error.response.data)[0]][0] +
+        //           "(" +
+        //           Object.keys(error.response.data)[0] +
+        //           ")"
+        //       );
+        //     }
+        //     onSaleLoaded(true);
+        //   });
       });
     });
   }, [isFocused]);
@@ -294,12 +294,12 @@ export default function SalesManagement(props) {
   function onUpdate(date) {
     let tmpDate = new Date();
     if (date) {
-      onDateChange(date);
       tmpDate = date;
-      onPlaceHolderDate(
-        tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
-      );
     }
+    onDateChange(tmpDate);
+    onPlaceHolderDate(
+      tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
+    );
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
         if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"]) {

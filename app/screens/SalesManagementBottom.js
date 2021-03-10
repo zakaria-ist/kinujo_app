@@ -38,50 +38,6 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
 
-// function processSaleHtml(sales) {
-//   let tmpSaleHtml = [];
-//   for (var i = 0; i < sales.length; i++) {
-//     let sale = sales[i];
-//     tmpSaleHtml.push(
-//       <TouchableWithoutFeedback key={i}>
-//         <View style={styles.commissionTabContainer}>
-//           <Text style={styles.commissionTabText}>
-//             {kanjidate.format(
-//               "{Y:4}/{M:2}/{D:2}",
-//               new Date(sale.order.created)
-//             )}
-//           </Text>
-//           <View
-//             style={{
-//               width: widthPercentageToDP("36%"),
-//               // position: "absolute",
-//               left: 0,
-//               marginLeft: widthPercentageToDP("3%"),
-//               // paddingBottom: heightPercentageToDP("2%"),
-//             }}
-//           >
-//             <Text style={styles.commissionTabText}>
-//               {sale.product_jan_code.horizontal
-//                 ? sale.product_jan_code.horizontal.product_variety.product.name
-//                 : sale.product_jan_code.vertical.product_variety.product.name}
-//             </Text>
-//           </View>
-//           <Text
-//             style={{
-//               position: "absolute",
-//               fontSize: RFValue(12),
-//               right: 0,
-//               paddingBottom: heightPercentageToDP("2%"),
-//             }}
-//           >
-//             {format.separator(sale.unit_price)}円
-//           </Text>
-//         </View>
-//       </TouchableWithoutFeedback>
-//     );
-//   }
-//   return tmpSaleHtml;
-// }
 function processSaleHtml(sales) {
   let tmpSaleHtml = [];
   for (var i = 0; i < sales.length; i++) {
@@ -181,7 +137,7 @@ let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
 let commissionProducts = [];
-let salesProducts = [];
+// let salesProducts = [];
 
 export default function SalesManagement(props) {
   const isFocused = useIsFocused();
@@ -260,33 +216,33 @@ export default function SalesManagement(props) {
             onCommissionLoaded(true);
           });
 
-        request
-          .get("saleProducts/" + userId + "/")
-          .then(function (response) {
-            // salesProducts = [];
-            if (response.data.saleProducts) {
-              salesProducts = response.data.saleProducts;
-            } else {
-              salesProducts = [];
-            }
-            onUpdate();
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-            onSaleLoaded(true);
-          });
+        // request
+        //   .get("saleProducts/" + userId + "/")
+        //   .then(function (response) {
+        //     // salesProducts = [];
+        //     if (response.data.saleProducts) {
+        //       salesProducts = response.data.saleProducts;
+        //     } else {
+        //       salesProducts = [];
+        //     }
+        //     onUpdate();
+        //   })
+        //   .catch(function (error) {
+        //     if (
+        //       error &&
+        //       error.response &&
+        //       error.response.data &&
+        //       Object.keys(error.response.data).length > 0
+        //     ) {
+        //       alert.warning(
+        //         error.response.data[Object.keys(error.response.data)[0]][0] +
+        //           "(" +
+        //           Object.keys(error.response.data)[0] +
+        //           ")"
+        //       );
+        //     }
+        //     onSaleLoaded(true);
+        //   });
       });
     });
   }, [isFocused]);
@@ -294,13 +250,12 @@ export default function SalesManagement(props) {
   function onUpdate(date) {
     let tmpDate = new Date();
     if (date) {
-      onDateChange(date);
-      console.log(date);
       tmpDate = date;
-      onPlaceHolderDate(
-        tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
-      );
     }
+    onDateChange(tmpDate);
+    onPlaceHolderDate(
+      tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
+    );
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
         if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"]) {
@@ -323,15 +278,6 @@ export default function SalesManagement(props) {
     });
     onTotalCommissionChanged(commissionTotal);
 
-
-    // let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-    //   if (!saleProduct["is_hidden"]) {
-    //     let periods = saleProduct["order"]["created"].split("-");
-    //     let year = periods[0];
-    //     let month = periods[1];
-    //     return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
-    //   }
-    // });
     let tmpSaleProducts = commissionProducts.filter(
       (commissionProduct) => {
         if (!commissionProduct["is_hidden"] && commissionProduct["is_sales"]) {
