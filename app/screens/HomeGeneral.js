@@ -41,6 +41,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
 import Format from "../lib/format";
 import firebase from "firebase/app";
+import { Notifications } from 'react-native-notifications'
 
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
@@ -124,29 +125,27 @@ export default function Home(props) {
   }
 
   async function createNotificationListeners() {
-    // If your app is in Foreground
-    notificationListener = firebase.notifications().onNotification((notification) => {
-        const localNotification = new firebase.notifications.Notification({
-          show_in_foreground: true,
-        })
-        .setNotificationId(notification.notificationId)
-        .setTitle(notification.title)
-        .setBody(notification.body)
-        .android.setChannelId("chat")
-        .android.setPriority(firebase.notifications.Android.Priority.High);
+    Notifications.setNotificationChannel({
+      channelId: 'chat',
+      name: 'Chat channel',
+      description: 'Chat channel',
+      importance: 5
+    })
 
-        firebase.notifications()
-          .displayNotification(localNotification)
-          .catch(err => console.error(err));
+    notificationListener = messaging().onMessage(({notification}) => {
+      Notifications.postLocalNotification({
+        title: notification.title,
+        body: notification.body
+      })
     });
-    //If your app is in background
-    notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
+
+    notificationOpenedListener = messaging().onNotificationOpened((notificationOpen) => {
       const { title, body } = notificationOpen.notification;
       console.log('onNotificationOpened:');
       Alert.alert(title, body);
     });
     // If your app is closed
-    const notificationOpen = await firebase.notifications().getInitialNotification();
+    const notificationOpen = await messaging().getInitialNotification();
     if (notificationOpen) {
       console.log('getInitialNotification:');
     }
