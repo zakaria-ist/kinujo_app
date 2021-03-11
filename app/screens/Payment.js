@@ -93,18 +93,24 @@ export default function Payment(props) {
                       onSpinnerChanged(false);
                       response = response.data;
                       if (response.success) {
+                        let products = props.route.params.products;
                         db.collection("users")
                           .doc(userId)
                           .collection("carts")
                           .get()
                           .then((querySnapshot) => {
                             querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(userId)
-                                .collection("carts")
-                                .doc(documentSnapshot.id)
-                                .delete()
-                                .then(() => {});
+                              products.forEach(prod => {
+                                if (prod.id == documentSnapshot.id) {
+                                  db.collection("users")
+                                    .doc(userId)
+                                    .collection("carts")
+                                    .doc(documentSnapshot.id)
+                                    .delete()
+                                    .then(() => {});
+                                }
+                              });
+                              
                             });
 
                             db.collection("sellers")
