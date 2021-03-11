@@ -363,7 +363,7 @@
 				INFOPLIST_FILE = kinujo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = "1.2.18-release";
+				MARKETING_VERSION = "1.2.19-release";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -395,7 +395,7 @@
 				INFOPLIST_FILE = kinujo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = "1.2.18-release";
+				MARKETING_VERSION = "1.2.19-release";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
