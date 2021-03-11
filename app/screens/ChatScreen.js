@@ -2239,10 +2239,10 @@ export default function ChatScreen(props) {
     
     // let date = chat.data.createdAt.split(":");
     let date = created.split(":");
-    let tmpMonth = date[1];
-    let tmpDay = date[2]; //message created at
-    let tmpHours = date[3];
-    let tmpMinutes = date[4];
+    let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
+    let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
+    let tmpHours = date[3].length > 1 ? date[3] : '0' + date[3];
+    let tmpMinutes = date[4].length > 1 ? date[4] : '0' + date[4];
     let tmpMessageID = messageID.filter((item) => {
       return item == chat.id;
     });

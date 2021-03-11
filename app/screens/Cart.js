@@ -45,7 +45,7 @@ const ratioUpWhiteArrow = width / 24 / 15;
 const ratioDownWhiteArrow = width / 24 / 10;
 const ratioRemoveIcon = width / 19 / 16;
 let firebaseProducts = [];
-let djangoProducts = [];
+// let shopProducts = [];
 let ids = [];
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -58,7 +58,7 @@ let taxObj = {};
 let productLoaded = false;
 let controller;
 export default function Cart(props) {
-  const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
+  // const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
   const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
   const [cartCount, onCartCountChanged] = useStateIfMounted(0);
   const cartItemHeight = useRef(new Animated.Value(heightPercentageToDP("50%")))
@@ -74,11 +74,12 @@ export default function Cart(props) {
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
   const [picker, onPickerChanged] = useStateIfMounted(1);
-  const [cartHtml, onCartHtmlChanged] = useStateIfMounted(<View></View>);
+  // const [cartHtml, onCartHtmlChanged] = useStateIfMounted(<View></View>);
+  const [cartView, onCartViewChanged] = useStateIfMounted([]);
   const [loaded, onLoaded] = useStateIfMounted(false);
-  const [subtotal, onSubTotalChanged] = useStateIfMounted(0);
-  const [shipping, onShippingChanged] = useStateIfMounted(0);
-  const [tax, onTaxChanged] = useStateIfMounted(0);
+  // const [subtotal, onSubTotalChanged] = useStateIfMounted(0);
+  // const [shipping, onShippingChanged] = useStateIfMounted(0);
+  // const [tax, onTaxChanged] = useStateIfMounted(0);
   const [user, onUserChanged] = useStateIfMounted({});
   let userId = 0;
   const isFocused = useIsFocused();
@@ -86,6 +87,9 @@ export default function Cart(props) {
   const [addressHtml, onAddressHtmlChanged] = useStateIfMounted([]);
   const [dropDownPickerOpen, onDropDownPickerOpen] = useStateIfMounted(false);
   const cartItems = [];
+  let shops = [];
+  let tempCartView = [];
+  let cartProducts = [];
   // if (this.controller.isOpen()) {
   //   onDropDownPickerOpen(true);
   // }
@@ -184,7 +188,7 @@ export default function Cart(props) {
       }
       return product;
     });
-    onUpdate(ids, firebaseProducts, is_store);
+    shopUpdate(ids, is_store);
   }
   function processCartHtml(props, products, maps, is_store = false) {
     productLoaded = false;
@@ -193,7 +197,6 @@ export default function Cart(props) {
     for (i = 0; i < maps.length; i++) {
       let item = maps[i];
       let tmpProducts = products.filter((product) => {
-        console.log(product.id + " = " + item.product_id);
         return product.id == item.product_id;
       });
       if (tmpProducts.length > 0) {
@@ -211,7 +214,6 @@ export default function Cart(props) {
         //   }
         // }
         tmpCartHtml.push(
-          // <TouchableWithoutFeedback onPress={() => controller.close()}>
           <TouchableWithoutFeedback>
             <View
               key={i}
@@ -283,7 +285,7 @@ export default function Cart(props) {
                   onOpen={() => {
                     for (let j = 0; j < isVis.length; j++) {
                       if (idx !== j) {
-                        isVis[j].close();
+                        //isVis[j].close();
                       }
                     }
                   }}
@@ -353,7 +355,6 @@ export default function Cart(props) {
                               } else {
                                 tmpIds = ids;
                               }
-                              console.log(firebaseProducts)
                               db.collection("users")
                                 .doc(userId.toString())
                                 .collection("carts")
@@ -365,10 +366,10 @@ export default function Cart(props) {
                                   .collection("carts")
                                   .get()
                                   .then((querySnapShot) => {
-                                    onCartCountChanged(querySnapShot.size ? querySnapShot.size : "clear");
+                                    onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
                                   });
                                 })
-                              onUpdate(tmpIds, firebaseProducts, user.is_seller && user.is_approved);
+                              shopUpdate(tmpIds, user.is_seller && user.is_approved);
                             },
                           },
                           {
@@ -392,42 +393,213 @@ export default function Cart(props) {
         );
       }
     }
-
-    console.log(tmpCartHtml);
     return tmpCartHtml;
   }
 
-  function onUpdate(ids, items, is_store) {
+  function processCartView(props, shop, shopFirebaseProducts) {
+    productLoaded = false;
+    tempCartView.push(
+      <View>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              shop.cartItemShow == true
+                ? Animated.parallel([
+                    Animated.timing(cartItemOpacity, {
+                      toValue: heightPercentageToDP("0%"),
+                      duration: 100,
+                      useNativeDriver: false,
+                    }),
+                  ]).start(() => {}, shop.cartItemShow = false, onUpdate(ids, user.is_seller && user.is_approved))
+                : Animated.parallel([
+                    Animated.timing(cartItemOpacity, {
+                      toValue: heightPercentageToDP("100%"),
+                      duration: 30000,
+                      useNativeDriver: false,
+                    }),
+                  ]).start(() => {}, shop.cartItemShow = true, onUpdate(ids, user.is_seller && user.is_approved));
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                backgroundColor: Colors.D7CCA6,
+                height: heightPercentageToDP("6%"),
+                alignItems: "center",
+                marginBottom: widthPercentageToDP("3%")
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(14),
+                  color: "white",
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+              >
+                {shop.seller}
+              </Text>
+              {shop.cartItemShow == true ? (
+                <UpArrowLogo
+                  width={18}
+                  height={18}
+                  style={styles.upWhiteArrow}
+                />
+              ) : (
+                <ArrowDownLogo
+                  width={18}
+                  height={18}
+                  style={styles.upWhiteArrow}
+                />
+              )}
+            </View>
+          </TouchableWithoutFeedback>
+
+          <Animated.View
+              style={shop.cartItemShow == true ? styles.cartAnimation : styles.none}
+            >
+            <View>
+              <View>{shop.shopHtml}</View>
+            </View>
+            <View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "flex-end",
+                  marginTop: heightPercentageToDP("2%"),
+                }}
+              >
+                <View
+                  style={{
+                    marginRight: widthPercentageToDP("10%"),
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <Text style={styles.totalText}>
+                    {Translate.t("Subtotal")}
+                  </Text>
+                  <Text style={styles.totalText}>{Translate.t("gst")}</Text>
+                  <Text style={styles.totalText}>
+                    {Translate.t("shippingFee")}
+                  </Text>
+                </View>
+                <View style={{ alignItems: "flex-end" }}>
+                  <Text style={styles.totalText}>
+                    {format.separator(shop.subtotal)}円
+                  </Text>
+                  <Text style={styles.totalText}>
+                    {format.separator(shop.tax)}円
+                  </Text>
+                  <Text style={styles.totalText}>
+                    {format.separator(shop.shipping)}円
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-end",
+                marginTop: heightPercentageToDP("2%"),
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(14),
+                  marginRight: widthPercentageToDP("15%"),
+                }}
+              >
+                {Translate.t("total")}
+              </Text>
+              <Text style={{ fontSize: RFValue(14) }}>
+                {format.separator(shop.total)}円
+              </Text>
+            </View>
+
+            <View style={styles.allTabsContainer}>
+              <TouchableWithoutFeedback
+                onPress={() => onPaymentMethodShow(!paymentMethodShow)}
+              >
+                <View
+                  style={{
+                    backgroundColor: Colors.D7CCA6,
+                    justifyContent: "center",
+                    height: heightPercentageToDP("5%"),
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: RFValue(14),
+                      color: "white",
+                      marginLeft: widthPercentageToDP("3%"),
+                    }}
+                  >
+                    {Translate.t("deliveryAddressCart")}
+                  </Text>
+
+                </View>
+              </TouchableWithoutFeedback>
+              <View
+                style={paymentMethodShow == false ? styles.none : ""}
+              >
+                {addressHtml}
+              </View>
+            </View>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                if (shopFirebaseProducts.length > 0 && selected) {
+                  props.navigation.navigate("Payment", {
+                    products: shopFirebaseProducts,
+                    address: selected,
+                    tax: taxObj.id,
+                  });
+                } else {
+                  alert.warning(
+                    Translate.t("must_have_item")
+                  );
+                }
+              }}
+            >
+              <View style={{ paddingBottom: heightPercentageToDP("5%") }}>
+                <View style={styles.orderConfirmButtonContainer}>
+                  <Text style={styles.orderConfirmButtonText}>
+                    {Translate.t("confirmOrder")}
+                  </Text>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+        </Animated.View>
+      </View>
+    );
+
+  }
+
+  function shopUpdate(tmpIds, is_seller) {
     request
       .get("product/byIds/", {
-        ids: ids,
+        ids: tmpIds,
       })
       .then(function (response) {
-        djangoProducts = response.data.products;
-        onCartHtmlChanged(
-          processCartHtml(props, djangoProducts, items, is_store)
-        );
-        productLoaded = true;
-        let tmpProducts = response.data.products;
-
-        total = 0;
-        tmpShipping = 0;
-        firebaseProducts.filter((fbProduct) => {
-          let quantity = fbProduct.quantity;
-          console.log(fbProduct)
-          let tmpProduct = tmpProducts.filter((product) => {
-            return (product.id == fbProduct.product_id);
-          });
-          tmpProduct = tmpProduct[0];
-          total +=
-            (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
-          if (tmpProduct.shipping_fee > tmpShipping) {
-            tmpShipping = tmpProduct.shipping_fee;
+        cartProducts = response.data.products;
+        let prods = response.data.products;
+        let tempShops = [];
+        prods.forEach((prod) => {
+          let t_shops = tempShops.filter((t_shop) => {
+            let seller = prod.user.shop_name ? prod.user.shop_name : prod.user.real_name;
+            return t_shop.seller == seller;
+          })
+          if (!t_shops.length) {
+            tempShops.push({
+              seller: prod.user.shop_name ? prod.user.shop_name : prod.user.real_name,
+              total: 0,
+              subtotal: 0,
+              shipping: 0,
+              tax: 0,
+              shopHtml: [],
+              cartItemShow: true
+            })
           }
-        });
-
-        onShippingChanged(tmpShipping)
-        onSubTotalChanged(total);
+        })
+        shops = tempShops;
+        onUpdate(tmpIds, is_seller)
       })
       .catch(function (error) {
         if (
@@ -444,6 +616,76 @@ export default function Cart(props) {
           );
         }
       });
+  }
+
+  function processCarts(is_store) {
+      shops.forEach(shop => {
+        let shopProducts = cartProducts.filter((element) => {
+          let seller = element.user.shop_name ? element.user.shop_name : element.user.real_name;
+          return shop.seller == seller;
+        });
+        let tmpProducts = shopProducts;
+
+        subTotal = 0;
+        tmpShipping = 0;
+        let shopFirebaseProducts = [];
+        firebaseProducts.filter((fbProduct) => {
+          let quantity = fbProduct.quantity;
+          let tmpProduct = tmpProducts.filter((product) => {
+            if (product.id == fbProduct.product_id) {shopFirebaseProducts.push(fbProduct);}
+            return (product.id == fbProduct.product_id);
+          });
+          if (tmpProduct && tmpProduct.length) {
+            tmpProduct = tmpProduct[0];
+            subTotal +=
+              (is_store ? tmpProduct.store_price : tmpProduct.price) * quantity;
+            if (parseInt(tmpProduct.shipping_fee) > parseInt(tmpShipping)) {
+              tmpShipping = parseInt(tmpProduct.shipping_fee);
+            }
+          }
+        });
+        
+        shop.shipping = tmpShipping;
+        shop.subtotal = subTotal;
+        let tax = taxObj ? taxObj.tax_rate * subTotal : 0;
+        shop.tax = tax;
+        shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
+        shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store);
+        processCartView(props, shop, shopFirebaseProducts);
+    });
+    productLoaded = true;
+    onCartViewChanged(tempCartView);
+  }
+
+  function onUpdate(ids, is_store) {
+    tempCartView = [];
+    if (!cartProducts.length) {
+      request
+        .get("product/byIds/", {
+          ids: ids,
+        })
+        .then(function (response) {
+          cartProducts = response.data.products;
+          processCarts(is_store);
+        })
+        .catch(function (error) {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
+          }
+        });
+    } else {
+      processCarts(is_store);
+    }
   }
   React.useEffect(() => {
 
@@ -486,13 +728,58 @@ export default function Cart(props) {
             });
             ids = tmpIds;
             firebaseProducts = items;
-              request
-            .get(url)
-            .then(function (response) {
-              onUserChanged(response.data);
-              onUpdate(tmpIds, items, response.data.is_seller && response.data.is_approved);
-            })
+
+            request
+              .get("product/byIds/", {
+                ids: ids,
+              })
+              .then(function (response) {
+                cartProducts = response.data.products;
+                let prods = response.data.products;
+                let tempShops = [];
+                prods.forEach((prod) => {
+                  let t_shops = tempShops.filter((t_shop) => {
+                    let seller = prod.user.shop_name ? prod.user.shop_name : prod.user.real_name;
+                    return t_shop.seller == seller;
+                  })
+                  if (!t_shops.length) {
+                    tempShops.push({
+                      seller: prod.user.shop_name ? prod.user.shop_name : prod.user.real_name,
+                      total: 0,
+                      subtotal: 0,
+                      shipping: 0,
+                      tax: 0,
+                      shopHtml: [],
+                      cartItemShow: true
+                    })
+                  }
+                })
+                shops = tempShops;
+
+                request
+                  .get(url)
+                  .then(function (response) {
+                    onUserChanged(response.data);
+                    onUpdate(tmpIds, response.data.is_seller && response.data.is_approved);
+                  })
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
           });
+          
         AsyncStorage.getItem("defaultAddress").then((address) => {
           if (address != null) {
             request.get(address).then((response) => {
@@ -639,7 +926,8 @@ export default function Cart(props) {
           overrideCartCount={cartCount}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
         />
-        <ScrollView>
+        <ScrollView>{cartView}</ScrollView>
+        {/* <ScrollView>
           <TouchableWithoutFeedback
             onPress={() => {
               cartItemShow == true
@@ -785,19 +1073,19 @@ export default function Cart(props) {
                     }}
                   >
                     {Translate.t("deliveryAddressCart")}
-                  </Text>
+                  </Text> */}
 
                   {/* <UpArrowLogo
                     width={18}
                     height={18}
                     style={styles.upWhiteArrow}
                   /> */}
-                </View>
+                {/* </View>
               </TouchableWithoutFeedback>
               <Animated.View
                 style={paymentMethodShow == false ? styles.none : ""}
               >
-                {addressHtml}
+                {addressHtml} */}
                 {/* //////Payment/////////////////////////////////////////////////////////// */}
                 {/* <View style={styles.deliveryTabContainer}>
                   <View
@@ -845,7 +1133,7 @@ export default function Cart(props) {
                   </View>
                 </View> */}
                 {/* //////Payment/////////////////////////////////////////////////////////// */}
-              </Animated.View>
+              {/* </Animated.View>
             </View>
             <TouchableWithoutFeedback
               onPress={() => {
@@ -871,7 +1159,7 @@ export default function Cart(props) {
               </View>
             </TouchableWithoutFeedback>
           </View>
-        </ScrollView>
+        </ScrollView> */}
       </View>
     </SafeAreaView>
   );
@@ -1055,9 +1343,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   cartAnimation: {
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
     paddingBottom: heightPercentageToDP("5%"),
-    borderColor: Colors.deepGrey,
+    // borderColor: Colors.deepGrey,
+    marginHorizontal: widthPercentageToDP("5%"),
   },
   none: {
     display: "none",
