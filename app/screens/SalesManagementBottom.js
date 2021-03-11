@@ -48,7 +48,7 @@ function processSaleHtml(sales) {
           <Text style={styles.commissionTabText}>
             {kanjidate.format(
               "{Y:4}/{M:2}/{D:2}",
-              new Date(sale.order.created)
+              new Date(sale.order_product.order.created)
             )}
           </Text>
           <View
@@ -61,9 +61,9 @@ function processSaleHtml(sales) {
             }}
           >
             <Text style={styles.commissionTabText}>
-              {sale.product_jan_code.horizontal
-                ? sale.product_jan_code.horizontal.product_variety.product.name
-                : sale.product_jan_code.vertical.product_variety.product.name}
+              {sale.order_product.product_jan_code.horizontal
+                ? sale.order_product.product_jan_code.horizontal.product_variety.product.name
+                : sale.order_product.product_jan_code.vertical.product_variety.product.name}
             </Text>
           </View>
           <Text
@@ -74,7 +74,7 @@ function processSaleHtml(sales) {
               paddingBottom: heightPercentageToDP("2%"),
             }}
           >
-            {format.separator(sale.unit_price)}円
+            {format.separator(sale.amount)}円
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -137,7 +137,7 @@ let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
 let commissionProducts = [];
-let salesProducts = [];
+// let salesProducts = [];
 
 export default function SalesManagement(props) {
   const isFocused = useIsFocused();
@@ -216,33 +216,33 @@ export default function SalesManagement(props) {
             onCommissionLoaded(true);
           });
 
-        request
-          .get("saleProducts/" + userId + "/")
-          .then(function (response) {
-            // salesProducts = [];
-            if (response.data.saleProducts) {
-              salesProducts = response.data.saleProducts;
-            } else {
-              salesProducts = [];
-            }
-            onUpdate();
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-            onSaleLoaded(true);
-          });
+        // request
+        //   .get("saleProducts/" + userId + "/")
+        //   .then(function (response) {
+        //     // salesProducts = [];
+        //     if (response.data.saleProducts) {
+        //       salesProducts = response.data.saleProducts;
+        //     } else {
+        //       salesProducts = [];
+        //     }
+        //     onUpdate();
+        //   })
+        //   .catch(function (error) {
+        //     if (
+        //       error &&
+        //       error.response &&
+        //       error.response.data &&
+        //       Object.keys(error.response.data).length > 0
+        //     ) {
+        //       alert.warning(
+        //         error.response.data[Object.keys(error.response.data)[0]][0] +
+        //           "(" +
+        //           Object.keys(error.response.data)[0] +
+        //           ")"
+        //       );
+        //     }
+        //     onSaleLoaded(true);
+        //   });
       });
     });
   }, [isFocused]);
@@ -250,21 +250,22 @@ export default function SalesManagement(props) {
   function onUpdate(date) {
     let tmpDate = new Date();
     if (date) {
-      onDateChange(date);
-      console.log(date);
       tmpDate = date;
-      onPlaceHolderDate(
-        tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
-      );
     }
+    onDateChange(tmpDate);
+    onPlaceHolderDate(
+      tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
+    );
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
-        let periods = commissionProduct["order_product"]["order"][
-          "created"
-        ].split("-");
-        let year = periods[0];
-        let month = periods[1];
-        return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+        if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"]) {
+          let periods = commissionProduct["order_product"]["order"][
+            "created"
+          ].split("-");
+          let year = periods[0];
+          let month = periods[1];
+          return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+        }
       }
     );
     onCommissionsChanged(tmpCommissionProducts);
@@ -276,17 +277,24 @@ export default function SalesManagement(props) {
       commissionTotal += commission.amount;
     });
     onTotalCommissionChanged(commissionTotal);
-    let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-      let periods = saleProduct["order"]["created"].split("-");
-      let year = periods[0];
-      let month = periods[1];
-      return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
-    });
+
+    let tmpSaleProducts = commissionProducts.filter(
+      (commissionProduct) => {
+        if (!commissionProduct["is_hidden"] && commissionProduct["is_sales"]) {
+          let periods = commissionProduct["order_product"]["order"][
+            "created"
+          ].split("-");
+          let year = periods[0];
+          let month = periods[1];
+          return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+        }
+      }
+    );
     onSalesChanged(tmpSaleProducts);
     onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
     let saleTotal = 0;
     tmpSaleProducts.map((sale) => {
-      saleTotal += sale.unit_price;
+      saleTotal += sale.amount;
     });
     onTotalSaleChanged(saleTotal);
 

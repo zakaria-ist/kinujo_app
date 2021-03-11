@@ -201,8 +201,8 @@ export default function ChatScreen(props) {
       });
       userId = urls[urls.length - 1];
 
-      let groupID;
-      let groupName;
+      let groupId;
+      // let groupName;
       let deleted = "delete_" + userId;
       db.collection("chat")
         .where("users", "array-contains", userId)
@@ -216,14 +216,14 @@ export default function ChatScreen(props) {
               let users = snapShot.doc.data().users;
               for (var i = 0; i < users.length; i++) {
                 if (users[i] == contactID) {
-                  groupID = snapShot.doc.id;
+                  groupId = snapShot.doc.id;
                 }
               }
             }
           });
-          if (groupID != null) {
+          if (groupId != null) {
             db.collection("chat")
-              .doc(groupID)
+              .doc(groupId)
               .set(
                 {
                   [deleted]: false,
@@ -235,7 +235,7 @@ export default function ChatScreen(props) {
             AsyncStorage.setItem(
               "chat",
               JSON.stringify({
-                groupID: groupID,
+                groupID: groupId,
                 groupName: contactName,
               })
             ).then(() => {
@@ -1952,7 +1952,8 @@ export default function ChatScreen(props) {
       return chat;
     });
 
-
+    //remove duplicates
+    // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
     let last = "";
     for(let i=0; i<chats.length; i++){
       let chat = chats[i];
@@ -2027,10 +2028,10 @@ export default function ChatScreen(props) {
       previousMessageDateElse = null;
       tmpMessageCount = 0;
 
-      let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
-      lastQuerySnapshot.forEach((snapShot)=>{
-        lastDoc = snapShot;
-      })
+      // let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
+      // lastQuerySnapshot.forEach((snapShot)=>{
+      //   lastDoc = snapShot;
+      // })
 
       // Read all message
       chatsRef.doc(groupID).update({
@@ -2042,33 +2043,33 @@ export default function ChatScreen(props) {
         .collection("messages")
         .orderBy("timeStamp", "asc");
       
-      if(lastDoc){
-        build = build.startAfter(lastDoc);
-        chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
-          querySnapShot.forEach((snapShot) => {
-            if(!old30LastDoc){
-              old30LastDoc = snapShot;
-            }
-            let tmpChats = old30Chats.filter((chat) => {
-              return chat.id == snapShot.id;
-            });
-            if (tmpChats.length == 0) {
-              old30Chats.push({
-                id: snapShot.id,
-                data: snapShot.data(),
-              });
-            } else {
-              old30Chats = old30Chats.map((chat) => {
-                if (chat.id == snapShot.id) {
-                  chat.data = snapShot.data();
-                }
-                return chat;
-              });
-            }
-          })
-          updateChats(oldChats.concat(old30Chats, chats))
-        })
-      }
+      // if(lastDoc){
+      //   build = build.startAfter(lastDoc);
+      //   chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
+      //     querySnapShot.forEach((snapShot) => {
+      //       if(!old30LastDoc){
+      //         old30LastDoc = snapShot;
+      //       }
+      //       let tmpChats = old30Chats.filter((chat) => {
+      //         return chat.id == snapShot.id;
+      //       });
+      //       if (tmpChats.length == 0) {
+      //         old30Chats.push({
+      //           id: snapShot.id,
+      //           data: snapShot.data(),
+      //         });
+      //       } else {
+      //         old30Chats = old30Chats.map((chat) => {
+      //           if (chat.id == snapShot.id) {
+      //             chat.data = snapShot.data();
+      //           }
+      //           return chat;
+      //         });
+      //       }
+      //     })
+      //     updateChats(oldChats.concat(old30Chats, chats))
+      //   })
+      // }
 
       this.unsub = build
         .onSnapshot(
@@ -2182,7 +2183,6 @@ export default function ChatScreen(props) {
     }
 
     InteractionManager.runAfterInteractions(() => {
-      console.log(groupID);
       chatsRef
         .doc(groupID)
         .get()
@@ -2239,10 +2239,10 @@ export default function ChatScreen(props) {
     
     // let date = chat.data.createdAt.split(":");
     let date = created.split(":");
-    let tmpMonth = date[1];
-    let tmpDay = date[2]; //message created at
-    let tmpHours = date[3];
-    let tmpMinutes = date[4];
+    let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
+    let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
+    let tmpHours = date[3].length > 1 ? date[3] : '0' + date[3];
+    let tmpMinutes = date[4].length > 1 ? date[4] : '0' + date[4];
     let tmpMessageID = messageID.filter((item) => {
       return item == chat.id;
     });

@@ -121,7 +121,6 @@ export default function QRCode(props) {
       setInteracted(true);
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url).then((response) => {
-          console.log(response.data);
           onUserChanged(response.data);
         });
       });
@@ -166,7 +165,7 @@ export default function QRCode(props) {
           return url;
         });
         let userId = urls[urls.length - 1];
-  
+
         buildLink(userId, "1").then(function (link) {
           console.log(link);
           onStoreLinkChanged(link);
