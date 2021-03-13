@@ -70,7 +70,6 @@ export default function Payment(props) {
       />
       <TouchableWithoutFeedback
           onPress={() => {
-            request
               fetch(paymentUrl + 'create-checkout-session/', {
                 method: 'POST',
               })

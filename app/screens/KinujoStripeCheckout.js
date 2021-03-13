@@ -41,6 +41,8 @@ export default function KinujoStripeCheckout(props) {
     const TAX = props.route.params.tax;
     const ADDRESS = props.route.params.address;
     const PRODUCTS = props.route.params.products;
+    const userId = props.route.params.userId;
+    const apiUrl = request.getApiUrl();
     console.log('CHECKOUT_SESSION_ID', CHECKOUT_SESSION_ID);
   
     React.useEffect(() => {}, []);
@@ -65,52 +67,25 @@ export default function KinujoStripeCheckout(props) {
                 }}
                 onSuccess={({ checkoutSessionId }) => {
                     console.log(`Stripe checkout session succeeded. session id: ${checkoutSessionId}.`);
-                    AsyncStorage.getItem("user").then((url) => {
-                        let urls = url.split("/");
-                        urls = urls.filter((url) => {
-                          return url;
-                        });
-                        userId = urls[urls.length - 1];
-                        request
-                            .post("pay/" + userId + "/", {
-                                checkoutSessionId: CHECKOUT_SESSION_ID,
+                    fetch(apiUrl + "pay/" + userId + "/", {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                                checkoutSessionId: checkoutSessionId,
                                 products: PRODUCTS,
                                 address: ADDRESS,
                                 tax: TAX,
                             })
-                            .then(function (response) {
-                                response = response.data;
-                                if (response.success) {
-                                    let products = PRODUCTS;
-                                    db.collection("users")
-                                    .doc(userId)
-                                    .collection("carts")
-                                    .get()
-                                    .then((querySnapshot) => {
-                                        querySnapshot.forEach((documentSnapshot) => {
-                                            products.forEach(prod => {
-                                                if (prod.id == documentSnapshot.id) {
-                                                    db.collection("users")
-                                                        .doc(userId)
-                                                        .collection("carts")
-                                                        .doc(documentSnapshot.id)
-                                                        .delete()
-                                                        .then(() => {});
-                                                }
-                                            });
-                                        });
-
-                                        db.collection("sellers")
-                                        .add({
-                                            sellers: response.sellers
-                                        })
-                                        .then(() => {
-                                            props.navigation.navigate("PurchaseCompletion");
-                                        });
-                                    });
-                                }
-                            })
-                      });
+                        })
+                        .then(function(response) {
+                            return response.json();
+                        })
+                        .then(function(response) {
+                            console.log(response.success);
+                        })
                 }}
                 onCancel={() => {
                     console.log(`Stripe checkout session cancelled.`);

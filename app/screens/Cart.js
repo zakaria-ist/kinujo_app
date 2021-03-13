@@ -549,7 +549,6 @@ export default function Cart(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 if (shopFirebaseProducts.length > 0 && selected) {
-                  request
                     fetch(paymentUrl + 'create-checkout-session/', {
                       method: 'POST',
                       headers: {
@@ -558,7 +557,6 @@ export default function Cart(props) {
                       },
                       body: JSON.stringify({amount: shop.total})
                     })
-                    
                     .then(function(response) {
                       return response.json();
                     })
@@ -566,10 +564,39 @@ export default function Cart(props) {
                       let CHECKOUT_SESSION_ID = session.sessionId;
                       props.navigation.navigate("KinujoStripeCheckout", {
                         checkoutSessionId: CHECKOUT_SESSION_ID,
-                        stripePublicKey: 'pk_test_51INa46G0snPTYlWjPqYzBnU4XeWZhXLtduZx5F1A02YnShGIvAGqRuK0J6uPECj6DME62dKsNlUb3JXQlq9zaBf300Z1eNWPIP',
+                        stripePublicKey: 'pk_test_51HKjPHIvJqFxVlDAE98cKW9H5ugaXDHTkuR18QPSw8yM3NOjYvX4V2SQzLzUb6MMqOmTTRUB2FCxjWeyv3hIUZa700ApA0gjSN',
                         products: shopFirebaseProducts,
                         address: selected,
                         tax: taxObj.id,
+                        userId: userId,
+                      });
+
+                      let products = shopFirebaseProducts;
+                      db.collection("users")
+                      .doc(userId)
+                      .collection("carts")
+                      .get()
+                      .then((querySnapshot) => {
+                          querySnapshot.forEach((documentSnapshot) => {
+                              products.forEach(prod => {
+                                  if (prod.id == documentSnapshot.id) {
+                                      db.collection("users")
+                                          .doc(userId)
+                                          .collection("carts")
+                                          .doc(documentSnapshot.id)
+                                          .delete()
+                                          .then(() => {});
+                                  }
+                              });
+                          });
+
+                          // db.collection("sellers")
+                          // .add({
+                          //     sellers: response.sellers
+                          // })
+                          // .then(() => {
+                          //     props.navigation.navigate("PurchaseCompletion");
+                          // });
                       });
                     })
                     .catch(function (error) {
