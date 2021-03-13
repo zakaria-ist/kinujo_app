@@ -84,13 +84,15 @@ export default function Cart(props) {
   const [user, onUserChanged] = useStateIfMounted({});
   let userId = 0;
   const isFocused = useIsFocused();
-  const [selected, onSelectedChanged] = useStateIfMounted("");
-  const [addressHtml, onAddressHtmlChanged] = useStateIfMounted([]);
+  // const [selected, onSelectedChanged] = useStateIfMounted("");
+  // const [addressHtml, onAddressHtmlChanged] = useStateIfMounted([]);
   const [dropDownPickerOpen, onDropDownPickerOpen] = useStateIfMounted(false);
   const cartItems = [];
   let shops = [];
   let tempCartView = [];
   let cartProducts = [];
+  let selected = "";
+  let addressHtml = [];
   // if (this.controller.isOpen()) {
   //   onDropDownPickerOpen(true);
   // }
@@ -749,6 +751,97 @@ export default function Cart(props) {
         });
         userId = urls[urls.length - 1];
 
+        AsyncStorage.getItem("defaultAddress").then((address) => {
+          if (address != null) {
+            request.get(address).then((response) => {
+              // onAddressHtmlChanged(getAddressHtml(response.data, ""));
+              // onSelectedChanged(response.data.id);
+              addressHtml = getAddressHtml(response.data, "");
+              selected = response.data.id;
+            });
+          } else {
+            request
+              .get("addressList/" + userId + "/")
+              .then((response) => {
+                if (response.data.addresses.length > 0) {
+                  // onAddressHtmlChanged(
+                  //   getAddressHtml(response.data.addresses[0], "")
+                  // );
+                  // onSelectedChanged(response.data.addresses[0].id);
+                  addressHtml = getAddressHtml(response.data.addresses[0], "");
+                  selected = response.data.addresses[0].id;
+                } else {
+                  let tmpAddresses = [];
+                  tmpAddresses.push(
+                    <View style={styles.deliveryTabContainer}>
+                      <View
+                        style={{
+                          position: "absolute",
+                          marginLeft: widthPercentageToDP("4%"),
+                        }}
+                      >
+                        <Text style={{ fontSize: RFValue(12) }}>
+                          {Translate.t("destination")}
+                        </Text>
+                        <TouchableWithoutFeedback
+                          onPress={() =>
+                            props.navigation.navigate("ShippingList", {
+                              type: "cart",
+                            })
+                          }
+                        >
+                          <View style={styles.buttonContainer}>
+                            <Text
+                              style={{ fontSize: RFValue(11), color: "white" }}
+                            >
+                              {Translate.t("change")}
+                            </Text>
+                          </View>
+                        </TouchableWithoutFeedback>
+                      </View>
+                      <View
+                        style={{
+                          // marginRight: widthPercentageToDP("5%"),
+                          position: "absolute",
+                          right: 0,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: RFValue(12),
+                            // backgroundColor: "orange",
+                            width: widthPercentageToDP("45%"),
+                          }}
+                        ></Text>
+                        <Text style={styles.textInTabContainer}></Text>
+                        <Text style={styles.textInTabContainer}></Text>
+                        <Text style={styles.textInTabContainer}></Text>
+                      </View>
+                    </View>
+                  );
+                  // onAddressHtmlChanged(tmpAddresses);
+                  addressHtml = tmpAddresses;
+                }
+              })
+              .catch((error) => {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                      "(" +
+                      Object.keys(error.response.data)[0] +
+                      ")"
+                  );
+                }
+              });
+          }
+        });
+
         db.collection("users")
           .doc(userId)
           .collection("carts")
@@ -819,74 +912,115 @@ export default function Cart(props) {
                 }
               });
           });
-      });
           
-      AsyncStorage.getItem("defaultAddress").then((address) => {
-        if (address != null) {
-          request.get(address).then((response) => {
-            onAddressHtmlChanged(getAddressHtml(response.data, ""));
-            onSelectedChanged(response.data.id);
-          });
-        } else {
+          // AsyncStorage.getItem("defaultAddress").then((address) => {
+          //   if (address != null) {
+          //     request.get(address).then((response) => {
+          //       onAddressHtmlChanged(getAddressHtml(response.data, ""));
+          //       onSelectedChanged(response.data.id);
+          //     });
+          //   } else {
+          //     request
+          //       .get("addressList/" + userId + "/")
+          //       .then((response) => {
+          //         if (response.data.addresses.length > 0) {
+          //           onAddressHtmlChanged(
+          //             getAddressHtml(response.data.addresses[0], "")
+          //           );
+          //           onSelectedChanged(response.data.addresses[0].id);
+          //         } else {
+          //           let tmpAddresses = [];
+          //           tmpAddresses.push(
+          //             <View style={styles.deliveryTabContainer}>
+          //               <View
+          //                 style={{
+          //                   position: "absolute",
+          //                   marginLeft: widthPercentageToDP("4%"),
+          //                 }}
+          //               >
+          //                 <Text style={{ fontSize: RFValue(12) }}>
+          //                   {Translate.t("destination")}
+          //                 </Text>
+          //                 <TouchableWithoutFeedback
+          //                   onPress={() =>
+          //                     props.navigation.navigate("ShippingList", {
+          //                       type: "cart",
+          //                     })
+          //                   }
+          //                 >
+          //                   <View style={styles.buttonContainer}>
+          //                     <Text
+          //                       style={{ fontSize: RFValue(11), color: "white" }}
+          //                     >
+          //                       {Translate.t("change")}
+          //                     </Text>
+          //                   </View>
+          //                 </TouchableWithoutFeedback>
+          //               </View>
+          //               <View
+          //                 style={{
+          //                   // marginRight: widthPercentageToDP("5%"),
+          //                   position: "absolute",
+          //                   right: 0,
+          //                   justifyContent: "center",
+          //                 }}
+          //               >
+          //                 <Text
+          //                   style={{
+          //                     fontSize: RFValue(12),
+          //                     // backgroundColor: "orange",
+          //                     width: widthPercentageToDP("45%"),
+          //                   }}
+          //                 ></Text>
+          //                 <Text style={styles.textInTabContainer}></Text>
+          //                 <Text style={styles.textInTabContainer}></Text>
+          //                 <Text style={styles.textInTabContainer}></Text>
+          //               </View>
+          //             </View>
+          //           );
+          //           onAddressHtmlChanged(tmpAddresses);
+          //         }
+          //       })
+          //       .catch((error) => {
+          //         if (
+          //           error &&
+          //           error.response &&
+          //           error.response.data &&
+          //           Object.keys(error.response.data).length > 0
+          //         ) {
+          //           alert.warning(
+          //             error.response.data[Object.keys(error.response.data)[0]][0] +
+          //               "(" +
+          //               Object.keys(error.response.data)[0] +
+          //               ")"
+          //           );
+          //         }
+          //       });
+          //   }
+          // });
+
           request
-            .get("addressList/" + userId + "/")
+            .get("tax_rates/")
             .then((response) => {
-              if (response.data.addresses.length > 0) {
-                onAddressHtmlChanged(
-                  getAddressHtml(response.data.addresses[0], "")
-                );
-                onSelectedChanged(response.data.addresses[0].id);
-              } else {
-                let tmpAddresses = [];
-                tmpAddresses.push(
-                  <View style={styles.deliveryTabContainer}>
-                    <View
-                      style={{
-                        position: "absolute",
-                        marginLeft: widthPercentageToDP("4%"),
-                      }}
-                    >
-                      <Text style={{ fontSize: RFValue(12) }}>
-                        {Translate.t("destination")}
-                      </Text>
-                      <TouchableWithoutFeedback
-                        onPress={() =>
-                          props.navigation.navigate("ShippingList", {
-                            type: "cart",
-                          })
-                        }
-                      >
-                        <View style={styles.buttonContainer}>
-                          <Text
-                            style={{ fontSize: RFValue(11), color: "white" }}
-                          >
-                            {Translate.t("change")}
-                          </Text>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </View>
-                    <View
-                      style={{
-                        // marginRight: widthPercentageToDP("5%"),
-                        position: "absolute",
-                        right: 0,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: RFValue(12),
-                          // backgroundColor: "orange",
-                          width: widthPercentageToDP("45%"),
-                        }}
-                      ></Text>
-                      <Text style={styles.textInTabContainer}></Text>
-                      <Text style={styles.textInTabContainer}></Text>
-                      <Text style={styles.textInTabContainer}></Text>
-                    </View>
-                  </View>
-                );
-                onAddressHtmlChanged(tmpAddresses);
+              let taxes = response.data.filter((item) => {
+                let nowDate = new Date();
+                if (item.start_date && item.end_date) {
+                  if (
+                    nowDate >= new Date(item.start_date) &&
+                    nowDate <= new Date(item.end_date)
+                  ) {
+                    return true;
+                  }
+                } else if (item.start_date) {
+                  if (nowDate >= new Date(item.start_date)) {
+                    return true;
+                  }
+                }
+                return false;
+              });
+
+              if (taxes.length > 0) {
+                taxObj = taxes[0];
               }
             })
             .catch((error) => {
@@ -904,49 +1038,8 @@ export default function Cart(props) {
                 );
               }
             });
-        }
-      });
-
-      request
-        .get("tax_rates/")
-        .then((response) => {
-          let taxes = response.data.filter((item) => {
-            let nowDate = new Date();
-            if (item.start_date && item.end_date) {
-              if (
-                nowDate >= new Date(item.start_date) &&
-                nowDate <= new Date(item.end_date)
-              ) {
-                return true;
-              }
-            } else if (item.start_date) {
-              if (nowDate >= new Date(item.start_date)) {
-                return true;
-              }
-            }
-            return false;
-          });
-
-          if (taxes.length > 0) {
-            taxObj = taxes[0];
-          }
-        })
-        .catch((error) => {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
         });
-    });
+      });
   }, [isFocused]);
 
   return (

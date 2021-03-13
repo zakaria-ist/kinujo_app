@@ -88,24 +88,24 @@ export default function KinujoStripeCheckout(props) {
                                     .get()
                                     .then((querySnapshot) => {
                                         querySnapshot.forEach((documentSnapshot) => {
-                                        products.forEach(prod => {
-                                            if (prod.id == documentSnapshot.id) {
-                                            db.collection("users")
-                                                .doc(userId)
-                                                .collection("carts")
-                                                .doc(documentSnapshot.id)
-                                                .delete()
-                                                .then(() => {});
-                                            }
-                                        });
-                                        
+                                            products.forEach(prod => {
+                                                if (prod.id == documentSnapshot.id) {
+                                                    db.collection("users")
+                                                        .doc(userId)
+                                                        .collection("carts")
+                                                        .doc(documentSnapshot.id)
+                                                        .delete()
+                                                        .then(() => {});
+                                                }
+                                            });
                                         });
 
                                         db.collection("sellers")
                                         .add({
-                                        sellers: response.sellers
-                                        }).then(() => {
-                                        props.navigation.navigate("PurchaseCompletion");
+                                            sellers: response.sellers
+                                        })
+                                        .then(() => {
+                                            props.navigation.navigate("PurchaseCompletion");
                                         });
                                     });
                                 }
