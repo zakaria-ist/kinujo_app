@@ -58,52 +58,59 @@ export default function KinujoStripeCheckout(props) {
             />
             <StripeCheckout
                 stripePublicKey={STRIPE_PUBLIC_KEY}
-                successUrl={paymentUrl + 'success?sc_checkout=success&sc_sid=' + CHECKOUT_SESSION_ID}
-                cancelUrl={paymentUrl + 'cancelled?sc_checkout=cancel'}
+                // successUrl={paymentUrl + 'success?sc_checkout=success&sc_sid=' + CHECKOUT_SESSION_ID}
+                // cancelUrl={paymentUrl + 'cancelled?sc_checkout=cancel'}
                 checkoutSessionInput={{
                     sessionId: CHECKOUT_SESSION_ID,
                 }}
                 onSuccess={({ checkoutSessionId }) => {
                     console.log(`Stripe checkout session succeeded. session id: ${checkoutSessionId}.`);
-                    request
-                        .post("pay/" + userId + "/", {
-                            checkoutSessionId: CHECKOUT_SESSION_ID,
-                            products: PRODUCTS,
-                            address: ADDRESS,
-                            tax: TAX,
-                        })
-                        .then(function (response) {
-                            response = response.data;
-                            if (response.success) {
-                                let products = PRODUCTS;
-                                db.collection("users")
-                                .doc(userId)
-                                .collection("carts")
-                                .get()
-                                .then((querySnapshot) => {
-                                    querySnapshot.forEach((documentSnapshot) => {
-                                    products.forEach(prod => {
-                                        if (prod.id == documentSnapshot.id) {
-                                        db.collection("users")
-                                            .doc(userId)
-                                            .collection("carts")
-                                            .doc(documentSnapshot.id)
-                                            .delete()
-                                            .then(() => {});
-                                        }
-                                    });
-                                    
-                                    });
+                    AsyncStorage.getItem("user").then((url) => {
+                        let urls = url.split("/");
+                        urls = urls.filter((url) => {
+                          return url;
+                        });
+                        userId = urls[urls.length - 1];
+                        request
+                            .post("pay/" + userId + "/", {
+                                checkoutSessionId: CHECKOUT_SESSION_ID,
+                                products: PRODUCTS,
+                                address: ADDRESS,
+                                tax: TAX,
+                            })
+                            .then(function (response) {
+                                response = response.data;
+                                if (response.success) {
+                                    let products = PRODUCTS;
+                                    db.collection("users")
+                                    .doc(userId)
+                                    .collection("carts")
+                                    .get()
+                                    .then((querySnapshot) => {
+                                        querySnapshot.forEach((documentSnapshot) => {
+                                        products.forEach(prod => {
+                                            if (prod.id == documentSnapshot.id) {
+                                            db.collection("users")
+                                                .doc(userId)
+                                                .collection("carts")
+                                                .doc(documentSnapshot.id)
+                                                .delete()
+                                                .then(() => {});
+                                            }
+                                        });
+                                        
+                                        });
 
-                                    db.collection("sellers")
-                                    .add({
-                                    sellers: response.sellers
-                                    }).then(() => {
-                                    props.navigation.navigate("PurchaseCompletion");
+                                        db.collection("sellers")
+                                        .add({
+                                        sellers: response.sellers
+                                        }).then(() => {
+                                        props.navigation.navigate("PurchaseCompletion");
+                                        });
                                     });
-                                });
-                            }
-                        })
+                                }
+                            })
+                      });
                 }}
                 onCancel={() => {
                     console.log(`Stripe checkout session cancelled.`);
