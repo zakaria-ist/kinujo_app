@@ -51,6 +51,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
+const paymentUrl = request.getPaymentUrl();
 const win = Dimensions.get("window");
 const ratioAdd = win.width / 21 / 14;
 const ratioRemove = win.width / 20 / 16;
@@ -59,7 +60,7 @@ let productLoaded = false;
 let controller;
 export default function Cart(props) {
   // const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
-  const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
+  // const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
   const [cartCount, onCartCountChanged] = useStateIfMounted(0);
   const cartItemHeight = useRef(new Animated.Value(heightPercentageToDP("50%")))
     .current;
@@ -214,7 +215,7 @@ export default function Cart(props) {
         //   }
         // }
         tmpCartHtml.push(
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback key={product.name}>
             <View
               key={i}
               style={{
@@ -240,7 +241,7 @@ export default function Cart(props) {
                   円
                 </Text>
                 <Text style={styles.cartTabText}>{item.name}</Text>
-                <Text style={styles.cartTabText}>{product.shipping_fee}円</Text>
+                {/* <Text style={styles.cartTabText}>{product.shipping_fee}円</Text> */}
               </View>
               <View style={styles.tabRightContainer}>
                 <Text style={styles.cartTabText}>{Translate.t("unit")}</Text>
@@ -399,7 +400,7 @@ export default function Cart(props) {
   function processCartView(props, shop, shopFirebaseProducts) {
     productLoaded = false;
     tempCartView.push(
-      <View>
+      <View key={shop.seller}>
           <TouchableWithoutFeedback
             onPress={() => {
               shop.cartItemShow == true
@@ -516,7 +517,7 @@ export default function Cart(props) {
 
             <View style={styles.allTabsContainer}>
               <TouchableWithoutFeedback
-                onPress={() => onPaymentMethodShow(!paymentMethodShow)}
+                // onPress={() => onPaymentMethodShow(!paymentMethodShow)}
               >
                 <View
                   style={{
@@ -538,7 +539,7 @@ export default function Cart(props) {
                 </View>
               </TouchableWithoutFeedback>
               <View
-                style={paymentMethodShow == false ? styles.none : ""}
+                // style={paymentMethodShow == false ? styles.none : ""}
               >
                 {addressHtml}
               </View>
@@ -546,11 +547,50 @@ export default function Cart(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 if (shopFirebaseProducts.length > 0 && selected) {
-                  props.navigation.navigate("Payment", {
-                    products: shopFirebaseProducts,
-                    address: selected,
-                    tax: taxObj.id,
-                  });
+                  request
+                    fetch(paymentUrl + 'create-checkout-session/', {
+                      method: 'POST',
+                      headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({amount: shop.total})
+                    })
+                    
+                    .then(function(response) {
+                      return response.json();
+                    })
+                    .then(function(session) {
+                      let CHECKOUT_SESSION_ID = session.sessionId;
+                      props.navigation.navigate("KinujoStripeCheckout", {
+                        checkoutSessionId: CHECKOUT_SESSION_ID,
+                        stripePublicKey: 'pk_test_51INa46G0snPTYlWjPqYzBnU4XeWZhXLtduZx5F1A02YnShGIvAGqRuK0J6uPECj6DME62dKsNlUb3JXQlq9zaBf300Z1eNWPIP',
+                        products: shopFirebaseProducts,
+                        address: selected,
+                        tax: taxObj.id,
+                      });
+                    })
+                    .catch(function (error) {
+                      console.log(error);
+                      // onSpinnerChanged(false);
+                      if (
+                        error &&
+                        error.response &&
+                        error.response.data &&
+                        Object.keys(error.response.data).length > 0
+                      ) {
+                        alert.warning(
+                          error.response.data[
+                            Object.keys(error.response.data)[0]
+                          ][0]
+                        );
+                      }
+                    });
+                  // props.navigation.navigate("Payment", {
+                  //   products: shopFirebaseProducts,
+                  //   address: selected,
+                  //   tax: taxObj.id,
+                  // });
                 } else {
                   alert.warning(
                     Translate.t("must_have_item")
@@ -779,133 +819,133 @@ export default function Cart(props) {
                 }
               });
           });
+      });
           
-        AsyncStorage.getItem("defaultAddress").then((address) => {
-          if (address != null) {
-            request.get(address).then((response) => {
-              onAddressHtmlChanged(getAddressHtml(response.data, ""));
-              onSelectedChanged(response.data.id);
-            });
-          } else {
-            request
-              .get("addressList/" + userId + "/")
-              .then((response) => {
-                if (response.data.addresses.length > 0) {
-                  onAddressHtmlChanged(
-                    getAddressHtml(response.data.addresses[0], "")
-                  );
-                  onSelectedChanged(response.data.addresses[0].id);
-                } else {
-                  let tmpAddresses = [];
-                  tmpAddresses.push(
-                    <View style={styles.deliveryTabContainer}>
-                      <View
-                        style={{
-                          position: "absolute",
-                          marginLeft: widthPercentageToDP("4%"),
-                        }}
+      AsyncStorage.getItem("defaultAddress").then((address) => {
+        if (address != null) {
+          request.get(address).then((response) => {
+            onAddressHtmlChanged(getAddressHtml(response.data, ""));
+            onSelectedChanged(response.data.id);
+          });
+        } else {
+          request
+            .get("addressList/" + userId + "/")
+            .then((response) => {
+              if (response.data.addresses.length > 0) {
+                onAddressHtmlChanged(
+                  getAddressHtml(response.data.addresses[0], "")
+                );
+                onSelectedChanged(response.data.addresses[0].id);
+              } else {
+                let tmpAddresses = [];
+                tmpAddresses.push(
+                  <View style={styles.deliveryTabContainer}>
+                    <View
+                      style={{
+                        position: "absolute",
+                        marginLeft: widthPercentageToDP("4%"),
+                      }}
+                    >
+                      <Text style={{ fontSize: RFValue(12) }}>
+                        {Translate.t("destination")}
+                      </Text>
+                      <TouchableWithoutFeedback
+                        onPress={() =>
+                          props.navigation.navigate("ShippingList", {
+                            type: "cart",
+                          })
+                        }
                       >
-                        <Text style={{ fontSize: RFValue(12) }}>
-                          {Translate.t("destination")}
-                        </Text>
-                        <TouchableWithoutFeedback
-                          onPress={() =>
-                            props.navigation.navigate("ShippingList", {
-                              type: "cart",
-                            })
-                          }
-                        >
-                          <View style={styles.buttonContainer}>
-                            <Text
-                              style={{ fontSize: RFValue(11), color: "white" }}
-                            >
-                              {Translate.t("change")}
-                            </Text>
-                          </View>
-                        </TouchableWithoutFeedback>
-                      </View>
-                      <View
-                        style={{
-                          // marginRight: widthPercentageToDP("5%"),
-                          position: "absolute",
-                          right: 0,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: RFValue(12),
-                            // backgroundColor: "orange",
-                            width: widthPercentageToDP("45%"),
-                          }}
-                        ></Text>
-                        <Text style={styles.textInTabContainer}></Text>
-                        <Text style={styles.textInTabContainer}></Text>
-                        <Text style={styles.textInTabContainer}></Text>
-                      </View>
+                        <View style={styles.buttonContainer}>
+                          <Text
+                            style={{ fontSize: RFValue(11), color: "white" }}
+                          >
+                            {Translate.t("change")}
+                          </Text>
+                        </View>
+                      </TouchableWithoutFeedback>
                     </View>
-                  );
-                  onAddressHtmlChanged(tmpAddresses);
-                }
-              })
-              .catch((error) => {
-                if (
-                  error &&
-                  error.response &&
-                  error.response.data &&
-                  Object.keys(error.response.data).length > 0
-                ) {
-                  alert.warning(
-                    error.response.data[Object.keys(error.response.data)[0]][0] +
-                      "(" +
-                      Object.keys(error.response.data)[0] +
-                      ")"
-                  );
-                }
-              });
+                    <View
+                      style={{
+                        // marginRight: widthPercentageToDP("5%"),
+                        position: "absolute",
+                        right: 0,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: RFValue(12),
+                          // backgroundColor: "orange",
+                          width: widthPercentageToDP("45%"),
+                        }}
+                      ></Text>
+                      <Text style={styles.textInTabContainer}></Text>
+                      <Text style={styles.textInTabContainer}></Text>
+                      <Text style={styles.textInTabContainer}></Text>
+                    </View>
+                  </View>
+                );
+                onAddressHtmlChanged(tmpAddresses);
+              }
+            })
+            .catch((error) => {
+              if (
+                error &&
+                error.response &&
+                error.response.data &&
+                Object.keys(error.response.data).length > 0
+              ) {
+                alert.warning(
+                  error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                );
+              }
+            });
+        }
+      });
+
+      request
+        .get("tax_rates/")
+        .then((response) => {
+          let taxes = response.data.filter((item) => {
+            let nowDate = new Date();
+            if (item.start_date && item.end_date) {
+              if (
+                nowDate >= new Date(item.start_date) &&
+                nowDate <= new Date(item.end_date)
+              ) {
+                return true;
+              }
+            } else if (item.start_date) {
+              if (nowDate >= new Date(item.start_date)) {
+                return true;
+              }
+            }
+            return false;
+          });
+
+          if (taxes.length > 0) {
+            taxObj = taxes[0];
+          }
+        })
+        .catch((error) => {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
+            );
           }
         });
-
-        request
-          .get("tax_rates/")
-          .then((response) => {
-            let taxes = response.data.filter((item) => {
-              let nowDate = new Date();
-              if (item.start_date && item.end_date) {
-                if (
-                  nowDate >= new Date(item.start_date) &&
-                  nowDate <= new Date(item.end_date)
-                ) {
-                  return true;
-                }
-              } else if (item.start_date) {
-                if (nowDate >= new Date(item.start_date)) {
-                  return true;
-                }
-              }
-              return false;
-            });
-
-            if (taxes.length > 0) {
-              taxObj = taxes[0];
-            }
-          })
-          .catch((error) => {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-          });
-      });
     });
   }, [isFocused]);
 
