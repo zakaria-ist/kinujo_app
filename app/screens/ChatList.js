@@ -236,7 +236,7 @@ export default function ChatList(props) {
         }
       }
     }
-    processChat(chats, ownUserID);
+    processChat(chats, ownUserID, false);
 
     chats = [];
     for (let i=0; i<tmpSnapshots.length; i++) {
@@ -270,10 +270,10 @@ export default function ChatList(props) {
         }
       }
     }
-    processChat(chats, ownUserID);
+    processChat(chats, ownUserID, true);
   }
 
-  function processChat(tmpChats, ownUserID) {
+  function processChat(tmpChats, ownUserID, updateUnread = false) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
@@ -567,7 +567,10 @@ export default function ChatList(props) {
       });
       onChatHtmlChanged(resultChatHtml);
     });
-    setTotalUnread(unreadMessage);
+    
+    if(updateUnread){
+      setTotalUnread(unreadMessage);
+    }
   }
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");

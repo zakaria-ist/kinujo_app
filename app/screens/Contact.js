@@ -414,7 +414,7 @@ export default function Contact(props) {
     onGroupHtmlChanged(processGroupHtml(props, groups, userId));
   }
 
-  async function getBlock(){
+  async function getBlock(ownId){
     let snapShot = await db
     .collection("users")
     .doc(ownId)
@@ -455,7 +455,7 @@ export default function Contact(props) {
             }
           });
 
-          getBlock().then(()=>{
+          getBlock(userId).then(()=>{
             request
             .get("user/byIds/", {
               ids: ids,
