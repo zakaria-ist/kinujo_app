@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     borderTopColor: "transparent",
     borderBottomColor: "transparent",
     borderColor: "#fff",
-    marginTop: heightPercentageToDP("3%"),
+    bottom: -heightPercentageToDP("2%"),
   },
   left_triangle: {
     borderLeftWidth: 0,

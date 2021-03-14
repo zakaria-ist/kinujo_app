@@ -167,6 +167,7 @@ export default function ChatScreen(props) {
   const insets = useSafeAreaInsets();
   const myTimeZone = Localization.timezone;
 
+
   function findParams(data, param) {
     let tmps = data.split("?");
     if (tmps.length > 0) {
