@@ -64,6 +64,7 @@ import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
 import ChatContact from "../Screens/ChatContact";
 import FavoriteChat from "../Screens/FavoriteChat";
 import ProductList from "../Screens/ProductList";
+import KinujoStripeCheckout from "../Screens/KinujoStripeCheckout";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
@@ -2097,6 +2098,10 @@ export default function LoginStack() {
         <Stack.Screen
           name="ExhibitedProductList"
           component={ExhibitedProductList}
+        />
+        <Stack.Screen
+          name="KinujoStripeCheckout"
+          component={KinujoStripeCheckout}
         />
         {/* <Stack.Screen name="HomeStoreList" component={HomeStoreList} /> */}
       </Stack.Navigator>
