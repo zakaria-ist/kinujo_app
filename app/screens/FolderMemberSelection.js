@@ -42,6 +42,7 @@ if (!firebase.apps.length) {
 let ids = [];
 let tmpFriend = [];
 let tmpFriendIds = [];
+let selectedGroups = [];
 const db = firebase.firestore();
 const request = new Request();
 const alert = new CustomAlert();
@@ -54,8 +55,9 @@ const ratioNext = win.width / 38 / 8;
 export default function FolderMemberSelection(props) {
   const isFocused = useIsFocused();
   const [friendChatShow, onFriendChatShowChanged] = useStateIfMounted(true);
-  const [groupChatShow, onGroupChatShowChanged] = useStateIfMounted(true);
+  const [groupChatShow, onGroupChatShowChanged] = useStateIfMounted(false);
   const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
+  const [groupHtml, onGroupHtmlChanged] = useStateIfMounted(<View></View>);
   const [loaded, onLoaded] = useStateIfMounted(false);
   const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const groupChatOpacity = useRef(
@@ -70,6 +72,55 @@ export default function FolderMemberSelection(props) {
   const friendChatHeight = useRef(
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
+
+
+  function getID(url) {
+    let urls = url.split("/");
+    urls = urls.filter((url) => {
+      return url;
+    });
+    tmpUserId = urls[urls.length - 1];
+    return tmpUserId;
+  }
+
+  async function populateGroup() {
+    let url = await AsyncStorage.getItem("user");
+    userId = getID(url);
+    let querySnapshot = await db
+      .collection("chat")
+      .where("users", "array-contains", String(userId))
+      .get();
+
+    let ids = [];
+    let items = [];
+    let total = 0;
+    let groups = [];
+    querySnapshot.forEach((documentSnapshot) => {
+      if (
+        documentSnapshot.data().users.length > 2 ||
+        documentSnapshot.data().type == "group"
+      ) {
+        groups.push({
+          id: documentSnapshot.id,
+          name: documentSnapshot.data().groupName,
+          data: documentSnapshot.data(),
+        });
+        total += 1;
+      }
+    });
+    let finalGroups = [];
+    for (i = 0; i < groups.length; i++) {
+      let group = groups[i];
+      images = await request.post("user/images", {
+        users: groups[i].data.users,
+      });
+      group["images"] = images.data.images;
+      finalGroups.push(group);
+    }
+    globalGroups = finalGroups;
+    onGroupHtmlChanged(processGroupHtml(props, groups, userId));
+  }
+
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       ids = [];
@@ -180,10 +231,13 @@ export default function FolderMemberSelection(props) {
           tmpFriendIds.map((id) => {});
         });
       });
+
+      populateGroup();
     });
 
     if(!isFocused){
       onUserHtmlChanged(<View></View>)
+      onGroupHtmlChanged(<View></View>)
     }
   }, [isFocused]);
   function onValueChange(friendID) {
@@ -310,6 +364,46 @@ export default function FolderMemberSelection(props) {
     });
     return tmpUserHtml;
   }
+  function processGroupHtml(props, groups, userId){
+    let html = [];
+    groups.map((group) => {
+      html.push(
+        <View key={group.id} style={styles.tabContainer}>
+          <Image
+            style={{
+              width: RFValue(40),
+              height: RFValue(40),
+              borderRadius: win.width / 2,
+              backgroundColor: Colors.DCDCDC,
+            }}
+          />
+          <Text style={styles.tabText}>{group['name']}</Text>
+          <View style={styles.checkBoxContainer}>
+            <CheckBox
+              color={Colors.E6DADE}
+              uncheckedColor={Colors.E6DADE}
+              status={selectedGroups.filter((group2) => {
+                return group.id == group2.id
+              }).length > 0 ? "checked" : "unchecked"}
+              onValueChange={() => {
+                if(selectedGroups.filter((group2) => {
+                  return group2.id == group.id
+                }).length > 0){
+                  selectedGroups = selectedGroups.filter((group2) => {
+                    return group2.id != group.id
+                  })
+                } else {
+                  selectedGroups.push(group);
+                }
+                console.log(selectedGroups)
+                onGroupHtmlChanged(processGroupHtml(props, groups, userId));
+              }}
+            />
+          </View>
+        </View>);
+    })
+    return html;
+  }
   function finishSelect() {
     let selectedId = [];
     // console.log(tmpFriend);
@@ -318,7 +412,19 @@ export default function FolderMemberSelection(props) {
         selectedId.push(String(friend.id));
       }
     });
-    AsyncStorage.setItem("ids", JSON.stringify(selectedId)).then(() => {
+
+    selectedGroups.map((group) => {
+      selectedId = selectedId.concat(group.data.users)
+    })
+
+    finalSelectedId = [];
+    selectedId.map((id) => {
+      if(!finalSelectedId.includes(id)){
+        finalSelectedId.push(id);
+      }
+    })
+
+    AsyncStorage.setItem("ids", JSON.stringify(finalSelectedId)).then(() => {
       props.navigation.goBack();
     });
   }
@@ -375,7 +481,7 @@ export default function FolderMemberSelection(props) {
             />
           </View>
         </View>
-        {/* <TouchableWithoutFeedback
+        <TouchableWithoutFeedback
           onPress={() => {
             groupChatShow == true
               ? Animated.parallel([
@@ -429,74 +535,17 @@ export default function FolderMemberSelection(props) {
               <NextArrow style={styles.nextIcon} />
             )}
           </View>
-        </TouchableWithoutFeedback> */}
-{/*
+        </TouchableWithoutFeedback>
+
         <Animated.View
-          style={{
+          style={!groupChatShow ? {display: 'none'} : {
             marginTop: heightPercentageToDP(".5%"),
             marginLeft: widthPercentageToDP("1%"),
-
             opacity: groupChatOpacity,
           }}
         >
-          <View style={styles.tabContainer}>
-            <Image
-              style={{
-                width: RFValue(40),
-                height: RFValue(40),
-                borderRadius: win.width / 2,
-                backgroundColor: Colors.DCDCDC,
-              }}
-            />
-            <Text style={styles.tabText}>name</Text>
-            <View style={styles.checkBoxContainer}>
-              <Checkbox
-                color={Colors.E6DADE}
-                uncheckedColor={Colors.E6DADE}
-                status={checked ? "checked" : "unchecked"}
-                onPress={() => onCheckedChanged(!checked)}
-              />
-            </View>
-          </View>
-          <View style={styles.tabContainer}>
-            <Image
-              style={{
-                width: RFValue(40),
-                height: RFValue(40),
-                borderRadius: win.width / 2,
-                backgroundColor: Colors.DCDCDC,
-              }}
-            />
-            <Text style={styles.tabText}>name</Text>
-            <View style={styles.checkBoxContainer}>
-              <Checkbox
-                color={Colors.E6DADE}
-                uncheckedColor={Colors.E6DADE}
-                status={checked ? "checked" : "unchecked"}
-                onPress={() => onCheckedChanged(!checked)}
-              />
-            </View>
-          </View>
-          <View style={styles.tabContainer}>
-            <Image
-              style={{
-                width: RFValue(40),
-                height: RFValue(40),
-                borderRadius: win.width / 2,
-                backgroundColor: Colors.DCDCDC,
-              }}
-            />
-            <Text style={styles.tabText}>name</Text>
-            <View style={styles.checkBoxContainer}>
-              <Checkbox
-                color={Colors.E6DADE}
-                uncheckedColor={Colors.E6DADE}
-                status={checked ? "checked" : "unchecked"}
-                onPress={() => onCheckedChanged(!checked)}
-              />
-            </View>
-          </View>
-        </Animated.View> */}
+          {groupHtml}
+        </Animated.View>
         <TouchableWithoutFeedback
           onPress={() => {
             friendChatShow == true
@@ -561,7 +610,7 @@ export default function FolderMemberSelection(props) {
             {userHtml}
           </View>
         </View>
-        {/* <Animated.View
+        <Animated.View
           style={{
             marginTop: heightPercentageToDP(".5%"),
             marginLeft: widthPercentageToDP("1%"),
@@ -579,15 +628,15 @@ export default function FolderMemberSelection(props) {
             />
             <Text style={styles.tabText}>name</Text>
             <View style={styles.checkBoxContainer}>
-              <Checkbox
+              <CheckBox
                 color={Colors.E6DADE}
                 uncheckedColor={Colors.E6DADE}
-                status={checked ? "checked" : "unchecked"}
-                onPress={() => onCheckedChanged(!checked)}
+                status={false ? "checked" : "unchecked"}
+                onPress={() => onCheckedChanged(!false)}
               />
             </View>
           </View>
-        </Animated.View> */}
+        </Animated.View>
       </View>
       </ScrollView>
     </SafeAreaView>
