@@ -11,6 +11,7 @@ const db = firebase.firestore();
 const base = "kinujo-develop.c2sg.asia";
 // const base = "kinujo-release.c2sg.asia";
 // const base = "http://192.168.0.107:8000";
+let payment = "https://" + base + "/payments/";
 let api = "https://" + base + "/api/";
 let httpApi = "http://" + base + "/api/";
 
@@ -21,6 +22,10 @@ class Request {
 
   getApiUrl(){
     return api;
+  }
+
+  getPaymentUrl(){
+    return payment;
   }
 
   async get(url, params, headers = {}) {

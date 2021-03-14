@@ -1,5 +1,7 @@
 import React from "react";
 import { InteractionManager } from 'react-native';
+// import { WebView } from 'react-native-webview';
+// import StripeCheckout from 'react-native-stripe-checkout-webview';
 
 import {
   StyleSheet,
@@ -34,6 +36,7 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import Spinner from "react-native-loading-spinner-overlay";
+// import KinujoStripeCheckout from "./KinujoStripeCheckout";
 
 const request = new Request();
 const alert = new CustomAlert();
@@ -41,6 +44,7 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.firestore();
+const paymentUrl = request.getPaymentUrl();
 
 export default function Payment(props) {
   const [card, onCardChanged] = useStateIfMounted({});
@@ -64,7 +68,53 @@ export default function Payment(props) {
         }}
         text={Translate.t("payment")}
       />
-      <View>
+      <TouchableWithoutFeedback
+          onPress={() => {
+              fetch(paymentUrl + 'create-checkout-session/', {
+                method: 'POST',
+              })
+              
+              .then(function(response) {
+                return response.json();
+              })
+              .then(function(session) {
+                let CHECKOUT_SESSION_ID = session.sessionId;
+                props.navigation.navigate("KinujoStripeCheckout", {
+                  checkoutSessionId: CHECKOUT_SESSION_ID,
+                  stripePublicKey: 'pk_test_51INa46G0snPTYlWjPqYzBnU4XeWZhXLtduZx5F1A02YnShGIvAGqRuK0J6uPECj6DME62dKsNlUb3JXQlq9zaBf300Z1eNWPIP',
+                });
+              })
+              .catch(function (error) {
+                console.log(error);
+                onSpinnerChanged(false);
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[
+                      Object.keys(error.response.data)[0]
+                    ][0]
+                  );
+                }
+              });
+          }}
+        >
+          <View style={{ paddingBottom: heightPercentageToDP("10%") }}>
+            <View style={styles.orderConfirmButtonContainer}>
+              <Text style={styles.orderConfirmButtonText}>
+                {Translate.t("confirmPayment")}
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      {/* <WebView
+        source={{ uri: paymentUrl + 'pay/' }}
+        style={{ marginTop: 20, height: heightPercentageToDP("80%") }}
+      /> */}
+      {/* <View>
         <CreditCardInput
           onChange={(form) => {
             onCardChanged(form);
@@ -171,7 +221,7 @@ export default function Payment(props) {
             </View>
           </View>
         </TouchableWithoutFeedback>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
