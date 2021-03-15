@@ -1,19 +1,10 @@
 import React from "react";
-import { WebView } from 'react-native-webview';
 import StripeCheckout from 'react-native-stripe-checkout-webview';
 import {
     StyleSheet,
-    // Text,
-    // Button,
-    // Image,
-    // View,
-    // Dimensions,
-    // TouchableWithoutFeedback,
     SafeAreaView,
-    // Animated,
-    // ScrollView,
   } from "react-native";
-// import Spinner from "react-native-loading-spinner-overlay";
+import { useStateIfMounted } from "use-state-if-mounted";
 import {
     widthPercentageToDP,
     heightPercentageToDP,
@@ -21,7 +12,6 @@ import {
 import { Colors } from "../assets/Colors.js";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
-// import CustomAlert from "../lib/alert";
 import Translate from "../assets/Translates/Translate";
 import Request from "../lib/request";
 import { firebaseConfig } from "../../firebaseConfig.js";
@@ -30,67 +20,122 @@ import "firebase/firestore";
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const db = firebase.firestore();
+const DB = firebase.firestore();
 const request = new Request();
-const paymentUrl = request.getPaymentUrl();
 
 
 export default function KinujoStripeCheckout(props) {
+    const [cartCount, onCartCountChanged] = useStateIfMounted(0);
     const CHECKOUT_SESSION_ID = props.route.params.checkoutSessionId;
     const STRIPE_PUBLIC_KEY = props.route.params.stripePublicKey;
     const TAX = props.route.params.tax;
     const ADDRESS = props.route.params.address;
     const PRODUCTS = props.route.params.products;
-    const userId = props.route.params.userId;
-    const apiUrl = request.getApiUrl();
-    console.log('CHECKOUT_SESSION_ID', CHECKOUT_SESSION_ID);
+    const USERID = props.route.params.userId;
+    const APIURL = request.getApiUrl();
   
     React.useEffect(() => {}, []);
+
+    const KinujoCheckout = ({ STRIPE_PUBLIC_KEY, CHECKOUT_SESSION_ID, PRODUCTS, ADDRESS, TAX, USERID, APIURL, DB}) => (
+        <StripeCheckout
+            stripePublicKey={STRIPE_PUBLIC_KEY}
+            checkoutSessionInput={{
+                sessionId: CHECKOUT_SESSION_ID,
+            }}
+            onSuccess={({ checkoutSessionId }) => {
+                console.log(`Stripe checkout session succeeded. session id: ${checkoutSessionId}.`);
+                let seller = '';
+                fetch(APIURL + "pay/" + USERID + "/", {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                            checkoutSessionId: CHECKOUT_SESSION_ID,
+                            products: PRODUCTS,
+                            address: ADDRESS,
+                            tax: TAX,
+                        })
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(response) {
+                        console.log(response.success);
+                        seller = response.sellers;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+                    DB.collection("users")
+                    .doc(USERID)
+                    .collection("carts")
+                    .get()
+                    .then((querySnapshot) => {
+                        querySnapshot.forEach((documentSnapshot) => {
+                            PRODUCTS.forEach(prod => {
+                                if (prod.id == documentSnapshot.id) {
+                                    DB.collection("users")
+                                        .doc(USERID)
+                                        .collection("carts")
+                                        .doc(documentSnapshot.id)
+                                        .delete()
+                                        .then(() => {});
+                                }
+                            });
+                        });
+
+                        DB.collection("users")
+                            .doc(USERID.toString())
+                            .collection("carts")
+                            .get()
+                            .then((querySnapShot) => {
+                                //onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                            });
+                        if (seller != '') {
+                            DB.collection("sellers")
+                                .add({
+                                    sellers: seller
+                                })
+                                .then(() => {
+                                });
+                        }
+                    });
+            }}
+            onCancel={() => {
+                console.log(`Stripe checkout session cancelled.`);
+            }}
+        />
+    );
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <CustomHeader
                 onBack={() => {
                     props.navigation.goBack();
                 }}
+                onCartCount={(count) => {
+                    onCartCountChanged(count);
+                }}
+                overrideCartCount={cartCount}
                 onFavoritePress={() => props.navigation.navigate("Favorite")}
                 onPress={() => {
                     props.navigation.navigate("Cart");
                 }}
                 text={Translate.t("payment")}
             />
-            <StripeCheckout
-                stripePublicKey={STRIPE_PUBLIC_KEY}
-                // successUrl={paymentUrl + 'success?sc_checkout=success&sc_sid=' + CHECKOUT_SESSION_ID}
-                // cancelUrl={paymentUrl + 'cancelled?sc_checkout=cancel'}
-                checkoutSessionInput={{
-                    sessionId: CHECKOUT_SESSION_ID,
-                }}
-                onSuccess={({ checkoutSessionId }) => {
-                    console.log(`Stripe checkout session succeeded. session id: ${checkoutSessionId}.`);
-                    fetch(apiUrl + "pay/" + userId + "/", {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                                checkoutSessionId: checkoutSessionId,
-                                products: PRODUCTS,
-                                address: ADDRESS,
-                                tax: TAX,
-                            })
-                        })
-                        .then(function(response) {
-                            return response.json();
-                        })
-                        .then(function(response) {
-                            console.log(response.success);
-                        })
-                }}
-                onCancel={() => {
-                    console.log(`Stripe checkout session cancelled.`);
-                }}
+            <KinujoCheckout
+                STRIPE_PUBLIC_KEY={STRIPE_PUBLIC_KEY}
+                CHECKOUT_SESSION_ID={CHECKOUT_SESSION_ID}
+                PRODUCTS={PRODUCTS}
+                ADDRESS={ADDRESS}
+                TAX={TAX}
+                USERID={USERID}
+                APIURL={APIURL}
+                DB={DB}
             />
+            
         </SafeAreaView>
     );
 }
