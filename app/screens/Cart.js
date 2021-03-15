@@ -555,7 +555,9 @@ export default function Cart(props) {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                       },
-                      body: JSON.stringify({amount: shop.total})
+                      body: JSON.stringify({
+                        amount: shop.total,
+                      })
                     })
                     .then(function(response) {
                       return response.json();
@@ -569,34 +571,6 @@ export default function Cart(props) {
                         address: selected,
                         tax: taxObj.id,
                         userId: userId,
-                      });
-
-                      let products = shopFirebaseProducts;
-                      db.collection("users")
-                      .doc(userId)
-                      .collection("carts")
-                      .get()
-                      .then((querySnapshot) => {
-                          querySnapshot.forEach((documentSnapshot) => {
-                              products.forEach(prod => {
-                                  if (prod.id == documentSnapshot.id) {
-                                      db.collection("users")
-                                          .doc(userId)
-                                          .collection("carts")
-                                          .doc(documentSnapshot.id)
-                                          .delete()
-                                          .then(() => {});
-                                  }
-                              });
-                          });
-
-                          // db.collection("sellers")
-                          // .add({
-                          //     sellers: response.sellers
-                          // })
-                          // .then(() => {
-                          //     props.navigation.navigate("PurchaseCompletion");
-                          // });
                       });
                     })
                     .catch(function (error) {
@@ -615,11 +589,7 @@ export default function Cart(props) {
                         );
                       }
                     });
-                  // props.navigation.navigate("Payment", {
-                  //   products: shopFirebaseProducts,
-                  //   address: selected,
-                  //   tax: taxObj.id,
-                  // });
+                  
                 } else {
                   alert.warning(
                     Translate.t("must_have_item")
@@ -939,92 +909,6 @@ export default function Cart(props) {
                 }
               });
           });
-          
-          // AsyncStorage.getItem("defaultAddress").then((address) => {
-          //   if (address != null) {
-          //     request.get(address).then((response) => {
-          //       onAddressHtmlChanged(getAddressHtml(response.data, ""));
-          //       onSelectedChanged(response.data.id);
-          //     });
-          //   } else {
-          //     request
-          //       .get("addressList/" + userId + "/")
-          //       .then((response) => {
-          //         if (response.data.addresses.length > 0) {
-          //           onAddressHtmlChanged(
-          //             getAddressHtml(response.data.addresses[0], "")
-          //           );
-          //           onSelectedChanged(response.data.addresses[0].id);
-          //         } else {
-          //           let tmpAddresses = [];
-          //           tmpAddresses.push(
-          //             <View style={styles.deliveryTabContainer}>
-          //               <View
-          //                 style={{
-          //                   position: "absolute",
-          //                   marginLeft: widthPercentageToDP("4%"),
-          //                 }}
-          //               >
-          //                 <Text style={{ fontSize: RFValue(12) }}>
-          //                   {Translate.t("destination")}
-          //                 </Text>
-          //                 <TouchableWithoutFeedback
-          //                   onPress={() =>
-          //                     props.navigation.navigate("ShippingList", {
-          //                       type: "cart",
-          //                     })
-          //                   }
-          //                 >
-          //                   <View style={styles.buttonContainer}>
-          //                     <Text
-          //                       style={{ fontSize: RFValue(11), color: "white" }}
-          //                     >
-          //                       {Translate.t("change")}
-          //                     </Text>
-          //                   </View>
-          //                 </TouchableWithoutFeedback>
-          //               </View>
-          //               <View
-          //                 style={{
-          //                   // marginRight: widthPercentageToDP("5%"),
-          //                   position: "absolute",
-          //                   right: 0,
-          //                   justifyContent: "center",
-          //                 }}
-          //               >
-          //                 <Text
-          //                   style={{
-          //                     fontSize: RFValue(12),
-          //                     // backgroundColor: "orange",
-          //                     width: widthPercentageToDP("45%"),
-          //                   }}
-          //                 ></Text>
-          //                 <Text style={styles.textInTabContainer}></Text>
-          //                 <Text style={styles.textInTabContainer}></Text>
-          //                 <Text style={styles.textInTabContainer}></Text>
-          //               </View>
-          //             </View>
-          //           );
-          //           onAddressHtmlChanged(tmpAddresses);
-          //         }
-          //       })
-          //       .catch((error) => {
-          //         if (
-          //           error &&
-          //           error.response &&
-          //           error.response.data &&
-          //           Object.keys(error.response.data).length > 0
-          //         ) {
-          //           alert.warning(
-          //             error.response.data[Object.keys(error.response.data)[0]][0] +
-          //               "(" +
-          //               Object.keys(error.response.data)[0] +
-          //               ")"
-          //           );
-          //         }
-          //       });
-          //   }
-          // });
 
           request
             .get("tax_rates/")
