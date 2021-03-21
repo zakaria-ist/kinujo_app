@@ -345,5 +345,6 @@
   "home":"ホーム",
   "dialogYes":"はい",
   "dialogNo":"いいえ",
-  "registerWarning":"既に登録されている電話番号です。"
+  "registerWarning":"既に登録されている電話番号です。",
+  "emptyCart":"カートは空です"
 }

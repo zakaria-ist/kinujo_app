@@ -64,7 +64,7 @@ import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
 import ChatContact from "../Screens/ChatContact";
 import FavoriteChat from "../Screens/FavoriteChat";
 import ProductList from "../Screens/ProductList";
-import KinujoStripeCheckout from "../Screens/KinujoStripeCheckout";
+// import KinujoStripeCheckout from "../Screens/KinujoStripeCheckout";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import { Image } from "react-native";
@@ -2040,9 +2040,33 @@ function BottomNavigationStore(props) {
   }
 }
 
+const linking = {
+  prefixes: [
+    'net.c2sg.kinujo://',
+  ],
+  config: {
+    screens: {
+      HomeStore: {
+        screens: {
+          Cart: {
+            path: 'complete/:status/:snapIds/:seller',
+          },
+        },
+      },
+      // HomeGeneral: {
+      //   screens: {
+      //     Cart: {
+      //       path: 'complete/:status/:snapIds/:seller',
+      //     },
+      //   },
+      // },
+    },
+  },
+};
+
 export default function LoginStack() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
@@ -2099,10 +2123,10 @@ export default function LoginStack() {
           name="ExhibitedProductList"
           component={ExhibitedProductList}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="KinujoStripeCheckout"
           component={KinujoStripeCheckout}
-        />
+        /> */}
         {/* <Stack.Screen name="HomeStoreList" component={HomeStoreList} /> */}
       </Stack.Navigator>
     </NavigationContainer>

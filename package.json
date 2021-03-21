@@ -108,7 +108,7 @@
     "react-native-vector-icons": "^7.1.0",
     "react-native-version-info": "^1.1.0",
     "react-native-web": "~0.13.12",
-    "react-native-webview": "^11.2.4",
+    "react-native-webview": "^11.2.5",
     "react-navigation": "^4.4.3",
     "react-navigation-hooks": "^1.0.2-alpha.0",
     "react-navigation-stack": "^2.8.4",

@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   Animated,
   ScrollView,
+  Linking
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -58,6 +59,7 @@ const ratioRemove = win.width / 20 / 16;
 let taxObj = {};
 let productLoaded = false;
 let controller;
+
 export default function Cart(props) {
   // const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
   // const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
@@ -74,10 +76,10 @@ export default function Cart(props) {
   const paymentItemOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
-  const [picker, onPickerChanged] = useStateIfMounted(1);
+  // const [picker, onPickerChanged] = useStateIfMounted(1);
   // const [cartHtml, onCartHtmlChanged] = useStateIfMounted(<View></View>);
   const [cartView, onCartViewChanged] = useStateIfMounted([]);
-  const [loaded, onLoaded] = useStateIfMounted(false);
+  // const [loaded, onLoaded] = useStateIfMounted(false);
   // const [subtotal, onSubTotalChanged] = useStateIfMounted(0);
   // const [shipping, onShippingChanged] = useStateIfMounted(0);
   // const [tax, onTaxChanged] = useStateIfMounted(0);
@@ -86,17 +88,107 @@ export default function Cart(props) {
   const isFocused = useIsFocused();
   // const [selected, onSelectedChanged] = useStateIfMounted("");
   // const [addressHtml, onAddressHtmlChanged] = useStateIfMounted([]);
-  const [dropDownPickerOpen, onDropDownPickerOpen] = useStateIfMounted(false);
+  // const [dropDownPickerOpen, onDropDownPickerOpen] = useStateIfMounted(false);
   const cartItems = [];
   let shops = [];
   let tempCartView = [];
   let cartProducts = [];
   let selected = "";
   let addressHtml = [];
+
   // if (this.controller.isOpen()) {
   //   onDropDownPickerOpen(true);
   // }
   // this.controller.isOpen();
+
+  let params = {
+    snapIds: [],
+    seller: ''
+  };
+
+var handleOpenURL = (url) => {
+  console.log('handleOpenURL', 'handleOpenURL', 'handleOpenURL', url);
+  let type = typeof url;
+  if (type == "object") {
+    url = url.url;
+  }
+  url = decodeURI(url);
+  if (url.includes('success')) {
+    var strList = url.replace('net.c2sg.kinujo://complete/success/', '').split('/');
+    params.snapIds = strList[0].split(',');
+    params.seller = strList[1];
+    // alert.warning(
+    //   "Payment Success"
+    // );
+    updateShop();
+  } else if (url.includes('cancel')) {
+    // alert.warning(
+    //   "Payment Cancelled"
+    // );
+  } else {
+    console.log('Linking other url', url);
+  }
+}
+
+Linking.getInitialURL().then((url) => {
+  if (url) {
+    handleOpenURL(url)
+  }
+}).catch(err => {console.log('Linking ERROR', err)})
+Linking.addEventListener('url', handleOpenURL);
+
+function updateShop() {
+  console.log('updateShop', 'updateShop', 'updateShop');
+  AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
+
+      db.collection("users")
+        .doc(userId)
+        .collection("carts")
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((documentSnapshot) => {
+              params.snapIds.forEach(param_id => {
+                    if (param_id == documentSnapshot.id) {
+                      console.log('MATCHMATCHATCH');
+                      db.collection("users")
+                        .doc(userId)
+                        .collection("carts")
+                        .doc(documentSnapshot.id)
+                        .delete()
+                        .then(() => {
+                          db.collection("users")
+                            .doc(userId.toString())
+                            .collection("carts")
+                            .get()
+                            .then((querySnapShot) => {
+                                onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                            });
+                        });
+                    }
+                });
+            });
+
+            
+            if (params.seller != '') {
+              db.collection("sellers")
+                .add({
+                    sellers: params.seller
+                })
+                .then(() => {
+                });
+            }
+        });
+  });
+}
+
+
+
+
   function getAddressHtml(pAddresses, pSelected) {
     let tmpAddresses = [];
     // pAddresses.map((address) => {
@@ -549,47 +641,61 @@ export default function Cart(props) {
             <TouchableWithoutFeedback
               onPress={() => {
                 if (shopFirebaseProducts.length > 0 && selected) {
-                    fetch(paymentUrl + 'create-checkout-session/', {
-                      method: 'POST',
-                      headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify({
-                        amount: shop.total,
-                      })
-                    })
-                    .then(function(response) {
-                      return response.json();
-                    })
-                    .then(function(session) {
-                      let CHECKOUT_SESSION_ID = session.sessionId;
-                      props.navigation.navigate("KinujoStripeCheckout", {
-                        checkoutSessionId: CHECKOUT_SESSION_ID,
-                        stripePublicKey: 'pk_test_51HKjPHIvJqFxVlDAE98cKW9H5ugaXDHTkuR18QPSw8yM3NOjYvX4V2SQzLzUb6MMqOmTTRUB2FCxjWeyv3hIUZa700ApA0gjSN',
-                        products: shopFirebaseProducts,
-                        address: selected,
-                        tax: taxObj.id,
-                        userId: userId,
-                      });
-                    })
-                    .catch(function (error) {
-                      console.log(error);
-                      // onSpinnerChanged(false);
-                      if (
-                        error &&
-                        error.response &&
-                        error.response.data &&
-                        Object.keys(error.response.data).length > 0
-                      ) {
-                        alert.warning(
-                          error.response.data[
-                            Object.keys(error.response.data)[0]
-                          ][0]
-                        );
-                      }
-                    });
-                  
+                    // fetch(paymentUrl + 'create-checkout-session/', {
+                    //   method: 'POST',
+                    //   headers: {
+                    //     'Accept': 'application/json',
+                    //     'Content-Type': 'application/json'
+                    //   },
+                    //   body: JSON.stringify({
+                    //     amount: shop.total,
+                    //   })
+                    // })
+                    // .then(function(response) {
+                    //   return response.json();
+                    // })
+                    // .then(function(session) {
+                    //   let CHECKOUT_SESSION_ID = session.sessionId;
+                    //   props.navigation.navigate("KinujoStripeCheckout", {
+                    //     checkoutSessionId: CHECKOUT_SESSION_ID,
+                    //     stripePublicKey: 'pk_test_51HKjPHIvJqFxVlDAE98cKW9H5ugaXDHTkuR18QPSw8yM3NOjYvX4V2SQzLzUb6MMqOmTTRUB2FCxjWeyv3hIUZa700ApA0gjSN',
+                    //     products: shopFirebaseProducts,
+                    //     address: selected,
+                    //     tax: taxObj.id,
+                    //     userId: userId,
+                    //   });
+                    // })
+                    // .catch(function (error) {
+                    //   console.log(error);
+                    //   // onSpinnerChanged(false);
+                    //   if (
+                    //     error &&
+                    //     error.response &&
+                    //     error.response.data &&
+                    //     Object.keys(error.response.data).length > 0
+                    //   ) {
+                    //     alert.warning(
+                    //       error.response.data[
+                    //         Object.keys(error.response.data)[0]
+                    //       ][0]
+                    //     );
+                    //   }
+                    // });
+                    var params = 'amount=' + shop.total + '&address=' + selected + '&tax=' + taxObj.id + '&userId=' + userId;
+                    params += '&products_len=' + shopFirebaseProducts.length;
+                    for (var i=0; i < shopFirebaseProducts.length; i++) {
+                      params += '&prod_' + i + 'id=' + shopFirebaseProducts[i].id;
+                      params += '&prod_' + i + 'p_id=' + shopFirebaseProducts[i].product_id;
+                      params += '&prod_' + i + 'v_id=' + shopFirebaseProducts[i].varietyId;
+                      params += '&prod_' + i + 'name=' + shopFirebaseProducts[i].name;
+                      params += '&prod_' + i + 'qty=' + shopFirebaseProducts[i].quantity;
+                    }
+                    const url = paymentUrl + 'pay?' + params;
+                    console.log(url);
+                    // const canOpen = Linking.canOpenURL(url)
+                    // if (canOpen) {
+                      Linking.openURL(url)
+                    // }
                 } else {
                   alert.warning(
                     Translate.t("must_have_item")
@@ -610,6 +716,7 @@ export default function Cart(props) {
     );
 
   }
+
 
   function shopUpdate(tmpIds, is_seller) {
     request
@@ -970,7 +1077,11 @@ export default function Cart(props) {
           overrideCartCount={cartCount}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
         />
-        <ScrollView>{cartView}</ScrollView>
+        <ScrollView>{firebaseProducts.length ? cartView : 
+              <View style={{ paddingBottom: heightPercentageToDP("10%"), flexGrow: 1 }}>
+                  <Text style={styles.emptyText}>{Translate.t("emptyCart")}</Text>
+              </View>}
+        </ScrollView>
         {/* <ScrollView>
           <TouchableWithoutFeedback
             onPress={() => {
@@ -1224,6 +1335,13 @@ const styles = StyleSheet.create({
     color: "white",
     paddingVertical: heightPercentageToDP(".3%"),
     paddingHorizontal: widthPercentageToDP("2%"),
+    alignSelf: "center",
+  },
+  emptyText: {
+    fontSize: RFValue(25),
+    paddingVertical: heightPercentageToDP(".3%"),
+    paddingHorizontal: widthPercentageToDP("2%"),
+    marginTop: heightPercentageToDP("10%"),
     alignSelf: "center",
   },
   paymentButtonText: {

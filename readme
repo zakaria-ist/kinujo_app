@@ -42,12 +42,13 @@ var sharedBlacklist = [
   /.*\/__tests__\/.*/
 ];
 
-5. the no.4 process must be done manually everytime you re-install your node_modules
-6. go to the project root, run `gradle wrapper`
-7. run `cd android`
-8. run `gradle wrapper`
-9. run `./gradlew clean`
-10. run `cd ..`
-11. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
-12. run `npm run android` or `npm run ios`
-13. you can also run it with android studio
+5. Comment this line `[wkWebViewConfig.userContentController addUserScript:script];` from node_modules/react-native-webview/apple/RNCWebView.m
+6. the no.4, 5 process must be done manually everytime you re-install your node_modules
+7. go to the project root, run `gradle wrapper`
+8. run `cd android`
+9. run `gradle wrapper`
+10. run `./gradlew clean`
+11. run `cd ..`
+12. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
+13. run `npm run android` or `npm run ios`
+14. you can also run it with android studio
