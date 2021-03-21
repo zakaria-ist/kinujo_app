@@ -347,5 +347,6 @@
   "home":"Home",
   "dialogYes":"Yes",
   "dialogNo":"No",
-  "registerWarning":"This phone number has been registered."
+  "registerWarning":"This phone number has been registered.",
+  "emptyCart":"The cart is empty"
 }

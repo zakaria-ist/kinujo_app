@@ -1,2 +1,54 @@
 export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home"
-export ANDROID_HOME="/Users/guanchuan/Library/Android/sdk"
+export ANDROID_HOME="/Users/YOUR_USERNAME/Library/Android/sdk"
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+******************************************************
+* Running the following without npm install command: *
+******************************************************
+
+1. go to the project root, run `gradle wrapper`
+2. cd android, run `gradle wrapper`
+3. run `./gradlew clean`
+4. cd ..
+5. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
+6. npm run android or npm run ios
+7. you can also run it with android studio
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+************************************************
+* With npm install command in the first place: *
+************************************************
+
+1. npm install, if it shows error then run `rm -rf package-lock.json node_modules/` then run npm install again
+2. cd node_modules/metro-config/src/default
+3. open the blacklist.js file
+4. Replace :
+
+var sharedBlacklist = [
+  /node_modules[/\\]react[/\\]dist[/\\].*/,
+  /website\/node_modules\/.*/,
+  /heapCapture\/bundle\.js/,
+  /.*\/__tests__\/.*/
+];
+
+with :
+
+var sharedBlacklist = [
+  /node_modules[\/\\]react[\/\\]dist[\/\\].*/,
+  /website\/node_modules\/.*/,
+  /heapCapture\/bundle\.js/,
+  /.*\/__tests__\/.*/
+];
+
+5. Comment this line `[wkWebViewConfig.userContentController addUserScript:script];` from node_modules/react-native-webview/apple/RNCWebView.m
+6. the no.4, 5 process must be done manually everytime you re-install your node_modules
+7. go to the project root, run `gradle wrapper`
+8. run `cd android`
+9. run `gradle wrapper`
+10. run `./gradlew clean`
+11. run `cd ..`
+12. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
+13. run `npm run android` or `npm run ios`
+14. you can also run it with android studio
