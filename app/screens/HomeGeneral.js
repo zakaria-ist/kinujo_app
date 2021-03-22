@@ -86,6 +86,14 @@ export default function Home(props) {
           });
         }
       });
+    messaging()
+      .onMessage(({notification}) => {
+        Notifications.postLocalNotification({
+          title: notification.title,
+          body: notification.body
+        })
+      });
+      
 
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("product").then((product_id) => {
@@ -124,7 +132,7 @@ export default function Home(props) {
     }
   }
 
-  async function createNotificationListeners() {
+  async function createNotificationChannel() {
     Notifications.setNotificationChannel({
       channelId: 'chat',
       name: 'Chat channel',
@@ -132,23 +140,17 @@ export default function Home(props) {
       importance: 5
     })
 
-    notificationListener = messaging().onMessage(({notification}) => {
-      Notifications.postLocalNotification({
-        title: notification.title,
-        body: notification.body
-      })
-    });
+    // notificationOpenedListener = messaging().onNotificationOpened((notificationOpen) => {
+    //   const { title, body } = notificationOpen.notification;
+    //   console.log('onNotificationOpened:');
+    //   Alert.alert(title, body);
+    // });
+    // // If your app is closed
+    // const notificationOpen = await messaging().getInitialNotification();
+    // if (notificationOpen) {
+    //   console.log('getInitialNotification:');
+    // }
 
-    notificationOpenedListener = messaging().onNotificationOpened((notificationOpen) => {
-      const { title, body } = notificationOpen.notification;
-      console.log('onNotificationOpened:');
-      Alert.alert(title, body);
-    });
-    // If your app is closed
-    const notificationOpen = await messaging().getInitialNotification();
-    if (notificationOpen) {
-      console.log('getInitialNotification:');
-    }
   }
   // function featuredProductNavigation(seller, userShopName) {
   //   console.log(seller);
@@ -373,7 +375,7 @@ export default function Home(props) {
       // onFeaturedHtmlChanged([]);
       // onKinujoHtmlChanged([]);
       requestUserPermission();
-      createNotificationListeners();
+      createNotificationChannel();
       AsyncStorage.getItem("user").then(function (url) {
         request
           .get(url)
