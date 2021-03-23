@@ -17,6 +17,7 @@ import {
   StatusBar,
   TextInput,
   Platform,
+  Linking
 } from "react-native";
 
 import { useStateIfMounted } from "use-state-if-mounted";
@@ -68,9 +69,95 @@ export default function Home(props) {
   const [kinujoHtml, onKinujoHtmlChanged] = useStateIfMounted([]);
   const [showCategory, onCategoryShow] = useStateIfMounted(false);
   const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
+  const [cartCount, onCartCountChanged] = useStateIfMounted(0);
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
+  
+  let d_params = {
+    snapIds: [],
+    seller: ''
+  };
+
+  var handleOpenURL = (url) => {
+    console.log('handleOpenURL', url);
+    let type = typeof url;
+    if (type == "object") {
+      url = url.url;
+    }
+    url = decodeURI(url);
+    if (url.includes('success')) {
+      var strList = url.replace('net.c2sg.kinujo://complete/success/', '').split('/');
+      d_params.snapIds = strList[0].split(',');
+      d_params.seller = strList[1];
+      // alert.warning(
+      //   "Payment Success"
+      // );
+      updateShop();
+    } else if (url.includes('cancel')) {
+      console.log('HomeStore Cart url', url);
+      // alert.warning(
+      //   "Payment Cancelled"
+      // );
+    } else {
+      console.log('Linking other url', url);
+    }
+  }
+
+  Linking.getInitialURL().then((url) => {
+    if (url) {
+      handleOpenURL(url)
+    }
+  }).catch(err => {console.log('Linking ERROR', err)})
+  Linking.removeEventListener('url', handleOpenURL);
+  Linking.addEventListener('url', handleOpenURL);
+
+  function updateShop() {
+    AsyncStorage.getItem("user").then((url) => {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
+
+        db.collection("users")
+          .doc(userId)
+          .collection("carts")
+          .get()
+          .then((querySnapshot) => {
+              querySnapshot.forEach((documentSnapshot) => {
+                d_params.snapIds.forEach(param_id => {
+                      if (param_id == documentSnapshot.id) {
+                        db.collection("users")
+                          .doc(userId)
+                          .collection("carts")
+                          .doc(documentSnapshot.id)
+                          .delete()
+                          .then(() => {
+                            db.collection("users")
+                              .doc(userId.toString())
+                              .collection("carts")
+                              .get()
+                              .then((querySnapShot) => {
+                                  onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                              });
+                          });
+                      }
+                  });
+              });
+
+              if (d_params.seller != '') {
+                db.collection("sellers")
+                  .add({
+                      sellers: d_params.seller
+                  })
+                  .then(() => {
+                  });
+              }
+          });
+    });
+  }
+  
   React.useEffect(() => {
     messaging()
       .getInitialNotification()
@@ -542,6 +629,10 @@ export default function Home(props) {
       <SafeAreaView>
         <CustomHeader
           text={Translate.t("home")}
+          onCartCount={(count) => {
+            onCartCountChanged(count);
+          }}
+          overrideCartCount={cartCount}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => {
             props.navigation.navigate("Cart");
