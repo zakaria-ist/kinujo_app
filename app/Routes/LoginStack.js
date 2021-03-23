@@ -2045,22 +2045,25 @@ const linking = {
     'net.c2sg.kinujo://',
   ],
   config: {
-    screens: {
-      HomeStore: {
-        screens: {
-          Cart: {
-            path: 'complete/:status/:snapIds/:seller',
-          },
+    // screens: {
+    //   HomeStore: {
+    //     screens: {
+    //       Cart: {
+    //         path: 'complete/:status/:snapIds/:seller',
+    //       },
+    //     },
+    //   },
+      screens: {
+        Cart: {
+          path: 'cancelled/:status',
         },
       },
-      // HomeGeneral: {
-      //   screens: {
-      //     Cart: {
-      //       path: 'complete/:status/:snapIds/:seller',
-      //     },
-      //   },
-      // },
-    },
+      screens: {
+        HomeStore: {
+          path: 'complete/:status/:snapIds/:seller',
+        },
+      },
+    // },
   },
 };
 
