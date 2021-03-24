@@ -111,14 +111,17 @@ export default function QRCode(props) {
   const [storeLink, onStoreLinkChanged] = useStateIfMounted("");
   const [userLink, onUserLinkChanged] = useStateIfMounted("");
   const [interacted, setInteracted] = useState(false);
+  const [cameraTimeout, setCameraTimeout] = useState(0);
   React.useEffect(() => {
     if(!isFocused){
       setInviteShow(false);
       setInteracted(false);
+      setCameraTimeout(100);
     }
 
     InteractionManager.runAfterInteractions(() => {
       setInteracted(true);
+      setCameraTimeout(0);
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url).then((response) => {
           onUserChanged(response.data);
@@ -130,6 +133,7 @@ export default function QRCode(props) {
     setPopupQR(false);
     setInviteShow(false);
     setInteracted(false);
+    setCameraTimeout(100);
   }, [!isFocused]);
 
   const onSuccess = (e) => {
@@ -187,7 +191,7 @@ export default function QRCode(props) {
         showMarker={true}
         reactivate={interacted}
         reactivateTimeout={5000}
-        cameraTimeout={0}
+        cameraTimeout={cameraTimeout}
         buttonPositive={Translate.t("ok")}
         cameraStyle={
           {
@@ -253,7 +257,8 @@ export default function QRCode(props) {
         flashMode={RNCamera.Constants.FlashMode.off}
         topViewStyle={styles.none}
         bottomViewStyle={styles.none}
-      />) : (<View></View>)}
+      // />) : (<View></View>)}
+      />) : (<QRCodeScanner cameraTimeout={cameraTimeout} />)}
         <ScrollView style={{top:heightPercentageToDP("26%")}}>
           <View style={styles.qrcode_button}>
           <View style={inviteShow ? styles.none : null}>
