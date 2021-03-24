@@ -116,11 +116,11 @@ export default function QRCode(props) {
     if(!isFocused){
       setInviteShow(false);
       setInteracted(false);
-      setCameraTimeout(100);
+      setCameraTimeout(10);
     }
 
     InteractionManager.runAfterInteractions(() => {
-      setInteracted(true);
+      setInteracted(false);
       setCameraTimeout(0);
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url).then((response) => {
@@ -133,7 +133,7 @@ export default function QRCode(props) {
     setPopupQR(false);
     setInviteShow(false);
     setInteracted(false);
-    setCameraTimeout(100);
+    setCameraTimeout(10);
   }, [!isFocused]);
 
   const onSuccess = (e) => {
@@ -259,7 +259,7 @@ export default function QRCode(props) {
         bottomViewStyle={styles.none}
       // />) : (<View></View>)}
       />) : (<QRCodeScanner cameraTimeout={cameraTimeout} />)}
-        <ScrollView style={{top:heightPercentageToDP("26%")}}>
+        <ScrollView style={{top:heightPercentageToDP("30%")}}>
           <View style={styles.qrcode_button}>
           <View style={inviteShow ? styles.none : null}>
             <View style={styles.button_frame}>
