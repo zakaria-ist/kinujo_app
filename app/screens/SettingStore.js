@@ -86,11 +86,16 @@ export default function SettingStore(props) {
         break;
     }
   }
+
   AsyncStorage.getItem("language").then((language) => {
     if (language) {
       defaultLanguage = language;
     } else {
-      defaultLanguage = Localization.locale;
+      if (i18n.locale.includes('ja') || i18n.locale.includes('JP')) {
+        defaultLanguage = 'ja';
+      } else {
+        defaultLanguage = 'en';
+      }
     }
   });
   React.useEffect(() => {

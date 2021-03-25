@@ -77,6 +77,12 @@ export default function SettingGeneral(props) {
   AsyncStorage.getItem("language").then((language) => {
     if (language) {
       defaultLanguage = language;
+    } else {
+      if (i18n.locale.includes('ja') || i18n.locale.includes('JP')) {
+        defaultLanguage = 'ja';
+      } else {
+        defaultLanguage = 'en';
+      }
     }
   });
   React.useEffect(() => {
