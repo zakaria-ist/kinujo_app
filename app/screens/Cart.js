@@ -884,6 +884,31 @@ export default function Cart(props) {
               })
               .then(function (response) {
                 cartProducts = response.data.products;
+                //empty cart for deleted products
+                firebaseProducts = firebaseProducts.filter((fbProduct) => {
+                  let tmpProduct = cartProducts.filter((product) => {
+                    return (product.id == fbProduct.product_id);
+                  });
+                  if (tmpProduct && tmpProduct.length) {
+                    return true;
+                  } else {
+                    db.collection("users")
+                      .doc(userId)
+                      .collection("carts")
+                      .doc(fbProduct.id)
+                      .delete()
+                      .then(() => {
+                        db.collection("users")
+                          .doc(userId.toString())
+                          .collection("carts")
+                          .get()
+                          .then((querySnapShot) => {
+                              onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                          });
+                      });
+                  }
+                });
+                
                 let prods = response.data.products;
                 let tempShops = [];
                 prods.forEach((prod) => {
