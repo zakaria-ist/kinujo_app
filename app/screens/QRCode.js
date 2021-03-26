@@ -198,6 +198,20 @@ export default function QRCode(props) {
             height: heightPercentageToDP("50%")
           }
         }
+        cameraTimeoutView={
+          <View
+            style={{
+              flex: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: Dimensions.get('window').height,
+              width: Dimensions.get('window').width,
+              backgroundColor: 'black',
+            }}
+          >
+            <Text style={{ color: 'white' }}>{Translate.t("tapForCamera")}</Text>
+          </View>
+        }
         customMarker={
           <View
             style={{
