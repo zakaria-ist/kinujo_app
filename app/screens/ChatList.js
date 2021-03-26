@@ -169,7 +169,7 @@ let gUnsubscribe = null;
 export default function ChatList(props) {
   const isFocused = useIsFocused();
   const [show, onShowChanged] = useStateIfMounted(false);
-  const [totalUnread, setTotalUnread] = useStateIfMounted(false);
+  const [totalUnread, setTotalUnread] = useStateIfMounted(0);
   const [loaded, onLoadedChanged] = useStateIfMounted(false);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
@@ -278,6 +278,7 @@ export default function ChatList(props) {
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
     let unreadMessage = 0;
+    setTotalUnread(unreadMessage);
 
     tmpChats = tmpChats.filter((chat) => {
       return (
@@ -287,8 +288,8 @@ export default function ChatList(props) {
       );
     });
     tmpChats.map((chat) => {
-      if (
-        chat.data["totalMessageRead_" + ownUserID] < chat.data["totalMessage"]
+      if (updateUnread &&
+        chat.data["unseenMessageCount_" + ownUserID]
       ) {
         unreadMessage++;
       }
@@ -568,9 +569,9 @@ export default function ChatList(props) {
       onChatHtmlChanged(resultChatHtml);
     });
     
-    if(updateUnread){
+    // if(updateUnread){
       setTotalUnread(unreadMessage);
-    }
+    // }
   }
   async function firstLoad() {
     let url = await AsyncStorage.getItem("user");
