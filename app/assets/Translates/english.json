@@ -314,7 +314,7 @@
   "(tel_code)": "Please enter the country code.",
   "callingCode": "Please enter the country code.",
   "(tel)": "Please enter the contact number.",
-  "register-(password)": "Please enter the password.",
+  "register-(password)": "Please enter the password. Minimum length 8.",
   "auth/invalid-verification-code": "Invalid verification code",
   "account_not_exists": "This account doesn't exist. Please sign up an account.", 
   "This field must be unique.(username)": "The phone number is registered, please try again.",
