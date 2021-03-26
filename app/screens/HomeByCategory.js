@@ -864,7 +864,7 @@ export default function HomeByCategory(props) {
             <View></View>
           )}
           {kinujoHtml.length > 0 ? (
-            <View style={styles.section_product}>{kinujoHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product}>{kinujoHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -879,7 +879,7 @@ export default function HomeByCategory(props) {
             <View></View>
           )}
           {featuredHtml.length > 0 ? (
-            <View style={styles.section_product2}>{featuredHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product2}>{featuredHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -948,13 +948,13 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: heightPercentageToDP("25%"),
+    marginBottom: heightPercentageToDP("5%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
   },
   section_product2: {
-    marginBottom: heightPercentageToDP("25%"),
+    marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
