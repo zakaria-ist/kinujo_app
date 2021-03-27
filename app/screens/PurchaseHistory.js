@@ -52,6 +52,7 @@ export default function PurchaseHistory(props) {
   const [orderHtml, onOrderHtmlChanged] = useStateIfMounted([]);
   const [user, onUserChanged] = useStateIfMounted({});
   const [loaded, onLoaded] = useStateIfMounted(false);
+  const [showYears, onshowYears] = useStateIfMounted(true);
   const [yearHtml, onYearHtmlChanged] = useStateIfMounted(<View></View>);
   const [years, onYearChanged] = useStateIfMounted(<View></View>);
   const [searchText, onSearchTextChanged] = useStateIfMounted("");
@@ -62,20 +63,20 @@ export default function PurchaseHistory(props) {
       ? order.product_jan_code.horizontal.product_variety.product.productImages
       : order.product_jan_code.vertical.product_variety.product.productImages;
   }
-  function processOrderHtml(props, orders, status = "") {
-    if (searchText) {
+  function processOrderHtml(props, orders, searchTxt, status = "") {
+    if (searchTxt != "") {
       orders = orders.filter((order) => {
         if (order.product_jan_code.horizontal) {
           return (
             order.product_jan_code.horizontal.product_variety.product.name
               .toLowerCase()
-              .indexOf(searchText.toLowerCase()) >= 0
+              .indexOf(searchTxt.toLowerCase()) >= 0
           );
         } else if (order.product_jan_code.vertical) {
           return (
             order.product_jan_code.vertical.product_variety.product.name
               .toLowerCase()
-              .indexOf(searchText.toLowerCase()) >= 0
+              .indexOf(searchTxt.toLowerCase()) >= 0
           );
         }
         return false;
@@ -307,12 +308,20 @@ export default function PurchaseHistory(props) {
         let tmpOrderProducts = response.data.orderProducts
           .reverse()
           .filter((order) => {
-            let year = kanjidate.format("{Y:4}", new Date(order.created));
-            return year == type || type == "all";
+            if (type == 'past_6_months') {
+              let today = new Date();
+              let past_6_months = today.setMonth(today.getMonth() - 6);
+              if (new Date(order.created) >= past_6_months) {
+                return true;
+              }
+            } else {
+              let year = kanjidate.format("{Y:4}", new Date(order.created));
+              return year == type || type == "all";
+            }
           });
         onOrdersChanged(tmpOrderProducts);
         onYearHtmlChanged(processYearHtml(tmpYears));
-        onOrderHtmlChanged(processOrderHtml(props, tmpOrderProducts, ""));
+        onOrderHtmlChanged(processOrderHtml(props, tmpOrderProducts, searchText, ""));
         onLoaded(true);
       })
       .catch(function (error) {
@@ -499,44 +508,57 @@ export default function PurchaseHistory(props) {
                 value={searchText}
                 onChangeText={(value) => {
                   onSearchTextChanged(value);
-                  onOrderHtmlChanged(processOrderHtml(props, orders, ""));
+                  onOrderHtmlChanged(processOrderHtml(props, orders, value, ""));
                 }}
               />
+              <TouchableWithoutFeedback onPress={() => {
+                onSearchTextChanged(""); 
+                onOrderHtmlChanged(processOrderHtml(props, orders, "", ""));
+              }}>
               <Image
                 style={{
-                  width: win.width / 24,
+                  width: win.width / 14,
                   height: ratioSearch * 19,
                   position: "absolute",
                   right: 0,
+                  marginTop: heightPercentageToDP("2%"),
                   marginRight: widthPercentageToDP("4%"),
                   alignSelf: "center",
+                  zIndex: 2,
                 }}
                 source={require("../assets/Images/cancelIcon.png")}
               />
+              </TouchableWithoutFeedback>
             </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingVertical: heightPercentageToDP("2%"),
-                marginHorizontal: widthPercentageToDP("1.5%"),
-                borderBottomWidth: 1,
-                borderBottomColor: Colors.D7CCA6,
-              }}
-            >
-              <Text style={styles.dateTabText}>Release Date</Text>
-              <Image
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onshowYears(!showYears);
+              }}>
+              <View
                 style={{
-                  width: win.width / 24,
-                  height: ratioSearch * 8,
-                  position: "absolute",
-                  right: 0,
-                  marginRight: widthPercentageToDP("4%"),
-                  alignSelf: "center",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP("2%"),
+                  marginHorizontal: widthPercentageToDP("1.5%"),
+                  borderBottomWidth: 1,
+                  borderBottomColor: Colors.D7CCA6,
                 }}
-                source={require("../assets/Images/upIcon.png")}
-              />
+              >
+                <Text style={styles.dateTabText}>Release Date</Text>
+                <Image
+                  style={{
+                    width: win.width / 24,
+                    height: ratioSearch * 8,
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("4%"),
+                    alignSelf: "center",
+                  }}
+                  source={showYears ? (require("../assets/Images/upIcon.png")) : (require("../assets/Images/downArrow.png"))}
+                />
             </View>
+            </TouchableWithoutFeedback>
+            {showYears ? (<View>
             <TouchableWithoutFeedback
               onPress={() => {
                 onLoaded(false);
@@ -581,7 +603,7 @@ export default function PurchaseHistory(props) {
             >
               2015 年 3月以前
             </Text> */}
-            </View>
+            </View></View>) : (<View></View>)}
 
             <View
               style={{
@@ -592,7 +614,7 @@ export default function PurchaseHistory(props) {
                 bottom: 0,
                 position: "absolute",
                 marginHorizontal: widthPercentageToDP("1%"),
-                marginBottom: heightPercentageToDP("15%"),
+                marginBottom: heightPercentageToDP("20%"),
                 justifyContent: "space-evenly",
                 // backgroundColor: "orange",
                 width: "100%",
@@ -613,7 +635,7 @@ export default function PurchaseHistory(props) {
               <TouchableWithoutFeedback
                 onPress={() => {
                   onSearchTextChanged("");
-                  onOrderHtmlChanged(processOrderHtml(props, orders, ""));
+                  onOrderHtmlChanged(processOrderHtml(props, orders, "", ""));
                 }}
               >
                 <Text
@@ -621,18 +643,19 @@ export default function PurchaseHistory(props) {
                     fontSize: RFValue(14),
                     marginLeft: widthPercentageToDP("3%"),
                     marginBottom: heightPercentageToDP(".3%"),
+                    padding: widthPercentageToDP("2%"),
                   }}
                 >
                   Cancel all conditions
                 </Text>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
-                onPress={() =>
+                onPress={() => {
                   Animated.timing(right, {
                     toValue: widthPercentageToDP("-80%"),
                     duration: 500,
                     useNativeDriver: false,
-                  }).start()
+                  }).start()}
                 }
               >
                 <View
