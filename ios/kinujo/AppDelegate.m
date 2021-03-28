@@ -137,4 +137,12 @@ restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nul
   restorationHandler:restorationHandler];
 }
 
+- (void)applicationDidBecomeActive:(UIApplication *)application{
+   [UIApplication sharedApplication].applicationIconBadgeNumber = 0; 
+ }
+
+-(void)applicationDidEnterBackground:(UIApplication *)application{
+   [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+ }
+
 @end
