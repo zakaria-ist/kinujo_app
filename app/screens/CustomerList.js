@@ -200,7 +200,7 @@ export default function CustomerList(props) {
 
       <View style={styles.searchInputContainer}>
         <TextInput
-          placeholder="髪長"
+          placeholder=""
           placeholderTextColor={Colors.grey}
           style={{
             height: heightPercentageToDP("5.8%"),

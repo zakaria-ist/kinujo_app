@@ -34,6 +34,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const request = new Request();
 const alert = new CustomAlert();
 import postal_code from "japan-postal-code-oasis";
@@ -61,6 +62,7 @@ export default function AddressManagement(props) {
   const [countryCode, setCountryCode] = useStateIfMounted("");
   let controller;
   const isFocused = useIsFocused();
+  const BUTTON_SIZE = 40;
   function handlePhone(value) {
     onPhoneNumberChanged(value.replace(/[^0-9]/g, ""));
   }
@@ -262,6 +264,9 @@ export default function AddressManagement(props) {
     onCallingCodeChanged(tmpItem[1]);
     console.log(tmpItem[1]);
   }
+  function closePressed() {
+    onShowCountryChanged(false);
+  }
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -276,6 +281,9 @@ export default function AddressManagement(props) {
         text={Translate.t("addressee")}
       />
       <Modal visible={showCountry}>
+        <TouchableOpacity onPress={closePressed} style={[styles.button,{backgroundColor: 'white',borderColor: 'white'}]}>
+          <Icon name={'close'} color={'black'} size={BUTTON_SIZE} />
+        </TouchableOpacity>
         <SafeAreaView>
           <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
             <View style={styles.searchInputContainer}>

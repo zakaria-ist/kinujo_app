@@ -85,15 +85,15 @@ async function buildLink(userId, is_store) {
   const link = await dynamicLinks().buildLink(
     {
       link:
-        "https://kinujo.page.link?userId=" + userId + "&store=" + is_store,
+        "https://kinujo-link.c2sg.asia?userId=" + userId + "&store=" + is_store,
       // domainUriPrefix is created in your Firebase console
-      domainUriPrefix: "https://kinujo.page.link",
+      domainUriPrefix: "https://kinujo-link.c2sg.asia",
       android: {
-        packageName: "com.example.kinujo",
+        packageName: "net.c2sg.kinujo",
       },
       ios: {
         appStoreId: "123123123",
-        bundleId: "com.example.kinujo",
+        bundleId: "net.c2sg.kinujo",
       },
     },
     dynamicLinks.ShortLinkType.UNGUESSABLE
@@ -120,7 +120,7 @@ export default function QRCode(props) {
     }
 
     InteractionManager.runAfterInteractions(() => {
-      setInteracted(false);
+      setInteracted(true);
       setCameraTimeout(0);
       AsyncStorage.getItem("user").then(function (url) {
         request.get(url).then((response) => {
@@ -186,7 +186,7 @@ export default function QRCode(props) {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      {interacted ? (<QRCodeScanner
+      {<QRCodeScanner
         onRead={onSuccess}
         showMarker={true}
         reactivate={interacted}
@@ -197,6 +197,20 @@ export default function QRCode(props) {
           {
             height: heightPercentageToDP("50%")
           }
+        }
+        cameraTimeoutView={
+          <View
+            style={{
+              flex: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: Dimensions.get('window').height,
+              width: Dimensions.get('window').width,
+              backgroundColor: 'black',
+            }}
+          >
+            <Text style={{ color: 'white' }}>{Translate.t("tapForCamera")}</Text>
+          </View>
         }
         customMarker={
           <View
@@ -257,8 +271,7 @@ export default function QRCode(props) {
         flashMode={RNCamera.Constants.FlashMode.off}
         topViewStyle={styles.none}
         bottomViewStyle={styles.none}
-      // />) : (<View></View>)}
-      />) : (<QRCodeScanner cameraTimeout={cameraTimeout} />)}
+       />}
         <ScrollView style={{top:heightPercentageToDP("30%")}}>
           <View style={styles.qrcode_button}>
           <View style={inviteShow ? styles.none : null}>
