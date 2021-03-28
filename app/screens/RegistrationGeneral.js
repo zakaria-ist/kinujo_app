@@ -144,8 +144,8 @@ export default function RegistrationGeneral(props) {
 
                 Alert.alert(
                   "",
-                  Translate.t("registerWarning"),
-                  // Translate.t("register-(" + errorMessage),
+                  // Translate.t("registerWarning"),
+                  Translate.t("register-(" + errorMessage),
                   [
                     {
                       text: "OK",

@@ -26,6 +26,7 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Translate from "../assets/Translates/Translate";
 // import { useIsFocused } from "@react-navigation/native";
 const win = Dimensions.get("window");
@@ -37,6 +38,7 @@ export default function CountrySearch(props) {
   //const isFocused = useIsFocused();
   const [countryHtml, setCountryHtml] = useStateIfMounted(<View></View>);
   const [searchText, setSearchText] = useStateIfMounted("");
+  const BUTTON_SIZE = 40;
 
   function processCountryHtml(countries) {
     let html = [];
@@ -68,6 +70,10 @@ export default function CountrySearch(props) {
     });
     return html;
   }
+
+  function closePressed() {
+    props.navigation.pop();
+  }
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       request.get("country_codes/").then(function (response) {
@@ -78,6 +84,9 @@ export default function CountrySearch(props) {
   }, [true]);
   return (
     <SafeAreaView>
+      <TouchableOpacity onPress={closePressed} style={[styles.button,{backgroundColor: 'white',borderColor: 'white'}]}>
+        <Icon name={'close'} color={'black'} size={BUTTON_SIZE} />
+      </TouchableOpacity>
       <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
         <View style={styles.searchInputContainer}>
           <TextInput

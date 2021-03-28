@@ -93,7 +93,8 @@ export default function HomeProducts({
     });
   }, [product_id, isFocused]);
   return (
-    <SafeAreaView
+
+    <TouchableWithoutFeedback
       style={{
         alignItems: "center",
         justifyContent: "center",
@@ -194,7 +195,7 @@ export default function HomeProducts({
         <Text style={styles.product_shipping}>{shipping}</Text>
       </View>
       {/* </TouchableWithoutFeedback> */}
-    </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 }
 

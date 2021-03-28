@@ -169,7 +169,7 @@ let gUnsubscribe = null;
 export default function ChatList(props) {
   const isFocused = useIsFocused();
   const [show, onShowChanged] = useStateIfMounted(false);
-  const [totalUnread, setTotalUnread] = useStateIfMounted(false);
+  const [totalUnread, setTotalUnread] = useStateIfMounted(0);
   const [loaded, onLoadedChanged] = useStateIfMounted(false);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
@@ -213,10 +213,10 @@ export default function ChatList(props) {
         if(!snapShot.data()["delete_" + ownUserID] &&
         !snapShot.data()["hide_" + ownUserID] &&
         !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
-          let tmpChats = chats.filter((chat) => {
+          let tempChats = chats.filter((chat) => {
             return chat.id == snapShot.id;
           });
-          if (tmpChats.length == 0) {
+          if (tempChats.length == 0) {
             chats.push({
               id: snapShot.id,
               data: snapShot.data(),
@@ -236,6 +236,7 @@ export default function ChatList(props) {
         }
       }
     }
+    chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
     processChat(chats, ownUserID, false);
 
     chats = [];
@@ -245,10 +246,10 @@ export default function ChatList(props) {
         if(!snapShot.data()["delete_" + ownUserID] &&
         !snapShot.data()["hide_" + ownUserID] &&
         !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
-          let tmpChats = chats.filter((chat) => {
+          let tempChats = chats.filter((chat) => {
             return chat.id == snapShot.id;
           });
-          if (tmpChats.length == 0) {
+          if (tempChats.length == 0) {
             let detail = await getDetail(ownUserID, snapShot.id, snapShot.data());
             chats.push({
               id: snapShot.id,
@@ -270,6 +271,7 @@ export default function ChatList(props) {
         }
       }
     }
+    chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
     processChat(chats, ownUserID, true);
   }
 
@@ -278,7 +280,9 @@ export default function ChatList(props) {
     lastReadDateField = "lastReadDate_" + ownUserID;
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
     let unreadMessage = 0;
-
+    // setTotalUnread(unreadMessage);
+    console.log('totalUnread', totalUnread);
+    
     tmpChats = tmpChats.filter((chat) => {
       return (
         !chat.data["delete_" + ownUserID] &&
@@ -287,10 +291,12 @@ export default function ChatList(props) {
       );
     });
     tmpChats.map((chat) => {
-      if (
-        chat.data["totalMessageRead_" + ownUserID] < chat.data["totalMessage"]
+      console.log('chat', chat);
+      if (updateUnread &&
+        parseInt(chat.data["unseenMessageCount_" + ownUserID]) > 0
       ) {
         unreadMessage++;
+        console.log('unreadMessage', unreadMessage);
       }
 
       totalUnseenMessage = 0;
@@ -570,6 +576,7 @@ export default function ChatList(props) {
     
     if(updateUnread){
       setTotalUnread(unreadMessage);
+      console.log('totalUnread', totalUnread);
     }
   }
   async function firstLoad() {

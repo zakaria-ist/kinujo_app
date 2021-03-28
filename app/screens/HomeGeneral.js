@@ -215,8 +215,26 @@ export default function Home(props) {
         .doc(String(user.id))
         .set({
           tokenID: deviceToken,
+        })
+        .then(() => {
+          console.log("tokenID successfully written!");
+        })
+        .catch((error) => {
+            console.error("Error writing tokenID: ", error);
         });
     }
+    // const deviceToken = await messaging().getToken();
+    // Notification.requestPermission().then(function(permission) { 
+    //   if (permission == "granted" || permission == "default") {
+    //     db.collection("users")
+    //       .doc(String(user.id))
+    //       .collection("token")
+    //       .doc(String(user.id))
+    //       .set({
+    //         tokenID: deviceToken,
+    //       });
+    //   }
+    // });
   }
 
   async function createNotificationChannel() {
@@ -780,7 +798,7 @@ export default function Home(props) {
             <View></View>
           )}
           {kinujoHtml.length > 0 ? (
-            <View style={styles.section_product}>{kinujoHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product}>{kinujoHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -801,7 +819,7 @@ export default function Home(props) {
             <View></View>
           )}
           {featuredHtml.length > 0 ? (
-            <View style={styles.section_product}>{featuredHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product_2}>{featuredHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -862,6 +880,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
+    marginBottom: heightPercentageToDP("5%"),
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  section_product_2: {
     marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",
