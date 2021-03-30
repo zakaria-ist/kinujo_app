@@ -164,7 +164,7 @@ export default function CreateFolder(props) {
             });
         }
       } else {
-        alert.warning("Please fill in the folder name");
+        alert.warning(Translate.t('groupNotFilled'));
       }
     } else if (friendIds.length == 0) {
       Alert.alert(

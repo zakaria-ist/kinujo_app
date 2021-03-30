@@ -869,7 +869,7 @@ export default function HomeStoreList(props) {
                 padding: widthPercentageToDP("5%"),
               }}
             >
-              {name}
+              {name != "none" ? name : ""}
             </Text>
           </View>
 

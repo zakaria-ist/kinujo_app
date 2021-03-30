@@ -344,14 +344,14 @@ export default function PasswordReset(props) {
                         } else {
                           onSpinnerChanged(false);
                           alert.warning(
-                            "Password and confirm password mismatch.", ()=>{
+                            Translate.t('passwordAndConfirmPasswordMustSame'), ()=>{
                               onSpinnerChanged(false);
                             }
                           );
                         }
                       } else {
                         alert.warning(
-                          "Please fill in the password and confirm password", ()=>{
+                          Translate.t('fillPass'), ()=>{
                             onSpinnerChanged(false);
                           }
                         );

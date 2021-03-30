@@ -447,7 +447,7 @@ export default function SellerProductList(props) {
         />
         <View style={styles.discription_header}>
           <View>
-            <Text style={styles.disc_title_text}>Seller : {sellerName}</Text>
+            <Text style={styles.disc_title_text}>Translate.t("seller") : {sellerName}</Text>
           </View>
           <View
             style={{

@@ -863,7 +863,7 @@ export default function ProductInformationAddNew(props) {
               <Text style={styles.text}>{Translate.t("variation")}</Text>
               <View style={styles.radioGroupContainer}>
                 <RadioButton.Group
-                  style={{ alignItems: "flex-start" }}
+                  // style={styles.radioGroupContainer}
                   onValueChange={(variant) => {
                     onValueChanged(variant);
                   }}
@@ -892,7 +892,7 @@ export default function ProductInformationAddNew(props) {
                     </Text>
                   </View>
                   <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
+                    <RadioButton.Android 
                       value="none"
                       uncheckedColor="#FFF"
                       color="#BD9848"
@@ -939,26 +939,30 @@ export default function ProductInformationAddNew(props) {
 
               <Text style={styles.text}>{Translate.t("publishState")}</Text>
               <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
+                <RadioButton.Group style={styles.radioGroupContainer}
                   onValueChange={(newValue) => onPublishStateChanged(newValue)}
                   value={publishState}
                 >
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="published"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("published")}
-                  </Text>
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="unpublished"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("nonPublished")}
-                  </Text>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="published"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("published")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="unpublished"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("nonPublished")}
+                    </Text>
+                  </View>
                 </RadioButton.Group>
               </View>
               <View style={styles.releaseDateContainer}>
@@ -1043,58 +1047,68 @@ export default function ProductInformationAddNew(props) {
               </Text>
               <Text style={styles.text}>{Translate.t("productStatus")}</Text>
               <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
+                <RadioButton.Group style={styles.radioGroupContainer}
                   onValueChange={(newValue) => onProductStatusChanged(newValue)}
                   value={productStatus}
                 >
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="new"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("new")}
-                  </Text>
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="secondHand"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("secondHand")}
-                  </Text>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="new"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("new")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="secondHand"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("secondHand")}
+                    </Text>
+                  </View>
                 </RadioButton.Group>
               </View>
               <Text style={styles.text}>{Translate.t("targetUser")}</Text>
               <View style={styles.radioGroupContainer}>
-                <RadioButton.Group
+                <RadioButton.Group style={styles.radioGroupContainer}
                   onValueChange={(newValue) => onTargetUserChanged(newValue)}
                   value={targetUser}
                 >
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="allUser"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("allUser")}
-                  </Text>
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="generalUser"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("generalUser")}
-                  </Text>
-                  <RadioButton.Android
-                    uncheckedColor="#FFF"
-                    color="#BD9848"
-                    value="storeUser"
-                  />
-                  <Text style={styles.radioButtonText}>
-                    {Translate.t("storeUser")}
-                  </Text>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="allUser"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("allUser")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="generalUser"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("generalUser")}
+                    </Text>
+                  </View>
+                  <View style={styles.radionButtonLabel}>
+                    <RadioButton.Android
+                      uncheckedColor="#FFF"
+                      color="#BD9848"
+                      value="storeUser"
+                    />
+                    <Text style={styles.radioButtonText}>
+                      {Translate.t("storeUser")}
+                    </Text>
+                  </View>
                 </RadioButton.Group>
               </View>
               <Text style={styles.releaseDateWarningText}>
@@ -1529,14 +1543,15 @@ const styles = StyleSheet.create({
   radioGroupContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between"
   },
   radionButtonLabel: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    flexWrap: "wrap",
-    paddingRight: 10,
-    flexBasis: "auto",
+    // flexWrap: "wrap",
+    // paddingRight: 10,
+    // flexBasis: "auto",
   },
   releaseDateTextInput: {
     borderWidth: 0,
