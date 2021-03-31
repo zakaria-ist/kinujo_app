@@ -102,7 +102,7 @@ export default function ProductOneVariations({
       onProcessSVariationDetailsHtml(processVariationDetailsHtml(items));
       onLoaded(true);
     } else {
-      alert.warning("Please fill in the choice.");
+      alert.warning(Translate.t('choiseNotField'));
     }
   }
   function onProcess(items) {

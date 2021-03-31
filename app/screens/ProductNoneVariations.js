@@ -50,10 +50,14 @@ export default function ProductNoneVariations({
             if(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)){
               setEditStock(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)[0]);
             } else {
-              setEditStock("")
+              setEditStock("");
             }
           }
         }
+      } else {
+        setJanCode("");
+        setStock(0);
+        setEditStock("");
       }
     });
   }, [pItems]);

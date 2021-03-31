@@ -425,7 +425,7 @@ export default function Home(props) {
         />
         <View style={styles.discription_header}>
           <View>
-            <Text style={styles.disc_title_text}>{"Seller:" + shopName}</Text>
+            <Text style={styles.disc_title_text}>{Translate.t("seller") + ":" + shopName}</Text>
           </View>
           <View
             style={{

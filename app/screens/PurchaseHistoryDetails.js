@@ -271,7 +271,7 @@ export default function PurchaseHistoryDetails(props) {
           <Text
             style={{ position: "absolute", right: 0, fontSize: RFValue(12) }}
           >
-            {order && order.order ? order.status : ""}
+            {order && order.order ? (order.order.status == 1 ? Translate.t("shippingProcess") : Translate.t("shippingComplete")) : ""}
           </Text>
         </View>
         <View style={styles.productInformationContainer}>
