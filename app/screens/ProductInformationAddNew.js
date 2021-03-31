@@ -187,7 +187,9 @@ export default function ProductInformationAddNew(props) {
             request.get(props.route.params.url.replace("simple_products", "products")).then((response) => {
               let tmpProduct = response.data;
 
-              onProductCategoryChanged(tmpProduct.category.url);
+              if (tmpProduct.category) {
+                onProductCategoryChanged(tmpProduct.category.url);
+              }
               onProductChanged(response.data);
               onProductNameChanged(response.data.name);
               onBrandNameChanged(response.data.brand_name);
@@ -587,15 +589,15 @@ export default function ProductInformationAddNew(props) {
             ) {
               alert.warning(
                 response.errors[Object.keys(response.errors)[0]][0] +
-                  "(" +
-                  Object.keys(response.errors)[0] +
-                  ")",
+                            "(" +
+                            Object.keys(response.errors)[0] +
+                            ")",
                 () => {
                   onSpinnerChanged(false);
                 }
               );
             } else if (response.errors && response.errors.length > 0) {
-              alert.warning(response.errors[0], () => {
+              alert.warning(Translate.t(response.errors[0]), () => {
                 onSpinnerChanged(false);
               });
             } else if (response.error) {
@@ -731,12 +733,12 @@ export default function ProductInformationAddNew(props) {
               if(Object.keys(response.errors)[0] != "0"){
                 alert.warning(
                   response.errors[Object.keys(response.errors)[0]][0] +
-                    "(" +
-                    Object.keys(response.errors)[0] +
-                    ")"
+                              "(" +
+                              Object.keys(response.errors)[0] +
+                              ")"
                 );
               } else {
-                alert.warning(response.errors[0]);
+                alert.warning(Translate.t(response.errors[0]));
               }
             } else if (response.error) {
               alert.warning(response.error);

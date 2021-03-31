@@ -508,7 +508,7 @@ export default function HomeStoreList(props) {
           db.collection("chat")
             .add({
               groupName: friendName,
-              users: [ownUserID, String(friendID)],
+              users: [String(user.id), String(friendID)],
               totalMessage: 0,
               [ownMessageUnseenField]: 0,
               [friendMessageUnseenField]: 0,

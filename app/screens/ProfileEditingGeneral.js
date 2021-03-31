@@ -9,6 +9,7 @@ import {
   ImageBackground,
   Switch,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   Modal,
   TextInput,
   ScrollView,
@@ -64,6 +65,7 @@ function promptUpdate(props, user, field, value) {
 }
 
 export default function ProfileEditingGeneral(props) {
+  const BUTTON_SIZE = 40;
   const textInput = React.createRef();
   const [password, onPasswordChanged] = useStateIfMounted("********");
   const [phoneNumber, onPhoneNumberChanged] = useStateIfMounted("");
@@ -77,6 +79,8 @@ export default function ProfileEditingGeneral(props) {
   const [showCountry, onShowCountryChanged] = useStateIfMounted(false);
   const [countryCode, setCountryCode] = useStateIfMounted("");
   const [searchText, setSearchText] = useStateIfMounted("");
+  const [userPhone, onUserPhoneChanged] = useStateIfMounted("");
+  const [userCCode, onUserCCodeChanged] = useStateIfMounted("");
   const [countryHtml, setCountryHtml] = useStateIfMounted(<View></View>);
   const [addingFriendsByID, onAddingFriendsByIDChanged] = useStateIfMounted(false);
 
@@ -155,6 +159,8 @@ export default function ProfileEditingGeneral(props) {
     onUserChanged(response.data);
     onCallingCodeChanged(response.data.tel_code);
     setCountryCode(response.data.tel_code);
+    onUserPhoneChanged(response.data.tel);
+    onUserCCodeChanged(response.data.tel_code);
     if (updateData && updateData["type"] == "email" && verified == "1") {
       onEmailChanged(updateData["value"]);
       request.post("user/change-email", {
@@ -336,10 +342,16 @@ export default function ProfileEditingGeneral(props) {
     // alert.warning(tmpItem[1]);
     onCallingCodeChanged(tmpItem[1]);
   }
+  function closePressed() {
+    onShowCountryChanged(false);
+  }
   return (
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <Modal visible={showCountry}>
         <SafeAreaView>
+        <TouchableOpacity onPress={closePressed} style={[styles.button,{backgroundColor: 'white',borderColor: 'white'}]}>
+          <Icon name={'close'} color={'black'} size={BUTTON_SIZE} />
+        </TouchableOpacity>
           <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
             <View style={styles.searchInputContainer}>
               <TextInput
@@ -710,11 +722,24 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => {
                       if (phoneNumber) {
-                        onEditPhoneNumberChanged(false);
-                        promptUpdate(props, user, "tel", [
-                          callingCode,
-                          phoneNumber,
-                        ]);
+                        if (userPhone == phoneNumber && userCCode == callingCode) {
+                          onEditPhoneNumberChanged(false);
+                        } else {
+                          request.post("user/check-phone", {
+                            tel: phoneNumber,
+                            tel_code: callingCode,
+                          }).then(function(response) {
+                            if (response.data.success) {
+                              onEditPhoneNumberChanged(false);
+                              promptUpdate(props, user, "tel", [
+                                callingCode,
+                                phoneNumber,
+                              ]);
+                            } else {
+                              alert.warning(Translate.t('registerWarning'));
+                            }
+                          })
+                        }
                       } else {
                         alert.warning(Translate.t("fieldEmpty"));
                       }
@@ -1003,7 +1028,7 @@ export default function ProfileEditingGeneral(props) {
               value={!addingFriendsByID}
             />
           </View>
-          <View style={styles.tabContainer}>
+          {/* <View style={styles.tabContainer}>
             <Text style={styles.textInContainerLeft}>
               {Translate.t("profileEditAllowAddFriendByPhoneNum")}
             </Text>
@@ -1042,7 +1067,7 @@ export default function ProfileEditingGeneral(props) {
               }}
               value={!allowAddingFriendsByPhoneNumber}
             />
-          </View>
+          </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>

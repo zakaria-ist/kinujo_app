@@ -166,6 +166,7 @@ export default function FriendSearch(props) {
           key={friend.id}
           onPress={() => {
             request.addFriend(ownUserID, friend.id).then(() => {
+              alert.warning(Translate.t('friendAdded'));
               redirectToChat(friend.id, friend.real_name);
               onSearchTextChanged("");
             });

@@ -190,7 +190,7 @@ export default function PurchaseHistory(props) {
               <TouchableWithoutFeedback
                 onPress={() =>
                   redirectToChat(
-                    order.id,
+                    order.order.seller.id,
                     order.order.seller.store_name
                       ? order.order.seller.store_name
                       : order.order.seller.nickname
