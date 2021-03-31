@@ -162,7 +162,7 @@ export default function ProductTwoVariations({
         if (tmpChoices.length == 0) {
           product.choices.push(choiceObj);
         } else {
-          alert.warning("Please fill in the choice.");
+          alert.warning(Translate.t('choiseNotField'));
         }
       }
       return product;

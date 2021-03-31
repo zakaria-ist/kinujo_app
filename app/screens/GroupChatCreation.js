@@ -212,7 +212,7 @@ export default function GroupChatCreation(props) {
             });
         }
       } else {
-        alert.warning("Please fill in the group name");
+        alert.warning(Translate.t('groupNotFilled'));
       }
     } else if (friendIds.length == 0) {
       Alert.alert(
