@@ -875,6 +875,7 @@ export default function ProfileEditingStore(props) {
                     reverseColor="black"
                     onPress={() => {
                       if (phoneNumber) {
+                        phoneNumber = phoneNumber.replace(/,/g, "")
                         if (userPhone == phoneNumber && userCCode == callingCode) {
                           onEditPhoneNumberChanged(false);
                         } else {
@@ -902,6 +903,7 @@ export default function ProfileEditingStore(props) {
                   <TextInput
                     value={phoneNumber}
                     onChangeText={(value) => onPhoneNumberChanged(value)}
+                    keyboardType={'numeric'}
                     style={{
                       borderRadius: 10,
                       fontSize: RFValue(11),
