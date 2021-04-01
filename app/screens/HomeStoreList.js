@@ -69,6 +69,7 @@ export default function HomeStoreList(props) {
   const [userAuthorityID, onUserAuthorityIDChanged] = useStateIfMounted(0);
   const [product, onProductChanged] = useStateIfMounted({});
   const [selectedJanCode, onSelectedJanCodeChanged] = useStateIfMounted(null);
+  const [selectedJanStock, onSelectedJanStockChanged] = useStateIfMounted(null);
   const [selectedName, onSelectedNameChanged] = useStateIfMounted("");
   const [images, onImagesChanged] = useStateIfMounted([]);
   const [show, onShowChanged] = useStateIfMounted({});
@@ -145,6 +146,7 @@ export default function HomeStoreList(props) {
               status={selected === tmpJanCode.id ? "checked" : "unchecked"}
               onPress={() => {
                 onSelectedJanCodeChanged(tmpJanCode.id);
+                onSelectedJanStockChanged(tmpJanCode.stock);
                 if (tmpProduct.variety == 2) {
                   onSelectedNameChanged(name + " x " + key);
                 } else {
@@ -170,6 +172,9 @@ export default function HomeStoreList(props) {
     } else if (tmpProduct.variety == 0) {
       onSelectedJanCodeChanged(
         tmpJanCodes[Object.keys(tmpJanCodes)[0]]["none"].id
+      );
+      onSelectedJanStockChanged(
+        tmpJanCodes[Object.keys(tmpJanCodes)[0]]["none"].stock
       );
       return [];
     }
@@ -246,7 +251,8 @@ export default function HomeStoreList(props) {
         }
       });
 
-      onSelectedJanCodeChanged("")
+      onSelectedJanCodeChanged("");
+      onSelectedJanStockChanged(null);
       for (var i = 1; i < 10; i++) {
         if (
           cartItems.filter((item) => {
@@ -944,7 +950,17 @@ export default function HomeStoreList(props) {
                     }}
                     onChangeItem={(item) => {
                       if (item) {
-                        onQuantityChanged(item.value);
+                        if (selectedJanStock) {
+                          if (selectedJanStock >= item.value) {
+                            onQuantityChanged(item.value);
+                          } else {
+                            onQuantityChanged(selectedJanStock);
+                          }
+                        } else {
+                          alert.warning(
+                            Translate.t("limitedStock")
+                          );
+                        }
                       }
                     }}
                   />
@@ -957,53 +973,60 @@ export default function HomeStoreList(props) {
                 >
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      if ((selectedJanCode || !name) && quantity) {
-                        onShowChanged(false);
-                        db.collection("users")
-                          .doc(user.id.toString())
-                          .collection("carts")
-                          .doc(selectedJanCode.toString())
-                          .get()
-                          .then((snapshot) => {
-                            let tmpQuantity = parseInt(quantity);
-                            if (snapshot.data()) {
-                              tmpQuantity += parseInt(snapshot.data().quantity);
-                            }
-                            db.collection("users")
-                              .doc(user.id.toString())
-                              .collection("carts")
-                              .doc(selectedJanCode.toString())
-                              .set({
-                                id: product.id,
-                                quantity: tmpQuantity,
-                                url: selectedJanCode,
-                                name: selectedName,
-                              }).then(()=>{
-                                const subscriber = db
-                                  .collection("users")
-                                  .doc(user.id.toString())
-                                  .collection("carts")
-                                  .get()
-                                  .then((querySnapShot) => {
-                                    onCartCountChanged(querySnapShot.size);
-                                  });
-                              })
-                          });
+                      if (quantity <= selectedJanStock) {
+                        if ((selectedJanCode || !name) && quantity) {
+                          onShowChanged(false);
+                          db.collection("users")
+                            .doc(user.id.toString())
+                            .collection("carts")
+                            .doc(selectedJanCode.toString())
+                            .get()
+                            .then((snapshot) => {
+                              let tmpQuantity = parseInt(quantity);
+                              if (snapshot.data()) {
+                                tmpQuantity += parseInt(snapshot.data().quantity);
+                              }
+                              db.collection("users")
+                                .doc(user.id.toString())
+                                .collection("carts")
+                                .doc(selectedJanCode.toString())
+                                .set({
+                                  id: product.id,
+                                  quantity: tmpQuantity,
+                                  url: selectedJanCode,
+                                  name: selectedName,
+                                }).then(()=>{
+                                  const subscriber = db
+                                    .collection("users")
+                                    .doc(user.id.toString())
+                                    .collection("carts")
+                                    .get()
+                                    .then((querySnapShot) => {
+                                      onCartCountChanged(querySnapShot.size);
+                                    });
+                                })
+                            });
 
-                        if(product.variety != 0){
-                          onSelectedJanCodeChanged(null);
+                          if(product.variety != 0){
+                            onSelectedJanCodeChanged(null);
+                            onSelectedJanStockChanged(null);
+                          }
+                          onShowText(true);
+                          setTimeout(
+                            function () {
+                              onShowText(false);
+                            }.bind(this),
+                            2000
+                          );
+                        } else {
+                          alert.warning(
+                            Translate.t("no_select_jancode")
+                          );
                         }
-                        onShowText(true);
-                        setTimeout(
-                          function () {
-                            onShowText(false);
-                          }.bind(this),
-                          2000
-                        );
                       } else {
                         alert.warning(
-                          Translate.t("no_select_jancode")
-                        );
+                            Translate.t("limitedStock")
+                          );
                       }
                     }}
                   >

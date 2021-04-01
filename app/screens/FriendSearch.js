@@ -213,7 +213,7 @@ export default function FriendSearch(props) {
                   })
                   .then(function (response) {
                     tmpFriend = response.data.filter((item) => {
-                      return !item.allowed_by_id && item.is_hidden == 0;
+                      return !item.allowed_by_id && item.is_hidden == 0 && item.id != ownUserID;
                     });
                     console.log(tmpFriend);
                     onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
