@@ -369,5 +369,7 @@
   "Please fill in product page display method.": "商品ページ表示方式を入力してください",
   "Please fill in product description.": "商品説明文を入力してください",
   "Please fill in Jan Code.": "JANコードを入力してください",
-  "Please fill in stock.": "在庫を入力してください"
+  "Please fill in stock.": "在庫を入力してください",
+  "limitedStock": "要求された在庫は利用できません。",
+  "cartFilterMsg": "在庫が限られているか空の場合、商品はカートから削除されます"
 }

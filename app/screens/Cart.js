@@ -742,6 +742,7 @@ export default function Cart(props) {
           }
         });
     } else {
+      
       processCarts(is_store);
     }
   }
@@ -887,8 +888,44 @@ export default function Cart(props) {
                 //empty cart for deleted products
                 firebaseProducts = firebaseProducts.filter((fbProduct) => {
                   let tmpProduct = cartProducts.filter((product) => {
-                    return (product.id == fbProduct.product_id);
+                    if (product.id == fbProduct.product_id) {
+                      return product.productVarieties.map((productVariety) => {
+                        if (!productVariety.is_hidden) {
+                          return productVariety.productVarietySelections.map((productVarietySelection) => {
+                              if (!productVarietySelection.is_hidden) {
+                                if (!productVarietySelection.jancode_horizontal.is_hidden) {
+                                  return productVarietySelection.jancode_horizontal.map((horizontal) => {
+                                      if (!horizontal.is_hidden) {
+                                        if (horizontal.id == fbProduct.id) {
+                                          if (horizontal.stock >= fbProduct.quantity) {
+                                            return true;
+                                          }
+                                        }
+                                      }
+                                    }
+                                  );
+                                }
+
+                                if (!productVarietySelection.jancode_vertical.is_hidden) {
+                                  return productVarietySelection.jancode_vertical.map((vertical) => {
+                                      if (!vertical.is_hidden) {
+                                        if (vertical.id == fbProduct.id) {
+                                          if (vertical.stock >= fbProduct.quantity) {
+                                            return true;
+                                          }
+                                        }
+                                      }
+                                    }
+                                  );
+                                }
+                              }
+                            }
+                          );
+                        }
+                      });
+                    }
                   });
+                  console.log('tmpProduct', tmpProduct);
                   if (tmpProduct && tmpProduct.length) {
                     return true;
                   } else {
@@ -908,6 +945,10 @@ export default function Cart(props) {
                       });
                   }
                 });
+
+                if (items && firebaseProducts.length < items.length) {
+                  alert.warning(Translate.t('cartFilterMsg'));
+                }
                 
                 let prods = response.data.products;
                 let tempShops = [];
