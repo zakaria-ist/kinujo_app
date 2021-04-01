@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { InteractionManager } from 'react-native';
+import { InteractionManager } from "react-native";
 import {
   StyleSheet,
   Text,
@@ -17,7 +17,7 @@ import {
   Platform,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from "react-native-expo-cached-image";
 import { Colors } from "../assets/Colors.js";
 import ImagePicker from "react-native-image-picker";
 import { RadioButton } from "react-native-paper";
@@ -68,14 +68,18 @@ export default function ProductInformationAddNew(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = useStateIfMounted({});
   const [productName, onProductNameChanged] = useStateIfMounted("");
-  const [noneVariationItems, onNoneVariationItemsChanged] = useStateIfMounted([]);
+  const [noneVariationItems, onNoneVariationItemsChanged] = useStateIfMounted(
+    []
+  );
   const [oneVariationItems, onOneVariationItemsChanged] = useStateIfMounted([]);
   const [twoVariationItems, onTwoVariationItemsChanged] = useStateIfMounted([]);
   const [brandName, onBrandNameChanged] = useStateIfMounted("");
   const [pr, onPrChanged] = useStateIfMounted("");
   const [productId, onProductIdChanged] = useStateIfMounted("");
   const [productCategory, onProductCategoryChanged] = useStateIfMounted("");
-  const [productVariation, onProductVariationChanged] = useStateIfMounted("none");
+  const [productVariation, onProductVariationChanged] = useStateIfMounted(
+    "none"
+  );
   const [publishState, onPublishStateChanged] = useStateIfMounted("");
   const [publishDate, onPublishDateChanged] = useStateIfMounted("");
   const [productStatus, onProductStatusChanged] = useStateIfMounted("");
@@ -89,7 +93,9 @@ export default function ProductInformationAddNew(props) {
   ] = useStateIfMounted("");
   const [productImages, onProductImagesChanged] = useStateIfMounted([]);
   const [productImageHtml, onProductImageHtmlChanged] = useStateIfMounted([]);
-  const [productDescription, onProductDescriptionChanged] = useStateIfMounted("");
+  const [productDescription, onProductDescriptionChanged] = useStateIfMounted(
+    ""
+  );
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   const [product, onProductChanged] = useStateIfMounted(false);
   const [productCategories, onProductCategoriesChanged] = useStateIfMounted([]);
@@ -184,299 +190,318 @@ export default function ProductInformationAddNew(props) {
           onProductCategoriesChanged(categories);
 
           if (props.route.params.url) {
-            request.get(props.route.params.url.replace("simple_products", "products")).then((response) => {
-              let tmpProduct = response.data;
+            request
+              .get(
+                props.route.params.url.replace("simple_products", "products")
+              )
+              .then((response) => {
+                let tmpProduct = response.data;
 
-              if (tmpProduct.category) {
-                onProductCategoryChanged(tmpProduct.category.url);
-              }
-              onProductChanged(response.data);
-              onProductNameChanged(response.data.name);
-              onBrandNameChanged(response.data.brand_name);
-              onPrChanged(response.data.pr);
-              onProductIdChanged(response.data.url_str);
-              onPublishDateChanged(response.data.opened_date);
-              onPublishStateChanged(
-                response.data.is_opened ? "published" : "unpublished"
-              );
-              onProductVariationChanged(
-                response.data.variety == 0
-                  ? "none"
-                  : response.data.variety == 1
-                  ? "one"
-                  : "two"
-              );
-              onProductStatusChanged(
-                response.data.is_used == 0 ? "new" : "secondHand"
-              );
-              onTargetUserChanged(
-                response.data.target == 0
-                  ? "allUser"
-                  : response.data.target == 1
-                  ? "generalUser"
-                  : "storeUser"
-              );
-              onPriceChanged(response.data.price.toString());
-              onStorePriceChanged(response.data.store_price);
-              onShippingChanged(response.data.shipping_fee + "");
-              onProductDescriptionChanged(response.data.description);
-              let oldImages = response.data.productImages.filter((image)=>{
-                return !image.is_hidden && !image.image.is_hidden;
-              }).map((image) => {
-                let tmpImage = image.image;
-                tmpImage["is_old"] = true;
-                return tmpImage;
-              });
-              onProductImagesChanged(oldImages);
-              onProductPageDisplayMethodChanged("slidingType");
-              let tmpImages = response.data.productImages;
+                if (tmpProduct.category) {
+                  onProductCategoryChanged(tmpProduct.category.url);
+                }
+                onProductChanged(response.data);
+                onProductNameChanged(response.data.name);
+                onBrandNameChanged(response.data.brand_name);
+                onPrChanged(response.data.pr);
+                onProductIdChanged(response.data.url_str);
+                onPublishDateChanged(response.data.opened_date);
+                onPublishStateChanged(
+                  response.data.is_opened ? "published" : "unpublished"
+                );
+                onProductVariationChanged(
+                  response.data.variety == 0
+                    ? "none"
+                    : response.data.variety == 1
+                    ? "one"
+                    : "two"
+                );
+                onProductStatusChanged(
+                  response.data.is_used == 0 ? "new" : "secondHand"
+                );
+                onTargetUserChanged(
+                  response.data.target == 0
+                    ? "allUser"
+                    : response.data.target == 1
+                    ? "generalUser"
+                    : "storeUser"
+                );
+                onPriceChanged(response.data.price.toString());
+                onStorePriceChanged(response.data.store_price);
+                onShippingChanged(response.data.shipping_fee + "");
+                onProductDescriptionChanged(response.data.description);
+                let oldImages = response.data.productImages
+                  .filter((image) => {
+                    return !image.is_hidden && !image.image.is_hidden;
+                  })
+                  .map((image) => {
+                    let tmpImage = image.image;
+                    tmpImage["is_old"] = true;
+                    return tmpImage;
+                  });
+                onProductImagesChanged(oldImages);
+                onProductPageDisplayMethodChanged("slidingType");
+                let tmpImages = response.data.productImages;
 
-              let html = [];
-              tmpImages.map((image) => {
-                image = image.image;
-                if (!image.is_hidden) {
-                  html.push(
-                    <View
-                      key={image.id}
-                      style={{
-                        marginTop: heightPercentageToDP("1%"),
-                        height: 1,
-                        width: "100%",
-                        height: heightPercentageToDP("30%"),
-                        borderRadius: 1,
-                        borderWidth: 1,
-                        borderColor: Colors.deepGrey,
-                        borderStyle: "dashed",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Image
+                let html = [];
+                tmpImages.map((image) => {
+                  image = image.image;
+                  if (!image.is_hidden) {
+                    html.push(
+                      <View
+                        key={image.id}
                         style={{
+                          marginTop: heightPercentageToDP("1%"),
+                          height: 1,
                           width: "100%",
                           height: heightPercentageToDP("30%"),
-                          position: "absolute",
+                          borderRadius: 1,
+                          borderWidth: 1,
+                          borderColor: Colors.deepGrey,
+                          borderStyle: "dashed",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
-                        source={{ uri: image.image }}
-                      />
-                    </View>
+                      >
+                        <Image
+                          style={{
+                            width: "100%",
+                            height: heightPercentageToDP("30%"),
+                            position: "absolute",
+                          }}
+                          source={{ uri: image.image }}
+                        />
+                      </View>
+                    );
+                  }
+                });
+                onProductImageHtmlChanged(html);
+                console.log(response.data);
+                if (response.data.variety == 0) {
+                  let productVariety = response.data.productVarieties[0];
+                  let productVarietySelection =
+                    productVariety.productVarietySelections[0];
+                  let horizontal =
+                    productVarietySelection.jancode_horizontal[0];
+                  onNoneVariationItemsChanged({
+                    id: horizontal.id,
+                    janCode: horizontal.jan_code,
+                    stock: horizontal.stock,
+                  });
+                }
+                if (response.data.variety == 1) {
+                  let tmpItems = {};
+                  tmpItems["items"] = [];
+                  // let productVariety = response.data.productVarieties[0];
+                  response.data.productVarieties.map((productVariety) => {
+                    if (!productVariety.is_hidden) {
+                      tmpItems["name"] = productVariety["name"];
+                      tmpItems["id"] = productVariety["id"];
+                      for (
+                        var i = 0;
+                        i < productVariety.productVarietySelections.length;
+                        i++
+                      ) {
+                        let productVarietySelection =
+                          productVariety.productVarietySelections[i];
+                        let vertical =
+                          productVarietySelection.jancode_horizontal[0];
+                        tmpItems["items"].push({
+                          id: vertical.id,
+                          index: tmpItems["items"].length,
+                          choice: productVarietySelection.selection,
+                          stock: vertical.stock + "",
+                          janCode: vertical.jan_code,
+                          hidden: vertical.is_hidden ? true : false,
+                          delete: vertical.is_hidden ? true : false,
+                        });
+                      }
+                    }
+                  });
+                  onOneVariationItemsChanged(tmpItems);
+                }
+                if (response.data.variety == 2) {
+                  let firstProductVariety = response.data.productVarieties[0];
+                  let secondProductVariety = response.data.productVarieties[1];
+
+                  let tmpItems = {
+                    items: [
+                      {
+                        id: firstProductVariety["id"],
+                        index: 0,
+                        horizontalItem: firstProductVariety["name"],
+                        choices: [],
+                      },
+                      {
+                        id: secondProductVariety["id"],
+                        index: 1,
+                        horizontalItem: secondProductVariety["name"],
+                        choices: [],
+                      },
+                    ],
+                    mappingValue: {},
+                  };
+
+                  rawMapping = {};
+
+                  firstProductVariety.productVarietySelections.map(
+                    (productVarietySelection) => {
+                      if (!productVarietySelection.is_hidden) {
+                        rawMapping[productVarietySelection.id] =
+                          productVarietySelection.selection;
+                        tmpItems["items"][0]["choices"].push({
+                          choiceIndex: tmpItems["items"][0]["choices"].length,
+                          choiceItem: productVarietySelection.selection,
+                          id: productVarietySelection.id,
+                        });
+                      }
+                    }
                   );
+                  secondProductVariety.productVarietySelections.map(
+                    (productVarietySelection) => {
+                      if (!productVarietySelection.is_hidden) {
+                        rawMapping[productVarietySelection.id] =
+                          productVarietySelection.selection;
+                        tmpItems["items"][1]["choices"].push({
+                          choiceIndex: tmpItems["items"][1]["choices"].length,
+                          choiceItem: productVarietySelection.selection,
+                          id: productVarietySelection.id,
+                        });
+                      }
+                    }
+                  );
+
+                  firstProductVariety.productVarietySelections.map(
+                    (productVarietySelection) => {
+                      if (!productVarietySelection.is_hidden) {
+                        productVarietySelection.jancode_horizontal.map(
+                          (horizontal) => {
+                            if (
+                              horizontal.horizontal &&
+                              horizontal.vertical &&
+                              !horizontal.is_hidden
+                            ) {
+                              let horizontalId = getId(horizontal.horizontal);
+                              let verticalId = getId(horizontal.vertical);
+                              if (
+                                !tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ]
+                              ) {
+                                tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ] = {};
+                              }
+                              tmpItems["mappingValue"][
+                                rawMapping[horizontalId]
+                              ][rawMapping[verticalId]] = {
+                                id: horizontal.id,
+                                stock: horizontal.stock + "",
+                                janCode: horizontal.jan_code,
+                                delete: horizontal.is_hidden ? true : false,
+                              };
+                            }
+                          }
+                        );
+                        productVarietySelection.jancode_vertical.map(
+                          (vertical) => {
+                            if (
+                              vertical.horizontal &&
+                              vertical.vertical &&
+                              !vertical.is_hidden
+                            ) {
+                              let horizontalId = getId(vertical.horizontal);
+                              let verticalId = getId(vertical.vertical);
+                              if (
+                                !tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ]
+                              ) {
+                                tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ] = {};
+                              }
+                              tmpItems["mappingValue"][
+                                rawMapping[horizontalId]
+                              ][rawMapping[verticalId]] = {
+                                id: vertical.id,
+                                stock: vertical.stock + "",
+                                janCode: vertical.jan_code,
+                                delete: vertical.is_hidden ? true : false,
+                              };
+                            }
+                          }
+                        );
+                      }
+                    }
+                  );
+                  secondProductVariety.productVarietySelections.map(
+                    (productVarietySelection) => {
+                      if (!productVarietySelection.is_hidden) {
+                        productVarietySelection.jancode_horizontal.map(
+                          (horizontal) => {
+                            if (
+                              horizontal.horizontal &&
+                              horizontal.vertical &&
+                              !horizontal.is_hidden
+                            ) {
+                              let horizontalId = getId(horizontal.horizontal);
+                              let verticalId = getId(horizontal.vertical);
+                              if (
+                                !tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ]
+                              ) {
+                                tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ] = {};
+                              }
+                              tmpItems["mappingValue"][
+                                rawMapping[horizontalId]
+                              ][rawMapping[verticalId]] = {
+                                id: horizontal.id,
+                                stock: horizontal.stock + "",
+                                janCode: horizontal.jan_code,
+                                delete: horizontal.is_hidden ? true : false,
+                              };
+                            }
+                          }
+                        );
+                        productVarietySelection.jancode_vertical.map(
+                          (vertical) => {
+                            if (
+                              vertical.horizontal &&
+                              vertical.vertical &&
+                              !vertical.is_hidden
+                            ) {
+                              let horizontalId = getId(vertical.horizontal);
+                              let verticalId = getId(vertical.vertical);
+                              if (
+                                !tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ]
+                              ) {
+                                tmpItems["mappingValue"][
+                                  rawMapping[horizontalId]
+                                ] = {};
+                              }
+                              tmpItems["mappingValue"][
+                                rawMapping[horizontalId]
+                              ][rawMapping[verticalId]] = {
+                                id: vertical.id,
+                                stock: vertical.stock + "",
+                                janCode: vertical.jan_code,
+                                delete: vertical.is_hidden ? true : false,
+                              };
+                            }
+                          }
+                        );
+                      }
+                    }
+                  );
+                  onTwoVariationItemsChanged(tmpItems);
                 }
               });
-              onProductImageHtmlChanged(html);
-              console.log(response.data)
-              if (response.data.variety == 0) {
-                let productVariety = response.data.productVarieties[0];
-                let productVarietySelection =
-                  productVariety.productVarietySelections[0];
-                let horizontal = productVarietySelection.jancode_horizontal[0];
-                onNoneVariationItemsChanged({
-                  id: horizontal.id,
-                  janCode: horizontal.jan_code,
-                  stock: horizontal.stock,
-                });
-              }
-              if (response.data.variety == 1) {
-                let tmpItems = {};
-                tmpItems["items"] = [];
-                // let productVariety = response.data.productVarieties[0];
-                response.data.productVarieties.map((productVariety) => {
-                  if (!productVariety.is_hidden) {
-                    tmpItems["name"] = productVariety["name"];
-                    tmpItems["id"] = productVariety["id"];
-                    for (
-                      var i = 0;
-                      i < productVariety.productVarietySelections.length;
-                      i++
-                    ) {
-                      let productVarietySelection =
-                        productVariety.productVarietySelections[i];
-                      let vertical =
-                        productVarietySelection.jancode_horizontal[0];
-                      tmpItems["items"].push({
-                        id: vertical.id,
-                        index: tmpItems["items"].length,
-                        choice: productVarietySelection.selection,
-                        stock: vertical.stock + "",
-                        janCode: vertical.jan_code,
-                        hidden: vertical.is_hidden ? true : false,
-                        delete: vertical.is_hidden ? true : false,
-                      });
-                    }
-                  }
-                });
-                onOneVariationItemsChanged(tmpItems);
-              }
-              if (response.data.variety == 2) {
-                let firstProductVariety = response.data.productVarieties[0];
-                let secondProductVariety = response.data.productVarieties[1];
-
-                let tmpItems = {
-                  items: [
-                    {
-                      id: firstProductVariety["id"],
-                      index: 0,
-                      horizontalItem: firstProductVariety["name"],
-                      choices: [],
-                    },
-                    {
-                      id: secondProductVariety["id"],
-                      index: 1,
-                      horizontalItem: secondProductVariety["name"],
-                      choices: [],
-                    },
-                  ],
-                  mappingValue: {},
-                };
-
-                rawMapping = {};
-
-                firstProductVariety.productVarietySelections.map(
-                  (productVarietySelection) => {
-                    if (!productVarietySelection.is_hidden) {
-                      rawMapping[productVarietySelection.id] =
-                        productVarietySelection.selection;
-                      tmpItems["items"][0]["choices"].push({
-                        choiceIndex: tmpItems["items"][0]["choices"].length,
-                        choiceItem: productVarietySelection.selection,
-                        id: productVarietySelection.id,
-                      });
-                    }
-                  }
-                );
-                secondProductVariety.productVarietySelections.map(
-                  (productVarietySelection) => {
-                    if (!productVarietySelection.is_hidden) {
-                      rawMapping[productVarietySelection.id] =
-                        productVarietySelection.selection;
-                      tmpItems["items"][1]["choices"].push({
-                        choiceIndex: tmpItems["items"][1]["choices"].length,
-                        choiceItem: productVarietySelection.selection,
-                        id: productVarietySelection.id,
-                      });
-                    }
-                  }
-                );
-
-                firstProductVariety.productVarietySelections.map(
-                  (productVarietySelection) => {
-                    if (!productVarietySelection.is_hidden) {
-                      productVarietySelection.jancode_horizontal.map(
-                        (horizontal) => {
-                          if (
-                            horizontal.horizontal &&
-                            horizontal.vertical &&
-                            !horizontal.is_hidden
-                          ) {
-                            let horizontalId = getId(horizontal.horizontal);
-                            let verticalId = getId(horizontal.vertical);
-                            if (
-                              !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                            ) {
-                              tmpItems["mappingValue"][
-                                rawMapping[horizontalId]
-                              ] = {};
-                            }
-                            tmpItems["mappingValue"][rawMapping[horizontalId]][
-                              rawMapping[verticalId]
-                            ] = {
-                              id: horizontal.id,
-                              stock: horizontal.stock + "",
-                              janCode: horizontal.jan_code,
-                              delete: horizontal.is_hidden ? true : false,
-                            };
-                          }
-                        }
-                      );
-                      productVarietySelection.jancode_vertical.map((vertical) => {
-                        if (
-                          vertical.horizontal &&
-                          vertical.vertical &&
-                          !vertical.is_hidden
-                        ) {
-                          let horizontalId = getId(vertical.horizontal);
-                          let verticalId = getId(vertical.vertical);
-                          if (
-                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                          ) {
-                            tmpItems["mappingValue"][
-                              rawMapping[horizontalId]
-                            ] = {};
-                          }
-                          tmpItems["mappingValue"][rawMapping[horizontalId]][
-                            rawMapping[verticalId]
-                          ] = {
-                            id: vertical.id,
-                            stock: vertical.stock + "",
-                            janCode: vertical.jan_code,
-                            delete: vertical.is_hidden ? true : false,
-                          };
-                        }
-                      });
-                    }
-                  }
-                );
-                secondProductVariety.productVarietySelections.map(
-                  (productVarietySelection) => {
-                    if (!productVarietySelection.is_hidden) {
-                      productVarietySelection.jancode_horizontal.map(
-                        (horizontal) => {
-                          if (
-                            horizontal.horizontal &&
-                            horizontal.vertical &&
-                            !horizontal.is_hidden
-                          ) {
-                            let horizontalId = getId(horizontal.horizontal);
-                            let verticalId = getId(horizontal.vertical);
-                            if (
-                              !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                            ) {
-                              tmpItems["mappingValue"][
-                                rawMapping[horizontalId]
-                              ] = {};
-                            }
-                            tmpItems["mappingValue"][rawMapping[horizontalId]][
-                              rawMapping[verticalId]
-                            ] = {
-                              id: horizontal.id,
-                              stock: horizontal.stock + "",
-                              janCode: horizontal.jan_code,
-                              delete: horizontal.is_hidden ? true : false,
-                            };
-                          }
-                        }
-                      );
-                      productVarietySelection.jancode_vertical.map((vertical) => {
-                        if (
-                          vertical.horizontal &&
-                          vertical.vertical &&
-                          !vertical.is_hidden
-                        ) {
-                          let horizontalId = getId(vertical.horizontal);
-                          let verticalId = getId(vertical.vertical);
-                          if (
-                            !tmpItems["mappingValue"][rawMapping[horizontalId]]
-                          ) {
-                            tmpItems["mappingValue"][
-                              rawMapping[horizontalId]
-                            ] = {};
-                          }
-                          tmpItems["mappingValue"][rawMapping[horizontalId]][
-                            rawMapping[verticalId]
-                          ] = {
-                            id: vertical.id,
-                            stock: vertical.stock + "",
-                            janCode: vertical.jan_code,
-                            delete: vertical.is_hidden ? true : false,
-                          };
-                        }
-                      });
-                    }
-                  }
-                );
-                onTwoVariationItemsChanged(tmpItems);
-              }
-            });
           } else {
             let d = new Date();
             onPublishDateChanged(Moment().format("YYYY-MM-DD"));
@@ -485,7 +510,7 @@ export default function ProductInformationAddNew(props) {
         .catch((error) => {
           // console.log(error);
         });
-      });
+    });
   }, [isFocused]);
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
@@ -589,9 +614,9 @@ export default function ProductInformationAddNew(props) {
             ) {
               alert.warning(
                 response.errors[Object.keys(response.errors)[0]][0] +
-                            "(" +
-                            Object.keys(response.errors)[0] +
-                            ")",
+                  "(" +
+                  Object.keys(response.errors)[0] +
+                  ")",
                 () => {
                   onSpinnerChanged(false);
                 }
@@ -677,21 +702,32 @@ export default function ProductInformationAddNew(props) {
                 );
             }
 
-            
-            if(
-              (tmpTwoVariation['items'][0]['choices'].filter((choice)=>{
-                return choice.choiceItem == choice1.choiceItem && !choice['delete'];
-              }).length == 0 && tmpTwoVariation['items'][1]['choices'].filter((choice)=>{
-                return choice.choiceItem == choice1.choiceItem && !choice['delete'];
-              }).length == 0) || (tmpTwoVariation['items'][0]['choices'].filter((choice)=>{
-                return choice.choiceItem == choice2.choiceItem && !choice['delete'];
-              }).length == 0 && tmpTwoVariation['items'][1]['choices'].filter((choice)=>{
-                return choice.choiceItem == choice2.choiceItem && !choice['delete'];
-              }).length == 0)){
-                tmpTwoVariation["mappingValue"][choice1.choiceItem][
-                  choice2.choiceItem
-                ]["delete"] = true;
-              }
+            if (
+              (tmpTwoVariation["items"][0]["choices"].filter((choice) => {
+                return (
+                  choice.choiceItem == choice1.choiceItem && !choice["delete"]
+                );
+              }).length == 0 &&
+                tmpTwoVariation["items"][1]["choices"].filter((choice) => {
+                  return (
+                    choice.choiceItem == choice1.choiceItem && !choice["delete"]
+                  );
+                }).length == 0) ||
+              (tmpTwoVariation["items"][0]["choices"].filter((choice) => {
+                return (
+                  choice.choiceItem == choice2.choiceItem && !choice["delete"]
+                );
+              }).length == 0 &&
+                tmpTwoVariation["items"][1]["choices"].filter((choice) => {
+                  return (
+                    choice.choiceItem == choice2.choiceItem && !choice["delete"]
+                  );
+                }).length == 0)
+            ) {
+              tmpTwoVariation["mappingValue"][choice1.choiceItem][
+                choice2.choiceItem
+              ]["delete"] = true;
+            }
           });
         });
       }
@@ -728,14 +764,13 @@ export default function ProductInformationAddNew(props) {
           if (response.success) {
             props.navigation.goBack();
           } else {
-
             if (response.errors && Object.keys(response.errors).length > 0) {
-              if(Object.keys(response.errors)[0] != "0"){
+              if (Object.keys(response.errors)[0] != "0") {
                 alert.warning(
                   response.errors[Object.keys(response.errors)[0]][0] +
-                              "(" +
-                              Object.keys(response.errors)[0] +
-                              ")"
+                    "(" +
+                    Object.keys(response.errors)[0] +
+                    ")"
                 );
               } else {
                 alert.warning(Translate.t(response.errors[0]));
@@ -791,7 +826,12 @@ export default function ProductInformationAddNew(props) {
           props.navigation.navigate("Cart");
         }}
       />
-      <CustomSecondaryHeader outUser={user} props={props} name={user.nickname} accountType={""} />
+      <CustomSecondaryHeader
+        outUser={user}
+        props={props}
+        name={user.nickname}
+        accountType={""}
+      />
       <View style={{ flex: 1 }}>
         <KeyboardAvoidingView
           behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -871,37 +911,39 @@ export default function ProductInformationAddNew(props) {
                   }}
                   value={productVariation}
                 >
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="one"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {"1 "}
-                      {Translate.t("item")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      value="two"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {"2 "}
-                      {Translate.t("item")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android 
-                      value="none"
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("none")}
-                    </Text>
+                  <View style={styles.radioButtonContainer}>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        value="one"
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {"1 "}
+                        {Translate.t("item")}
+                      </Text>
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        value="two"
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {"2 "}
+                        {Translate.t("item")}
+                      </Text>
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        value="none"
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {Translate.t("none")}
+                      </Text>
+                    </View>
                   </View>
                 </RadioButton.Group>
               </View>
@@ -941,29 +983,32 @@ export default function ProductInformationAddNew(props) {
 
               <Text style={styles.text}>{Translate.t("publishState")}</Text>
               <View style={styles.radioGroupContainer}>
-                <RadioButton.Group style={styles.radioGroupContainer}
+                <RadioButton.Group
+                  // style={styles.radioGroupContainer}
                   onValueChange={(newValue) => onPublishStateChanged(newValue)}
                   value={publishState}
                 >
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="published"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("published")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="unpublished"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("nonPublished")}
-                    </Text>
+                  <View style={styles.radioButtonContainer}>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                        value="published"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {Translate.t("published")}
+                      </Text>
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                        value="unpublished"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {Translate.t("nonPublished")}
+                      </Text>
+                    </View>
                   </View>
                 </RadioButton.Group>
               </View>
@@ -1047,72 +1092,82 @@ export default function ProductInformationAddNew(props) {
               <Text style={styles.releaseDateWarningText}>
                 {Translate.t("publishWarning")}
               </Text>
-              <Text style={styles.text}>{Translate.t("productStatus")}</Text>
+              <Text style={[styles.text, { marginTop: 20 }]}>
+                {Translate.t("productStatus")}
+              </Text>
               <View style={styles.radioGroupContainer}>
-                <RadioButton.Group style={styles.radioGroupContainer}
+                <RadioButton.Group
+                  // style={styles.radioGroupContainer}
                   onValueChange={(newValue) => onProductStatusChanged(newValue)}
                   value={productStatus}
                 >
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="new"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("new")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="secondHand"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("secondHand")}
-                    </Text>
-                  </View>
-                </RadioButton.Group>
-              </View>
-              <Text style={styles.text}>{Translate.t("targetUser")}</Text>
-              <View style={styles.radioGroupContainer}>
-                <RadioButton.Group style={styles.radioGroupContainer}
-                  onValueChange={(newValue) => onTargetUserChanged(newValue)}
-                  value={targetUser}
-                >
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="allUser"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("allUser")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="generalUser"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("generalUser")}
-                    </Text>
-                  </View>
-                  <View style={styles.radionButtonLabel}>
-                    <RadioButton.Android
-                      uncheckedColor="#FFF"
-                      color="#BD9848"
-                      value="storeUser"
-                    />
-                    <Text style={styles.radioButtonText}>
-                      {Translate.t("storeUser")}
-                    </Text>
+                  <View style={styles.radioButtonContainer}>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                        value="new"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {Translate.t("new")}
+                      </Text>
+                    </View>
+                    <View style={styles.radioButtonItem}>
+                      <RadioButton.Android
+                        uncheckedColor="#FFF"
+                        color="#BD9848"
+                        value="secondHand"
+                      />
+                      <Text style={styles.radioButtonText}>
+                        {Translate.t("secondHand")}
+                      </Text>
+                    </View>
                   </View>
                 </RadioButton.Group>
               </View>
+              <Text style={[styles.text, { marginTop: 20 }]}>
+                {Translate.t("targetUser")}
+              </Text>
+                <View style={styles.radioGroupContainer}>
+                  <RadioButton.Group
+                    // style={styles.radioGroupContainer}
+                    onValueChange={(newValue) => onTargetUserChanged(newValue)}
+                    value={targetUser}
+                  >
+                    <View style={styles.radioButtonContainer}>
+                      <View style={styles.radioButtonItem}>
+                        <RadioButton.Android
+                          uncheckedColor="#FFF"
+                          color="#BD9848"
+                          value="allUser"
+                        />
+                        <Text style={styles.radioButtonText}>
+                          {Translate.t("allUser")}
+                        </Text>
+                      </View>
+                      <View style={styles.radioButtonItem}>
+                        <RadioButton.Android
+                          uncheckedColor="#FFF"
+                          color="#BD9848"
+                          value="generalUser"
+                        />
+                        <Text style={styles.radioButtonText}>
+                          {Translate.t("generalUser")}
+                        </Text>
+                      </View>
+                      <View style={styles.radioButtonItem}>
+                        <RadioButton.Android
+                          uncheckedColor="#FFF"
+                          color="#BD9848"
+                          value="storeUser"
+                        />
+                        <Text style={styles.radioButtonText}>
+                          {Translate.t("storeUser")}
+                        </Text>
+                      </View>
+                    </View>
+                  </RadioButton.Group>
+                </View>
               <Text style={styles.releaseDateWarningText}>
                 {Translate.t("notVisibleToUser")}
               </Text>
@@ -1227,11 +1282,11 @@ export default function ProductInformationAddNew(props) {
                     onPress={() => {
                       const options = {
                         mediaType: "photo",
-                        allowsEditing: true
+                        allowsEditing: true,
                       };
                       ImagePicker.launchImageLibrary(options, (response) => {
                         if (response.uri) {
-                        if(response.type.includes("image")){
+                          if (response.type.includes("image")) {
                             onSpinnerChanged(true);
                             const formData = new FormData();
                             formData.append("image", {
@@ -1299,10 +1354,10 @@ export default function ProductInformationAddNew(props) {
                                   );
                                 }
                               });
-                        } else {
-                          alert.warning(Translate.t("image_allowed"))
+                          } else {
+                            alert.warning(Translate.t("image_allowed"));
+                          }
                         }
-                      }
                       });
                     }}
                   >
@@ -1405,9 +1460,15 @@ export default function ProductInformationAddNew(props) {
                           if (props.route.params.url) {
                             // alert.warning("Z");
                             request
-                              .patch(props.route.params.url.replace("simple_products", "products"), {
-                                is_hidden: 1,
-                              })
+                              .patch(
+                                props.route.params.url.replace(
+                                  "simple_products",
+                                  "products"
+                                ),
+                                {
+                                  is_hidden: 1,
+                                }
+                              )
                               .then((response) => {
                                 props.navigation.navigate(
                                   "ExhibitedProductList"
@@ -1439,9 +1500,15 @@ export default function ProductInformationAddNew(props) {
                           if (props.route.params.url) {
                             // alert.warning("Z");
                             request
-                              .patch(props.route.params.url.replace("simple_products", "products"), {
-                                is_hidden: 1,
-                              })
+                              .patch(
+                                props.route.params.url.replace(
+                                  "simple_products",
+                                  "products"
+                                ),
+                                {
+                                  is_hidden: 1,
+                                }
+                              )
                               .then((response) => {
                                 props.navigation.navigate(
                                   "ExhibitedProductList"
@@ -1545,7 +1612,8 @@ const styles = StyleSheet.create({
   radioGroupContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginTop: -15,
   },
   radionButtonLabel: {
     flex: 1,
@@ -1662,5 +1730,13 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: heightPercentageToDP("1%"),
     paddingLeft: widthPercentageToDP("2%"),
+  },
+  radioButtonContainer: {
+    flexDirection: "row",
+  },
+  radioButtonItem: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

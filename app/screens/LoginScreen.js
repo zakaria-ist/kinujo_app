@@ -338,7 +338,21 @@ export default function LoginScreen(props) {
                           "user",
                           user.url,
                           function (response) {
-                            if (
+                            if (user.authority.id == 2 || user.authority.id == 3) {
+                              if (
+                                user.is_seller &&
+                                !user.is_master &&
+                                !user.payload.bank_skipped &&
+                                !user.bank
+                              ) {
+                                props.navigation.navigate(
+                                  "BankAccountRegistrationOption",
+                                  {
+                                    authority: user.authority.id == 2 ? "special" : "ambassador",
+                                  }
+                                );
+                              }
+                            } else if (
                               user.is_seller &&
                               !user.is_master &&
                               !user.payload.account_selected
