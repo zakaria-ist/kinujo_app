@@ -85,15 +85,15 @@ async function buildLink(userId, is_store) {
   const link = await dynamicLinks().buildLink(
     {
       link:
-        "https://kinujo-link.c2sg.asia?userId=" + userId + "&store=" + is_store,
+        "https://kinujo.page.link?userId=" + userId + "&store=" + is_store,
       // domainUriPrefix is created in your Firebase console
-      domainUriPrefix: "https://kinujo-link.c2sg.asia",
+      domainUriPrefix: "https://kinujo.page.link",
       android: {
-        packageName: "net.c2sg.kinujo",
+        packageName: "com.example.kinujo",
       },
       ios: {
         appStoreId: "123123123",
-        bundleId: "net.c2sg.kinujo",
+        bundleId: "com.example.kinujo",
       },
     },
     dynamicLinks.ShortLinkType.UNGUESSABLE

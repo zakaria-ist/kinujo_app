@@ -2042,7 +2042,7 @@ function BottomNavigationStore(props) {
 
 const linking = {
   prefixes: [
-    'net.c2sg.kinujo://',
+    'com.example.kinujo://',
   ],
   config: {
     // screens: {
