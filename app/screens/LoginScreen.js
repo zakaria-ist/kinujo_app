@@ -13,6 +13,8 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableWithoutFeedback,
+  Platform,
+  Linking
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -46,15 +48,19 @@ const ratioKinujo = win.width / 1.6 / 151;
 
 function findParams(data, param) {
   let tmps = data.split("?");
+  console.log('tmps', tmps);
   if (tmps.length > 0) {
     let tmp = tmps[1];
     let params = tmp.split("&");
     let searchParams = params.filter((tmpParam) => {
       return tmpParam.indexOf(param) >= 0;
     });
+    console.log('searchParams', searchParams);
     if (searchParams.length > 0) {
       let foundParam = searchParams[0];
       let foundParams = foundParam.split("=");
+      foundParams = foundParam.split("%3D");
+      console.log('foundParams', foundParams);
       if (foundParams.length > 0) {
         return foundParams[1];
       }
@@ -71,6 +77,8 @@ async function saveProduct(props, link) {
 async function performUrl(props, link) {
   let userId = findParams(link, "userId");
   let store = findParams(link, "store");
+  console.log('userId', userId);
+  console.log('store', store);
   await AsyncStorage.setItem("referUser", userId);
   if (parseInt(store)) {
     props.navigation.navigate("RegistrationStore", {"referUser": userId});
@@ -82,9 +90,18 @@ async function performUrl(props, link) {
 async function init(props, foreground) {
   let url = await AsyncStorage.getItem("user");
   if (url) {
-    let link = await dynamicLinks().getInitialLink();
-    if (link) {
-      await saveProduct(props, link.url);
+    if (Platform.OS === 'ios') {
+      Linking.getInitialURL().then((url) => {
+        if (url) {
+          url = decodeURI(url);
+          saveProduct(props, url.replace("https://kinujo-link.c2sg.asia/?link=", ""));
+        }
+      }).catch(err => {console.log('Linking ERROR', err)})
+    } else {
+      let link = await dynamicLinks().getInitialLink();
+      if (link) {
+        await saveProduct(props, link.url);
+      }
     }
     request
       .get(url)
@@ -118,7 +135,23 @@ async function init(props, foreground) {
       });
   } else {
     SplashScreen.hide();
-    let link = await dynamicLinks().getInitialLink();
+    let link = "";
+    if (Platform.OS === 'ios') {
+      Linking.getInitialURL().then((url) => {
+        if (url) {
+          url = decodeURI(url);
+          saveProduct(props, url.replace("https://kinujo-link.c2sg.asia/?link=", ""));
+          performUrl(props, url.replace("https://kinujo-link.c2sg.asia/?link=", ""));
+        }
+        else {
+          if (foreground) {
+            foreground();
+          }
+        }
+      }).catch(err => {console.log('Linking ERROR', err)})
+    } else {
+      link = await dynamicLinks().getInitialLink();
+    }
     if (link) {
       await saveProduct(props, link.url);
       await performUrl(props, link.url);
@@ -150,6 +183,7 @@ export default function LoginScreen(props) {
     });
     onLoaded(true);
   }
+
   // let tmpPrefectures = response.data.map((prefecture) => {
   //   return {
   //     label: prefecture.name,
