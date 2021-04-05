@@ -85,6 +85,8 @@ export default function Setting(props) {
   const [addingFriendsByID, onAddingFriendsByIDChanged] = useStateIfMounted(false);
   const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
+  const [userPhone, onUserPhoneChanged] = useStateIfMounted("");
+  const [userCCode, onUserCCodeChanged] = useStateIfMounted("");
   const [
     messagedReceivedMobile,
     onMessagedReceivedMobileChanged,
@@ -128,6 +130,8 @@ export default function Setting(props) {
     } else {
       onEmailChanged(response.data.email);
     }
+    onUserPhoneChanged(response.data.tel);
+    onUserCCodeChanged(response.data.tel_code.split('+')[1]);
     if (updateData && updateData["type"] == "tel" && verified == "1") {
       onPhoneNumberChanged(updateData["value"]);
       request.post("user/change-phone", {
@@ -140,8 +144,12 @@ export default function Setting(props) {
 
       onPhoneNumberChanged(updateData["value"][1]);
       onCallingCodeChanged(updateData["value"][0])
+      onUserPhoneChanged(updateData["value"][1]);
+      onUserCCodeChanged(updateData["value"][0]);
     } else {
       onPhoneNumberChanged(response.data.tel);
+      onUserPhoneChanged(response.data.tel);
+      onUserCCodeChanged(response.data.tel_code.split('+')[1]);
     }
     if (updateData && updateData["type"] == "password" && verified == "1") {
       request.post("password/reset", {
@@ -331,14 +339,39 @@ export default function Setting(props) {
                   color="transparent"
                   reverseColor="black"
                   onPress={() => {
-                    onEditPhoneNumberChanged(false);
-                    promptUpdate(props, user, "tel", [callingCode, phoneNumber]);
+                    // onEditPhoneNumberChanged(false);
+                    // promptUpdate(props, user, "tel", [callingCode, phoneNumber]);
+                    if (phoneNumber) {
+                      // phoneNumber = phoneNumber.replace(/,/g, "")
+                      console.log(userPhone, phoneNumber, userCCode, callingCode);
+                      if (userPhone == phoneNumber && userCCode == callingCode) {
+                        onEditPhoneNumberChanged(false);
+                      } else {
+                        request.post("user/check-phone", {
+                          tel: phoneNumber,
+                          tel_code: callingCode,
+                        }).then(function(response) {
+                          if (response.data.success) {
+                            onEditPhoneNumberChanged(false);
+                            promptUpdate(props, user, "tel", [
+                              callingCode,
+                              phoneNumber,
+                            ]);
+                          } else {
+                            alert.warning(Translate.t('registerWarning'));
+                          }
+                        })
+                      }
+                    } else {
+                      alert.warning(Translate.t("fieldEmpty"));
+                    }
                   }}
                 />
 
                 <TextInput
                   value={phoneNumber}
                   onChangeText={(value) => onPhoneNumberChanged(value)}
+                  keyboardType={'numeric'}
                   style={{
                     borderRadius: 10,
                     fontSize: RFValue(11),
@@ -749,7 +782,7 @@ export default function Setting(props) {
               />
             </View>
           </View>
-          <View style={styles.tabContainer}>
+          {/* <View style={styles.tabContainer}>
             <Text style={styles.textInContainerLeft}>
               {Translate.t("profileEditAllowAddFriendByPhoneNum")}
             </Text>
@@ -800,8 +833,7 @@ export default function Setting(props) {
                 value={!allowAddingFriendsByPhoneNumber}
               />
             </View>
-          </View>
-          <View style={styles.tabContainer}></View>
+          </View> */}
           <View style={styles.tabContainer}>
             <Text style={styles.textInContainerLeft}>
               {Translate.t("versionInformation")}

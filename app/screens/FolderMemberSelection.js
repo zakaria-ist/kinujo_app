@@ -73,6 +73,8 @@ export default function FolderMemberSelection(props) {
     new Animated.Value(heightPercentageToDP("25%"))
   ).current;
 
+  let user_list = [];
+
 
   function getID(url) {
     let urls = url.split("/");
@@ -202,10 +204,11 @@ export default function FolderMemberSelection(props) {
                 .then(function (response) {
                   // console.log(response.data.users.length);
                   //response = get use details from url
+                  user_list = response.data.users.filter((user) => {
+                    return !deleteIds.includes(user.id) && user.id != userId;
+                  })
                   onUserHtmlChanged(
-                    processUserHtml(props, response.data.users.filter((user) => {
-                      return !deleteIds.includes(user.id) && user.id != userId;
-                    }), tmpFriend)
+                    processUserHtml(props, user_list, tmpFriend)
                   );
                 })
                 .catch(function (error) {
@@ -262,7 +265,7 @@ export default function FolderMemberSelection(props) {
       // console.log(tmpFriend);
     }
     onUserHtmlChanged(
-      processUserHtml(props, users, tmpFriend)
+      processUserHtml(props, user_list, tmpFriend)
     );
   }
   function onUpdate(ids, items) {
@@ -431,7 +434,7 @@ export default function FolderMemberSelection(props) {
   return (
     <SafeAreaView>
       <CustomHeader
-        text={Translate.t("folderMemberSelection")}
+        text={Translate.t("folder")}
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
       />
