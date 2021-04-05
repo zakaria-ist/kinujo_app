@@ -100,8 +100,8 @@ export default function FolderContactList(props) {
         } else {
           let ownMessageUnseenField = "unseenMessageCount_" + userId;
           let friendMessageUnseenField = "unseenMessageCount_" + friendID;
-          let ownTotalMessageReadField = "totalMessageRead_" + ownUserID;
-          let friendTotalMessageReadField = "totalMessageRead_" + chatPersonID;
+          let ownTotalMessageReadField = "totalMessageRead_" + userId;
+          let friendTotalMessageReadField = "totalMessageRead_" + friendID;
           db.collection("chat")
             .add({
               groupName: friendName,

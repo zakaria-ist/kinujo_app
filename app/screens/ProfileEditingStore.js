@@ -192,8 +192,12 @@ export default function ProfileEditingStore(props) {
 
       onPhoneNumberChanged(updateData["value"][1]);
       onCallingCodeChanged(updateData["value"][0]);
+      onUserPhoneChanged(updateData["value"][1]);
+      onUserCCodeChanged(updateData["value"][0]);
     } else {
       onPhoneNumberChanged(response.data.tel);
+      onUserPhoneChanged(response.data.tel);
+      onUserCCodeChanged(response.data.tel_code);
     }
     if (updateData && updateData["type"] == "password" && verified == "1") {
       request.post("password/reset", {
