@@ -184,8 +184,12 @@ export default function ProfileEditingGeneral(props) {
 
       onPhoneNumberChanged(updateData["value"][1]);
       onCallingCodeChanged(updateData["value"][0]);
+      onUserPhoneChanged(updateData["value"][1]);
+      onUserCCodeChanged(updateData["value"][0]);
     } else {
       onPhoneNumberChanged(response.data.tel);
+      onUserPhoneChanged(response.data.tel);
+      onUserCCodeChanged(response.data.tel_code);
     }
     console.log(verified);
     console.log(updateData);
