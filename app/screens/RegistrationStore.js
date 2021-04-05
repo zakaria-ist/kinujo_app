@@ -48,6 +48,7 @@ export default function RegistrationStore(props) {
   const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
   const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
   const [loaded, onLoaded] = useStateIfMounted(false);
+  const [refUser, onReferUser] = useStateIfMounted(null);
   const isFocused = useIsFocused();
 
   setTimeout(function () {
@@ -68,7 +69,14 @@ export default function RegistrationStore(props) {
           }
         });
         onLoaded(true);
+        try {
+          onReferUser(props.route.params.referUser);
+          AsyncStorage.setItem("referUser", props.route.params.referUser);
+        } catch (e) {
+          console.log(e);
+        }
     });
+    
   }, [isFocused])
 
   function processCountryCode(val) {
@@ -246,6 +254,9 @@ export default function RegistrationStore(props) {
                           // onPhoneChanged("");
                           AsyncStorage.getItem("referUser")
                             .then((item) => {
+                              if (item == null || item == "") {
+                                item = refUser;
+                              }
                               props.navigation.navigate("SMSAuthentication", {
                                 nickname: nickname,
                                 real_name: nickname,

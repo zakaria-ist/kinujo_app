@@ -73,9 +73,9 @@ async function performUrl(props, link) {
   let store = findParams(link, "store");
   await AsyncStorage.setItem("referUser", userId);
   if (parseInt(store)) {
-    props.navigation.navigate("RegistrationStore");
+    props.navigation.navigate("RegistrationStore", {"referUser": userId});
   } else {
-    props.navigation.navigate("RegistrationGeneral");
+    props.navigation.navigate("RegistrationGeneral", {"referUser": userId});
   }
 }
 
