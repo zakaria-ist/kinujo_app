@@ -74,6 +74,7 @@ export default function Home(props) {
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
   
+  let userId = "";
   let d_params = {
     snapIds: [],
     seller: ''
@@ -202,39 +203,38 @@ export default function Home(props) {
   React.useEffect(() => {
     hideCategoryAnimation();
   }, [!isFocused]);
+
   async function requestUserPermission() {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-    if (enabled) {
-      const deviceToken = await messaging().getToken();
-      db.collection("users")
-        .doc(String(user.id))
-        .collection("token")
-        .doc(String(user.id))
-        .set({
-          tokenID: deviceToken,
-        })
-        .then(() => {
-          console.log("tokenID successfully written!");
-        })
-        .catch((error) => {
-            console.error("Error writing tokenID: ", error);
-        });
-    }
-    // const deviceToken = await messaging().getToken();
-    // Notification.requestPermission().then(function(permission) { 
-    //   if (permission == "granted" || permission == "default") {
-    //     db.collection("users")
-    //       .doc(String(user.id))
-    //       .collection("token")
-    //       .doc(String(user.id))
-    //       .set({
-    //         tokenID: deviceToken,
-    //       });
-    //   }
-    // });
+    await messaging().requestPermission()
+      .then((authStatus) => {
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        if (enabled) {
+          messaging().getToken()
+            .then((deviceToken) => {
+              let user_id = user.id;
+              if (user_id == undefined) {
+                user_id = userId;
+              }
+              if (user_id != undefined && user_id != "") {
+                db.collection("users")
+                  .doc(String(user_id))
+                  .collection("token")
+                  .doc(String(user_id))
+                  .set({
+                    tokenID: deviceToken,
+                  })
+                  .then(() => {
+                    console.log("tokenID successfully written!");
+                  })
+                  .catch((error) => {
+                      console.error("Error writing tokenID: ", error);
+                  });
+                }
+            });
+        }
+      })
   }
 
   async function createNotificationChannel() {
@@ -473,20 +473,28 @@ export default function Home(props) {
     });
     return tmpCategoryHtml;
   }
+  
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       SplashScreen.hide();
     
       // onFeaturedHtmlChanged([]);
       // onKinujoHtmlChanged([]);
-      requestUserPermission();
       createNotificationChannel();
+      AsyncStorage.getItem("user").then((url) => {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        userId = urls[urls.length - 1];
+      })
       AsyncStorage.getItem("user").then(function (url) {
         request
           .get(url)
           .then(function (response) {
             onUserChanged(response.data);
             setUserAuthorityId(response.data.authority.id);
+            requestUserPermission();
           })
           .catch(function (error) {
             if (

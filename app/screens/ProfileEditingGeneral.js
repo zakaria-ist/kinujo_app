@@ -726,7 +726,7 @@ export default function ProfileEditingGeneral(props) {
                     reverseColor="black"
                     onPress={() => {
                       if (phoneNumber) {
-                        phoneNumber = phoneNumber.replace(/,/g, "")
+                        // phoneNumber = phoneNumber.replace(/,/g, "")
                         if (userPhone == phoneNumber && userCCode == callingCode) {
                           onEditPhoneNumberChanged(false);
                         } else {

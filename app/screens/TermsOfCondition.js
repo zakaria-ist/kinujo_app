@@ -30,6 +30,14 @@ export default function TermsOfCondition(props) {
   const [termView, onTermViewChanged] = useStateIfMounted([]);
   const win = Dimensions.get("window");
   const ratio = win.width / 1.6 / 151;
+  let referStore = 0;
+  let referUser = "";
+  try {
+    referStore = props.route.params.store;
+    referUser = props.route.params.referUser;
+  } catch (e) {
+    console.log(e);
+  }
 
   React.useEffect(() => {
     request
@@ -83,7 +91,14 @@ export default function TermsOfCondition(props) {
           {termView}
         </ScrollView>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate("RegistrationGeneral")}
+          onPress={() => {
+            console.log('referStore', referStore);
+            if (referStore && referStore != "" && referStore != "0" ) {
+              props.navigation.navigate("RegistrationStore", {"referUser": referUser});
+            } else {
+              props.navigation.navigate("RegistrationGeneral", {"referUser": referUser});
+            }
+          }}
         >
           <View style={styles.agreeButton}>
             <Text style={styles.agreeButtonText}>{Translate.t("agree")}</Text>

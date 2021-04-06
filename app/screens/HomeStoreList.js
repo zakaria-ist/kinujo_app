@@ -995,7 +995,9 @@ export default function HomeStoreList(props) {
                                   quantity: tmpQuantity,
                                   url: selectedJanCode,
                                   name: selectedName,
+                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp()
                                 }).then(()=>{
+                                  onSelectedNameChanged("");
                                   const subscriber = db
                                     .collection("users")
                                     .doc(user.id.toString())

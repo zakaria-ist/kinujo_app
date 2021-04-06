@@ -78,10 +78,10 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onSend}>
-            <View style={{marginRight: widthPercentageToDP("2%")}}><Text>Send</Text></View>
+            <View style={{marginRight: widthPercentageToDP("2%")}}><Text>Translate.t('send')</Text></View>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback onPress={onCancel}>
-            <View><Text>Cancel</Text></View>
+            <View><Text>Translate.t('cancel')</Text></View>
         </TouchableWithoutFeedback>
       </SafeAreaView>
     </TouchableWithoutFeedback>

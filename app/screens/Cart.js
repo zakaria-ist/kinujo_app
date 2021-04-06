@@ -868,14 +868,24 @@ export default function Cart(props) {
             let items = [];
             querySnapshot.forEach((documentSnapshot) => {
               tmpIds = tmpIds.concat(documentSnapshot.data().id);
+              let tStamps = "";
+              try{
+                tStamps = documentSnapshot.data().timeStamp.toDate();
+              } catch(e){
+                console.log('ERROR', e);
+              }
               items.push({
                 product_id: documentSnapshot.data().id.toString(),
                 id: documentSnapshot.id.toString(),
                 quantity: documentSnapshot.data().quantity,
                 varietyId: documentSnapshot.data().url,
                 name: documentSnapshot.data().name,
+                timeStamp: tStamps
               });
             });
+            console.log('items', items);
+            items.sort((a, b) => (a.timeStamp < b.timeStamp) ? 1 : -1);
+            console.log('items', items);
             ids = tmpIds;
             firebaseProducts = items;
 
