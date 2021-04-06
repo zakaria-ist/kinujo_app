@@ -207,37 +207,37 @@ export default function ChatList(props) {
     });
     // looping two times for improving UI response
     // One without user detail, next with the detail
-    for (let i=0; i<tmpSnapshots.length; i++) {
-      let snapShot = tmpSnapshots[i];
-      if (snapShot && snapShot.exists) {
-        if(!snapShot.data()["delete_" + ownUserID] &&
-        !snapShot.data()["hide_" + ownUserID] &&
-        !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
-          let tempChats = chats.filter((chat) => {
-            return chat.id == snapShot.id;
-          });
-          if (tempChats.length == 0) {
-            chats.push({
-              id: snapShot.id,
-              data: snapShot.data(),
-              name: "",
-              images: [""],
-              block: false,
-              hide: false,
-            });
-          } else {
-            chats = chats.map((chat) => {
-              if (chat.id == snapShot.id) {
-                chat.data = snapShot.data();
-              }
-              return chat;
-            });
-          }
-        }
-      }
-    }
-    chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
-    processChat(chats, ownUserID, false);
+    // for (let i=0; i<tmpSnapshots.length; i++) {
+    //   let snapShot = tmpSnapshots[i];
+    //   if (snapShot && snapShot.exists) {
+    //     if(!snapShot.data()["delete_" + ownUserID] &&
+    //     !snapShot.data()["hide_" + ownUserID] &&
+    //     !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
+    //       let tempChats = chats.filter((chat) => {
+    //         return chat.id == snapShot.id;
+    //       });
+    //       if (tempChats.length == 0) {
+    //         chats.push({
+    //           id: snapShot.id,
+    //           data: snapShot.data(),
+    //           name: "",
+    //           images: [""],
+    //           block: false,
+    //           hide: false,
+    //         });
+    //       } else {
+    //         chats = chats.map((chat) => {
+    //           if (chat.id == snapShot.id) {
+    //             chat.data = snapShot.data();
+    //           }
+    //           return chat;
+    //         });
+    //       }
+    //     }
+    //   }
+    // }
+    // chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
+    // processChat(chats, ownUserID, false);
 
     chats = [];
     for (let i=0; i<tmpSnapshots.length; i++) {
