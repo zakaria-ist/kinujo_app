@@ -712,7 +712,7 @@ export default function ChatList(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["pinned_" + ownUserID] =
@@ -729,8 +729,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {longPressObj && longPressObj.data && longPressObj.data["pinned_" + ownUserID] == true ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["notify_" + ownUserID] =
@@ -751,8 +751,8 @@ export default function ChatList(props) {
                       ? "ON"
                       : "OFF"}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["hide_" + ownUserID] =
@@ -768,8 +768,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("nonRepresent")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["delete_" + ownUserID] =
@@ -785,8 +785,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("remove")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -808,8 +808,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("groupChatCreate")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -831,7 +831,7 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("createFolder")}
                   </Text>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

@@ -74,6 +74,7 @@ export default function RegistrationGeneral(props) {
       });
       onLoaded(true);
       try {
+        console.log('props.route.params.referUser', props.route.params.referUser);
         onReferUser(props.route.params.referUser);
         AsyncStorage.setItem("referUser", props.route.params.referUser);
       } catch (e) {
@@ -346,7 +347,7 @@ export default function RegistrationGeneral(props) {
                 </Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 register("store")
               }}
@@ -356,7 +357,7 @@ export default function RegistrationGeneral(props) {
                   {Translate.t("registerAsBeauticianOrSalon")}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </KeyboardAwareScrollView>
       </LinearGradient>
