@@ -77,6 +77,7 @@ export default function SearchProducts(props) {
     });
 
     let tmpKinujoHtml = [];
+    let idx = 0;
     kinujoProducts.map((product) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
@@ -90,7 +91,8 @@ export default function SearchProducts(props) {
               url: product.url,
             });
           }}
-          idx={product.id}
+          // idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
               ? images[0].image.image
@@ -124,6 +126,7 @@ export default function SearchProducts(props) {
     onKinujoHtmlChanged(tmpKinujoHtml);
 
     let tmpFeaturedHtml = [];
+    idx = 0;
     featuredProducts.map((product) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
@@ -137,7 +140,8 @@ export default function SearchProducts(props) {
               url: product.url,
             });
           }}
-          idx={product.id}
+          // idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
               ? images[0].image.image
@@ -372,7 +376,7 @@ export default function SearchProducts(props) {
           <View></View>
         )}
         {featuredHtml.length > 0 ? (
-          <View style={styles.section_product}>{featuredHtml}</View>
+          <View style={styles.section_product_2}>{featuredHtml}</View>
         ) : (
           <View></View>
         )}
@@ -463,7 +467,13 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: 10,
+    marginBottom: heightPercentageToDP("5%"),
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  section_product_2: {
+    marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

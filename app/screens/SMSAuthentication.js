@@ -108,7 +108,7 @@ export default function SMSAuthentication(props) {
               textAlign: "center",
             }}
           >
-            {i18n.locale == "ja"
+            {i18n.locale.includes('ja') || i18n.locale.includes('JP')
               ? phone + Translate.t("sentVerificationCode")
               : Translate.t("sentVerificationCode") + phone}
           </Text>

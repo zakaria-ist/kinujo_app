@@ -59,7 +59,6 @@ function findParams(data, param) {
     if (searchParams.length > 0) {
       let foundParam = searchParams[0];
       let foundParams = foundParam.split("=");
-      foundParams = foundParam.split("%3D");
       console.log('foundParams', foundParams);
       if (foundParams.length > 0) {
         return foundParams[1];
@@ -77,13 +76,16 @@ async function saveProduct(props, link) {
 async function performUrl(props, link) {
   let userId = findParams(link, "userId");
   let store = findParams(link, "store");
+  console.log('link', link);
   console.log('userId', userId);
   console.log('store', store);
   await AsyncStorage.setItem("referUser", userId);
-  if (parseInt(store)) {
-    props.navigation.navigate("RegistrationStore", {"referUser": userId});
+  if (store && store != "" && store != "0" ) {
+    // props.navigation.navigate("RegistrationStore", {"referUser": userId});
+    props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 1});
   } else {
-    props.navigation.navigate("RegistrationGeneral", {"referUser": userId});
+    // props.navigation.navigate("RegistrationGeneral", {"referUser": userId});
+    props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 0});
   }
 }
 
@@ -94,7 +96,7 @@ async function init(props, foreground) {
       Linking.getInitialURL().then((url) => {
         if (url) {
           url = decodeURI(url);
-          saveProduct(props, url.replace("https://kinujo-link.c2sg.asia/?link=", ""));
+          saveProduct(props, url.replace("https://kinujo.page.link/?link=", "").replace("%3D", '='));
         }
       }).catch(err => {console.log('Linking ERROR', err)})
     } else {
@@ -140,8 +142,9 @@ async function init(props, foreground) {
       Linking.getInitialURL().then((url) => {
         if (url) {
           url = decodeURI(url);
-          saveProduct(props, url.replace("https://kinujo-link.c2sg.asia/?link=", ""));
-          performUrl(props, url.replace("https://kinujo-link.c2sg.asia/?link=", ""));
+          console.log('url', url);
+          saveProduct(props, url.replace("https://kinujo.page.link/?link=", "").replace("%3D", '='));
+          performUrl(props, url.replace("https://kinujo.page.link/?link=", "").replace("%3D", '='));
         }
         else {
           if (foreground) {
@@ -153,6 +156,7 @@ async function init(props, foreground) {
       link = await dynamicLinks().getInitialLink();
     }
     if (link) {
+      console.log('url', link.url);
       await saveProduct(props, link.url);
       await performUrl(props, link.url);
     } else {
@@ -385,6 +389,16 @@ export default function LoginScreen(props) {
                                     authority: user.authority.id == 2 ? "special" : "ambassador",
                                   }
                                 );
+                              } else if (!user.is_seller && !user.is_master) {
+                                props.navigation.reset({
+                                  index: 0,
+                                  routes: [{ name: "HomeGeneral" }],
+                                });
+                              } else if (user.is_seller) {
+                                props.navigation.reset({
+                                  index: 0,
+                                  routes: [{ name: "HomeStore" }],
+                                });
                               }
                             } else if (
                               user.is_seller &&
