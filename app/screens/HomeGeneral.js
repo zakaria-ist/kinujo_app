@@ -73,7 +73,7 @@ export default function Home(props) {
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
-
+  
   let userId = "";
   let d_params = {
     snapIds: [],
@@ -158,7 +158,7 @@ export default function Home(props) {
           });
     });
   }
-
+  
   React.useEffect(() => {
     messaging()
       .getInitialNotification()
@@ -181,7 +181,7 @@ export default function Home(props) {
           body: notification.body
         })
       });
-
+      
 
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("product").then((product_id) => {
@@ -195,7 +195,7 @@ export default function Home(props) {
           }
         });
       });
-
+  
       AsyncStorage.removeItem("product");
     });
   }, []);
@@ -473,11 +473,11 @@ export default function Home(props) {
     });
     return tmpCategoryHtml;
   }
-
+  
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       SplashScreen.hide();
-
+    
       // onFeaturedHtmlChanged([]);
       // onKinujoHtmlChanged([]);
       createNotificationChannel();
@@ -566,7 +566,7 @@ export default function Home(props) {
             }
             return 1;
           });
-
+  
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
             return (
@@ -576,7 +576,7 @@ export default function Home(props) {
               product.is_draft == 0
             );
           });
-
+  
           kinujoProducts = products.filter((product) => {
             return product.user.authority.id == 1;
           });
