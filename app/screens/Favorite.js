@@ -61,6 +61,7 @@ export default function Favorite(props) {
   const isFocused = useIsFocused();
   function processFeatured(props, user, products) {
     let tmpFeaturedHtml = [];
+    let idx = 0;
     products.map((product) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
@@ -75,7 +76,8 @@ export default function Favorite(props) {
               url: product.url,
             });
           }}
-          idx={product.id}
+          // idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
               ? images[0].image.image
@@ -115,6 +117,7 @@ export default function Favorite(props) {
   }
   function processFavouriteHtml(props, user, products) {
     let tmpProductHtml = [];
+    let idx = 0;
     products.map((product) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
@@ -129,7 +132,8 @@ export default function Favorite(props) {
               url: product.url,
             });
           }}
-          idx={product.id}
+          // idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
               ? images[0].image.image
@@ -534,7 +538,7 @@ export default function Favorite(props) {
             <View></View>
           )}
           {featuredHtml.length > 0 ? (
-            <View style={styles.section_product}>{featuredHtml}</View>
+            <View style={styles.section_product_2}>{featuredHtml}</View>
           ) : (
             <View></View>
           )}
@@ -579,7 +583,7 @@ const styles = StyleSheet.create({
     overflow: "scroll",
   },
   section_product: {
-    marginBottom: 10,
+    marginBottom: heightPercentageToDP("5%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
@@ -621,6 +625,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
+    marginBottom: heightPercentageToDP("5%"),
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  section_product_2: {
     marginBottom: heightPercentageToDP("15%"),
     flexDirection: "row",
     alignItems: "flex-start",

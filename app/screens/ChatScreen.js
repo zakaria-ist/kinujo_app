@@ -2808,6 +2808,7 @@ export default function ChatScreen(props) {
 
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : null}
+        keyboardVerticalOffset={Platform.OS == "ios" ? 20 : 0}
         style={{ flex: 1 }}
       >
         <EmojiBoard
@@ -2845,7 +2846,7 @@ export default function ChatScreen(props) {
           visible={showPopUp}
           transparent={true}
         >
-          <TouchableNativeFeedback onPress={() => onShowPopUpChanged(false)}>
+          <TouchableNativeFeedback  >
             <View style={{ flex: 1, backgroundColor: "transparent" }}>
               <View style={showPopUp == true ? styles.popUpView : styles.none}>
                 <View
@@ -2857,15 +2858,15 @@ export default function ChatScreen(props) {
                   }}
                 >
                   <View>
-                    <TouchableNativeFeedback
+                    <TouchableOpacity
                       onPress={() => Clipboard.setString(longPressObj.message)}
                       onPressIn={() => onShowPopUpChanged(false)}
                     >
                       <Text style={styles.popUpText}>
                         {Translate.t("copy")}
                       </Text>
-                    </TouchableNativeFeedback>
-                    <TouchableNativeFeedback
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       onPress={() =>
                         props.navigation.navigate("ChatListForward", {
                           message: longPressObj.message,
@@ -2878,8 +2879,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("forward")}
                       </Text>
-                    </TouchableNativeFeedback>
-                    <TouchableNativeFeedback
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       onPress={() => {
                         let update = {};
                         update["delete"] = longPressObj.data["delete"]
@@ -2921,8 +2922,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("cancelOnlyMe")}
                       </Text>
-                    </TouchableNativeFeedback>
-                    <TouchableNativeFeedback
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       onPress={() => {
                         let update = {};
                         update["delete_" + userId] = longPressObj.data[
@@ -2966,8 +2967,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("remove")}
                       </Text>
-                    </TouchableNativeFeedback>
-                    <TouchableNativeFeedback
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       onPress={() => {
                         let update = {};
                         update["favourite_" + userId] = true;
@@ -2999,8 +3000,8 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("addToFav")}
                       </Text>
-                    </TouchableNativeFeedback>
-                    <TouchableNativeFeedback
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       onPress={() => {
                         setMultiSelect(true);
                         tmpMultiSelect = true;
@@ -3017,7 +3018,7 @@ export default function ChatScreen(props) {
                       <Text style={styles.popUpText}>
                         {Translate.t("multiSelect")}
                       </Text>
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
