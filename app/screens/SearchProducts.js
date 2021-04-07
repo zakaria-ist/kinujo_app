@@ -99,8 +99,8 @@ export default function SearchProducts(props) {
           office={product.brand_name}
           name={product.name}
           seller={
-            product.user.real_name
-              ? product.user.real_name
+            product.user.shop_name
+              ? product.user.shop_name
               : product.user.nickname
           }
           price={

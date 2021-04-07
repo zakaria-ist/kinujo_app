@@ -782,7 +782,7 @@ export default function Home(props) {
                 paddingHorizontal: widthPercentageToDP("2%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+              <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>
