@@ -622,7 +622,7 @@ export default function ProductInformationAddNew(props) {
                 }
               );
             } else if (response.errors && response.errors.length > 0) {
-              alert.warning(Translate.t(response.errors[0]), () => {
+              alert.warning(Translate.t(response.errors[0].replace(/ /g, '_').replace(/\./g, '')), () => {
                 onSpinnerChanged(false);
               });
             } else if (response.error) {
