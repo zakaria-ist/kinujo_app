@@ -538,40 +538,40 @@ export default function ChatList(props) {
       for (var i in unseenObj) {
         totalUnseenMessage += unseenObj[i];
       }
-      // tmpChatHtml.sort((html1, html2) => {
-      //   if (html1.props["pinned"] && !html2.props["pinned"]) {
-      //     return 1;
-      //   }
+      tmpChatHtml.sort((html1, html2) => {
+        // if (html1.props["pinned"] && !html2.props["pinned"]) {
+        //   return 1;
+        // }
 
-      //   if (!html1.props["pinned"] && html2.props["pinned"]) {
-      //     return -1;
-      //   }
+        // if (!html1.props["pinned"] && html2.props["pinned"]) {
+        //   return -1;
+        // }
 
-      //   if (html1.props["pinned"] && html2.props["pinned"]) {
-      //     let date1 = getDate(html1.props["date"]);
-      //     let date2 = getDate(html2.props["date"]);
+        // if (html1.props["pinned"] && html2.props["pinned"]) {
+        //   let date1 = getDate(html1.props["date"]);
+        //   let date2 = getDate(html2.props["date"]);
 
-      //     if (date1 > date2) {
-      //       return -1;
-      //     }
-      //     if (date1 < date2) {
-      //       return 1;
-      //     }
-      //   }
+        //   if (date1 > date2) {
+        //     return -1;
+        //   }
+        //   if (date1 < date2) {
+        //     return 1;
+        //   }
+        // }
 
-      //   if (!html1.props["pinned"] && !html2.props["pinned"]) {
-      //     let date1 = getDate(html1.props["date"]);
-      //     let date2 = getDate(html2.props["date"]);
+        if (!html1.props["pinned"] && !html2.props["pinned"]) {
+          let date1 = getDate(html1.props["date"]);
+          let date2 = getDate(html2.props["date"]);
 
-      //     if (date1 > date2) {
-      //       return -1;
-      //     }
-      //     if (date1 < date2) {
-      //       return 1;
-      //     }
-      //   }
-      //   return 0;
-      // });
+          if (date1 > date2) {
+            return -1;
+          }
+          if (date1 < date2) {
+            return 1;
+          }
+        }
+        return 0;
+      });
       const resultChatHtml = tmpChatHtml.filter((html) => {
         return !html.props["hide"] && !html.props["delete"];
       });

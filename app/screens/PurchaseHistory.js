@@ -494,7 +494,7 @@ export default function PurchaseHistory(props) {
                 }}
               />
               <TextInput
-                placeholder="Product Name"
+                placeholder={Translate.t("filterProductName")}
                 style={{
                   paddingVertical: heightPercentageToDP("1%"),
                   width: "100%",
@@ -544,7 +544,7 @@ export default function PurchaseHistory(props) {
                   borderBottomColor: Colors.D7CCA6,
                 }}
               >
-                <Text style={styles.dateTabText}>Release Date</Text>
+                <Text style={styles.dateTabText}>{Translate.t("releaseDate")}</Text>
                 <Image
                   style={{
                     width: win.width / 24,
@@ -579,7 +579,7 @@ export default function PurchaseHistory(props) {
               }}
             >
               <View style={styles.dateTabContainer}>
-                <Text style={styles.dateTabText}>Past 6 Month</Text>
+                <Text style={styles.dateTabText}>{Translate.t("pastSixMonth")}</Text>
               </View>
             </TouchableWithoutFeedback>
             {yearHtml}
@@ -646,7 +646,7 @@ export default function PurchaseHistory(props) {
                     padding: widthPercentageToDP("2%"),
                   }}
                 >
-                  Cancel all conditions
+                  {Translate.t("cancelCondition")}
                 </Text>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
@@ -668,7 +668,7 @@ export default function PurchaseHistory(props) {
                     // marginRight: widthPercentageToDP("2%"),
                   }}
                 >
-                  <Text style={styles.dateTabText}>Done</Text>
+                  <Text style={styles.dateTabText}>{Translate.t("done")}</Text>
                 </View>
               </TouchableWithoutFeedback>
             </View>

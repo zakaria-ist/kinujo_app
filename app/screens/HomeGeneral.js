@@ -148,12 +148,22 @@ export default function Home(props) {
               });
 
               if (d_params.seller != '') {
-                db.collection("sellers")
-                  .add({
-                      sellers: d_params.seller
+                request
+                  .post("user/get-email", {
+                    id: d_params.seller,
                   })
-                  .then(() => {
-                  });
+                  .then((response) => {
+                    if(response.data.success) {
+                      db.collection("sellers")
+                      .add({
+                          sellers: d_params.seller,
+                          email: response.data.email
+                      })
+                      .then(() => {
+                      });
+                    }
+                  })
+                
               }
           });
     });
@@ -162,8 +172,26 @@ export default function Home(props) {
   React.useEffect(() => {
     messaging()
       .getInitialNotification()
-      .then((remoteMessage) => {
+        .then((remoteMessage) => {
+          console.log('remoteMessage', 'getInitialNotification', remoteMessage);
+          if (remoteMessage) {
+            console.log('remoteMessage', remoteMessage.data);
+            let groupID = remoteMessage.data.groupID;
+            let groupName = remoteMessage.data.groupName;
+            let groupType = remoteMessage.data.groupType;
+            props.navigation.navigate("ChatScreen", {
+              type: String(groupType),
+              groupID: String(groupID),
+              groupName: String(groupName),
+            });
+          }
+        });
+
+    messaging()
+      .onNotificationOpenedApp((remoteMessage) => {
+        console.log('remoteMessage', 'onNotificationOpenedApp', remoteMessage);
         if (remoteMessage) {
+          console.log('remoteMessage', remoteMessage.data);
           let groupID = remoteMessage.data.groupID;
           let groupName = remoteMessage.data.groupName;
           let groupType = remoteMessage.data.groupType;
@@ -174,14 +202,14 @@ export default function Home(props) {
           });
         }
       });
-    messaging()
-      .onMessage(({notification}) => {
-        Notifications.postLocalNotification({
-          title: notification.title,
-          body: notification.body
-        })
-      });
       
+      messaging()
+        .onMessage(({notification}) => {
+          Notifications.postLocalNotification({
+            title: notification.title,
+            body: notification.body
+          })
+        });
 
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("product").then((product_id) => {
@@ -204,7 +232,7 @@ export default function Home(props) {
     hideCategoryAnimation();
   }, [!isFocused]);
 
-  async function requestUserPermission() {
+  async function requestUserPermission(response_user) {
     await messaging().requestPermission()
       .then((authStatus) => {
         const enabled =
@@ -213,11 +241,15 @@ export default function Home(props) {
         if (enabled) {
           messaging().getToken()
             .then((deviceToken) => {
-              let user_id = user.id;
+              let user_id = response_user.id;
               if (user_id == undefined) {
                 user_id = userId;
               }
               if (user_id != undefined && user_id != "") {
+                console.log('user.message_notification_phone', response_user.message_notification_phone);
+                if (response_user && response_user.message_notification_phone == false) {
+                  deviceToken = "";
+                }
                 db.collection("users")
                   .doc(String(user_id))
                   .collection("token")
@@ -494,7 +526,7 @@ export default function Home(props) {
           .then(function (response) {
             onUserChanged(response.data);
             setUserAuthorityId(response.data.authority.id);
-            requestUserPermission();
+            requestUserPermission(response.data);
           })
           .catch(function (error) {
             if (
@@ -790,7 +822,7 @@ export default function Home(props) {
                 paddingHorizontal: widthPercentageToDP("2%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+              <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>
