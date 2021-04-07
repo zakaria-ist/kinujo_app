@@ -148,12 +148,22 @@ export default function Home(props) {
               });
 
               if (d_params.seller != '') {
-                db.collection("sellers")
-                  .add({
-                      sellers: d_params.seller
+                request
+                  .post("user/get-email", {
+                    id: d_params.seller,
                   })
-                  .then(() => {
-                  });
+                  .then((response) => {
+                    if(response.data.success) {
+                      db.collection("sellers")
+                      .add({
+                          sellers: d_params.seller,
+                          email: response.data.email
+                      })
+                      .then(() => {
+                      });
+                    }
+                  })
+                
               }
           });
     });
