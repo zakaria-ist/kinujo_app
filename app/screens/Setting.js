@@ -19,6 +19,8 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import firebase from "firebase/app";
+import messaging from "@react-native-firebase/messaging";
 import VersionInfo from "react-native-version-info";
 import CountrySearch from "../assets/CustomComponents/CountrySearch";
 import Translate from "../assets/Translates/Translate";
@@ -30,6 +32,11 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
 import { useIsFocused } from "@react-navigation/native";
+import { firebaseConfig } from "../../firebaseConfig.js";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -591,9 +598,16 @@ export default function Setting(props) {
 
                   request
                     .patch(user.url, {
-                      message_notification_mail: value ? 0 : 1,
+                      message_notification_mail: value ? 1 : 0,
                     })
-                    .then(function (response) {})
+                    .then(function (response) {
+                      if (response.data.url) {
+                        AsyncStorage.setItem(
+                          "user",
+                          response.data.url
+                        )
+                      }
+                    })
                     .catch(function (error) {
                       if (
                         error &&
@@ -617,16 +631,44 @@ export default function Setting(props) {
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  messagedReceivedMobile == 0 ? Colors.D7CCA6 : "grey"
+                  messagedReceivedMobile == 1 ? Colors.D7CCA6 : "grey"
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("25%") }}
                 onValueChange={(value) => {
-                  onMessagedReceivedMobileChanged(!value);
+                  onMessagedReceivedMobileChanged(value);
                   request
                     .patch(user.url, {
-                      message_notification_phone: value == true ? 0 : 1,
+                      message_notification_phone: value == true ? 1 : 0,
                     })
-                    .then(function (response) {})
+                    .then(function (response) {
+                      console.log('response', response.data);
+                      if (response.data.url) {
+                        AsyncStorage.setItem(
+                          "user",
+                          response.data.url
+                        )
+                        if (response.data.id) {
+                          messaging().getToken()
+                            .then((deviceToken) => {
+                              let user_id = response.data.id;
+                              db.collection("users")
+                                .doc(String(user_id))
+                                .collection("token")
+                                .doc(String(user_id))
+                                .set({
+                                  tokenID: response.data.message_notification_phone == true ? deviceToken : "",
+                                })
+                                .then(() => {
+                                  console.log("tokenID successfully written!");
+                                })
+                                .catch((error) => {
+                                    console.error("Error writing tokenID: ", error);
+                                });
+                            })
+                          
+                        }
+                      }
+                    })
                     .catch(function (error) {
                       if (
                         error &&
@@ -645,7 +687,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!messagedReceivedMobile}
+                value={messagedReceivedMobile}
               />
             </View>
           </View>
