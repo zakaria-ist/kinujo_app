@@ -2859,8 +2859,7 @@ export default function ChatScreen(props) {
                 >
                   <View>
                     <TouchableOpacity
-                      onPress={() => Clipboard.setString(longPressObj.message)}
-                      onPressIn={() => onShowPopUpChanged(false)}
+                      onPress={() => {Clipboard.setString(longPressObj.message); onShowPopUpChanged(false)}}
                     >
                       <Text style={styles.popUpText}>
                         {Translate.t("copy")}

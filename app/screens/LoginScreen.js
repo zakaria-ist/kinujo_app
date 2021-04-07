@@ -56,14 +56,24 @@ function findParams(data, param) {
       return tmpParam.indexOf(param) >= 0;
     });
     console.log('searchParams', searchParams);
-    if (searchParams.length > 0) {
-      let foundParam = searchParams[0];
-      let foundParams = foundParam.split("=");
-      console.log('foundParams', foundParams);
-      if (foundParams.length > 0) {
-        return foundParams[1];
+    if (!searchParams.lemgth && param == "store") {
+      if (tmps[0].indexOf('asia1store') >= 0) {
+        return "1";
+      }
+      if (tmps[0].indexOf('asia0store') >= 0) {
+        return "0";
+      }
+    } else {
+      if (searchParams.length > 0) {
+        let foundParam = searchParams[0];
+        let foundParams = foundParam.split("=");
+        console.log('foundParams', foundParams);
+        if (foundParams.length > 0) {
+          return foundParams[1];
+        }
       }
     }
+    
   }
   return "";
 }
