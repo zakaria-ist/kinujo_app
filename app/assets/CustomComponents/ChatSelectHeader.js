@@ -19,6 +19,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import CartLogo from "../icons/cart.svg";
 import FavouriteLogo from "../icons/favorite.svg";
+import Translate from "../Translates/Translate";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import Request from "../../lib/request";
@@ -61,10 +62,10 @@ export default function CustomKinujoWord({
       />
       
       <TouchableWithoutFeedback onPress={onSend}>
-          <View style={{marginRight: widthPercentageToDP("2%")}}><Text>Send</Text></View>
+          <View style={{marginRight: widthPercentageToDP("2%")}}><Text>{Translate.t("send")}</Text></View>
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback onPress={onCancel}>
-          <View style={{marginRight:widthPercentageToDP("5%")}}><Text>Cancel</Text></View>
+          <View style={{marginRight:widthPercentageToDP("5%")}}><Text>{Translate.t("cancel")}</Text></View>
       </TouchableWithoutFeedback>
     </SafeAreaView>
   );
