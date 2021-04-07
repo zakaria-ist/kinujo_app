@@ -207,37 +207,37 @@ export default function ChatList(props) {
     });
     // looping two times for improving UI response
     // One without user detail, next with the detail
-    for (let i=0; i<tmpSnapshots.length; i++) {
-      let snapShot = tmpSnapshots[i];
-      if (snapShot && snapShot.exists) {
-        if(!snapShot.data()["delete_" + ownUserID] &&
-        !snapShot.data()["hide_" + ownUserID] &&
-        !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
-          let tempChats = chats.filter((chat) => {
-            return chat.id == snapShot.id;
-          });
-          if (tempChats.length == 0) {
-            chats.push({
-              id: snapShot.id,
-              data: snapShot.data(),
-              name: "",
-              images: [""],
-              block: false,
-              hide: false,
-            });
-          } else {
-            chats = chats.map((chat) => {
-              if (chat.id == snapShot.id) {
-                chat.data = snapShot.data();
-              }
-              return chat;
-            });
-          }
-        }
-      }
-    }
-    chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
-    processChat(chats, ownUserID, false);
+    // for (let i=0; i<tmpSnapshots.length; i++) {
+    //   let snapShot = tmpSnapshots[i];
+    //   if (snapShot && snapShot.exists) {
+    //     if(!snapShot.data()["delete_" + ownUserID] &&
+    //     !snapShot.data()["hide_" + ownUserID] &&
+    //     !snapShot.data()["hide"] && snapShot.data()['totalMessage'] > 0){
+    //       let tempChats = chats.filter((chat) => {
+    //         return chat.id == snapShot.id;
+    //       });
+    //       if (tempChats.length == 0) {
+    //         chats.push({
+    //           id: snapShot.id,
+    //           data: snapShot.data(),
+    //           name: "",
+    //           images: [""],
+    //           block: false,
+    //           hide: false,
+    //         });
+    //       } else {
+    //         chats = chats.map((chat) => {
+    //           if (chat.id == snapShot.id) {
+    //             chat.data = snapShot.data();
+    //           }
+    //           return chat;
+    //         });
+    //       }
+    //     }
+    //   }
+    // }
+    // chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
+    // processChat(chats, ownUserID, false);
 
     chats = [];
     for (let i=0; i<tmpSnapshots.length; i++) {
@@ -712,7 +712,7 @@ export default function ChatList(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["pinned_" + ownUserID] =
@@ -729,8 +729,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {longPressObj && longPressObj.data && longPressObj.data["pinned_" + ownUserID] == true ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["notify_" + ownUserID] =
@@ -751,8 +751,8 @@ export default function ChatList(props) {
                       ? "ON"
                       : "OFF"}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["hide_" + ownUserID] =
@@ -768,8 +768,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("nonRepresent")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     let update = {};
                     update["delete_" + ownUserID] =
@@ -785,8 +785,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("remove")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -808,8 +808,8 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("groupChatCreate")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -831,7 +831,7 @@ export default function ChatList(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("createFolder")}
                   </Text>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
               </View>
             </View>
           </View>

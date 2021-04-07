@@ -349,7 +349,7 @@ export default function Setting(props) {
                       } else {
                         request.post("user/check-phone", {
                           tel: phoneNumber,
-                          tel_code: callingCode,
+                          tel_code: "+" + callingCode,
                         }).then(function(response) {
                           if (response.data.success) {
                             onEditPhoneNumberChanged(false);
