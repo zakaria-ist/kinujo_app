@@ -61,6 +61,8 @@ const win = Dimensions.get("window");
 let kinujoProducts;
 let featuredProducts;
 let taxRate = 0;
+let handlerCount = 0;
+
 export default function Home(props) {
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
@@ -81,28 +83,32 @@ export default function Home(props) {
   };
 
   var handleOpenURL = (url) => {
-    console.log('handleOpenURL', url);
-    let type = typeof url;
-    if (type == "object") {
-      url = url.url;
+    console.log('handlerCount', handlerCount);
+    if (handlerCount == 0) {
+      console.log('handleOpenURL', url);
+      let type = typeof url;
+      if (type == "object") {
+        url = url.url;
+      }
+      url = decodeURI(url);
+      if (url.includes('success')) {
+        var strList = url.replace('net.c2sg.kinujo://complete/success/', '').split('/');
+        d_params.snapIds = strList[0].split(',');
+        d_params.seller = strList[1];
+        // alert.warning(
+        //   "Payment Success"
+        // );
+        updateShop();
+      } else if (url.includes('cancel')) {
+        console.log('HomeStore Cart url', url);
+        // alert.warning(
+        //   "Payment Cancelled"
+        // );
+      } else {
+        console.log('Linking other url', url);
+      }
     }
-    url = decodeURI(url);
-    if (url.includes('success')) {
-      var strList = url.replace('net.c2sg.kinujo://complete/success/', '').split('/');
-      d_params.snapIds = strList[0].split(',');
-      d_params.seller = strList[1];
-      // alert.warning(
-      //   "Payment Success"
-      // );
-      updateShop();
-    } else if (url.includes('cancel')) {
-      console.log('HomeStore Cart url', url);
-      // alert.warning(
-      //   "Payment Cancelled"
-      // );
-    } else {
-      console.log('Linking other url', url);
-    }
+    handlerCount ++;
   }
 
   Linking.getInitialURL().then((url) => {
@@ -112,8 +118,9 @@ export default function Home(props) {
   }).catch(err => {console.log('Linking ERROR', err)})
   Linking.removeEventListener('url', handleOpenURL);
   Linking.addEventListener('url', handleOpenURL);
+  
 
-  function updateShop() {
+  async function updateShop() {
     AsyncStorage.getItem("user").then((url) => {
         let urls = url.split("/");
         urls = urls.filter((url) => {
@@ -146,27 +153,62 @@ export default function Home(props) {
                       }
                   });
               });
-
-              if (d_params.seller != '') {
-                request
-                  .post("user/get-email", {
-                    id: d_params.seller,
-                  })
-                  .then((response) => {
-                    if(response.data.success) {
-                      db.collection("sellers")
-                      .add({
-                          sellers: d_params.seller,
-                          email: response.data.email
-                      })
-                      .then(() => {
-                      });
-                    }
-                  })
-                
-              }
           });
+        // if (d_params.seller != '') {
+        //   request
+        //     .post("user/get-email", {
+        //       id: d_params.seller,
+        //     })
+        //     .then((response) => {
+        //       if(response.data.success) {
+        //         db.collection("sellers")
+        //         .add({
+        //             sellers: d_params.seller,
+        //             email: response.data.email
+        //         })
+        //         .then(() => {
+        //         });
+        //       }
+        //     })
+        // }
+
+        // add seller for pushnotification
+        pushSeller()
+        
     });
+  }
+
+  async function pushSeller() {
+    if (d_params.seller != '') {
+      let sellerList = [];
+      let oldsellers = await db.collection("sellers").get();
+      oldsellers.forEach((docRef) => {
+        if (docRef.data().sellers && String(docRef.data().sellers) == String(d_params.seller)) {
+          sellerList.push(docRef.id);
+        }
+      });
+      console.log('sellerList', sellerList);
+      sellerList.forEach((id) => {
+        console.log('Seller', id);
+        db.collection("sellers").doc(String(id)).delete()
+          .then(() => {
+            console.log("Document successfully deleted!");
+          })
+          .catch((error) => {
+              console.error("Error removing document: ", error);
+          });
+      });
+
+      db.collection("sellers")
+        .add({
+            sellers: d_params.seller,
+        })
+        .then(() => {
+          console.log("Seller Document successfully added!");
+        });
+      
+      d_params.seller = '';
+    }
   }
   
   React.useEffect(() => {
@@ -230,9 +272,21 @@ export default function Home(props) {
 
   React.useEffect(() => {
     hideCategoryAnimation();
+    handlerCount = 0;
+    Linking.removeEventListener('url', handleOpenURL);
   }, [!isFocused]);
 
   async function requestUserPermission(response_user) {
+    // // update cart
+    // if (response_user) {
+    //   db.collection("users")
+    //       .doc((response_user.id).toString())
+    //       .collection("carts")
+    //       .get()
+    //       .then((querySnapShot) => {
+    //           onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+    //       });
+    // }
     await messaging().requestPermission()
       .then((authStatus) => {
         const enabled =
@@ -342,7 +396,7 @@ export default function Home(props) {
             //     }
             //   );
             // });
-            console.log(product)
+            // console.log(product)
             props.navigation.navigate("ProductList", {
               "id": product.id,
               "productName" : product.name
@@ -829,11 +883,13 @@ export default function Home(props) {
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
         <ScrollView style={styles.home_product_view}>
           {kinujoHtml.length > 0 ? (
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               <Text style={styles.section_header_text}>
                 {"KINUJO official product"}
               </Text>
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -849,11 +905,13 @@ export default function Home(props) {
             //     featuredProductNavigation(user.is_seller, user.shop_name)
             //   }
             // >
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               <Text style={styles.section_header_text}>
                 {Translate.t("featuredProduct")}
               </Text>
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             // </TouchableWithoutFeedback>
             <View></View>

@@ -717,16 +717,18 @@ export default function Home(props) {
         </Animated.View>
         <ScrollView style={styles.home_product_view}>
           {featuredHtml.length > 0 ? (
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               <Text style={styles.section_header_text}>
                 {Translate.t("featuredProduct")}
               </Text>
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
           {featuredHtml.length > 0 ? (
-            <View style={styles.section_product}>{featuredHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product}>{featuredHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
