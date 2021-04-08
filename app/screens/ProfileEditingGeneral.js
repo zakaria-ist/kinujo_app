@@ -854,7 +854,9 @@ export default function ProfileEditingGeneral(props) {
                     onPress={() => {
                       onEditEmailChanged(false);
                       if (validateEmail(email) == true) {
-                        promptUpdate(props, user, "email", email);
+                        if (email != user.email) {
+                          promptUpdate(props, user, "email", email);
+                        }
                       } else {
                         alert.warning(Translate.t("invalidEmail"), () => {
                           onEmailChanged(user.email);

@@ -130,7 +130,11 @@ async function getDetail(ownId, snapShotId, data) {
     let isBlock = false;
     let isHide = false;
     snapShot.forEach((docRef) => {
-      if (docRef.data().displayName && docRef.id == JSON.parse(users)) {
+      let customers = users;
+      if (customers.length > 0) {
+        customers = customers[0];
+      }
+      if (docRef.data().displayName && docRef.id == JSON.parse(customers)) {
         firebaseName = docRef.data().displayName;
         isBlock = docRef.data().blockMode ? true : false;
         isHide = docRef.data().secretMode ? true : false;
@@ -291,7 +295,8 @@ export default function ChatList(props) {
       return (
         !chat.data["delete_" + ownUserID] &&
         !chat.data["hide_" + ownUserID] &&
-        !chat["hide"]
+        !chat["hide"] &&
+        !chat["block"]
       );
     });
     tmpChats.map((chat) => {

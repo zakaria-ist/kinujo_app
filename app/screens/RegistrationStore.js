@@ -254,7 +254,7 @@ export default function RegistrationStore(props) {
                           // onPhoneChanged("");
                           AsyncStorage.getItem("referUser")
                             .then((item) => {
-                              if (item == null || item == "") {
+                              if (item == null || item == "" || item == "0") {
                                 item = refUser;
                               }
                               props.navigation.navigate("SMSAuthentication", {
