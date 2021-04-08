@@ -446,8 +446,26 @@ export default function SellerProductList(props) {
           }
         />
         <View style={styles.discription_header}>
-          <View>
+          {/* <View>
             <Text style={styles.disc_title_text}>{Translate.t("seller")} : {sellerName}</Text>
+          </View> */}
+          <View style={style={
+              position: "absolute",
+              justifyContent: "center",
+              paddingTop: heightPercentageToDP("3%"),
+              height: heightPercentageToDP("20%"),
+              // width: widthPercentageToDP("35%"),
+            }}>
+            <View style={{
+                  paddingVertical: heightPercentageToDP("3%"),
+                }}>
+              <Text style={styles.disc_title_text}>{Translate.t("seller")} : {sellerName}</Text>
+            </View>
+            <View style={{
+                  paddingVertical: heightPercentageToDP("2%"),
+                }}>
+              <Text style={styles.disc_title_text}>&nbsp;</Text>
+            </View>
           </View>
           <View
             style={{
@@ -794,7 +812,7 @@ const styles = StyleSheet.create({
     // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
-    paddingTop: heightPercentageToDP("15%"),
+    // paddingTop: heightPercentageToDP("15%"),
     paddingLeft: 15,
     fontSize: RFValue(14),
   },
