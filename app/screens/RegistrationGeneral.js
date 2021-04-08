@@ -121,7 +121,7 @@ export default function RegistrationGeneral(props) {
               // onPasswordChanged("")
               // onPhoneChanged("")
               AsyncStorage.getItem("referUser", function (item) {
-                if (item == null || item == "") {
+                if (item == null || item == "" || item == "0") {
                   item = refUser;
                 }
                 props.navigation.navigate("SMSAuthentication", {
