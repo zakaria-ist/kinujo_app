@@ -342,7 +342,7 @@ export default function Home(props) {
             //     }
             //   );
             // });
-            console.log(product)
+            // console.log(product)
             props.navigation.navigate("ProductList", {
               "id": product.id,
               "productName" : product.name
