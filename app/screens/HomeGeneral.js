@@ -146,26 +146,32 @@ export default function Home(props) {
                       }
                   });
               });
-
-              if (d_params.seller != '') {
-                request
-                  .post("user/get-email", {
-                    id: d_params.seller,
-                  })
-                  .then((response) => {
-                    if(response.data.success) {
-                      db.collection("sellers")
-                      .add({
-                          sellers: d_params.seller,
-                          email: response.data.email
-                      })
-                      .then(() => {
-                      });
-                    }
-                  })
-                
-              }
           });
+        // if (d_params.seller != '') {
+        //   request
+        //     .post("user/get-email", {
+        //       id: d_params.seller,
+        //     })
+        //     .then((response) => {
+        //       if(response.data.success) {
+        //         db.collection("sellers")
+        //         .add({
+        //             sellers: d_params.seller,
+        //             email: response.data.email
+        //         })
+        //         .then(() => {
+        //         });
+        //       }
+        //     })
+        // }
+        if (d_params.seller != '') {
+          db.collection("sellers")
+            .add({
+                sellers: d_params.seller,
+            })
+            .then(() => {
+            });
+        }
     });
   }
   
@@ -233,6 +239,16 @@ export default function Home(props) {
   }, [!isFocused]);
 
   async function requestUserPermission(response_user) {
+    // update cart
+    if (response_user) {
+      db.collection("users")
+          .doc((response_user.id).toString())
+          .collection("carts")
+          .get()
+          .then((querySnapShot) => {
+              onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+          });
+    }
     await messaging().requestPermission()
       .then((authStatus) => {
         const enabled =
@@ -829,11 +845,13 @@ export default function Home(props) {
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
         <ScrollView style={styles.home_product_view}>
           {kinujoHtml.length > 0 ? (
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               <Text style={styles.section_header_text}>
                 {"KINUJO official product"}
               </Text>
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -849,11 +867,13 @@ export default function Home(props) {
             //     featuredProductNavigation(user.is_seller, user.shop_name)
             //   }
             // >
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               <Text style={styles.section_header_text}>
                 {Translate.t("featuredProduct")}
               </Text>
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             // </TouchableWithoutFeedback>
             <View></View>
