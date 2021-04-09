@@ -727,8 +727,8 @@ export default function HomeStoreList(props) {
                 {Translate.t("seller") +
                   ": " +
                   (product && product.user
-                    ? product.user.real_name
-                      ? product.user.real_name
+                    ? product.user.shop_name
+                      ? product.user.shop_name
                       : product.user.nickname
                     : "")}
               </Text>
