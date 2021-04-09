@@ -246,6 +246,7 @@
   "generalUserInvite": "General user invitation",
   "storeAccInvite": "Store Account invitation",
   "friendAdded": "Friend has been added",
+  "friendAlreadyExist": "Friend already exists",
   "invalidQRcode": "Invalid QR Code",
   "breakdown": "Breakdown",
   "salesManagement": "Sales Management",

@@ -141,21 +141,49 @@ export default function QRCode(props) {
     if (code) {
       // alert.warning(userId.toString());
 
-      request.addFriend(userId, code).then(() => {
-        request.addFriend(code, userId).then(() => {
-          Alert.alert(
-            Translate.t("information"),
-            Translate.t("friendAdded"),
-            [
-              {
-                text: "OK",
-                onPress: () => {},
-              },
-            ],
-            { cancelable: false }
-          );
-        });
-      });
+      // request.addFriend(userId, code).then(() => {
+      //   request.addFriend(code, userId).then(() => {
+      //     Alert.alert(
+      //       Translate.t("information"),
+      //       Translate.t("friendAdded"),
+      //       [
+      //         {
+      //           text: "OK",
+      //           onPress: () => {},
+      //         },
+      //       ],
+      //       { cancelable: false }
+      //     );
+      //   });
+      // });
+      db.collection("users")
+        .doc(String(userId))
+        .collection("friends")
+        .get()
+        .then((querySnapshot) => {
+          let existing_friend = []
+          querySnapshot.forEach(documentSnapshot => {
+            existing_friend.push(documentSnapshot.data().id)
+          });
+
+          if(existing_friend.includes(code.toString())) {
+            alert.warning(Translate.t('friendAlreadyExist'));
+          } else {
+            request.addFriend(userId, code).then(() => {
+              Alert.alert(
+                Translate.t("information"),
+                Translate.t("friendAdded"),
+                [
+                  {
+                    text: "OK",
+                    onPress: () => {},
+                  },
+                ],
+                { cancelable: false }
+              );
+            });
+          }
+        })
     } else {
       alert.warning(Translate.t("invalidQRcode"));
     }
@@ -309,19 +337,47 @@ export default function QRCode(props) {
                           const { values } = response; // Array of detected QR code values. Empty if nothing found.
                           const code = findParams(values[0], "kinujoId");
                           if (code) {
-                            request.addFriend(userId, code).then(() => {
-                              Alert.alert(
-                                Translate.t("information"),
-                                Translate.t("friendAdded"),
-                                [
-                                  {
-                                    text: "OK",
-                                    onPress: () => {},
-                                  },
-                                ],
-                                { cancelable: false }
-                              );
-                            });
+                            // request.addFriend(userId, code).then(() => {
+                            //   Alert.alert(
+                            //     Translate.t("information"),
+                            //     Translate.t("friendAdded"),
+                            //     [
+                            //       {
+                            //         text: "OK",
+                            //         onPress: () => {},
+                            //       },
+                            //     ],
+                            //     { cancelable: false }
+                            //   );
+                            // });
+                            db.collection("users")
+                              .doc(String(userId))
+                              .collection("friends")
+                              .get()
+                              .then((querySnapshot) => {
+                                let existing_friend = []
+                                querySnapshot.forEach(documentSnapshot => {
+                                  existing_friend.push(documentSnapshot.data().id)
+                                });
+
+                                if(existing_friend.includes(code.toString())) {
+                                  alert.warning(Translate.t('friendAlreadyExist'));
+                                } else {
+                                  request.addFriend(userId, code).then(() => {
+                                    Alert.alert(
+                                      Translate.t("information"),
+                                      Translate.t("friendAdded"),
+                                      [
+                                        {
+                                          text: "OK",
+                                          onPress: () => {},
+                                        },
+                                      ],
+                                      { cancelable: false }
+                                    );
+                                  });
+                                }
+                              })
                           } else {
                             alert.warning(Translate.t("invalidQRcode"));
                           }
