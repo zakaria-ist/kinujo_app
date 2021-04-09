@@ -117,7 +117,9 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onBack}>
+          <View style={{ padding: 2 }}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20) }} />
+          </View>
         </TouchableWithoutFeedback>
         <KinujoWord
           style={{

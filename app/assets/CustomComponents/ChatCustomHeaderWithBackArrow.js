@@ -135,7 +135,9 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onBack}>
+          <View style={{ padding: 1 }}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20), marginRight: widthPercentageToDP("5%") }} />
+          </View>
         </TouchableWithoutFeedback>
         <GroupImages
             width={heightPercentageToDP("6%")}
