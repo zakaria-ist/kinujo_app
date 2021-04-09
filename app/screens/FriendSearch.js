@@ -165,11 +165,28 @@ export default function FriendSearch(props) {
         <TouchableWithoutFeedback
           key={friend.id}
           onPress={() => {
-            request.addFriend(ownUserID, friend.id).then(() => {
-              alert.warning(Translate.t('friendAdded'));
-              redirectToChat(friend.id, friend.real_name);
-              onSearchTextChanged("");
-            });
+            db.collection("users")
+                        .doc(String(ownUserID))
+                        .collection("friends")
+                        .get()
+                        .then((querySnapshot) => {
+                          let existing_friend = []
+                          querySnapshot.forEach(documentSnapshot => {
+                            existing_friend.push(documentSnapshot.data().id)
+                          });
+                          
+                          if(existing_friend.includes(friend.id.toString())) {
+                            alert.warning(Translate.t('friendAlreadyExist'));
+                            redirectToChat(friend.id, friend.real_name);
+                            onSearchTextChanged("");
+                          } else {
+                            request.addFriend(ownUserID, friend.id).then(() => {
+                              alert.warning(Translate.t('friendAdded'));
+                              redirectToChat(friend.id, friend.real_name);
+                              onSearchTextChanged("");
+                            });
+                          }
+                        })
           }}
         >
           <View style={styles.friendListContainer}>
