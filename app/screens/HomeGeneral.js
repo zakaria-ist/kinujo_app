@@ -420,7 +420,7 @@ export default function Home(props) {
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(product.store_price + (product.store_price * taxRate))
