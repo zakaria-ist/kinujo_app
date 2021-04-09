@@ -82,13 +82,40 @@ async function saveProduct(props, link) {
   let product_id = findParams(link, "product_id");
   await AsyncStorage.setItem("product", product_id);
 }
-
+function get_user_id(link) {
+  let user_params = link.split('&')[0];
+  return user_params.split('=')[1]
+}
 async function performUrl(props, link) {
   let userId = findParams(link, "userId");
   let store = findParams(link, "store");
   console.log('link', link);
   console.log('userId', userId);
   console.log('store', store);
+  let links = [];
+  if (store == "" || store == undefined) {
+    if (link.indexOf('asia1store%3F') >= 0) {
+      store = "1";
+      links = link.split('asia1store%3F');
+    }
+    else if (link.indexOf('asia1store?') >= 0) {
+      store = "1";
+      links = link.split('asia1store?');
+    }
+    else if (link.indexOf('asia0store%3F') >= 0) {
+      store = "0";
+      links = link.split('asia0store%3F');
+    }
+    else if (link.indexOf('asia0store?') >= 0) {
+      store = "0";
+      links = link.split('asia0store?');
+    }
+    if (links) {
+      userId = get_user_id(links[1]);
+    }
+    console.log('userId', userId);
+    console.log('store', store);
+  }
   await AsyncStorage.setItem("referUser", userId);
   if (store && store != "" && store != "0" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
@@ -106,7 +133,10 @@ async function init(props, foreground) {
       Linking.getInitialURL().then((url) => {
         if (url) {
           url = decodeURI(url);
-          saveProduct(props, url.replace("https://kinujo-link.c2sg.asia/?link=", "").replace("%3D", '='));
+          url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
+          url = url.replaceAll("%3D", '=');
+          url = url.replaceAll("%26", '&');
+          saveProduct(props, url);
         }
       }).catch(err => {console.log('Linking ERROR', err)})
     } else {
@@ -153,8 +183,11 @@ async function init(props, foreground) {
         if (url) {
           url = decodeURI(url);
           console.log('url', url);
-          saveProduct(props, url.replace("https://kinujo-link.c2sg.asia/?link=", "").replace("%3D", '='));
-          performUrl(props, url.replace("https://kinujo-link.c2sg.asia/?link=", "").replace("%3D", '='));
+          url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
+          url = url.replaceAll("%3D", '=');
+          url = url.replaceAll("%26", '&');
+          saveProduct(props, url);
+          performUrl(props, url);
         }
         else {
           if (foreground) {

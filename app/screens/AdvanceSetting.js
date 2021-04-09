@@ -123,9 +123,9 @@ export default function AdvanceSetting(props) {
               if (documentSnapshot.data()) {
                 let tmpUser = documentSnapshot.data();
                 onFirebaseUserChanged(documentSnapshot.data());
+                onBlockModeChanged(tmpUser.blockMode);
+                onSecretModeChanged(tmpUser.secretMode);
                 if (!firstLoaded) {
-                  onBlockModeChanged(tmpUser.blockMode);
-                  onSecretModeChanged(tmpUser.secretMode);
                   if (!tmpUser.displayName) {
                     onDisplayNameChanged(
                       response.data.nickname ? response.data.nickname : ""

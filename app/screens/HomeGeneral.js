@@ -154,31 +154,14 @@ export default function Home(props) {
                   });
               });
           });
-        // if (d_params.seller != '') {
-        //   request
-        //     .post("user/get-email", {
-        //       id: d_params.seller,
-        //     })
-        //     .then((response) => {
-        //       if(response.data.success) {
-        //         db.collection("sellers")
-        //         .add({
-        //             sellers: d_params.seller,
-        //             email: response.data.email
-        //         })
-        //         .then(() => {
-        //         });
-        //       }
-        //     })
-        // }
 
         // add seller for pushnotification
-        pushSeller()
+        pushSeller(userId)
         
     });
   }
 
-  async function pushSeller() {
+  async function pushSeller(userId) {
     if (d_params.seller != '') {
       let sellerList = [];
       let oldsellers = await db.collection("sellers").get();
@@ -209,6 +192,18 @@ export default function Home(props) {
       
       d_params.seller = '';
     }
+    // update the cart again
+    db.collection("users")
+        .doc(userId.toString())
+        .collection("carts")
+        .get()
+        .then((querySnapShot) => {
+            let totalItemQty = 0
+            querySnapShot.forEach(documentSnapshot => {
+              totalItemQty += parseInt(documentSnapshot.data().quantity)
+            });
+            onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
+        });
   }
   
   React.useEffect(() => {
@@ -277,16 +272,6 @@ export default function Home(props) {
   }, [!isFocused]);
 
   async function requestUserPermission(response_user) {
-    // // update cart
-    // if (response_user) {
-    //   db.collection("users")
-    //       .doc((response_user.id).toString())
-    //       .collection("carts")
-    //       .get()
-    //       .then((querySnapShot) => {
-    //           onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
-    //       });
-    // }
     await messaging().requestPermission()
       .then((authStatus) => {
         const enabled =

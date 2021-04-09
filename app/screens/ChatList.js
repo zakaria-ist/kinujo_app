@@ -295,8 +295,8 @@ export default function ChatList(props) {
       return (
         !chat.data["delete_" + ownUserID] &&
         !chat.data["hide_" + ownUserID] &&
-        !chat["hide"] &&
-        !chat["block"]
+        !chat["hide"] //&&
+        //!chat["block"]
       );
     });
     tmpChats.map((chat) => {
