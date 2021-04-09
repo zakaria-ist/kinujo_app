@@ -854,12 +854,14 @@ export default function HomeByCategory(props) {
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
         <ScrollView style={styles.home_product_view}>
           {kinujoHtml.length > 0 ? (
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               {/* <Text style={styles.section_header_text}>
                 {"Number of sellers:" +
                   (officialProductCount + featuredProductCount)}
               </Text> */}
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -870,11 +872,13 @@ export default function HomeByCategory(props) {
           )}
 
           {featuredHtml.length > 0 ? (
+            <TouchableWithoutFeedback>
             <View style={styles.section_header}>
               <Text style={styles.section_header_text}>
                 {Translate.t("featuredProduct")}
               </Text>
             </View>
+            </TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
