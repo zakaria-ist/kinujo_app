@@ -140,7 +140,12 @@ export default function Home(props) {
                               .collection("carts")
                               .get()
                               .then((querySnapShot) => {
-                                  onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                                let totalItemQty = 0
+                                // onCartCountChanged(querySnapShot.size);
+                                querySnapShot.forEach(documentSnapshot => {
+                                  totalItemQty += parseInt(documentSnapshot.data().quantity)
+                                });
+                                onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
                               });
                           });
                       }
