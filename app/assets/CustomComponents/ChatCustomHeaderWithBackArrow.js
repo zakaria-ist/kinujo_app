@@ -9,6 +9,7 @@ import {
   StatusBar,
   Platform,
   TouchableWithoutFeedback,
+  TouchableOpacity
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import {
@@ -59,7 +60,7 @@ export default function CustomKinujoWord({
   const [userAuthorityID, onUserAuthorityIDChanged] = useStateIfMounted(0);
   const [state, setState] = useStateIfMounted(false);
   const [localImages, setImages] = useStateIfMounted([]);
-  
+
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
@@ -91,6 +92,9 @@ export default function CustomKinujoWord({
           });
       });
     });
+    if (overrideCartCount >= 0) {
+      onCartChanged(overrideCartCount);
+    }
 
     if (userUrl) {
       if (userUrl != "group") {
