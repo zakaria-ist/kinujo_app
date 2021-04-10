@@ -9,6 +9,7 @@ import {
   StatusBar,
   Platform,
   TouchableWithoutFeedback,
+  TouchableOpacity
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import {
@@ -65,15 +66,30 @@ export default function CustomKinujoWord({
           .doc(String(response.data.id))
           .collection("carts")
           .get()
+          // .then((querySnapShot) => {
+          //   onCartChanged(0);
+          //   onCartChanged(querySnapShot.docs.length);
+          //   if (onCartCount) {
+          //     onCartCount(querySnapShot.docs.length);
+          //   }
+          // });
           .then((querySnapShot) => {
+            let totalItemQty = 0
+            querySnapShot.forEach(documentSnapshot => {
+              totalItemQty += parseInt(documentSnapshot.data().quantity)
+            });
             onCartChanged(0);
-            onCartChanged(querySnapShot.docs.length);
+            onCartChanged(totalItemQty);
             if (onCartCount) {
-              onCartCount(querySnapShot.docs.length);
+              onCartCount(totalItemQty)
             }
           });
       });
     });
+    if (overrideCartCount >= 0) {
+      console.log("overRideCartCount", overrideCartCount);
+      onCartChanged(overrideCartCount);
+    }
   }, [isFocused]);
   React.useEffect(() => {
     if (overrideCartCount >= 0) {
@@ -106,7 +122,9 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onBack}>
+          <View style={{ padding: 2 }}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20) }} />
+          </View>
         </TouchableWithoutFeedback>
         <KinujoWord
           style={{
