@@ -9,6 +9,7 @@ import {
   StatusBar,
   Platform,
   TouchableWithoutFeedback,
+  TouchableOpacity
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import {
@@ -59,7 +60,7 @@ export default function CustomKinujoWord({
   const [userAuthorityID, onUserAuthorityIDChanged] = useStateIfMounted(0);
   const [state, setState] = useStateIfMounted(false);
   const [localImages, setImages] = useStateIfMounted([]);
-  
+
   React.useEffect(() => {
     AsyncStorage.getItem("user").then(function (url) {
       request.get(url).then((response) => {
@@ -71,15 +72,29 @@ export default function CustomKinujoWord({
           .doc(String(response.data.id))
           .collection("carts")
           .get()
+          // .then((querySnapShot) => {
+          //   onCartChanged(0);
+          //   onCartChanged(querySnapShot.docs.length);
+          //   if (onCartCount) {
+          //     onCartCount(querySnapShot.docs.length);
+          //   }
+          // });
           .then((querySnapShot) => {
+            let totalItemQty = 0
+            querySnapShot.forEach(documentSnapshot => {
+              totalItemQty += parseInt(documentSnapshot.data().quantity)
+            });
             onCartChanged(0);
-            onCartChanged(querySnapShot.docs.length);
+            onCartChanged(totalItemQty);
             if (onCartCount) {
-              onCartCount(querySnapShot.docs.length);
+              onCartCount(totalItemQty)
             }
           });
       });
     });
+    if (overrideCartCount >= 0) {
+      onCartChanged(overrideCartCount);
+    }
 
     if (userUrl) {
       if (userUrl != "group") {
@@ -124,7 +139,9 @@ export default function CustomKinujoWord({
         }}
       >
         <TouchableWithoutFeedback onPress={onBack}>
+          <View style={{ padding: 1 }}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20), marginRight: widthPercentageToDP("5%") }} />
+          </View>
         </TouchableWithoutFeedback>
         <GroupImages
             width={heightPercentageToDP("6%")}

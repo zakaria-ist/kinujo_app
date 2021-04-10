@@ -309,7 +309,21 @@ export default function Cart(props) {
                           {
                             merge: true,
                           }
-                        );
+                        )
+                        .then(() => {
+                          db.collection("users")
+                            .doc(userId.toString())
+                            .collection("carts")
+                            .get()
+                            .then((querySnapShot) => {
+                              let totalItemQty = 0
+                              // onCartCountChanged(querySnapShot.size);
+                              querySnapShot.forEach(documentSnapshot => {
+                                totalItemQty += parseInt(documentSnapshot.data().quantity)
+                              });
+                              onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
+                            });
+                        });
                       onValueChanged(item.id, ci.value, is_store);
                     }
                   }}
@@ -373,7 +387,13 @@ export default function Cart(props) {
                                   .collection("carts")
                                   .get()
                                   .then((querySnapShot) => {
-                                    onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                                    let totalItemQty = 0
+                                    // onCartCountChanged(querySnapShot.size);
+                                    querySnapShot.forEach(documentSnapshot => {
+                                      totalItemQty += parseInt(documentSnapshot.data().quantity)
+                                      console.log(totalItemQty)
+                                    });
+                                    onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
                                   });
                                 })
                               shopUpdate(tmpIds, user.is_seller && user.is_approved);
@@ -950,7 +970,12 @@ export default function Cart(props) {
                           .collection("carts")
                           .get()
                           .then((querySnapShot) => {
-                              onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                            let totalItemQty = 0
+                            // onCartCountChanged(querySnapShot.size);
+                            querySnapShot.forEach(documentSnapshot => {
+                              totalItemQty += parseInt(documentSnapshot.data().quantity)
+                            });
+                            onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
                           });
                       });
                   }
