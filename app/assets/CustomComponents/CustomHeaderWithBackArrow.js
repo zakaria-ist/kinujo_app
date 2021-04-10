@@ -9,6 +9,7 @@ import {
   StatusBar,
   Platform,
   TouchableWithoutFeedback,
+  TouchableOpacity
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import {
@@ -74,6 +75,10 @@ export default function CustomKinujoWord({
           });
       });
     });
+    if (overrideCartCount >= 0) {
+      console.log("overRideCartCount", overrideCartCount);
+      onCartChanged(overrideCartCount);
+    }
   }, [isFocused]);
   React.useEffect(() => {
     if (overrideCartCount >= 0) {
@@ -105,9 +110,9 @@ export default function CustomKinujoWord({
           marginLeft: widthPercentageToDP("3%"),
         }}
       >
-        <TouchableWithoutFeedback onPress={onBack}>
+        <TouchableOpacity onPress={onBack}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20) }} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
         <KinujoWord
           style={{
             width: win.width / 4,

@@ -75,7 +75,7 @@ export default function Home(props) {
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
-  
+
   let userId = "";
   let d_params = {
     snapIds: [],
@@ -118,7 +118,7 @@ export default function Home(props) {
   }).catch(err => {console.log('Linking ERROR', err)})
   Linking.removeEventListener('url', handleOpenURL);
   Linking.addEventListener('url', handleOpenURL);
-  
+
 
   async function updateShop() {
     AsyncStorage.getItem("user").then((url) => {
@@ -154,31 +154,14 @@ export default function Home(props) {
                   });
               });
           });
-        // if (d_params.seller != '') {
-        //   request
-        //     .post("user/get-email", {
-        //       id: d_params.seller,
-        //     })
-        //     .then((response) => {
-        //       if(response.data.success) {
-        //         db.collection("sellers")
-        //         .add({
-        //             sellers: d_params.seller,
-        //             email: response.data.email
-        //         })
-        //         .then(() => {
-        //         });
-        //       }
-        //     })
-        // }
 
         // add seller for pushnotification
-        pushSeller()
-        
+        pushSeller(userId)
+
     });
   }
 
-  async function pushSeller() {
+  async function pushSeller(userId) {
     if (d_params.seller != '') {
       let sellerList = [];
       let oldsellers = await db.collection("sellers").get();
@@ -206,11 +189,23 @@ export default function Home(props) {
         .then(() => {
           console.log("Seller Document successfully added!");
         });
-      
+
       d_params.seller = '';
     }
+    // update the cart again
+    db.collection("users")
+        .doc(userId.toString())
+        .collection("carts")
+        .get()
+        .then((querySnapShot) => {
+            let totalItemQty = 0
+            querySnapShot.forEach(documentSnapshot => {
+              totalItemQty += parseInt(documentSnapshot.data().quantity)
+            });
+            onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
+        });
   }
-  
+
   React.useEffect(() => {
     messaging()
       .getInitialNotification()
@@ -244,7 +239,7 @@ export default function Home(props) {
           });
         }
       });
-      
+
       messaging()
         .onMessage(({notification}) => {
           Notifications.postLocalNotification({
@@ -265,7 +260,7 @@ export default function Home(props) {
           }
         });
       });
-  
+
       AsyncStorage.removeItem("product");
     });
   }, []);
@@ -277,16 +272,6 @@ export default function Home(props) {
   }, [!isFocused]);
 
   async function requestUserPermission(response_user) {
-    // // update cart
-    // if (response_user) {
-    //   db.collection("users")
-    //       .doc((response_user.id).toString())
-    //       .collection("carts")
-    //       .get()
-    //       .then((querySnapShot) => {
-    //           onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
-    //       });
-    // }
     await messaging().requestPermission()
       .then((authStatus) => {
         const enabled =
@@ -559,11 +544,11 @@ export default function Home(props) {
     });
     return tmpCategoryHtml;
   }
-  
+
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       SplashScreen.hide();
-    
+
       // onFeaturedHtmlChanged([]);
       // onKinujoHtmlChanged([]);
       createNotificationChannel();
@@ -652,7 +637,7 @@ export default function Home(props) {
             }
             return 1;
           });
-  
+
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
             return (
@@ -662,7 +647,7 @@ export default function Home(props) {
               product.is_draft == 0
             );
           });
-  
+
           kinujoProducts = products.filter((product) => {
             return product.user.authority.id == 1;
           });

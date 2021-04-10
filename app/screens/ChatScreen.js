@@ -108,6 +108,7 @@ let day = new Date().getDate();
 let tmpMultiSelect = false;
 let lastDoc = null;
 let old30LastDoc = null;
+let isUserBlocked = false;
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
     db.collection("users")
@@ -1991,6 +1992,26 @@ export default function ChatScreen(props) {
       tmpUsers = tmpUsers.filter((user) => {
         return user != userId;
       });
+
+      // check if me is blocked by other party
+      let blockerUser = tmpUsers;
+      if (blockerUser) {
+        if (blockerUser.length > 0) {
+          blockerUser = blockerUser[0];
+        }
+        let CustSnapShots = await db
+          .collection("users")
+          .doc(String(blockerUser))
+          .collection("customers")
+          .get();
+        CustSnapShots.forEach((CustSnapShot) => {
+          console.log('CustSnapShot.id', CustSnapShot.id);
+          if (CustSnapShot.id == String(userId)) {
+            isUserBlocked = CustSnapShot.data().blockMode ? true : false;
+          }
+        });
+        console.log('ifBlockUser Block', isUserBlocked);
+      }
       if (tmpUsers.length == 1) {
         let images = await request.post("user/images", {
           users: tmpUsers,
@@ -3108,23 +3129,28 @@ export default function ChatScreen(props) {
             {/* SEND BUTTON */}
             <TouchableNativeFeedback
               onPress={() => {
-                let tmpMessage = messages;
-                setMessages("");
-                let createdAt = getTime();
-                if (tmpMessage) {
-                  let doc = db
-                    .collection("chat")
-                    .doc(groupID)
-                    .collection("messages")
-                    .doc();
-                  doc
-                    .set({
-                      userID: userId,
-                      createdAt: createdAt,
-                      timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                      message: tmpMessage,
-                    })
-                    .then((item) => {});
+                console.log('press', isUserBlocked);
+                if (!isUserBlocked) {
+                  let tmpMessage = messages;
+                  setMessages("");
+                  let createdAt = getTime();
+                  if (tmpMessage) {
+                    let doc = db
+                      .collection("chat")
+                      .doc(groupID)
+                      .collection("messages")
+                      .doc();
+                    doc
+                      .set({
+                        userID: userId,
+                        createdAt: createdAt,
+                        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        message: tmpMessage,
+                      })
+                      .then((item) => {});
+                  }
+                } else {
+                  setMessages("");
                 }
               }}
             >

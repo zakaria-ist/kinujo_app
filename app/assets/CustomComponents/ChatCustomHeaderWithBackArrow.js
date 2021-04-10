@@ -9,6 +9,7 @@ import {
   StatusBar,
   Platform,
   TouchableWithoutFeedback,
+  TouchableOpacity
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import {
@@ -80,6 +81,9 @@ export default function CustomKinujoWord({
           });
       });
     });
+    if (overrideCartCount >= 0) {
+      onCartChanged(overrideCartCount);
+    }
 
     if (userUrl) {
       if (userUrl != "group") {
@@ -123,9 +127,9 @@ export default function CustomKinujoWord({
           marginLeft: widthPercentageToDP("3%"),
         }}
       >
-        <TouchableWithoutFeedback onPress={onBack}>
+        <TouchableOpacity onPress={onBack}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20), marginRight: widthPercentageToDP("5%") }} />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
         <GroupImages
             width={heightPercentageToDP("6%")}
             height={heightPercentageToDP("6%")}
