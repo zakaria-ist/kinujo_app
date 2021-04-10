@@ -56,9 +56,20 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
             .doc(String(response.data.id))
             .collection("carts")
             .get()
+            // .then((querySnapShot) => {
+            //   onCartChanged(0);
+            //   onCartChanged(querySnapShot.docs.length);
+            // });
             .then((querySnapShot) => {
+              let totalItemQty = 0
+              querySnapShot.forEach(documentSnapshot => {
+                totalItemQty += parseInt(documentSnapshot.data().quantity)
+              });
               onCartChanged(0);
-              onCartChanged(querySnapShot.docs.length);
+              onCartChanged(totalItemQty);
+              if (onCartCount) {
+                onCartCount(totalItemQty)
+              }
             });
         });
       });

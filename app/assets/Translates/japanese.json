@@ -244,6 +244,7 @@
   "generalUserInvite": "一般ユーザー招待",
   "storeAccInvite": "ストアアカウント招待",
   "friendAdded": "友達が追加されました",
+  "friendAlreadyExist": "既に友達登録されています",
   "invalidQRcode": "無効なQRコード",
   "breakdown": "内訳",
   "salesManagement": "売上管理",

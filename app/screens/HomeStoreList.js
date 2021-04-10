@@ -727,8 +727,8 @@ export default function HomeStoreList(props) {
                 {Translate.t("seller") +
                   ": " +
                   (product && product.user
-                    ? product.user.real_name
-                      ? product.user.real_name
+                    ? product.user.shop_name
+                      ? product.user.shop_name
                       : product.user.nickname
                     : "")}
               </Text>
@@ -1004,7 +1004,12 @@ export default function HomeStoreList(props) {
                                     .collection("carts")
                                     .get()
                                     .then((querySnapShot) => {
-                                      onCartCountChanged(querySnapShot.size);
+                                      let totalItemQty = 0
+                                      // onCartCountChanged(querySnapShot.size);
+                                      querySnapShot.forEach(documentSnapshot => {
+                                        totalItemQty += parseInt(documentSnapshot.data().quantity)
+                                      });
+                                      onCartCountChanged(totalItemQty);
                                     });
                                 })
                             });

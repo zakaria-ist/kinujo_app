@@ -147,7 +147,12 @@ export default function Home(props) {
                               .collection("carts")
                               .get()
                               .then((querySnapShot) => {
-                                  onCartCountChanged(querySnapShot.size ? querySnapShot.size : 0);
+                                let totalItemQty = 0
+                                // onCartCountChanged(querySnapShot.size);
+                                querySnapShot.forEach(documentSnapshot => {
+                                  totalItemQty += parseInt(documentSnapshot.data().quantity)
+                                });
+                                onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
                               });
                           });
                       }
@@ -400,7 +405,7 @@ export default function Home(props) {
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(product.store_price + (product.store_price * taxRate))
