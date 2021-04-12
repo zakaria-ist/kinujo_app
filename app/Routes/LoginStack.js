@@ -62,7 +62,8 @@ import GroupFolderCreateCompletion from "../Screens/GroupFolderCreateCompletion"
 import ContactShare from "../Screens/ContactShare";
 import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
 import ChatContact from "../Screens/ChatContact";
-import FavoriteChat from "../Screens/FavoriteChat";
+// import FavoriteChat from "../Screens/FavoriteChat";
+import FavoriteMessages from "../Screens/FavoriteMessages";
 import ProductList from "../Screens/ProductList";
 // import KinujoStripeCheckout from "../Screens/KinujoStripeCheckout";
 import { NavigationContainer } from "@react-navigation/native";
@@ -127,7 +128,7 @@ function BottomNavigationGeneral(props) {
       props.route.state.routeNames[props.route.state.index] ==
         "GroupFolderCreateCompletion" ||
       props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
-      props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
+      props.route.state.routeNames[props.route.state.index] == "FavoriteMessages";
   }
   if (isShow) {
     return (
@@ -166,11 +167,19 @@ function BottomNavigationGeneral(props) {
             tabBarIcon: () => <ChatLogo width={25} height={25} />,
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="FavoriteChat"
           component={FavoriteChat}
           options={{
             tabBarLabel: "FavoriteChat",
+            tabBarIcon: () => <StarLogo width={25} height={25} />,
+          }}
+        /> */}
+        <Tab.Screen
+          name="FavoriteMessages"
+          component={FavoriteMessages}
+          options={{
+            tabBarLabel: "FavoriteMessages",
             tabBarIcon: () => <StarLogo width={25} height={25} />,
           }}
         />
@@ -1089,7 +1098,7 @@ function BottomNavigationStore(props) {
       props.route.state.routeNames[props.route.state.index] ==
         "GroupFolderCreateCompletion" ||
       props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
-      props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
+      props.route.state.routeNames[props.route.state.index] == "FavoriteMessages";
   }
   if (isShow) {
     return (
@@ -1135,11 +1144,19 @@ function BottomNavigationStore(props) {
           name="HomeStoreList"
           component={HomeStoreList}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="FavoriteChat"
           component={FavoriteChat}
           options={{
             tabBarLabel: "FavoriteChat",
+            tabBarIcon: () => <StarLogo width={25} height={25} />,
+          }}
+        /> */}
+        <Tab.Screen
+          name="FavoriteMessages"
+          component={FavoriteMessages}
+          options={{
+            tabBarLabel: "FavoriteMessages",
             tabBarIcon: () => <StarLogo width={25} height={25} />,
           }}
         />
@@ -2042,7 +2059,7 @@ function BottomNavigationStore(props) {
 
 const linking = {
   prefixes: [
-    'com.example.kinujo://',
+    'net.c2sg.kinujo://',
   ],
   config: {
     // screens: {
