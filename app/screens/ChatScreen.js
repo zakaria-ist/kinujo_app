@@ -81,6 +81,7 @@ const request = new Request();
 let userId;
 let groupID;
 let groupName;
+let favData;
 let userTotalReadMessageField;
 let totalMessageCount = 0;
 let tmpChatHtml = [];
@@ -136,6 +137,7 @@ function getTime() {
     year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds
   );
 }
+let favIndex = -1;
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = useStateIfMounted(false);
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
@@ -163,6 +165,8 @@ export default function ChatScreen(props) {
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
   groupType = props.route.params.type;
+  favData = props.route.params.favData;
+  console.log('favData', favData);
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
   const insets = useSafeAreaInsets();
@@ -1954,6 +1958,17 @@ export default function ChatScreen(props) {
       return chat;
     });
 
+    if (favData) {
+      for(let i=0; i<chats.length; i++){
+        let chat = chats[i];
+         if (favData.createdAt == chat.data.createdAt && favData.message == chat.data.message) {
+          favIndex = i;
+          console.log('favIndex', favIndex);
+         }
+      }
+    }
+
+
     //remove duplicates
     // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
     let last = "";
@@ -2859,6 +2874,23 @@ export default function ChatScreen(props) {
             onContentSizeChange={() =>
               scrollViewReference.current.scrollToEnd({ animated: true })
             }
+            onScrollToIndexFailed={(error) => {
+              scrollViewReference.current.scrollToOffset({ offset: error.averageItemLength * error.index, animated: true });
+              setTimeout(() => {
+                if (newChats.length !== 0 && scrollViewReference.current !== null) {
+                  scrollViewReference.current.scrollToIndex({ index: error.index, animated: true });
+                }
+              }, 100);
+            }}
+            onEndReached={() => {
+              if (favIndex != undefined && favIndex != null && favIndex != -1) {
+                setTimeout(() => {
+                  if (scrollViewReference) {
+                    scrollViewReference.current.scrollToIndex({ animated: true, index: favIndex });
+                  }
+                }, 300);
+              }
+            }}
             keyExtractor={chat=> groupID + "_chat_" + chat.id}>
           </FlatList>
         </LinearGradient>
@@ -2990,17 +3022,35 @@ export default function ChatScreen(props) {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
-                        let update = {};
-                        update["favourite_" + userId] = true;
-                        db.collection("chat")
-                          .doc(groupID)
-                          .set(update, {
-                            merge: true,
-                          })
-                          .then(() => {
-                            onShowPopUpChanged(false);
-                            alert.warning(Translate.t("chat_favourite_added"));
-                          });
+                        // let update = {};
+                        // update["favourite_" + userId] = true;
+                        // db.collection("chat")
+                        //   .doc(groupID)
+                        //   .set(update, {
+                        //     merge: true,
+                        //   })
+                        //   .then(() => {
+                        //     onShowPopUpChanged(false);
+                        //     alert.warning(Translate.t("chat_favourite_added"));
+                        //   });
+
+                          db.collection("users")
+                            .doc(userId)
+                            .collection("favouriteMessages")
+                            .doc(String(longPressObj.id))
+                            .set({
+                              createdAt: longPressObj.data.createdAt,
+                              message: longPressObj.message,
+                              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                              groupID: groupID,
+                              groupName: groupName,
+                              gorupType: groupType ? groupType : "",
+                              senderId: String(longPressObj.data.userID)
+                            })
+                            .then(() => {
+                              onShowPopUpChanged(false);
+                              alert.warning(Translate.t("msg_favourite_added"));
+                            });
 
                         // db.collection("users")
                         //   .doc(userId)
