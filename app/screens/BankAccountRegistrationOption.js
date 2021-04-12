@@ -157,27 +157,32 @@ export default function BankAccountRegistration(props) {
             marginTop: heightPercentageToDP("3%"),
           }}
         >
-          <Text
-            onPress={() => updateProfile("AccountExamination")}
-            style={{
-              alignSelf: "center",
-              color: Colors.white,
-              textAlign: "center",
-              fontSize: RFValue(12),
-            }}
-          >
-            {Translate.t("registerLater")}
-          </Text>
-          <Image
-            onPress={() => updateProfile("AccountExamination")}
-            style={{
-              marginLeft: 5,
-              width: win.width / 25,
-              height: 17 * ratio,
-              alignSelf: "center",
-            }}
-            source={require("../assets/Images/whiteNextArrow.png")}
-          />
+            <TouchableOpacity
+              onPress={() => updateProfile("AccountExamination")}
+            >
+              <View style={{flexDirection:"row"}}>
+                <Text
+                  style={{
+                    alignSelf: "center",
+                    color: Colors.white,
+                    textAlign: "center",
+                    fontSize: RFValue(12),
+                  }}
+                >
+                  {Translate.t("registerLater")}
+                </Text>
+                <Image
+                  onPress={() => updateProfile("AccountExamination")}
+                  style={{
+                    marginLeft: 5,
+                    width: win.width / 25,
+                    height: 17 * ratio,
+                    alignSelf: "center",
+                  }}
+                  source={require("../assets/Images/whiteNextArrow.png")}
+                />
+            </View>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </LinearGradient>
