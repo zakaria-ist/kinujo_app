@@ -157,7 +157,7 @@ export default function BankAccountRegistration(props) {
             marginTop: heightPercentageToDP("3%"),
           }}
         >
-            <TouchableWithoutFeedback
+            <TouchableOpacity
               onPress={() => updateProfile("AccountExamination")}
             >
               <View style={{flexDirection:"row"}}>
@@ -182,7 +182,7 @@ export default function BankAccountRegistration(props) {
                   source={require("../assets/Images/whiteNextArrow.png")}
                 />
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </LinearGradient>
