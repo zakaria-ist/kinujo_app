@@ -86,11 +86,8 @@ export default function CustomKinujoWord({
           });
       });
     });
-    if (overrideCartCount >= 0) {
-      console.log("overRideCartCount", overrideCartCount);
-      onCartChanged(overrideCartCount);
-    }
   }, [isFocused]);
+  
   React.useEffect(() => {
     if (overrideCartCount >= 0) {
       console.log("overRideCart", overrideCartCount);
@@ -121,11 +118,11 @@ export default function CustomKinujoWord({
           marginLeft: widthPercentageToDP("3%"),
         }}
       >
-        <TouchableWithoutFeedback onPress={onBack}>
+        <TouchableOpacity onPress={onBack}>
           <View style={{ padding: 2 }}>
           <BackArrow style={{ width: RFValue(20), height: RFValue(20) }} />
           </View>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
         <KinujoWord
           style={{
             width: win.width / 4,
