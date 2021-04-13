@@ -197,10 +197,7 @@ export default function HomeStoreList(props) {
         >
           <TouchableOpacity
               onPress={() => {
-                console.log('showVarient', key, showVarientObj[key]);
                 showVarientObj[key] = !showVarientObj[key];
-                // onShowVarientChanged(show);
-                console.log('showVarient', key, showVarientObj[key]);
                 onPopupHtmlChanged(
                   populatePopupHtml(props, tmpProduct, tmpJanCodes, selected)
                 );
