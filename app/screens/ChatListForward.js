@@ -120,10 +120,13 @@ async function getDetail(ownId, data) {
   };
 }
 
-export default function ChatList(props) {
+export default function ChatListForward(props) {
   let messageToForward = props.route.params.message;
   let message = props.route.params;
   let messages = props.route.params.messages;
+  let groupId = props.route.params.groupID;
+  let groupName = props.route.params.groupName;
+  let groupType = props.route.params.type;
   const isFocused = useIsFocused();
   const [show, onShowChanged] = useStateIfMounted(false);
   const [totalUnread, setTotalUnread] = useStateIfMounted(false);
@@ -212,10 +215,20 @@ export default function ChatList(props) {
             .add(field)
             .then(function () {
               onSpinnerChanged(false);
-              props.navigation.goBack();
+              // props.navigation.goBack();
+              props.navigation.navigate("ChatScreen", {
+                type: groupType,
+                groupID: groupId,
+                groupName: groupName,
+              })
             }).catch(()=>{
               onSpinnerChanged(false);
-              props.navigation.goBack();
+              // props.navigation.goBack();
+              props.navigation.navigate("ChatScreen", {
+                type: groupType,
+                groupID: groupId,
+                groupName: groupName,
+              })
             })
         } else if(messages){
           const batch = db.batch();
@@ -245,10 +258,20 @@ export default function ChatList(props) {
           }
           batch.commit().then(()=>{
             onSpinnerChanged(false);
-            props.navigation.goBack();
+            // props.navigation.goBack();
+            props.navigation.navigate("ChatScreen", {
+              type: groupType,
+              groupID: groupId,
+              groupName: groupName,
+            })
           }).catch((error)=>{
             onSpinnerChanged(false);
-            props.navigation.goBack();
+            // props.navigation.goBack();
+            props.navigation.navigate("ChatScreen", {
+              type: groupType,
+              groupID: groupId,
+              groupName: groupName,
+            })
           })
         }
       }
@@ -526,7 +549,13 @@ export default function ChatList(props) {
         <CustomHeader
           text={Translate.t("chat")}
           onPress={() => props.navigation.navigate("Cart")}
-          onBack={() => props.navigation.goBack()}
+          onBack={() => {
+            props.navigation.navigate("ChatScreen", {
+              type: groupType,
+              groupID: groupId,
+              groupName: groupName,
+            })
+          }}
           onFavoriteChanged="noFavorite"
         />
         <ScrollView>
