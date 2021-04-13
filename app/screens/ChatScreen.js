@@ -2816,7 +2816,8 @@ export default function ChatScreen(props) {
       {!multiSelect ? (
         <CustomHeader
           text={Translate.t("chat")}
-          onBack={() => props.navigation.goBack()}
+          // onBack={() => props.navigation.goBack()}
+          onBack={() => props.navigation.navigate("ChatList")}
           images={images}
           name={name} userUrl={userUrl}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -2828,6 +2829,9 @@ export default function ChatScreen(props) {
             if (selects.length > 0) {
               props.navigation.navigate("ChatListForward", {
                 messages: selects,
+                groupID: groupID,
+                groupName: groupName,
+                gorupType: groupType ? groupType : "",
               });
             }
           }}
@@ -2924,7 +2928,10 @@ export default function ChatScreen(props) {
                           message: longPressObj.message,
                           contactID: longPressObj.contactID,
                           contactName: longPressObj.contactName,
-                          image: longPressObj.image
+                          image: longPressObj.image,
+                          groupID: groupID,
+                          groupName: groupName,
+                          gorupType: groupType ? groupType : "",
                         })
                       }
                     >
@@ -3114,7 +3121,7 @@ export default function ChatScreen(props) {
             }}
           >
             <View style={styles.input_bar_file}>
-              <TouchableNativeFeedback
+              <TouchableOpacity
                 onPress={() => {
                   hideEmoji();
                   setShouldShow(!shouldShow);
@@ -3135,7 +3142,7 @@ export default function ChatScreen(props) {
                     }}
                   />
                 )}
-              </TouchableNativeFeedback>
+              </TouchableOpacity>
             </View>
             <View style={styles.input_bar_text}>
               <View style={styles.input_bar_text_border}>
@@ -3225,7 +3232,8 @@ export default function ChatScreen(props) {
               onPress={() => {
                 const options = {
                   noData: true,
-                  mediaType: "photo"
+                  mediaType: "photo",
+                  allowsEditing: true
                 };
                 ImagePicker.launchCamera(options, (response) => {
                   if (response.uri) {
@@ -3293,7 +3301,8 @@ export default function ChatScreen(props) {
             <TouchableNativeFeedback
               onPress={() => {
                 const options = {
-                  mediaType: "photo"
+                  mediaType: "photo",
+                  allowsEditing: true
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   if (response.uri) {
@@ -3302,10 +3311,10 @@ export default function ChatScreen(props) {
                       onSpinnerChanged(true);
                       if (Platform.OS === "android") {
                         RNFetchBlob.fs.stat(response.uri).then((stat) => {
-                          console.log(stat);
+                          console.log('stat', stat);
                           reference
                             .putFile(stat.path)
-                            .then((response) => {
+                            .then((responses) => {
                               reference.getDownloadURL().then((url) => {
                                 let createdAt = getTime();
   
