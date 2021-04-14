@@ -404,7 +404,7 @@ export default function LoginScreen(props) {
                   })
                   .then(function (response) {
                     onPasswordChanged("");
-                    onPhoneChanged("");
+                    //onPhoneChanged("");
                     response = response.data;
                     console.log(response);
                     if (response.success) {

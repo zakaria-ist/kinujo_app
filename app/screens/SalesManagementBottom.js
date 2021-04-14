@@ -37,8 +37,17 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
+let userID;
+let year = new Date().getFullYear();
+let month = new Date().getMonth() + 1;
+let day = new Date().getDate();
+let commissionProducts = [];
+let userSales = [];
+let userCommissions = [];
+let taxRate = 0;
+let reducedTaxRate = 0;
 
-function processSaleHtml(sales) {
+function processSaleHtml(sales, status) {
   let tmpSaleHtml = [];
   for (var i = 0; i < sales.length; i++) {
     let sale = sales[i];
@@ -74,7 +83,9 @@ function processSaleHtml(sales) {
               paddingBottom: heightPercentageToDP("2%"),
             }}
           >
-            {format.separator(sale.amount)}円
+            {sales.is_food 
+            ? format.separator(parseFloat(sale.amount) + (parseFloat(sale.amount) * reducedTaxRate)) 
+            : format.separator(parseFloat(sale.amount) + (parseFloat(sale.amount) * taxRate))}円
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -82,7 +93,7 @@ function processSaleHtml(sales) {
   }
   return tmpSaleHtml;
 }
-function processCommissionHtml(commissions) {
+function processCommissionHtml(commissions, status) {
   let tmpCommissionHtml = [];
   for (var i = 0; i < commissions.length; i++) {
     let commission = commissions[i];
@@ -123,7 +134,9 @@ function processCommissionHtml(commissions) {
               paddingBottom: heightPercentageToDP("2%"),
             }}
           >
-            {format.separator(commission.amount)}円
+            {commission.is_food 
+            ? format.separator(parseFloat(commission.amount) + (parseFloat(commission.amount) * reducedTaxRate)) 
+            : format.separator(parseFloat(commission.amount) + (parseFloat(commission.amount) * taxRate))}円
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -132,11 +145,6 @@ function processCommissionHtml(commissions) {
   return tmpCommissionHtml;
 }
 
-let userID;
-let year = new Date().getFullYear();
-let month = new Date().getMonth() + 1;
-let day = new Date().getDate();
-let commissionProducts = [];
 // let salesProducts = [];
 
 export default function SalesManagement(props) {
@@ -189,6 +197,48 @@ export default function SalesManagement(props) {
             }
           });
 
+        // for gst
+        request
+          .get("tax_rates/")
+          .then((response) => {
+            let taxes = response.data.filter((item) => {
+              let nowDate = new Date();
+              if (item.start_date && item.end_date) {
+                if (
+                  nowDate >= new Date(item.start_date) &&
+                  nowDate <= new Date(item.end_date)
+                ) {
+                  return true;
+                }
+              } else if (item.start_date) {
+                if (nowDate >= new Date(item.start_date)) {
+                  return true;
+                }
+              }
+              return false;
+            });
+
+            if (taxes.length > 0) {
+              taxRate = taxes[0].tax_rate;
+              reducedTaxRate = taxes[0].reduced_tax_rate;
+            }
+          })
+          .catch((error) => {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+
         request
           .get("commissionProducts/" + userId + "/")
           .then(function (response) {
@@ -196,6 +246,16 @@ export default function SalesManagement(props) {
               commissionProducts = response.data.commissionProducts;
             } else {
               commissionProducts = [];
+            }
+            if (response.data.userSales) {
+              userSales = response.data.userSales;
+            } else {
+              userSales = [];
+            }
+            if (response.data.userCommissions) {
+              userCommissions = response.data.userCommissions;
+            } else {
+              userCommissions = [];
             }
             onUpdate();
           })
@@ -273,8 +333,10 @@ export default function SalesManagement(props) {
       processCommissionHtml(tmpCommissionProducts, status)
     );
     let commissionTotal = 0;
-    tmpCommissionProducts.map((commission) => {
-      commissionTotal += commission.amount;
+    userCommissions.map((commission) => {
+      if (commission.year == tmpDate.getFullYear() && commission.month == (tmpDate.getMonth() + 1)) {
+        commissionTotal += commission.total_amount;
+      }
     });
     onTotalCommissionChanged(commissionTotal);
 
@@ -293,8 +355,10 @@ export default function SalesManagement(props) {
     onSalesChanged(tmpSaleProducts);
     onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
     let saleTotal = 0;
-    tmpSaleProducts.map((sale) => {
-      saleTotal += sale.amount;
+    userSales.map((sale) => {
+      if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
+        saleTotal += sale.total_amount;
+      }
     });
     onTotalSaleChanged(saleTotal);
 

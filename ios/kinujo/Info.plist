@@ -40,6 +40,14 @@
 				<string>net.c2sg.kinujo</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.177676210326-cd0kckp8lcfa1c2633j5gn0aah826jtv</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
@@ -59,9 +67,9 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you're nearby.</string>
+	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you&apos;re nearby.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you're nearby.</string>
+	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you&apos;re nearby.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires camera access to scan QR Code and upload photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

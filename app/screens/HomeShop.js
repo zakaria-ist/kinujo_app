@@ -196,8 +196,8 @@ export default function Home(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
