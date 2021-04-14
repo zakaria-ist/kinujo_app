@@ -161,7 +161,7 @@ export default function AdvanceSetting(props) {
   return (
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
       <CustomHeader
-        text="详细设定"
+        text={Translate.t("advancedSetting")}
         onBack={() => {
           props.navigation.goBack();
         }}
@@ -170,7 +170,7 @@ export default function AdvanceSetting(props) {
       />
       <View>
         <View style={styles.firstTabContainer}>
-          <Text style={styles.textInTabs}>Edit display name</Text>
+          <Text style={styles.textInTabs}>{Translate.t("editDisplayName")}</Text>
           {editDisplayName == true ? (
             <View
               style={{
@@ -234,7 +234,7 @@ export default function AdvanceSetting(props) {
           )}
         </View>
         <View style={styles.tabContainer}>
-          <Text style={styles.textInTabs}>Secret mode</Text>
+          <Text style={styles.textInTabs}>{Translate.t("secretMode")}</Text>
           <Switch
             trackColor={{ true: Colors.F0EEE9, false: Colors.white }}
             thumbColor={secretMode ? Colors.D7CCA6 : "grey"}
@@ -289,7 +289,7 @@ export default function AdvanceSetting(props) {
         </View>
 
         <View style={styles.tabContainer}>
-          <Text style={styles.textInTabs}>Block</Text>
+          <Text style={styles.textInTabs}>{Translate.t("block")}</Text>
           <Switch
             trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
             thumbColor={blockMode ? Colors.D7CCA6 : "grey"}
