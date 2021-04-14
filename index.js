@@ -2,16 +2,16 @@ import { registerRootComponent } from "expo";
 import App from "./App";
 import firebase from "firebase/app";
 import { firebaseConfig } from "./firebaseConfig";
-import messaging from "@react-native-firebase/messaging";
-import { cos } from "react-native-reanimated";
-import { useNavigation } from "react-navigation-hooks";
-import SplashScreen from 'react-native-splash-screen';
+// import messaging from "@react-native-firebase/messaging";
+// import { cos } from "react-native-reanimated";
+// import { useNavigation } from "react-navigation-hooks";
+// import SplashScreen from 'react-native-splash-screen';
 import { LogBox } from 'react-native';
 // firebase.firestore().clearPersistence();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-SplashScreen.hide();
+// SplashScreen.hide();
 // const { navigate } = useNavigation();
 // // firebase.getInstance().setPersistenceEnabled(false);
 // messaging().setBackgroundMessageHandler(async (remoteMessage) => {
