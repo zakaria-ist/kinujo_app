@@ -760,8 +760,8 @@ export default function HomeStoreList(props) {
               <Text>
                 <Text style={styles.priceFont}>
                   {(user.is_seller && user.is_approved
-                    ? format.separator(taxObj ? (parseFloat(product.store_price) + parseInt(product.store_price * taxObj.tax_rate)) : product.store_price)
-                    : format.separator(taxObj ? (parseFloat(product.price) + parseInt(product.price * taxObj.tax_rate)) : product.price))}
+                    ? format.separator(taxObj ? (parseFloat(product.store_price) + parseFloat(product.store_price) * parseFloat(taxObj.tax_rate)) : product.store_price)
+                    : format.separator(taxObj ? (parseFloat(product.price) + parseFloat(product.price) * parseFloat(taxObj.tax_rate)) : product.price))}
                 </Text>
                 <Text style={styles.font_medium}>
                 {"円" +
