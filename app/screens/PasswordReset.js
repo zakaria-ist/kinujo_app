@@ -38,6 +38,7 @@ const win = Dimensions.get("window");
 const ratioKinujo = win.width / 1.6 / 151;
 import BlackBackArrow from "../assets/CustomComponents/CustomBlackBackArrow";
 import { call } from "react-native-reanimated";
+import i18n from "i18n-js";
 export default function PasswordReset(props) {
   const [phone, onPhoneChanged] = useStateIfMounted("");
   const [code, onCodeChanged] = useStateIfMounted("");
@@ -89,6 +90,7 @@ export default function PasswordReset(props) {
     // alert.warning(tmpItem[1]);
     onCallingCodeChanged(tmpItem[1]);
   }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Spinner
@@ -202,7 +204,8 @@ export default function PasswordReset(props) {
                 textAlign: "center",
               }}
             >
-              {timer}s {Translate.t("resendVerificationCodeText")}
+              {i18n.locale == 'ja' ? <Text>{Translate.t("resendVerificationCodeText")} {timer}s</Text>
+                                   : <Text>{timer}s {Translate.t("resendVerificationCodeText")}</Text>}
             </Text>
           ) : (
             <View></View>

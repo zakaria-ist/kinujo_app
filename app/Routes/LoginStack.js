@@ -1,6 +1,6 @@
 import { View, TouchableWithoutFeedback } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { useRoute } from "@react-navigation/native";
+// import { useRoute } from "@react-navigation/native";
 import LoginScreen from "../Screens/LoginScreen";
 import SearchProducts from "../Screens/SearchProducts";
 import RegistrationGeneral from "../Screens/RegistrationGeneral";
@@ -68,7 +68,7 @@ import ProductList from "../Screens/ProductList";
 // import KinujoStripeCheckout from "../Screens/KinujoStripeCheckout";
 import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
-import { Image } from "react-native";
+// import { Image } from "react-native";
 import CustomAlert from "../lib/alert";
 const alert = new CustomAlert();
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -83,24 +83,30 @@ import SettingLogo from "../assets/icons/setting.svg";
 import StarLogo from "../assets/icons/star.svg";
 import Request from "../lib/request";
 import MoneyLogo from "../assets/icons/money.svg";
-import { EventRegister } from 'react-native-event-listeners';
+// import { EventRegister } from 'react-native-event-listeners';
 import Translate from "../assets/Translates/Translate";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useIsFocused } from "@react-navigation/native";
+// import { useIsFocused } from "@react-navigation/native";
 
 const request = new Request();
 let lastRoute = "";
 
+let regexTestCurrentRoute = /Chat|ChatScreen|GroupChatMember|GroupChatCreation|FolderMemberSelection|GroupFolderCreateCompletion|CreateFolder|FavoriteChat/
+
 function BottomNavigationGeneral(props) {
+  if (!props) return null;
+  let currentRouteState = props?.route?.state
+  let currentRouteName = currentRouteState?.routeNames?.[currentRouteState?.index];
+
   if (props && props.route && props.route.state) {
-    if(lastRoute != props.route.state.routeNames[props.route.state.index]){
+    if (lastRoute != currentRouteName) {
       AsyncStorage.getItem("user").then(function (url) {
         request
           .get(url)
           .then(function (response) {
             console.log(response.data)
-            if(response.data.is_approved && response.data.is_seller){
-              alert.warning(Translate.t("account_approved"), ()=>{
+            if (response.data.is_approved && response.data.is_seller) {
+              alert.warning(Translate.t("account_approved"), () => {
                 // props.navigation.navigate("HomeStore");
                 props.navigation.reset({
                   index: 0,
@@ -109,27 +115,27 @@ function BottomNavigationGeneral(props) {
               })
             }
           })
-        })
-      lastRoute = props.route.state.routeNames[props.route.state.index];
+      })
+      lastRoute = currentRouteName;
     }
   }
-  let isShow = false;
+  // let isShow = false;
 
-  if (props && props.route && props.route.state) {
-    isShow =
-      props.route.state.routeNames[props.route.state.index] == "Chat" ||
-      props.route.state.routeNames[props.route.state.index] == "ChatScreen" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "GroupChatMember" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "GroupChatCreation" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "FolderMemberSelection" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "GroupFolderCreateCompletion" ||
-      props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
-      props.route.state.routeNames[props.route.state.index] == "FavoriteMessages";
-  }
+  // if (props && props.route && props.route.state) {
+  let isShow = regexTestCurrentRoute.test(currentRouteName)
+  // props.route.state.routeNames[props.route.state.index] == "Chat" ||
+  // props.route.state.routeNames[props.route.state.index] == "ChatScreen" ||
+  // props.route.state.routeNames[props.route.state.index] ==
+  // "GroupChatMember" ||
+  // props.route.state.routeNames[props.route.state.index] ==
+  // "GroupChatCreation" ||
+  // props.route.state.routeNames[props.route.state.index] ==
+  // "FolderMemberSelection" ||
+  // props.route.state.routeNames[props.route.state.index] ==
+  // "GroupFolderCreateCompletion" ||
+  // props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
+  // props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
+  // }
   if (isShow) {
     return (
       <Tab.Navigator
@@ -1083,23 +1089,26 @@ class CustomTabButton extends React.Component {
 }
 
 function BottomNavigationStore(props) {
-  let isShow = false;
-  if (props && props.route && props.route.state) {
-    // alert.warning(props.route.state.routeNames[props.route.state.index]);
-    isShow =
-      props.route.state.routeNames[props.route.state.index] == "Chat" ||
-      props.route.state.routeNames[props.route.state.index] == "ChatScreen" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "GroupChatMember" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "GroupChatCreation" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "FolderMemberSelection" ||
-      props.route.state.routeNames[props.route.state.index] ==
-        "GroupFolderCreateCompletion" ||
-      props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
-      props.route.state.routeNames[props.route.state.index] == "FavoriteMessages";
-  }
+  if (!props?.route) return null
+  // let isShow = false;
+  // if (props && props.route && props.route.state) {
+  // alert.warning(props.route.state.routeNames[props.route.state.index]);
+  let currentRouteState = props?.route?.state
+  let currentRouteName = currentRouteState?.routeNames?.[currentRouteState?.index];
+  let isShow = regexTestCurrentRoute.test(currentRouteName)
+  //     props.route.state.routeNames[props.route.state.index] == "Chat" ||
+  //     props.route.state.routeNames[props.route.state.index] == "ChatScreen" ||
+  //     props.route.state.routeNames[props.route.state.index] ==
+  //     "GroupChatMember" ||
+  //     props.route.state.routeNames[props.route.state.index] ==
+  //     "GroupChatCreation" ||
+  //     props.route.state.routeNames[props.route.state.index] ==
+  //     "FolderMemberSelection" ||
+  //     props.route.state.routeNames[props.route.state.index] ==
+  //     "GroupFolderCreateCompletion" ||
+  //     props.route.state.routeNames[props.route.state.index] == "CreateFolder" ||
+  //     props.route.state.routeNames[props.route.state.index] == "FavoriteChat";
+  // }
   if (isShow) {
     return (
       <Tab.Navigator
@@ -2070,16 +2079,16 @@ const linking = {
     //       },
     //     },
     //   },
-      screens: {
-        Cart: {
-          path: 'cancelled/:status',
-        },
+    screens: {
+      Cart: {
+        path: 'cancelled/:status',
       },
-      screens: {
-        HomeStore: {
-          path: 'complete/:status/:snapIds/:seller',
-        },
+    },
+    screens: {
+      HomeStore: {
+        path: 'complete/:status/:snapIds/:seller',
       },
+    },
     // },
   },
 };
@@ -2093,7 +2102,7 @@ export default function LoginStack() {
         }}
       >
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="CountrySearch" component={CountrySearch}/>
+        <Stack.Screen name="CountrySearch" component={CountrySearch} />
         <Stack.Screen
           name="RegistrationGeneral"
           component={RegistrationGeneral}

@@ -2902,8 +2902,11 @@ export default function ChatScreen(props) {
           presentationStyle={"overFullScreen"}
           visible={showPopUp}
           transparent={true}
+          animationType="fade"
         >
-          <TouchableNativeFeedback  >
+          <TouchableNativeFeedback onPress={() => {
+            onShowPopUpChanged(false);
+          }} >
             <View style={{ flex: 1, backgroundColor: "transparent" }}>
               <View style={showPopUp == true ? styles.popUpView : styles.none}>
                 <View
@@ -2916,7 +2919,7 @@ export default function ChatScreen(props) {
                 >
                   <View>
                     <TouchableOpacity
-                      onPress={() => {Clipboard.setString(longPressObj.message); onShowPopUpChanged(false)}}
+                      onPress={() => {Clipboard.setString(longPressObj.message); onShowPopUpChanged(false);}}
                     >
                       <Text style={styles.popUpText}>
                         {Translate.t("copy")}

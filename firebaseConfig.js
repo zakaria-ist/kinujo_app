@@ -7,5 +7,4 @@ export const firebaseConfig = {
   messagingSenderId: "177676210326",
   appId: "1:177676210326:android:f4433f534454a0927432b7",
   persistance: false,
-  persistence: false
 };
