@@ -5,8 +5,7 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "fixbuild":"node ./android-release-gradle-fix.js;",
-    "postinstall": "yarn fixbuild; npx jetify; cd ios; pod install"
+    "fixbuild": "node ./android-release-gradle-fix.js;"
   },
   "dependencies": {
     "@expo/configure-splash-screen": "^0.3.2",
