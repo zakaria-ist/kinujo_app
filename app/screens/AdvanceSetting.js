@@ -370,7 +370,7 @@ export default function AdvanceSetting(props) {
             marginTop: heightPercentageToDP("10%"),
           }}
         >
-          <Text style={{ fontSize: RFValue(14), color: "white" }}>Delete</Text>
+          <Text style={{ fontSize: RFValue(14), color: "white" }}>{Translate.t("delete")}</Text>
         </View>
       </TouchableWithoutFeedback>
       {showDeletePopUp == true ? (
