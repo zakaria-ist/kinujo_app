@@ -710,7 +710,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "latestFirst" ? "orange" : "white",
               }}
             >
-              <Text>Latest First</Text>
+              <Text>{Translate.t("latestFirst")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -725,7 +725,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "LowToHigh" ? "orange" : "white",
               }}
             >
-              <Text>Price Low to High</Text>
+              <Text>{Translate.t("priceLowToHigh")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -740,7 +740,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "HighToLow" ? "orange" : "white",
               }}
             >
-              <Text>Price High to Low</Text>
+              <Text>{Translate.t("priceHighToLow")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -755,7 +755,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "Popular" ? "orange" : "white",
               }}
             >
-              <Text>Popular</Text>
+              <Text>{Translate.t("popular")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <View
@@ -767,7 +767,7 @@ export default function HomeByCategory(props) {
               // marginTop: heightPercentageToDP("10%"),
               bottom: heightPercentageToDP("3%"),
               right: 0,
-              marginTop: heightPercentageToDP("60%"),
+              marginTop: heightPercentageToDP("50%"),
               // right: widthPercentageToDP("3%"),
               // backgroundColor: "orange",
             }}
@@ -785,7 +785,7 @@ export default function HomeByCategory(props) {
                   paddingHorizontal: widthPercentageToDP("2%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>{"Reset"}</Text>
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={() => hideSortingAimation()}>
@@ -802,7 +802,7 @@ export default function HomeByCategory(props) {
                   paddingHorizontal: widthPercentageToDP("2%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
               </View>
             </TouchableWithoutFeedback>
           </View>
