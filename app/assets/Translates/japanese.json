@@ -254,8 +254,8 @@
   "commission": "営業報酬",
   "sales": "出品売上",
   "commissionAmt": "営業報酬額",
-  "salesAmt": "商品売上額",
-  "price": "価格",
+  "salesAmt": "受け取り代金",
+  "price": "代金",
   "date": "日付",
   "edit": "編集",
   "addressee": "お届け先",
@@ -382,7 +382,7 @@
   "Please_fill_in_product_description": "商品説明文を入力してください",
   "Please fill in Jan Code.": "JANコードを入力してください",
   "Please fill in stock.": "在庫を入力してください",
-  "limitedStock": "要求された在庫は利用できません。",
+  "limitedStock": "バリエーションを選択してください。",
   "cartFilterMsg": "在庫が限られているか空の場合、商品はカートから削除されます",
   "send": "送信"
 }

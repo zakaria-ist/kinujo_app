@@ -794,14 +794,14 @@ export default function Setting(props) {
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey
+                  addingFriendsByID == 1 ? Colors.D7CCA6 : Colors.grey
                 }
                 style={{transform: [{ scaleX: .6 }, { scaleY: .6 }]}}
                 onValueChange={(value) => {
-                  onAddingFriendsByIDChanged(!value);
+                  onAddingFriendsByIDChanged(value);
                   request
                     .patch(user.url, {
-                      allowed_by_id: value == true ? 0 : 1,
+                      allowed_by_id: value == true ? 1 : 0,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -822,7 +822,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!addingFriendsByID}
+                value={addingFriendsByID}
               />
             </View>
           </View>
@@ -844,16 +844,16 @@ export default function Setting(props) {
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  allowAddingFriendsByPhoneNumber == 0
+                  allowAddingFriendsByPhoneNumber == 1
                     ? Colors.D7CCA6
                     : Colors.grey
                 }
                 style={{transform: [{ scaleX: .6 }, { scaleY: .6 }]}}
                 onValueChange={(value) => {
-                  onAllowAddingFriendsByPhoneNumber(!value);
+                  onAllowAddingFriendsByPhoneNumber(value);
                   request
                     .patch(user.url, {
-                      allowed_by_tel: value == true ? 0 : 1,
+                      allowed_by_tel: value == true ? 1 : 0,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -874,7 +874,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!allowAddingFriendsByPhoneNumber}
+                value={allowAddingFriendsByPhoneNumber}
               />
             </View>
           </View> */}
@@ -942,6 +942,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     height: heightPercentageToDP("6%"),
-    width: widthPercentageToDP("40%"),
+    width: widthPercentageToDP("60%"),
   },
 });
