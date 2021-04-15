@@ -1006,10 +1006,10 @@ export default function ProfileEditingGeneral(props) {
             </Text>
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey}
+              thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : Colors.grey}
               style={styles.switch}
               onValueChange={(value) => {
-                onAddingFriendsByIDChanged(!value);
+                onAddingFriendsByIDChanged(value);
                 request
                   .patch(user.url, {
                     allowed_by_id: value ? 1 : 0,
@@ -1033,7 +1033,7 @@ export default function ProfileEditingGeneral(props) {
                     }
                   });
               }}
-              value={!addingFriendsByID}
+              value={addingFriendsByID}
             />
           </View>
           {/* <View style={styles.tabContainer}>
@@ -1043,13 +1043,13 @@ export default function ProfileEditingGeneral(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={
-                allowAddingFriendsByPhoneNumber == 0
+                allowAddingFriendsByPhoneNumber == 1
                   ? Colors.D7CCA6
                   : Colors.grey
               }
               style={styles.switch}
               onValueChange={(value) => {
-                onAllowAddingFriendsByPhoneNumber(!value);
+                onAllowAddingFriendsByPhoneNumber(value);
                 request
                   .patch(user.url, {
                     allowed_by_tel: value ? 1 : 0,
@@ -1073,7 +1073,7 @@ export default function ProfileEditingGeneral(props) {
                     }
                   });
               }}
-              value={!allowAddingFriendsByPhoneNumber}
+              value={allowAddingFriendsByPhoneNumber}
             />
           </View> */}
         </View>
@@ -1147,7 +1147,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     height: heightPercentageToDP("6%"),
-    width: widthPercentageToDP("40%"),
+    width: widthPercentageToDP("60%"),
   },
   contactTabContainer: {
     flexDirection: "row",

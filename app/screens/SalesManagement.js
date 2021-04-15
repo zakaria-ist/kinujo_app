@@ -92,100 +92,154 @@ let reducedTaxRate = 0;
 //   }
 //   return tmpSaleHtml;
 // }
-function processSaleHtml(sales, status) {
+function processSaleHtml(orders, sales, tmpCommissionProducts) {
   let tmpSaleHtml = [];
-  for (var i = 0; i < sales.length; i++) {
-    let sale = sales[i];
-    tmpSaleHtml.push(
-      <TouchableWithoutFeedback key={i}>
-        <View style={styles.commissionTabContainer}>
-          <Text style={styles.commissionTabText}>
-            {kanjidate.format(
-              "{Y:4}/{M:2}/{D:2}",
-              new Date(sale.order_product.order.created)
-            )}
-          </Text>
-          <View
-            style={{
-              width: widthPercentageToDP("36%"),
-              // position: "absolute",
-              left: 0,
-              marginLeft: widthPercentageToDP("3%"),
-              // paddingBottom: heightPercentageToDP("2%"),
-            }}
-          >
+  for (var i = 0; i < orders.length; i++) {
+    let sale = sales.filter((salee) => {
+      return (salee.order_product.order.id == orders[i]);
+    });
+    if (sale.length) {
+      sale = sale[0];
+      let ttlCommission = 0;
+      tmpCommissionProducts.map((tmpCommission) => {
+        if (tmpCommission.order_product.id == orders[i]) {
+          ttlCommission += tmpCommission.is_food 
+              ? parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * reducedTaxRate)
+              : parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * taxRate)
+        }
+      })
+    
+      tmpSaleHtml.push(
+        <TouchableWithoutFeedback key={i}>
+          <View style={styles.commissionTabContainer}>
             <Text style={styles.commissionTabText}>
-              {sale.order_product.product_jan_code.horizontal
-                ? sale.order_product.product_jan_code.horizontal.product_variety.product.name
-                : sale.order_product.product_jan_code.vertical.product_variety.product.name}
+              {kanjidate.format(
+                "{Y:4}/{M:2}/{D:2}",
+                new Date(sale.order_product.order.created)
+              )}
+            </Text>
+            <View
+              style={{
+                width: widthPercentageToDP("17%"),
+                // position: "absolute",
+                left: 0,
+                marginLeft: widthPercentageToDP("2%"),
+                // paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Text style={styles.commissionTabText}>
+                {sale.order_product.product_jan_code.horizontal
+                  ? sale.order_product.product_jan_code.horizontal.product_variety.product.name
+                  : sale.order_product.product_jan_code.vertical.product_variety.product.name}
+              </Text>
+            </View>
+            <View
+              style={{
+                // width: widthPercentageToDP("17%"),
+                position: "absolute",
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+                marginRight: widthPercentageToDP("33%"),
+              }}
+            >
+              <Text style={{
+                  fontSize: RFValue(11),
+                  right: 0,
+                }}
+              >
+                {format.separator(parseInt(sale.order_product.order.amount) + parseInt(sale.order_product.order.tax))}円
+              </Text>
+              <Text style={{
+                  fontSize: RFValue(11),
+                  right: -23,
+                }}>
+                -{format.separator(ttlCommission)}円
+              </Text>
+            </View>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: RFValue(11),
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+                marginRight: widthPercentageToDP("17%"),
+              }}
+            >
+              {format.separator(sale.order_product.order.shipping_fee)}円
+            </Text>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: RFValue(11),
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              {format.separator(parseInt(sale.order_product.order.amount) 
+              + parseInt(sale.order_product.order.tax)
+              + parseInt(sale.order_product.order.shipping_fee)
+              - parseInt(ttlCommission))}円
             </Text>
           </View>
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: RFValue(12),
-              right: 0,
-              paddingBottom: heightPercentageToDP("2%"),
-            }}
-          >
-            {sales.is_food 
-            ? format.separator(parseFloat(sale.amount) + (parseFloat(sale.amount) * reducedTaxRate)) 
-            : format.separator(parseFloat(sale.amount) + (parseFloat(sale.amount) * taxRate))}円
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+        </TouchableWithoutFeedback>
+      );
+    }
   }
   return tmpSaleHtml;
 }
-function processCommissionHtml(commissions, status) {
+function processCommissionHtml(orders, commissions) {
   let tmpCommissionHtml = [];
-  for (var i = 0; i < commissions.length; i++) {
-    let commission = commissions[i];
-    tmpCommissionHtml.push(
-      <TouchableWithoutFeedback key={i}>
-        <View style={styles.commissionTabContainer}>
-          <Text style={styles.commissionTabText}>
-            {kanjidate.format(
-              "{Y:4}/{M:2}/{D:2}",
-              new Date(commission.order_product.order.created)
-            )}
-          </Text>
-          <View
-            style={{
-              // position: "absolute",
-              left: 0,
-              width: widthPercentageToDP("36%"),
-              marginLeft: widthPercentageToDP("3%"),
-              // marginBottom: heightPercentageToDP("2%"),
-            }}
-          >
+  for (var i = 0; i < orders.length; i++) {
+    let commission = commissions.filter((comm) => {
+      return (comm.order_product.order.id == orders[i]);
+    });
+    if (commission.length) {
+      commission = commission[0];
+      tmpCommissionHtml.push(
+        <TouchableWithoutFeedback key={i}>
+          <View style={styles.commissionTabContainer}>
             <Text style={styles.commissionTabText}>
-              {commission.order_product.product_jan_code.horizontal
-                ? commission.order_product.product_jan_code.horizontal
-                    .product_variety.product.name
-                : commission.order_product.product_jan_code.vertical
-                    .product_variety.product.name}
+              {kanjidate.format(
+                "{Y:4}/{M:2}/{D:2}",
+                new Date(commission.order_product.order.created)
+              )}
             </Text>
-            <Text style={styles.commissionTabText}>
-              {format.separator(commission.order_product.unit_price)}円
+            <View
+              style={{
+                // position: "absolute",
+                left: 0,
+                width: widthPercentageToDP("36%"),
+                marginLeft: widthPercentageToDP("3%"),
+                // marginBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Text style={styles.commissionTabText}>
+                {commission.order_product.product_jan_code.horizontal
+                  ? commission.order_product.product_jan_code.horizontal
+                      .product_variety.product.name
+                  : commission.order_product.product_jan_code.vertical
+                      .product_variety.product.name}
+              </Text>
+              <Text style={styles.commissionTabText}>
+                {format.separator(commission.order_product.unit_price)}円
+              </Text>
+            </View>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: RFValue(11),
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              {commission.is_food 
+              ? format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * reducedTaxRate)) 
+              : format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * taxRate))}円
             </Text>
           </View>
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: RFValue(12),
-              right: 0,
-              paddingBottom: heightPercentageToDP("2%"),
-            }}
-          >
-            {commission.is_food 
-            ? format.separator(parseFloat(commission.amount) + (parseFloat(commission.amount) * reducedTaxRate)) 
-            : format.separator(parseFloat(commission.amount) + (parseFloat(commission.amount) * taxRate))}円
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+        </TouchableWithoutFeedback>
+      );
+    }
   }
   return tmpCommissionHtml;
 }
@@ -359,6 +413,23 @@ export default function SalesManagement(props) {
     onPlaceHolderDate(
       tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
     );
+    let orders = [];
+    commissionProducts.map(
+      (commissionProduct) => {
+        if (!commissionProduct["is_hidden"]) {
+          let periods = commissionProduct["order_product"]["order"][
+            "created"
+          ].split("-");
+          let year = periods[0];
+          let month = periods[1];
+          if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+            if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
+              orders.push(commissionProduct["order_product"]["order"]['id'])
+            }
+          }
+        }
+      }
+    );
     let tmpCommissionProducts = commissionProducts.filter(
       (commissionProduct) => {
         if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"]) {
@@ -373,7 +444,7 @@ export default function SalesManagement(props) {
     );
     onCommissionsChanged(tmpCommissionProducts);
     onComissionHtmlChanged(
-      processCommissionHtml(tmpCommissionProducts, status)
+      processCommissionHtml(orders, tmpCommissionProducts)
     );
     let commissionTotal = 0;
     userCommissions.map((commission) => {
@@ -405,7 +476,7 @@ export default function SalesManagement(props) {
       }
     );
     onSalesChanged(tmpSaleProducts);
-    onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
+    onSaleHtmlChanged(processSaleHtml(orders, tmpSaleProducts, tmpCommissionProducts));
     let saleTotal = 0;
     userSales.map((sale) => {
       if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
@@ -623,12 +694,36 @@ export default function SalesManagement(props) {
                     fontSize: RFValue(12),
                     position: "absolute",
                     left: 0,
-                    marginLeft: widthPercentageToDP("22%"),
+                    marginLeft: widthPercentageToDP("17%"),
                   }}
                 >
                   {status == "commission"
                     ? Translate.t("product") + " / " + Translate.t("price")
                     : " " + Translate.t("product")}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("32%"),
+                  }}
+                >
+                  {status == "commission"
+                    ? ""
+                    : " " + Translate.t("price") + " / " + Translate.t("fee")}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("15%"),
+                  }}
+                >
+                  {status == "commission"
+                    ? ""
+                    : " " + Translate.t("shipping")}
                 </Text>
                 <Text
                   style={{

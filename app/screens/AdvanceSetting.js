@@ -236,7 +236,7 @@ export default function AdvanceSetting(props) {
         <View style={styles.tabContainer}>
           <Text style={styles.textInTabs}>{Translate.t("secretMode")}</Text>
           <Switch
-            trackColor={{ true: Colors.F0EEE9, false: Colors.white }}
+            trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
             thumbColor={secretMode ? Colors.D7CCA6 : "grey"}
             style={{
               position: "absolute",
@@ -370,7 +370,7 @@ export default function AdvanceSetting(props) {
             marginTop: heightPercentageToDP("10%"),
           }}
         >
-          <Text style={{ fontSize: RFValue(14), color: "white" }}>{Translate.t("delete")}</Text>
+          <Text style={{ fontSize: RFValue(14), color: "white" }}>Delete</Text>
         </View>
       </TouchableWithoutFeedback>
       {showDeletePopUp == true ? (
