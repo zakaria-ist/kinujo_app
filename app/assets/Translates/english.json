@@ -127,6 +127,7 @@
   "generalPrice": "General Price",
   "storePrice": "Store Price",
   "shipping": "Shipping",
+  "fee": "Fee",
   "productPageDisplayMethod": "Product page display method",
   "productImage": "Product Image",
   "uploadAPhoto": "Please upload a photo",

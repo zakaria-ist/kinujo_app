@@ -122,6 +122,7 @@
   "generalPrice": "一般価格",
   "storePrice": "ストア価格",
   "shipping": "送料",
+  "fee": "手数料",
   "productPageDisplayMethod": "商品ページ表示方式",
   "productImage": "商品画像",
   "uploadAPhoto": "写真をアップロードしてください",
