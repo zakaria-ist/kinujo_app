@@ -52,3 +52,14 @@ var sharedBlacklist = [
 12. run `react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res`
 13. run `npm run android` or `npm run ios`
 14. you can also run it with android studio
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+************************************************
+* RELEASE COMMAND: *
+************************************************
+
+keytool -list -v -keystore production.keystore -alias androidreleasekey -storepass Cloud@2020 -keypass Cloud@2020
+
+react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/build/intermediates/res/merged/release/ && rm -rf android/app/src/main/res/drawable-* && rm -rf android/app/src/main/res/raw/* && cd android && ./gradlew bundleRelease
+
