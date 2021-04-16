@@ -917,9 +917,12 @@ const styles = StyleSheet.create({
     // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
-    paddingTop: heightPercentageToDP("15%"),
+    // paddingTop: heightPercentageToDP("15%"),
+    minHeight: heightPercentageToDP("9%"),
+    justifyContent: "center",
     paddingLeft: 15,
     fontSize: RFValue(14),
+    marginTop: heightPercentageToDP("20%"),
   },
   disc_button_group: {
     width: 100,
