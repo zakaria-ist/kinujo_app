@@ -9,6 +9,8 @@
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 #import <Firebase.h>
 #import "RNFirebaseMessaging.h"
@@ -23,8 +25,7 @@
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
 
-#import <UserNotifications/UserNotifications.h>
-#import <RNCPushNotificationIOS.h>
+
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
