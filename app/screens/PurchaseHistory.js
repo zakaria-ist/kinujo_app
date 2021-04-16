@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
+import Spinner from "react-native-loading-spinner-overlay";
+import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -48,6 +50,7 @@ const ratioSearch = win.width / 24 / 19;
 const ratioCancel = win.width / 25 / 15;
 let userId;
 export default function PurchaseHistory(props) {
+  const isFocused = useIsFocused();
   const [orders, onOrdersChanged] = useStateIfMounted({});
   const [orderHtml, onOrderHtmlChanged] = useStateIfMounted([]);
   const [user, onUserChanged] = useStateIfMounted({});
@@ -57,6 +60,7 @@ export default function PurchaseHistory(props) {
   const [years, onYearChanged] = useStateIfMounted(<View></View>);
   const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   function getProductImages(order) {
     return order.product_jan_code.horizontal.product_variety.product
       .productImages
@@ -322,6 +326,7 @@ export default function PurchaseHistory(props) {
         onOrdersChanged(tmpOrderProducts);
         onYearHtmlChanged(processYearHtml(tmpYears));
         onOrderHtmlChanged(processOrderHtml(props, tmpOrderProducts, searchText, ""));
+        onSpinnerChanged(false);
         onLoaded(true);
       })
       .catch(function (error) {
@@ -372,9 +377,10 @@ export default function PurchaseHistory(props) {
           });
       }
 
-      if (!loaded) {
+      // if (!loaded) {
+        onSpinnerChanged(true);
         loadOrder(userId, "all");
-      }
+      // }
     });
   }
 
@@ -397,6 +403,7 @@ export default function PurchaseHistory(props) {
                 duration: 500,
                 useNativeDriver: false,
               }).start();
+              onSpinnerChanged(true);
               loadOrder(userId, year);
             });
           }}
@@ -414,7 +421,14 @@ export default function PurchaseHistory(props) {
     InteractionManager.runAfterInteractions(() => {
       load();
     });
-  }, []);
+  }, [isFocused]);
+
+  // React.useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  //     onSpinnerChanged(false);
+  //   });
+  // }, [!isFocused]);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableWithoutFeedback
@@ -442,6 +456,11 @@ export default function PurchaseHistory(props) {
             accountType={
               props.route.params.is_store ? Translate.t("storeAccount") : ""
             }
+          />
+          <Spinner
+            visible={spinner}
+            textContent={"Loading..."}
+            textStyle={styles.spinnerTextStyle}
           />
           <Animated.View
             style={{
@@ -574,6 +593,7 @@ export default function PurchaseHistory(props) {
                     duration: 500,
                     useNativeDriver: false,
                   }).start();
+                  onSpinnerChanged(true);
                   loadOrder(userId, "past_6_months");
                 });
               }}
@@ -785,5 +805,8 @@ const styles = StyleSheet.create({
   },
   dateTabText: {
     fontSize: RFValue(12),
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });

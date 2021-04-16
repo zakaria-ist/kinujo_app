@@ -91,7 +91,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 const request = new Request();
 let lastRoute = "";
 
-let regexTestCurrentRoute = /Chat|ChatScreen|GroupChatMember|GroupChatCreation|FolderMemberSelection|GroupFolderCreateCompletion|CreateFolder|FavoriteChat/
+let regexTestCurrentRoute = /Chat|ChatScreen|GroupChatMember|GroupChatCreation|FolderMemberSelection|GroupFolderCreateCompletion|CreateFolder|FavoriteMessages/
 
 function BottomNavigationGeneral(props) {
   if (!props) return null;

@@ -902,14 +902,16 @@ export default function Contact(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
+                      console.log('onPress', 'onPress');
                       contactPinned[longPressObj.data.id] = contactPinned[
                         longPressObj.data.id
                       ]
                         ? false
                         : true;
+                      console.log("contactPinned[longPressObj.data.id]", contactPinned[longPressObj.data.id])
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
                       });
@@ -988,8 +990,8 @@ export default function Contact(props) {
                       "pinned_" + userId
                     ])) ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     // alert.warning("1" + longPressObj.data.data["notify"]);
                     if (longPressObj.type == "user") {
@@ -1082,8 +1084,8 @@ export default function Contact(props) {
                       ? "ON"
                       : "OFF"}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       db.collection("users")
@@ -1155,8 +1157,8 @@ export default function Contact(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("nonRepresent")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       globalUsers = globalUsers.filter((user) => {
@@ -1235,9 +1237,9 @@ export default function Contact(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("remove")}
                   </Text>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
                 {longPressObj.type == "user" ? (
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPressIn={() => onShowChanged(false)}
                     onPress={() => {
                       AsyncStorage.setItem(
@@ -1256,10 +1258,10 @@ export default function Contact(props) {
                     <Text style={styles.longPressText}>
                       {Translate.t("groupChatCreate")}
                     </Text>
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 ) : null}
                 {longPressObj.type == "user" ? (
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPressIn={() => onShowChanged(false)}
                     onPress={() => {
                       AsyncStorage.setItem(
@@ -1278,7 +1280,7 @@ export default function Contact(props) {
                     <Text style={styles.longPressText}>
                       {Translate.t("createFolder")}
                     </Text>
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 ) : null}
               </View>
             </View>

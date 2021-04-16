@@ -120,7 +120,7 @@ async function performUrl(props, link) {
   if (store && store != "" && store != "0" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 1});
-  } else {
+  } else if(store && store != "" && store == "0") {
     // props.navigation.navigate("RegistrationGeneral", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 0});
   }

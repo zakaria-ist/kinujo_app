@@ -596,37 +596,37 @@ export default function Setting(props) {
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
-                  onMessagedReceivedEmailChanged(value);
+                  // onMessagedReceivedEmailChanged(value);
 
-                  request
-                    .patch(user.url, {
-                      message_notification_mail: value ? 1 : 0,
-                    })
-                    .then(function (response) {
-                      if (response.data.url) {
-                        AsyncStorage.setItem(
-                          "user",
-                          response.data.url
-                        )
-                      }
-                    })
-                    .catch(function (error) {
-                      if (
-                        error &&
-                        error.response &&
-                        error.response.data &&
-                        Object.keys(error.response.data).length > 0
-                      ) {
-                        alert.warning(
-                          error.response.data[
-                            Object.keys(error.response.data)[0]
-                          ][0] +
-                            "(" +
-                            Object.keys(error.response.data)[0] +
-                            ")"
-                        );
-                      }
-                    });
+                  // request
+                  //   .patch(user.url, {
+                  //     message_notification_mail: value ? 1 : 0,
+                  //   })
+                  //   .then(function (response) {
+                  //     if (response.data.url) {
+                  //       AsyncStorage.setItem(
+                  //         "user",
+                  //         response.data.url
+                  //       )
+                  //     }
+                  //   })
+                  //   .catch(function (error) {
+                  //     if (
+                  //       error &&
+                  //       error.response &&
+                  //       error.response.data &&
+                  //       Object.keys(error.response.data).length > 0
+                  //     ) {
+                  //       alert.warning(
+                  //         error.response.data[
+                  //           Object.keys(error.response.data)[0]
+                  //         ][0] +
+                  //           "(" +
+                  //           Object.keys(error.response.data)[0] +
+                  //           ")"
+                  //       );
+                  //     }
+                  //   });
                 }}
                 value={messagedReceivedEmail}
               />
@@ -711,14 +711,14 @@ export default function Setting(props) {
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  otherNofiticationMobile == 0 ? Colors.D7CCA6 : Colors.grey
+                  otherNofiticationMobile == 1 ? Colors.D7CCA6 : Colors.grey
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
-                  onOtherNofiticationMobileChanged(!value);
+                  onOtherNofiticationMobileChanged(value);
                   request
                     .patch(user.url, {
-                      other_notification_phone: value == true ? 0 : 1,
+                      other_notification_phone: value == true ? 1 : 0,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -739,19 +739,19 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!otherNofiticationMobile}
+                value={otherNofiticationMobile}
               />
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  otherNofiticationEmail == 0 ? Colors.D7CCA6 : Colors.grey
+                  otherNofiticationEmail == 1 ? Colors.D7CCA6 : Colors.grey
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("25%") }}
                 onValueChange={(value) => {
-                  onOtherNofiticationEmailChanged(!value);
+                  onOtherNofiticationEmailChanged(value);
                   request
                     .patch(user.url, {
-                      other_notification_mail: value == true ? 0 : 1,
+                      other_notification_mail: value == true ? 1 : 0,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -772,7 +772,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!otherNofiticationEmail}
+                value={otherNofiticationEmail}
               />
             </View>
           </View>
