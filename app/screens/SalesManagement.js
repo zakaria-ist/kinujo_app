@@ -31,6 +31,7 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 import Moment from "moment";
+import { Icon } from "react-native-elements";
 const format = new Format();
 var kanjidate = require("kanjidate");
 const request = new Request();
@@ -533,6 +534,8 @@ export default function SalesManagement(props) {
           <MonthPicker
             initialValue={new Date()}
             value={date}
+            confirmTitle={Translate.t("confirm")}
+            cancelTitle={Translate.t("cancel")}
             // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
@@ -546,21 +549,34 @@ export default function SalesManagement(props) {
               fontSize: RFValue(12),
             }}
           />
-          <Text
+          <View
             style={{
               zIndex: -999,
               color: "black",
               alignItems: "center",
               // width: widthPercentageToDP("23%"),
-              height: heightPercentageToDP("4%"),
+              // height: heightPercentageToDP("4%"),
               borderRadius: 5,
               textAlign: "center",
               fontSize: RFValue(12),
               position: "absolute",
+              flex: 1,
             }}
           >
-            {placeholderDate}
-          </Text>
+            <View style={{flex: 1, flexDirection: "row"}}>
+              <View>
+                <Text>{placeholderDate}</Text>
+              </View>
+              <View style={{justifyContent: "center", paddingLeft: widthPercentageToDP("1%")}}>
+                <Icon
+                  name="chevron-down"
+                  type="font-awesome"
+                  size={RFValue("10")}
+                  color="black"
+                />
+              </View>
+            </View>
+          </View>
           <View
             style={{
               borderWidth: 2,
