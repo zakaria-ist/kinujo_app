@@ -133,7 +133,7 @@ export default function StoreInformation(props) {
               onCorporateNameChanged(response.data.corporate_name);
               onRepresentativeNameChanged(response.data.representative_name);
               onPostalCodeChanged(response.data.zipcode);
-              onPrefectureChanged(response.data.prefecture_id);
+              onPrefectureChanged(response.data.prefecture);
               onAddress1Changed(response.data.address1);
               onAddress2Changed(response.data.address2);
             })
@@ -330,6 +330,7 @@ export default function StoreInformation(props) {
               />
               <TextInput
                 value={postalCode}
+                keyboardType={"numeric"}
                 onChangeText={(value) => {
                   onPostalCodeChanged(value);
                   postal_code(value).then((address) => {
@@ -640,5 +641,6 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
+    paddingLeft: 10
   },
 });

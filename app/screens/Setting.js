@@ -28,6 +28,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
+import NextArrow from "../assets/icons/nextArrow.svg";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
@@ -387,19 +388,19 @@ export default function Setting(props) {
                     height: heightPercentageToDP("6%"),
                     // backgroundColor: "orange",
                     width: widthPercentageToDP("30%"),
-                    paddingLeft: widthPercentageToDP("1%")
+                    paddingLeft: widthPercentageToDP("1%"),
+                    alignSelf: "center"
                   }}
                 />
-                
-                <CountrySearch onNavigate={
-                    () => {
-                      AsyncStorage.setItem("tel-navigate", phoneNumber);
-                    }
-                  } defaultCountry={user.tel_code} props={props} onCountryChanged={(val)=>{
-                    if(val){
-                      processCountryCode(val);
-                    }
-                  }}></CountrySearch>
+                  <CountrySearch onNavigate={
+                      () => {
+                        AsyncStorage.setItem("tel-navigate", phoneNumber);
+                      }
+                    } defaultCountry={user.tel_code} props={props} onCountryChanged={(val)=>{
+                      if(val){
+                        processCountryCode(val);
+                      }
+                    }}></CountrySearch>
               </View>
             ) : (
               <View
@@ -529,16 +530,13 @@ export default function Setting(props) {
                 <Text
                   style={{
                     marginRight: widthPercentageToDP("5%"),
-                    fontSize: RFValue(6.5),
+                    fontSize: RFValue(7),
                     alignSelf: "center",
                   }}
                 >
                   {Translate.t("storeName,PersonInCharge,Address")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -930,10 +928,11 @@ const styles = StyleSheet.create({
     fontSize: RFValue(11),
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
+    right: widthPercentageToDP("1%"),
+    alignSelf: "center"
   },
 
   textInputEdit: {
