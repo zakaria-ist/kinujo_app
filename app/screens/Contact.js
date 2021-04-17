@@ -149,7 +149,7 @@ export default function Contact(props) {
   async function getFriendName(userID, realName) {
     let snapShot = await db
       .collection("users")
-      .doc(String(user.id))
+      .doc(String(userId))
       .collection("customers")
       .get();
 
@@ -177,15 +177,17 @@ export default function Contact(props) {
       name = await getFriendName(user.id, user.nickname);
       users[i].show_name = name;
     }
-
     users.sort((a, b) => {
-      if (!contactPinned[a.id] && contactPinned[b.id]) {
-        return true;
-      }
-      if (contactPinned[a.id] && !contactPinned[b.id]) {
-        return false;
-      }
-      return a.show_name > b.show_name;
+      if (contactPinned[a.id] == undefined) contactPinned[a.id] = false;
+      if (contactPinned[b.id] == undefined) contactPinned[b.id] = false;
+      // if (!contactPinned[a.id] && contactPinned[b.id]) {
+      //   return true;
+      // }
+      // if (contactPinned[a.id] && !contactPinned[b.id]) {
+      //   return false;
+      // }
+      // return a.show_name > b.show_name;
+      return (contactPinned[a.id] === contactPinned[b.id])? 0 : contactPinned[a.id]? -1 : 1;
     });
 
     for (let i = 0; i < users.length; i++) {
@@ -446,8 +448,8 @@ export default function Contact(props) {
             let item = documentSnapshot.data();
             if (!item["delete"]) {
               ids.push(item.id);
-              contactPinned[item.id] = item["pinned"];
-              contactNotify[item.id] = item["notify"];
+              contactPinned[item.id] = item["pinned"] ? item["pinned"] : false;
+              contactNotify[item.id] = item["notify"] ? item["notify"] : false;
             }
 
             if (item["delete"]) {
@@ -905,19 +907,17 @@ export default function Contact(props) {
                 <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
-                      console.log('onPress', 'onPress');
                       contactPinned[longPressObj.data.id] = contactPinned[
                         longPressObj.data.id
                       ]
                         ? false
                         : true;
-                      console.log("contactPinned[longPressObj.data.id]", contactPinned[longPressObj.data.id])
+                      
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
                       });
-
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.data.id))
                         .get()
@@ -925,7 +925,7 @@ export default function Contact(props) {
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
                               db.collection("users")
-                                .doc(String(user.id))
+                                .doc(String(userId))
                                 .collection("friends")
                                 .doc(documentSnapshot.id)
                                 .set(
@@ -940,7 +940,7 @@ export default function Contact(props) {
                             });
                           } else {
                             db.collection("users")
-                              .doc(String(user.id))
+                              .doc(String(userId))
                               .collection("friends")
                               .add({
                                 id: String(longPressObj.data.id),
@@ -1089,15 +1089,15 @@ export default function Contact(props) {
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
+                        .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
                               db.collection("users")
-                                .doc(String(user.id))
+                                .doc(String(userId))
                                 .collection("friends")
                                 .doc(documentSnapshot.id)
                                 .set(
@@ -1162,7 +1162,7 @@ export default function Contact(props) {
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       globalUsers = globalUsers.filter((user) => {
-                        return user.id != longPressObj.data.id;
+                        return userId != longPressObj.data.id;
                       });
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
