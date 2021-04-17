@@ -378,6 +378,7 @@ export default function LoginScreen(props) {
               placeholder={Translate.t("phoneNumber")}
               placeholderTextColor={Colors.D7CCA6}
               style={styles.携帯電話番号}
+              keyboardType={"numeric"}
             ></TextInput>
           </View>
           <TextInput
