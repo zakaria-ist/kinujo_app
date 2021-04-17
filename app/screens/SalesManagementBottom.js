@@ -221,6 +221,9 @@ export default function SalesManagement(props) {
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if(!isFocused) {
+        onSpinnerChanged(false);
+      }
       AsyncStorage.getItem("user").then(function (url) {
         let urls = url.split("/");
         urls = urls.filter((url) => {
@@ -290,7 +293,9 @@ export default function SalesManagement(props) {
               );
             }
           });
-        // onSpinnerChanged(true);
+        if(isFocused) {
+          onSpinnerChanged(true);
+        }
         request
           .get("commissionProducts/" + userId + "/")
           .then(function (response) {

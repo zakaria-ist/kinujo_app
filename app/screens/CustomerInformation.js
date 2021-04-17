@@ -12,6 +12,8 @@ import {
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -499,7 +501,7 @@ export default function CustomerInformation(props) {
         </View>
       </View>
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modal}
         onRequestClose={() => {
@@ -509,7 +511,11 @@ export default function CustomerInformation(props) {
           onMemoChanged(firebaseUser.memo);
         }}
       >
-        <TouchableNativeFeedback onPress={() => {
+        <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
+        style={{flex: 1}}
+      >
+        <TouchableWithoutFeedback onPress={() => {
             onModalChanged(false);
           }} >
           <View style={styles.centeredView}>
@@ -529,7 +535,7 @@ export default function CustomerInformation(props) {
                   color: "black",
                   alignSelf: "center",
                   width: widthPercentageToDP("40%"),
-                  height: heightPercentageToDP("20%"),
+                  height: heightPercentageToDP("25%"),
                   marginLeft: widthPercentageToDP("2%"),
                   marginTop: heightPercentageToDP("5%"),
                 }}
@@ -576,7 +582,8 @@ export default function CustomerInformation(props) {
               </TouchableWithoutFeedback>
             </View>
           </View>
-        </TouchableNativeFeedback>
+        </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

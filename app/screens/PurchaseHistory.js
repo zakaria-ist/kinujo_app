@@ -378,7 +378,9 @@ export default function PurchaseHistory(props) {
       }
 
       // if (!loaded) {
-        onSpinnerChanged(true);
+        if (isFocused) {
+          onSpinnerChanged(true);
+        }
         loadOrder(userId, "all");
       // }
     });
@@ -419,6 +421,9 @@ export default function PurchaseHistory(props) {
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if(!isFocused) {
+        onSpinnerChanged(false);
+      }
       load();
     });
   }, [isFocused]);
