@@ -13,6 +13,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
+import Spinner from "react-native-loading-spinner-overlay";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
@@ -39,13 +40,14 @@ const ratioNext = win.width / 40 / 8;
 function processProductHtml(props, products, status) {
   let tmpProductHtml = [];
   let tmpProducts = products.filter((product) => {
+    console.log(status, product);
     if (product.is_hidden == 1) {
       return false;
     }
-    if (status == "published" && product.is_draft == 0) {
+    if (status == "published" && product.is_draft == 0 && product.is_opened == 1) {
       return true;
     }
-    if (status == "unpublished" && product.is_draft == 1) {
+    if (status == "unpublished" && (product.is_opened == 0 || product.is_draft == 1)) {
       return true;
     }
     return false;
@@ -151,11 +153,15 @@ export default function ExhibitedProductList(props) {
   const [loaded, onLoaded] = useStateIfMounted(false);
   const [productHtml, onProductHtmlChanged] = useStateIfMounted(<View></View>);
   const [user, onUserChanged] = useStateIfMounted({});
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   const insets = useSafeAreaInsets();
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if (!isFocused) {
+        onSpinnerChanged(false);
+      }
       AsyncStorage.getItem("user").then(function (url) {
         let urls = url.split("/");
         urls = urls.filter((url) => {
@@ -182,6 +188,9 @@ export default function ExhibitedProductList(props) {
               );
             }
           });
+        if (isFocused) {
+          onSpinnerChanged(true);
+        }
         request
           .get("sellerProducts/" + userId + "/")
           .then(function (response) {
@@ -190,6 +199,7 @@ export default function ExhibitedProductList(props) {
               processProductHtml(props, response.data.products, status)
             );
             onLoaded(true);
+            onSpinnerChanged(false);
           })
           .catch(function (error) {
             if (
@@ -205,6 +215,7 @@ export default function ExhibitedProductList(props) {
                   ")"
               );
             }
+            onSpinnerChanged(false);
             onLoaded(true);
           });
       });
@@ -212,6 +223,11 @@ export default function ExhibitedProductList(props) {
   }, [isFocused]);
   return (
     <SafeAreaView>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <CustomHeader
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onBack={() => {
@@ -415,5 +431,8 @@ const styles = StyleSheet.create({
     fontSize: RFValue(9),
     width: widthPercentageToDP("20%"),
     marginLeft: widthPercentageToDP("2%"),
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });

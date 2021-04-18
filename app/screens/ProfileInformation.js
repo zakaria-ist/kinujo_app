@@ -534,6 +534,7 @@ export default function ProfileInformation(props) {
                 />
                 <TextInput
                   value={postalCode}
+                  keyboardType={"numeric"}
                   onChangeText={(value) => {
                     onPostalCodeChanged(value);
                     postal_code(value).then((address) => {
@@ -887,6 +888,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
     alignSelf: "center",
+    paddingLeft: 10
   },
 
   dropDown: {

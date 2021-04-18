@@ -55,6 +55,7 @@ export default function Favorite(props) {
   const [loaded, onLoaded] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   const [showCategory, onCategoryShow] = useStateIfMounted(false);
+  const [selected, onSelected] = useStateIfMounted("");
   const rightSorting = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
@@ -88,8 +89,8 @@ export default function Favorite(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           removeFavourite={(favorite) => {
@@ -144,8 +145,8 @@ export default function Favorite(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           removeFavourite={(favorite) => {
             if (favorite) {
@@ -198,6 +199,7 @@ export default function Favorite(props) {
       tmpKinujoProducts = kinujoProducts;
     }
     if (type == "latestFirst") {
+      onSelected("latestFirst");
       if (tmpFeaturedProducts) {
         tmpFeaturedProducts = featuredProducts.sort((a, b) => {
           let date1 = new Date(a.opened_date);
@@ -231,6 +233,7 @@ export default function Favorite(props) {
     }
 
     if (type == "LowToHigh") {
+      onSelected("LowToHigh");
       if (tmpFeaturedProducts) {
         tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
           return a.store_price - b.store_price;
@@ -248,6 +251,7 @@ export default function Favorite(props) {
       );
     }
     if (type == "HighToLow") {
+      onSelected("HighToLow");
       if (tmpFeaturedProducts) {
         tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
           return b.store_price - a.store_price;
@@ -474,21 +478,39 @@ export default function Favorite(props) {
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("latestFirst")}
           >
-            <View style={styles.categoryContainer}>
+            <View style={{
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              paddingVertical: heightPercentageToDP("1.5%"),
+              backgroundColor: selected == "latestFirst" ? "orange" : "white",
+            }}>
               <Text>Latest First</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("LowToHigh")}
           >
-            <View style={styles.categoryContainer}>
+            <View style={{
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              paddingVertical: heightPercentageToDP("1.5%"),
+              backgroundColor: selected == "LowToHigh" ? "orange" : "white",
+            }}>
               <Text>Price Low to High</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => filterProductsBySorting("HighToLow")}
           >
-            <View style={styles.categoryContainer}>
+            <View style={{
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              paddingVertical: heightPercentageToDP("1.5%"),
+              backgroundColor: selected == "HighToLow" ? "orange" : "white",
+            }}>
               <Text>Price High to Low</Text>
             </View>
           </TouchableWithoutFeedback>

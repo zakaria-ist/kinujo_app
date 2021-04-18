@@ -30,6 +30,7 @@ var uuid = require("react-native-uuid");
 import Translate from "../assets/Translates/Translate";
 import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
+import NextArrow from "../assets/icons/nextArrow.svg";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -993,10 +994,7 @@ export default function ProfileEditingGeneral(props) {
                 >
                   {Translate.t("allIdentityInfo")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -1112,11 +1110,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.F0EEE9,
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
-    alignSelf: "center",
+    right: widthPercentageToDP("1%"),
+    alignSelf: "center"
   },
   textInContainerRight: {
     position: "absolute",
