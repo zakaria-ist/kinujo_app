@@ -181,6 +181,7 @@ export default function Cart(props) {
             <Text style={styles.textInTabContainer}>
               {pAddresses.prefecture.name}
             </Text>
+            <Text style={styles.textInTabContainer}>{pAddresses.address2}</Text>
           </View>
         </View>
       );
