@@ -50,12 +50,15 @@ export default function CountrySearch({
         style={{
           //   alignItems: "center",
           justifyContent: "center",
+          alignSelf:"center",
           padding: 5,
           borderWidth: 1,
           borderRadius: 5,
           width: widthPercentageToDP("23%"),
           height: heightPercentageToDP("6%"),
-          marginTop: heightPercentageToDP("1%")
+          marginTop: heightPercentageToDP("1%"),
+          marginBottom: heightPercentageToDP("1%"),
+          marginRight: widthPercentageToDP("1%"),
         }}
       >
         <Text

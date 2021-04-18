@@ -23,6 +23,7 @@
   "termsOfService": "Terms of service",
   "agree": "I agree",
   "ok" : "OK",
+  "confirm": "Confirm",
   "confirm_logout" : "Are you sure you want to logout?",
   "productCreate": "Create Product",
   "askLogin": "If you already have an account, please log in below",

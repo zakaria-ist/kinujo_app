@@ -28,6 +28,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import AsyncStorage from "@react-native-community/async-storage";
+import NextArrow from "../assets/icons/nextArrow.svg";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { Icon } from "react-native-elements";
@@ -387,19 +388,19 @@ export default function Setting(props) {
                     height: heightPercentageToDP("6%"),
                     // backgroundColor: "orange",
                     width: widthPercentageToDP("30%"),
-                    paddingLeft: widthPercentageToDP("1%")
+                    paddingLeft: widthPercentageToDP("1%"),
+                    alignSelf: "center"
                   }}
                 />
-                
-                <CountrySearch onNavigate={
-                    () => {
-                      AsyncStorage.setItem("tel-navigate", phoneNumber);
-                    }
-                  } defaultCountry={user.tel_code} props={props} onCountryChanged={(val)=>{
-                    if(val){
-                      processCountryCode(val);
-                    }
-                  }}></CountrySearch>
+                  <CountrySearch onNavigate={
+                      () => {
+                        AsyncStorage.setItem("tel-navigate", phoneNumber);
+                      }
+                    } defaultCountry={user.tel_code} props={props} onCountryChanged={(val)=>{
+                      if(val){
+                        processCountryCode(val);
+                      }
+                    }}></CountrySearch>
               </View>
             ) : (
               <View
@@ -529,16 +530,13 @@ export default function Setting(props) {
                 <Text
                   style={{
                     marginRight: widthPercentageToDP("5%"),
-                    fontSize: RFValue(6.5),
+                    fontSize: RFValue(7),
                     alignSelf: "center",
                   }}
                 >
                   {Translate.t("storeName,PersonInCharge,Address")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -596,37 +594,37 @@ export default function Setting(props) {
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
-                  onMessagedReceivedEmailChanged(value);
+                  // onMessagedReceivedEmailChanged(value);
 
-                  request
-                    .patch(user.url, {
-                      message_notification_mail: value ? 1 : 0,
-                    })
-                    .then(function (response) {
-                      if (response.data.url) {
-                        AsyncStorage.setItem(
-                          "user",
-                          response.data.url
-                        )
-                      }
-                    })
-                    .catch(function (error) {
-                      if (
-                        error &&
-                        error.response &&
-                        error.response.data &&
-                        Object.keys(error.response.data).length > 0
-                      ) {
-                        alert.warning(
-                          error.response.data[
-                            Object.keys(error.response.data)[0]
-                          ][0] +
-                            "(" +
-                            Object.keys(error.response.data)[0] +
-                            ")"
-                        );
-                      }
-                    });
+                  // request
+                  //   .patch(user.url, {
+                  //     message_notification_mail: value ? 1 : 0,
+                  //   })
+                  //   .then(function (response) {
+                  //     if (response.data.url) {
+                  //       AsyncStorage.setItem(
+                  //         "user",
+                  //         response.data.url
+                  //       )
+                  //     }
+                  //   })
+                  //   .catch(function (error) {
+                  //     if (
+                  //       error &&
+                  //       error.response &&
+                  //       error.response.data &&
+                  //       Object.keys(error.response.data).length > 0
+                  //     ) {
+                  //       alert.warning(
+                  //         error.response.data[
+                  //           Object.keys(error.response.data)[0]
+                  //         ][0] +
+                  //           "(" +
+                  //           Object.keys(error.response.data)[0] +
+                  //           ")"
+                  //       );
+                  //     }
+                  //   });
                 }}
                 value={messagedReceivedEmail}
               />
@@ -711,14 +709,14 @@ export default function Setting(props) {
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  otherNofiticationMobile == 0 ? Colors.D7CCA6 : Colors.grey
+                  otherNofiticationMobile == 1 ? Colors.D7CCA6 : Colors.grey
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], position: "absolute", right: 0 }}
                 onValueChange={(value) => {
-                  onOtherNofiticationMobileChanged(!value);
+                  onOtherNofiticationMobileChanged(value);
                   request
                     .patch(user.url, {
-                      other_notification_phone: value == true ? 0 : 1,
+                      other_notification_phone: value == true ? 1 : 0,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -739,19 +737,19 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!otherNofiticationMobile}
+                value={otherNofiticationMobile}
               />
               <Switch
                 trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
                 thumbColor={
-                  otherNofiticationEmail == 0 ? Colors.D7CCA6 : Colors.grey
+                  otherNofiticationEmail == 1 ? Colors.D7CCA6 : Colors.grey
                 }
                 style={{ transform: [{ scaleX: .6 }, { scaleY: .6 }], marginRight: widthPercentageToDP("25%") }}
                 onValueChange={(value) => {
-                  onOtherNofiticationEmailChanged(!value);
+                  onOtherNofiticationEmailChanged(value);
                   request
                     .patch(user.url, {
-                      other_notification_mail: value == true ? 0 : 1,
+                      other_notification_mail: value == true ? 1 : 0,
                     })
                     .then(function (response) {})
                     .catch(function (error) {
@@ -772,7 +770,7 @@ export default function Setting(props) {
                       }
                     });
                 }}
-                value={!otherNofiticationEmail}
+                value={otherNofiticationEmail}
               />
             </View>
           </View>
@@ -930,10 +928,11 @@ const styles = StyleSheet.create({
     fontSize: RFValue(11),
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
+    right: widthPercentageToDP("1%"),
+    alignSelf: "center"
   },
 
   textInputEdit: {

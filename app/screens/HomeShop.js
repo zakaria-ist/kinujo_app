@@ -40,6 +40,8 @@ import Format from "../lib/format";
 import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
+import navigationHelper from "../lib/navigationHelper";
+import imageHelper from "../lib/imageHelper";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -176,14 +178,23 @@ export default function Home(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpFeaturedHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           idx={idx++}
           image={

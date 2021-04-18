@@ -10,7 +10,10 @@ import {
   TextInput,
   ImageBackground,
   TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   SafeAreaView,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -498,77 +501,89 @@ export default function CustomerInformation(props) {
         </View>
       </View>
       <Modal
-        animationType="slide"
+        animationType="fade"
         transparent={true}
         visible={modal}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
+          // Alert.alert("Modal has been closed.");
+        }}
+        onShow={() => {
+          onMemoChanged(firebaseUser.memo);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TextInput
-              placeholderTextColor="gray"
-              backgroundColor="white"
-              placeholder="入力してください"
-              maxLength={500}
-              multiline={true}
-              value={memo}
-              onChangeText={(value) => {
-                onMemoChanged(value);
-              }}
-              style={{
-                fontSize: RFValue(16),
-                color: "black",
-                alignSelf: "center",
-                width: widthPercentageToDP("50%"),
-                height: heightPercentageToDP("50%"),
-                marginLeft: widthPercentageToDP("2%"),
-                marginTop: heightPercentageToDP("5%"),
-              }}
-            ></TextInput>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                onModalChanged(false);
-                db.collection("users")
-                  .doc(userId)
-                  .collection("customers")
-                  .doc(customerId)
-                  .set({
-                    secretMode: firebaseUser.secretMode
-                      ? firebaseUser.secretMode
-                      : false,
-                    blockMode: firebaseUser.blockMode
-                      ? firebaseUser.blockMode
-                      : false,
-                    displayName: firebaseUser.displayName
-                      ? firebaseUser.displayName
-                      : "",
-                    memo: memo,
-                  });
-              }}
-            >
-              <View
-                backgroundColor="#E6DADE"
+        <KeyboardAvoidingView
+        behavior={Platform.OS == "ios" ? "padding" : "height+1000"}
+        style={{flex: 1}}
+      >
+        <TouchableWithoutFeedback onPress={() => {
+            onModalChanged(false);
+          }} >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <TextInput
+                placeholderTextColor="gray"
+                backgroundColor="white"
+                placeholder="入力してください"
+                maxLength={500}
+                multiline={true}
+                value={memo}
+                onChangeText={(value) => {
+                  onMemoChanged(value);
+                }}
                 style={{
-                  width: widthPercentageToDP("50%"),
+                  fontSize: RFValue(16),
+                  color: "black",
                   alignSelf: "center",
-                  color: "white",
-                  textAlign: "center",
-                  padding: 15,
+                  width: widthPercentageToDP("40%"),
+                  height: heightPercentageToDP("25%"),
+                  marginLeft: widthPercentageToDP("2%"),
+                  marginTop: heightPercentageToDP("5%"),
+                }}
+              ></TextInput>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  onModalChanged(false);
+                  db.collection("users")
+                    .doc(userId)
+                    .collection("customers")
+                    .doc(customerId)
+                    .set({
+                      secretMode: firebaseUser.secretMode
+                        ? firebaseUser.secretMode
+                        : false,
+                      blockMode: firebaseUser.blockMode
+                        ? firebaseUser.blockMode
+                        : false,
+                      displayName: firebaseUser.displayName
+                        ? firebaseUser.displayName
+                        : "",
+                      memo: memo,
+                    });
                 }}
               >
-                <Text
+                <View
+                  backgroundColor="#E6DADE"
                   style={{
+                    width: widthPercentageToDP("50%"),
                     alignSelf: "center",
+                    color: "white",
+                    textAlign: "center",
+                    padding: 15,
                   }}
                 >
-                  Save
-                </Text>
-              </View>
-            </TouchableWithoutFeedback>
+                  <Text
+                    style={{
+                      alignSelf: "center",
+                    }}
+                  >
+                    Save
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

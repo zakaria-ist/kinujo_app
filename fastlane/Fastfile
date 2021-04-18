@@ -1,0 +1,23 @@
+
+fastlane_version '2.167.0'
+platform :android do
+      desc 'Build the final application & deploy to firebase distribute'
+      lane :rl do
+      
+      gradle(task: 'assemble',
+        build_type: 'Release',
+        project_dir: 'android/',
+    )
+      
+    end
+
+    desc 'Build the final application & deploy to firebase distribute'
+      lane :db do
+      
+      gradle(task: 'assemble',
+        build_type: 'Debug',
+        project_dir: 'android/',
+    )
+      
+    end
+end

@@ -142,18 +142,7 @@ export default function Home(props) {
                           .doc(documentSnapshot.id)
                           .delete()
                           .then(() => {
-                            db.collection("users")
-                              .doc(userId.toString())
-                              .collection("carts")
-                              .get()
-                              .then((querySnapShot) => {
-                                let totalItemQty = 0
-                                // onCartCountChanged(querySnapShot.size);
-                                querySnapShot.forEach(documentSnapshot => {
-                                  totalItemQty += parseInt(documentSnapshot.data().quantity)
-                                });
-                                onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
-                              });
+                            console.log('Deleted item from cart');
                           });
                       }
                   });
@@ -167,6 +156,19 @@ export default function Home(props) {
   }
 
   async function pushSeller(userId) {
+    // update cart
+    onCartCountChanged(0);
+    db.collection("users")
+        .doc(userId.toString())
+        .collection("carts")
+        .get()
+        .then((querySnap) => {
+          let totalItemQty = 0;
+          querySnap.forEach(documentSnap => {
+            totalItemQty += parseInt(documentSnap.data().quantity)
+          });
+          onCartCountChanged(totalItemQty);
+        });
     if (d_params.seller != '') {
       let sellerList = [];
       let oldsellers = await db.collection("sellers").get();

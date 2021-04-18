@@ -33,6 +33,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
+import navigationHelper from "../lib/navigationHelper";
+import imageHelper from "../lib/imageHelper";
 const format = new Format();
 
 const request = new Request();
@@ -83,13 +85,22 @@ export default function SearchProducts(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpKinujoHtml.push(
         <HomeProducts
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           // idx={product.id}
           idx={idx++}
@@ -107,8 +118,8 @@ export default function SearchProducts(props) {
           }
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -132,13 +143,22 @@ export default function SearchProducts(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpFeaturedHtml.push(
         <HomeProducts
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           // idx={product.id}
           idx={idx++}
@@ -156,8 +176,8 @@ export default function SearchProducts(props) {
           }
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
