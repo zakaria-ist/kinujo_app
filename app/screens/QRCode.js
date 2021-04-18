@@ -9,6 +9,7 @@ import {
   Switch,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  TouchableNativeFeedback,
   KeyboardAvoidingView,
   TextInput,
   Platform,
@@ -253,9 +254,12 @@ export default function QRCode(props) {
             }}>
               <CloseWhiteIcon
                 style={{
+                  position: "absolute",
                   alignSelf: "flex-start",
                   width: width / 18,
                   height: 20 * ratioBackArrow,
+                  bottom: 45,
+                  // top: 10,
                   marginLeft: widthPercentageToDP("5%"),
                   marginTop: widthPercentageToDP("5%"),
                 }}

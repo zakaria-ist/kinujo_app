@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
+import Spinner from "react-native-loading-spinner-overlay";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
@@ -31,7 +32,6 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 import Moment from "moment";
-import { Icon } from "react-native-elements";
 const format = new Format();
 var kanjidate = require("kanjidate");
 const request = new Request();
@@ -39,6 +39,7 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
 let userID;
+let isMaster = 0;
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
 let day = new Date().getDate();
@@ -103,7 +104,7 @@ function processSaleHtml(orders, sales, tmpCommissionProducts) {
       sale = sale[0];
       let ttlCommission = 0;
       tmpCommissionProducts.map((tmpCommission) => {
-        if (tmpCommission.order_product.id == orders[i]) {
+        if (tmpCommission.order_product.order.id == orders[i]) {
           ttlCommission += tmpCommission.is_food 
               ? parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * reducedTaxRate)
               : parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * taxRate)
@@ -152,7 +153,7 @@ function processSaleHtml(orders, sales, tmpCommissionProducts) {
               </Text>
               <Text style={{
                   fontSize: RFValue(11),
-                  right: -23,
+                  right: 0,
                 }}>
                 -{format.separator(ttlCommission)}円
               </Text>
@@ -188,59 +189,54 @@ function processSaleHtml(orders, sales, tmpCommissionProducts) {
   }
   return tmpSaleHtml;
 }
-function processCommissionHtml(orders, commissions) {
+function processCommissionHtml(commissions) {
   let tmpCommissionHtml = [];
-  for (var i = 0; i < orders.length; i++) {
-    let commission = commissions.filter((comm) => {
-      return (comm.order_product.order.id == orders[i]);
-    });
-    if (commission.length) {
-      commission = commission[0];
-      tmpCommissionHtml.push(
-        <TouchableWithoutFeedback key={i}>
-          <View style={styles.commissionTabContainer}>
+  for (var i = 0; i < commissions.length; i++) {
+    let commission = commissions[i]
+    tmpCommissionHtml.push(
+      <TouchableWithoutFeedback key={i}>
+        <View style={styles.commissionTabContainer}>
+          <Text style={styles.commissionTabText}>
+            {kanjidate.format(
+              "{Y:4}/{M:2}/{D:2}",
+              new Date(commission.order_product.order.created)
+            )}
+          </Text>
+          <View
+            style={{
+              // position: "absolute",
+              left: 0,
+              width: widthPercentageToDP("36%"),
+              marginLeft: widthPercentageToDP("3%"),
+              // marginBottom: heightPercentageToDP("2%"),
+            }}
+          >
             <Text style={styles.commissionTabText}>
-              {kanjidate.format(
-                "{Y:4}/{M:2}/{D:2}",
-                new Date(commission.order_product.order.created)
-              )}
+              {commission.order_product.product_jan_code.horizontal
+                ? commission.order_product.product_jan_code.horizontal
+                    .product_variety.product.name
+                : commission.order_product.product_jan_code.vertical
+                    .product_variety.product.name}
             </Text>
-            <View
-              style={{
-                // position: "absolute",
-                left: 0,
-                width: widthPercentageToDP("36%"),
-                marginLeft: widthPercentageToDP("3%"),
-                // marginBottom: heightPercentageToDP("2%"),
-              }}
-            >
-              <Text style={styles.commissionTabText}>
-                {commission.order_product.product_jan_code.horizontal
-                  ? commission.order_product.product_jan_code.horizontal
-                      .product_variety.product.name
-                  : commission.order_product.product_jan_code.vertical
-                      .product_variety.product.name}
-              </Text>
-              <Text style={styles.commissionTabText}>
-                {format.separator(commission.order_product.unit_price)}円
-              </Text>
-            </View>
-            <Text
-              style={{
-                position: "absolute",
-                fontSize: RFValue(11),
-                right: 0,
-                paddingBottom: heightPercentageToDP("2%"),
-              }}
-            >
-              {commission.is_food 
-              ? format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * reducedTaxRate)) 
-              : format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * taxRate))}円
+            <Text style={styles.commissionTabText}>
+              {format.separator(commission.order_product.unit_price)}円
             </Text>
           </View>
-        </TouchableWithoutFeedback>
-      );
-    }
+          <Text
+            style={{
+              position: "absolute",
+              fontSize: RFValue(11),
+              right: 0,
+              paddingBottom: heightPercentageToDP("2%"),
+            }}
+          >
+            {commission.is_food 
+            ? format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * reducedTaxRate)) 
+            : format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * taxRate))}円
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
   }
   return tmpCommissionHtml;
 }
@@ -264,9 +260,13 @@ export default function SalesManagement(props) {
   const [totalCommission, onTotalCommissionChanged] = useStateIfMounted(0);
   const [totalSale, onTotalSaleChanged] = useStateIfMounted(0);
   const [total, onTotalChanged] = useStateIfMounted(0);
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if(!isFocused) {
+        onSpinnerChanged(false);
+      }
       AsyncStorage.getItem("user").then(function (url) {
         let urls = url.split("/");
         urls = urls.filter((url) => {
@@ -336,7 +336,9 @@ export default function SalesManagement(props) {
               );
             }
           });
-
+        if (isFocused) {
+          onSpinnerChanged(true);
+        }
         request
           .get("commissionProducts/" + userId + "/")
           .then(function (response) {
@@ -355,6 +357,8 @@ export default function SalesManagement(props) {
             } else {
               userCommissions = [];
             }
+            isMaster = response.data.isMaster;
+            onSpinnerChanged(false);
             onUpdate();
           })
           .catch(function (error) {
@@ -372,6 +376,7 @@ export default function SalesManagement(props) {
               );
             }
             onCommissionLoaded(true);
+            onSpinnerChanged(false);
           });
 
         // request
@@ -405,7 +410,15 @@ export default function SalesManagement(props) {
     });
   }, [isFocused]);
 
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      onSpinnerChanged(false);
+    })
+  }, [!isFocused]);
+
+
   function onUpdate(date) {
+    // onSpinnerChanged(true);
     let tmpDate = new Date();
     if (date) {
       tmpDate = date;
@@ -417,12 +430,19 @@ export default function SalesManagement(props) {
     let orders = [];
     commissionProducts.map(
       (commissionProduct) => {
-        if (!commissionProduct["is_hidden"]) {
-          let periods = commissionProduct["order_product"]["order"][
-            "created"
-          ].split("-");
-          let year = periods[0];
-          let month = periods[1];
+        let periods = commissionProduct["order_product"]["order"][
+          "created"
+        ].split("-");
+        let year = periods[0];
+        let month = periods[1];
+        if (!commissionProduct["is_hidden"] && isMaster && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
+          if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+            if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
+              orders.push(commissionProduct["order_product"]["order"]['id'])
+            }
+          }
+        }
+        else if (!commissionProduct["is_hidden"] && commissionProduct["order_product"]["order"]["seller"]["id"] == userID) {
           if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
             if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
               orders.push(commissionProduct["order_product"]["order"]['id'])
@@ -431,21 +451,37 @@ export default function SalesManagement(props) {
         }
       }
     );
-    let tmpCommissionProducts = commissionProducts.filter(
+    let tmpCommissionProducts = [];
+    let userCommissionList = [];
+    commissionProducts.map(
       (commissionProduct) => {
-        if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"]) {
-          let periods = commissionProduct["order_product"]["order"][
-            "created"
-          ].split("-");
-          let year = periods[0];
-          let month = periods[1];
-          return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+        let periods = commissionProduct["order_product"]["order"][
+          "created"
+        ].split("-");
+        let year = periods[0];
+        let month = periods[1];
+        if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+          if (isMaster) {
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
+              tmpCommissionProducts.push(commissionProduct) ;
+            }
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] != "1") {
+              userCommissionList.push(commissionProduct) ;
+            }
+          } else {
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["user_id"] != userID) {
+              tmpCommissionProducts.push(commissionProduct) ;
+            }
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["user_id"] == userID) {
+              userCommissionList.push(commissionProduct) ;
+            }
+          }
         }
       }
     );
-    onCommissionsChanged(tmpCommissionProducts);
+    onCommissionsChanged(userCommissionList);
     onComissionHtmlChanged(
-      processCommissionHtml(orders, tmpCommissionProducts)
+      processCommissionHtml(userCommissionList)
     );
     let commissionTotal = 0;
     userCommissions.map((commission) => {
@@ -489,9 +525,15 @@ export default function SalesManagement(props) {
     onTotalChanged(
       format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
     );
+    // onSpinnerChanged(false);
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <CustomHeader
         text={Translate.t("salesManagement")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -534,8 +576,6 @@ export default function SalesManagement(props) {
           <MonthPicker
             initialValue={new Date()}
             value={date}
-            confirmTitle={Translate.t("confirm")}
-            cancelTitle={Translate.t("cancel")}
             // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
@@ -549,34 +589,21 @@ export default function SalesManagement(props) {
               fontSize: RFValue(12),
             }}
           />
-          <View
+          <Text
             style={{
               zIndex: -999,
               color: "black",
               alignItems: "center",
               // width: widthPercentageToDP("23%"),
-              // height: heightPercentageToDP("4%"),
+              height: heightPercentageToDP("4%"),
               borderRadius: 5,
               textAlign: "center",
               fontSize: RFValue(12),
               position: "absolute",
-              flex: 1,
             }}
           >
-            <View style={{flex: 1, flexDirection: "row"}}>
-              <View>
-                <Text>{placeholderDate}</Text>
-              </View>
-              <View style={{justifyContent: "center", paddingLeft: widthPercentageToDP("1%")}}>
-                <Icon
-                  name="chevron-down"
-                  type="font-awesome"
-                  size={RFValue("10")}
-                  color="black"
-                />
-              </View>
-            </View>
-          </View>
+            {placeholderDate}
+          </Text>
           <View
             style={{
               borderWidth: 2,
@@ -717,18 +744,40 @@ export default function SalesManagement(props) {
                     ? Translate.t("product") + " / " + Translate.t("price")
                     : " " + Translate.t("product")}
                 </Text>
-                <Text
+                <View
                   style={{
-                    fontSize: RFValue(12),
+                    // width: widthPercentageToDP("17%"),
                     position: "absolute",
                     right: 0,
-                    marginRight: widthPercentageToDP("32%"),
+                    paddingBottom: heightPercentageToDP("2%"),
+                    marginRight: widthPercentageToDP("33%"),
                   }}
                 >
-                  {status == "commission"
-                    ? ""
-                    : " " + Translate.t("price") + " / " + Translate.t("fee")}
-                </Text>
+                  <Text
+                    style={{
+                      fontSize: RFValue(12),
+                      // position: "absolute",
+                      right: 0,
+                      // marginRight: widthPercentageToDP("32%"),
+                    }}
+                  >
+                    {status == "commission"
+                      ? ""
+                      : " " + Translate.t("price")}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: RFValue(12),
+                      // position: "absolute",
+                      right: 0,
+                      // marginRight: widthPercentageToDP("32%"),
+                    }}
+                  >
+                    {status == "commission"
+                      ? ""
+                      : " " + Translate.t("fee")}
+                  </Text>
+                </View>
                 <Text
                   style={{
                     fontSize: RFValue(12),
@@ -803,5 +852,8 @@ const styles = StyleSheet.create({
   commissionTabText: {
     // marginBottom: heightPercentageToDP("2%"),
     fontSize: RFValue(11),
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });

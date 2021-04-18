@@ -91,6 +91,7 @@ export default function HomeByCategory(props) {
   function processFeaturedProductHtml(featuredProducts) {
     let tmpFeaturedHtml = [];
     let featuredProductCount = 0;
+    let idx = 0;
     featuredProducts.map((product) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
@@ -107,7 +108,7 @@ export default function HomeByCategory(props) {
               url: product.url,
             });
           }}
-          idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
               ? images[0].image.image
@@ -144,6 +145,7 @@ export default function HomeByCategory(props) {
   function processKinujoProductHtml(kinujoProducts) {
     let tmpKinujoHtml = [];
     let officialProductCount = 0;
+    let idx = 0;
     kinujoProducts.map((product) => {
       if (!sellers.includes(product.user.id)) {
         sellers.push(product.user.id);
@@ -160,7 +162,7 @@ export default function HomeByCategory(props) {
               url: product.url,
             });
           }}
-          idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
               ? images[0].image.image
@@ -917,12 +919,9 @@ const styles = StyleSheet.create({
     // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
-    // paddingTop: heightPercentageToDP("15%"),
-    minHeight: heightPercentageToDP("9%"),
-    justifyContent: "center",
+    paddingTop: heightPercentageToDP("15%"),
     paddingLeft: 15,
     fontSize: RFValue(14),
-    marginTop: heightPercentageToDP("20%"),
   },
   disc_button_group: {
     width: 100,
