@@ -43,6 +43,8 @@ import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
 import { hide } from "expo-splash-screen";
+import navigationHelper from "../lib/navigationHelper";
+import imageHelper from "../lib/imageHelper";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -109,14 +111,24 @@ export default function ProductList(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           onSellerNamePress={() => {
             props.navigation.navigate("SellerProductList", {
@@ -170,6 +182,11 @@ export default function ProductList(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       // console.log(product.category);
       tmpFeaturedHtml.push(
         <HomeProducts
@@ -179,9 +196,14 @@ export default function ProductList(props) {
             props.navigation.navigate("SellerProductList", {});
           }}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           idx={idx++}
           image={
