@@ -39,6 +39,8 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 import Format from "../lib/format";
+import navigationHelper from "../lib/navigationHelper.js";
+import imageHelper from "../lib/imageHelper.js";
 const format = new Format();
 let users;
 let featuredProducts = {};
@@ -68,14 +70,20 @@ export default function Favorite(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpFeaturedHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
           }}
           // idx={product.id}
           idx={idx++}
@@ -107,9 +115,9 @@ export default function Favorite(props) {
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
               : Translate.t("shipping") +
-                " : " +
-                format.separator(product.shipping_fee) +
-                "円"
+              " : " +
+              format.separator(product.shipping_fee) +
+              "円"
           }
         />
       );
@@ -124,14 +132,20 @@ export default function Favorite(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpProductHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
           }}
           // idx={product.id}
           idx={idx++}
@@ -163,9 +177,9 @@ export default function Favorite(props) {
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
               : Translate.t("shipping") +
-                " : "
-                +format.separator(product.shipping_fee) +
-                "円"
+              " : "
+              +format.separator(product.shipping_fee) +
+              "円"
           }
         />
       );
@@ -305,9 +319,9 @@ export default function Favorite(props) {
         ) {
           alert.warning(
             error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
           );
         }
       });
@@ -360,11 +374,11 @@ export default function Favorite(props) {
                     ) {
                       alert.warning(
                         error.response.data[
-                          Object.keys(error.response.data)[0]
+                        Object.keys(error.response.data)[0]
                         ][0] +
-                          "(" +
-                          Object.keys(error.response.data)[0] +
-                          ")"
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
                       );
                     }
                   });
@@ -388,11 +402,11 @@ export default function Favorite(props) {
                     ) {
                       alert.warning(
                         error.response.data[
-                          Object.keys(error.response.data)[0]
+                        Object.keys(error.response.data)[0]
                         ][0] +
-                          "(" +
-                          Object.keys(error.response.data)[0] +
-                          ")"
+                        "(" +
+                        Object.keys(error.response.data)[0] +
+                        ")"
                       );
                     }
                   });
@@ -407,9 +421,9 @@ export default function Favorite(props) {
             ) {
               alert.warning(
                 error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
               );
             }
           });

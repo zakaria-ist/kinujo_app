@@ -9,6 +9,8 @@
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <UMReactNativeAdapter/UMModuleRegistryAdapter.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <UserNotifications/UserNotifications.h>
+#import <RNCPushNotificationIOS.h>
 #import <UMCore/UMModuleRegistryProvider.h>
 #import <Firebase.h>
 #import "RNFirebaseMessaging.h"
@@ -22,6 +24,7 @@
 #import <FlipperKitNetworkPlugin/FlipperKitNetworkPlugin.h>
 #import <SKIOSNetworkPlugin/SKIOSNetworkAdapter.h>
 #import <FlipperKitReactPlugin/FlipperKitReactPlugin.h>
+
 
 
 static void InitializeFlipper(UIApplication *application) {
@@ -71,6 +74,9 @@ static void InitializeFlipper(UIApplication *application) {
 
 
   [RNSplashScreen show];
+  
+  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+  center.delegate = self;
   return YES;
 }
 
@@ -79,7 +85,7 @@ static void InitializeFlipper(UIApplication *application) {
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(nonnull NSDictionary *)userInfo
-                                                    fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
+                                                   fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHandler{
 [[FirebasePushNotifications instance] didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
 }
 
@@ -145,4 +151,27 @@ restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nul
    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
  }
 
+ // Required for localNotification event
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+didReceiveNotificationResponse:(UNNotificationResponse *)response
+         withCompletionHandler:(void (^)(void))completionHandler
+{
+  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
+  completionHandler();
+}
+
+//Called when a notification is delivered to a foreground app.
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+  completionHandler(UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge);
+}
+
+// Required for localNotification event
+//- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+//didReceiveNotificationResponse:(UNNotificationResponse *)response
+//         withCompletionHandler:(void (^)(void))completionHandler
+//{
+//  [RNCPushNotificationIOS didReceiveNotificationResponse:response];
+//}
 @end
+

@@ -261,6 +261,7 @@ function BottomNavigationGeneral(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
@@ -614,7 +615,7 @@ function BottomNavigationGeneral(props) {
           name="HomeStore"
           component={HomeGeneral}
           options={{
-            unmountOnBlur: true,
+            // unmountOnBlur: true,
             tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Home",
             tabBarIcon: () => <HomeLogo width={25} height={25} />,
@@ -624,7 +625,7 @@ function BottomNavigationGeneral(props) {
           name="ContactStore"
           component={Contact}
           options={{
-            unmountOnBlur: true,
+            // unmountOnBlur: true,
             tabBarButton: (props) => <CustomTabButton show={true} {...props} />,
             tabBarLabel: "Contact",
             tabBarIcon: () => <PersonLogo width={25} height={25} />,
@@ -632,6 +633,7 @@ function BottomNavigationGeneral(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
@@ -1146,6 +1148,7 @@ function BottomNavigationStore(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
@@ -1663,6 +1666,7 @@ function BottomNavigationStore(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
