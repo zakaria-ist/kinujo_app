@@ -1,13 +1,17 @@
 {
   "scripts": {
-    "start": "react-native start",
+    "start": "react-native start --reset-cache",
+    "swm": "watchman watch-del-all && react-native start --reset-cache",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "eject": "expo eject",
     "fixbuild": "node ./android-release-gradle-fix.js;",
     "postinstall": "yarn fixbuild; npx jetify; cd ios; pod install",
-    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/"
+    "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
+    "ra": "fastlane android rl",
+    "da": "fastlane android db",
+    "o": "open android/app/build/outputs/apk"
   },
   "dependencies": {
     "react-native-push-notification": "^7.2.3",

@@ -45,6 +45,8 @@ import Format from "../lib/format";
 import Translate from "../assets/Translates/Translate";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { method } from "lodash";
+import MySliderBox from "../Component/MySliderBox";
+import imageHelper from "../lib/imageHelper";
 const format = new Format();
 
 if (!firebase.apps.length) {
@@ -63,6 +65,9 @@ let janCodes = {};
 let janCodeNames = {};
 
 export default function HomeStoreList(props) {
+
+  let initImage = props.route.params.images || []
+
   const [name, setName] = useStateIfMounted("");
   const [favourite, setFavourite] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
@@ -71,7 +76,7 @@ export default function HomeStoreList(props) {
   const [selectedJanCode, onSelectedJanCodeChanged] = useStateIfMounted(null);
   const [selectedJanStock, onSelectedJanStockChanged] = useStateIfMounted(null);
   const [selectedName, onSelectedNameChanged] = useStateIfMounted("");
-  const [images, onImagesChanged] = useStateIfMounted([]);
+  const [images, onImagesChanged] = useStateIfMounted(initImage);
   const [show, onShowChanged] = useStateIfMounted({});
   const [showText, onShowText] = useStateIfMounted(false);
   const [time, setTimePassed] = useStateIfMounted(false);
@@ -211,45 +216,45 @@ export default function HomeStoreList(props) {
     InteractionManager.runAfterInteractions(() => {
 
       request
-      .get("tax_rates/")
-      .then((response) => {
-        let taxes = response.data.filter((item) => {
-          let nowDate = new Date();
-          if (item.start_date && item.end_date) {
-            if (
-              nowDate >= new Date(item.start_date) &&
-              nowDate <= new Date(item.end_date)
-            ) {
-              return true;
+        .get("tax_rates/")
+        .then((response) => {
+          let taxes = response.data.filter((item) => {
+            let nowDate = new Date();
+            if (item.start_date && item.end_date) {
+              if (
+                nowDate >= new Date(item.start_date) &&
+                nowDate <= new Date(item.end_date)
+              ) {
+                return true;
+              }
+            } else if (item.start_date) {
+              if (nowDate >= new Date(item.start_date)) {
+                return true;
+              }
             }
-          } else if (item.start_date) {
-            if (nowDate >= new Date(item.start_date)) {
-              return true;
-            }
-          }
-          return false;
-        });
+            return false;
+          });
 
-        if (taxes.length > 0) {
-          console.log(taxes[0])
-          setTaxObj(taxes[0])
-        }
-      })
-      .catch((error) => {
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
+          if (taxes.length > 0) {
+            console.log(taxes[0])
+            setTaxObj(taxes[0])
+          }
+        })
+        .catch((error) => {
+          if (
+            error &&
+            error.response &&
+            error.response.data &&
+            Object.keys(error.response.data).length > 0
+          ) {
+            alert.warning(
+              error.response.data[Object.keys(error.response.data)[0]][0] +
               "(" +
               Object.keys(error.response.data)[0] +
               ")"
-          );
-        }
-      });
+            );
+          }
+        });
 
       onSelectedJanCodeChanged("");
       onSelectedJanStockChanged(null);
@@ -429,7 +434,8 @@ export default function HomeStoreList(props) {
                   }))
                   onImagesChanged(
                     images.map((productImage) => {
-                      return productImage.image.image;
+                      return imageHelper.getOriginalImage(productImage?.image?.image)
+                      // return productImage.image.image;
                     })
                   );
                 } else {
@@ -447,9 +453,9 @@ export default function HomeStoreList(props) {
                 ) {
                   alert.warning(
                     error.response.data[Object.keys(error.response.data)[0]][0] +
-                      "(" +
-                      Object.keys(error.response.data)[0] +
-                      ")"
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
                   );
                 }
               });
@@ -463,9 +469,9 @@ export default function HomeStoreList(props) {
             ) {
               alert.warning(
                 error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
               );
             }
           });
@@ -610,29 +616,9 @@ export default function HomeStoreList(props) {
             }}
           >
             {/* Need Find Image Slider */}
-            <SliderBox
-              ImageComponent={FastImage}
+            <MySliderBox
               images={images}
-              sliderBoxHeight={width / 1.4 + 20}
-              parentWidth={width - 30}
-              onCurrentImagePressed={(index) =>
-                console.warn(`image ${index} pressed`)
-              }
-              dotColor="#D8CDA7"
-              inactiveDotColor="#90A4AE"
-              resizeMethod={"resize"}
-              resizeMode={"cover"}
-              autoplay={true}
-              circleLoop={true}
-              paginationBoxStyle={{
-                position: "absolute",
-                bottom: 0,
-                padding: 0,
-                alignItems: "center",
-                alignSelf: "center",
-                justifyContent: "center",
-                marginBottom: -60,
-              }}
+              width={width}
             />
             <View
               style={{
@@ -702,7 +688,7 @@ export default function HomeStoreList(props) {
                 }}
               >
                 <Image
-                  style={{ width: RFValue(25), height: RFValue(25), 
+                   style={{ width: RFValue(25), height: RFValue(25), 
                     resizeMode: 'contain' }}
                   source={require("../assets/Images/share.png")}
                 />
@@ -751,17 +737,17 @@ export default function HomeStoreList(props) {
                     : format.separator(taxObj ? (parseFloat(product.price) + parseInt(product.price * taxObj.tax_rate)) : product.price))}
                 </Text>
                 <Text style={styles.font_medium}>
-                {"円" +
-                  Translate.t("taxNotIncluded")}
+                  {"円" +
+                    Translate.t("taxNotIncluded")}
                 </Text>
               </Text>
             </View>
             <Text style={styles.font_small}>
               {product.shipping_fee
                 ? Translate.t("shipping") +
-                  ": " +
-                  format.separator(product.shipping_fee) +
-                  "円"
+                ": " +
+                format.separator(product.shipping_fee) +
+                "円"
                 : Translate.t("freeShipping")}
             </Text>
           </View>
@@ -787,9 +773,9 @@ export default function HomeStoreList(props) {
                     });
                   });
                 }}>
-                    <View style={{backgroundColor:"lightgray", padding:10, marginBottom: 10, borderRadius: 5, color: "white"}}> 
-                      <Text style={styles.contact_us}>{Translate.t("contact_us")}</Text>
-                    </View>
+                  <View style={{backgroundColor:"lightgray", padding:10, marginBottom: 10, borderRadius: 5, color: "white"}}>
+                    <Text style={styles.contact_us}>{Translate.t("contact_us")}</Text>
+                  </View>
                 </TouchableWithoutFeedback>
               </View>
             </View>
@@ -1032,8 +1018,8 @@ export default function HomeStoreList(props) {
                         }
                       } else {
                         alert.warning(
-                            Translate.t("limitedStock")
-                          );
+                          Translate.t("limitedStock")
+                        );
                       }
                     }}
                   >

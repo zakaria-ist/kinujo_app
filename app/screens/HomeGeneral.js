@@ -52,6 +52,8 @@ import { NavigationActions } from "react-navigation";
 import { hide } from "expo-splash-screen";
 import { EventRegister } from 'react-native-event-listeners'
 import notificationHelper from "../lib/notificationHelper";
+import navigationHelper from "../lib/navigationHelper";
+import imageHelper from "../lib/imageHelper";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -214,60 +216,60 @@ export default function Home(props) {
         onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
       });
   }
-// Must be outside of any component LifeCycle (such as `componentDidMount`).
-PushNotification.configure({
+  // Must be outside of any component LifeCycle (such as `componentDidMount`).
+  PushNotification.configure({
 
-  // (required) Called when a remote is received or opened, or local notification is opened
-  onNotification: function (notification) {
-    console.log("NOTIFICATION:", notification);
-    processNoti(notification)
-    // process the notification
-    // alert.warning(notification.data.b)
     // (required) Called when a remote is received or opened, or local notification is opened
-    notification.finish(PushNotificationIOS.FetchResult.NoData);
-  },
+    onNotification: function (notification) {
+      console.log("NOTIFICATION:", notification);
+      processNoti(notification)
+      // process the notification
+      // alert.warning(notification.data.b)
+      // (required) Called when a remote is received or opened, or local notification is opened
+      notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
 
-  // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
-  onAction: function (notification) {
-    // alert.warning(JSON.stringify(notification))
-    processNoti(notification)
-    // process the action
-  },
+    // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
+    onAction: function (notification) {
+      // alert.warning(JSON.stringify(notification))
+      processNoti(notification)
+      // process the action
+    },
 
-  // IOS ONLY (optional): default: all - Permissions to register.
-  permissions: {
-    alert: true,
-    badge: true,
-    sound: true,
-  },
+    // IOS ONLY (optional): default: all - Permissions to register.
+    permissions: {
+      alert: true,
+      badge: true,
+      sound: true,
+    },
 
-  // Should the initial notification be popped automatically
-  // default: true
-  popInitialNotification: true,
+    // Should the initial notification be popped automatically
+    // default: true
+    popInitialNotification: true,
 
-  /**
-   * (optional) default: true
-   * - Specified if permissions (ios) and token (android and ios) will requested or not,
-   * - if not, you must call PushNotificationsHandler.requestPermissions() later
-   * - if you are not using remote notification or do not have Firebase installed, use this:
-   *     requestPermissions: Platform.OS === 'ios'
-   */
-  requestPermissions: true,
-});
+    /**
+     * (optional) default: true
+     * - Specified if permissions (ios) and token (android and ios) will requested or not,
+     * - if not, you must call PushNotificationsHandler.requestPermissions() later
+     * - if you are not using remote notification or do not have Firebase installed, use this:
+     *     requestPermissions: Platform.OS === 'ios'
+     */
+    requestPermissions: true,
+  });
 
-const processNoti = (remoteMessage) => {
-  if (remoteMessage) {
-    console.log('remoteMessage', remoteMessage.data);
-    let groupID = remoteMessage.data.groupID;
-    let groupName = remoteMessage.data.groupName;
-    let groupType = remoteMessage.data.groupType;
-    props.navigation.navigate("ChatScreen", {
-      type: String(groupType),
-      groupID: String(groupID),
-      groupName: String(groupName),
-    });
+  const processNoti = (remoteMessage) => {
+    if (remoteMessage) {
+      console.log('remoteMessage', remoteMessage.data);
+      let groupID = remoteMessage.data.groupID;
+      let groupName = remoteMessage.data.groupName;
+      let groupType = remoteMessage.data.groupType;
+      props.navigation.navigate("ChatScreen", {
+        type: String(groupType),
+        groupID: String(groupID),
+        groupName: String(groupName),
+      });
+    }
   }
-}
 
   React.useEffect(() => {
 
@@ -391,6 +393,9 @@ const processNoti = (remoteMessage) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
       // console.log(
       //   product.productVarieties[0].productVarietySelections[0]
       //     .jancode_horizontal[0].jan_code
@@ -434,14 +439,19 @@ const processNoti = (remoteMessage) => {
             });
           }}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -479,14 +489,16 @@ const processNoti = (remoteMessage) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
-              url: product.url,
-            });
+            navigationHelper.gotoHomeStoreList({ props, url: product.url, images })
           }}
           onSellerNamePress={() => {
             // console.log("zz");
@@ -524,7 +536,7 @@ const processNoti = (remoteMessage) => {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}

@@ -42,6 +42,8 @@ import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
 import { keys } from "lodash";
 import { cos } from "react-native-reanimated";
+import navigationHelper from "../lib/navigationHelper";
+import imageHelper from "../lib/imageHelper";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -95,6 +97,11 @@ export default function HomeByCategory(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+
       if (!sellers.includes(product.user.id)) {
         sellers.push(product.user.id);
       }
@@ -103,9 +110,11 @@ export default function HomeByCategory(props) {
           key={product.id}
           product_id={product.category}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
           }}
           idx={product.id}
           image={
@@ -151,14 +160,21 @@ export default function HomeByCategory(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img.image.image)
+      })
+      
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
           }}
           idx={product.id}
           image={
