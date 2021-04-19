@@ -150,7 +150,7 @@ export default function CreateFolder(props) {
               usersName: friendNames,
             })
             .then((docRef) => {
-              setFolderName("");
+              // setFolderName("");
               console.log(friendIds);
               console.log(friendNames);
               props.navigation.navigate("GroupFolderCreateCompletion", {
@@ -182,12 +182,12 @@ export default function CreateFolder(props) {
   }
   function addMemberHandler() {
     AsyncStorage.setItem("tmpIds", JSON.stringify(friendIds)).then(() => {
-      props.navigation.navigate("FolderMemberSelection");
+      props.navigation.navigate("FolderMemberSelection", {"folderName": folderName});
     });
   }
 
   function backHandler() {
-    setFolderName("");
+    // setFolderName("");
     props.navigation.goBack();
   }
   return (

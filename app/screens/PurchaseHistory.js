@@ -103,21 +103,22 @@ export default function PurchaseHistory(props) {
                 marginTop: heightPercentageToDP("1.5%"),
               }}
             >
-              {kanjidate.format(
-                "{Y:4}" +
-                  Translate.t("年") +
-                  "{M:2}" +
-                  Translate.t("月") +
-                  "{D:2}" +
-                  Translate.t("日") +
-                  " ",
+              {kanjidate.format(kanjidate.f10,
+                // "{Y:4}" +
+                //   Translate.t("年") +
+                //   "{M:2}" +
+                //   Translate.t("月") +
+                //   "{D:2}" +
+                //   Translate.t("日") +
+                //   " ",
                 new Date(order.order.created)
               )}
-              (
+              {/* (
               {Translate.t(
                 kanjidate.format("{W:2}", new Date(order.order.created))
               )}
-              ){kanjidate.format(" {h:2}:{M:2}", new Date(order.order.created))}
+              ){kanjidate.format(" {h:2}:{M:2}", new Date(order.order.created))
+              } */}
             </Text>
             <View style={styles.purchaseHistoryProductContainer}>
               <View style={styles.productInformationContainer}>
@@ -153,7 +154,7 @@ export default function PurchaseHistory(props) {
                       : order.product_jan_code.vertical.product_variety.product
                           .name}
                   </Text>
-                  <Text>{format.separator(order.unit_price)} 円</Text>
+                  <Text>{format.separator(order.order.total_amount)} 円</Text>
                   {/* <Text>{format.separator(order.total_price)} 円</Text> */}
                 </View>
                 <View
@@ -173,6 +174,7 @@ export default function PurchaseHistory(props) {
                   lastOrderReceipt = {};
                   props.navigation.navigate("PurchaseHistoryDetails", {
                     url: order.url,
+                    order: order
                   });
                 }}
               >
@@ -302,6 +304,7 @@ export default function PurchaseHistory(props) {
     request
       .get("orderProducts/" + userId + "/")
       .then((response) => {
+        console.log('response.data.orderProducts', response.data.orderProducts);
         let tmpYears = [];
         response.data.orderProducts.map((order) => {
           let year = kanjidate.format("{Y:4}", new Date(order.created));

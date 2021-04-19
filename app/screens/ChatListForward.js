@@ -589,7 +589,7 @@ export default function ChatListForward(props) {
             {chatHtml}
           </View>
         </ScrollView>
-        <View style={show == true ? styles.popUp : styles.none}>
+        {/* <View style={show == true ? styles.popUp : styles.none}>
           <View
             style={{
               zIndex: 1,
@@ -738,7 +738,7 @@ export default function ChatListForward(props) {
               </View>
             </View>
           </View>
-        </View>
+        </View> */}
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );

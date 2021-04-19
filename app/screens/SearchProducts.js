@@ -106,7 +106,7 @@ export default function SearchProducts(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
           }
           office={product.brand_name}
@@ -164,7 +164,7 @@ export default function SearchProducts(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
           }
           office={product.brand_name}
@@ -259,6 +259,26 @@ export default function SearchProducts(props) {
         .get("simple_products/")
         .then(function (response) {
           let products = response.data;
+          products = products.filter((product) => {
+            let date = new Date(product.is_opened);
+            if (user.is_seller) {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 2)
+              );
+            } else {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 1)
+              );
+            }
+          });
           onProductsChanged(products);
           performProductHtml(products);
         })
