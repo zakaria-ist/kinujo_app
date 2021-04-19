@@ -89,7 +89,7 @@ export default function Favorite(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
           }
           office={product.brand_name}
@@ -151,7 +151,7 @@ export default function Favorite(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://www.alchemycorner.com/wp-content/uploads/2018/01/AC_YourProduct2.jpg"
           }
           office={product.brand_name}

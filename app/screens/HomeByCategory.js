@@ -102,7 +102,6 @@ export default function HomeByCategory(props) {
       images = images.map(img=>{
         return imageHelper.getOriginalImage(img.image.image)
       })
-
       if (!sellers.includes(product.user.id)) {
         sellers.push(product.user.id);
       }
@@ -120,7 +119,7 @@ export default function HomeByCategory(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -162,11 +161,9 @@ export default function HomeByCategory(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
-
       images = images.map(img=>{
         return imageHelper.getOriginalImage(img.image.image)
       })
-      
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
@@ -181,7 +178,7 @@ export default function HomeByCategory(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -321,12 +318,23 @@ export default function HomeByCategory(props) {
 
         products = products.filter((product) => {
           let date = new Date(product.is_opened);
-          return (
-            product.is_opened == 1 &&
-            new Date() > date &&
-            product.is_hidden == 0 &&
-            product.is_draft == 0
-          );
+          if (user.is_seller) {
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0 &&
+              (product.target == 0 || product.target == 2)
+            );
+          } else {
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0 &&
+              (product.target == 0 || product.target == 1)
+            );
+          }
         });
 
         kinujoProducts = products.filter((product) => {
@@ -366,7 +374,8 @@ export default function HomeByCategory(props) {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
           onPress={() =>
-            filterProductsByCateogry(categories, category.id, category.name)
+            {console.log(category.id, category.name);
+            filterProductsByCateogry(categories, category.id, category.name)}
           }
         >
           <View style={styles.categoryContainer} key={category.id}>
@@ -471,12 +480,23 @@ export default function HomeByCategory(props) {
 
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
-            return (
-              product.is_opened == 1 &&
-              new Date() > date &&
-              product.is_hidden == 0 &&
-              product.is_draft == 0
-            );
+            if (user.is_seller) {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 2)
+              );
+            } else {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 1)
+              );
+            }
           });
 
           kinujoProducts = products.filter((product) => {
@@ -557,7 +577,7 @@ export default function HomeByCategory(props) {
     <TouchableWithoutFeedback onPress={() => hideAll()}>
       <SafeAreaView>
         <CustomHeader
-          text="Product List"
+          text={Translate.t("productList")}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => {
             props.navigation.navigate("Cart");

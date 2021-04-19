@@ -126,37 +126,14 @@ export default function ProductInformationAddNew(props) {
       // setShow(false);
     }
     if (!isFocused) {
-      onProductNameChanged("");
-      onNoneVariationItemsChanged([]);
-      onOneVariationItemsChanged([]);
-      onTwoVariationItemsChanged([]);
-      onBrandNameChanged("");
-      onPrChanged("");
-      onProductIdChanged("");
-      onProductCategoryChanged("");
-      onProductVariationChanged("none");
-      onPublishStateChanged("");
-      // onPublishDateChanged(new Date());
-      onProductStatusChanged("");
-      onTargetUserChanged("");
-      onPriceChanged("");
-      onStorePriceChanged("");
-      onShippingChanged("");
-      onProductPageDisplayMethodChanged("");
-      onProductImageHtmlChanged([]), onProductImagesChanged([]);
-      onProductDescriptionChanged("");
-      onSpinnerChanged(false);
-      onProductChanged(false);
-      onProductCategoriesChanged([]);
-      onTwoVariationItemsChanged("");
-      onOneVariationItemsChanged("");
-      onNoneVariationItemsChanged("");
+      clearTheForm();
 
       // props.navigation.setParams({ url: "" });
     }
 
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("user").then(function (url) {
+        clearTheForm();
         request
           .get(url)
           .then(function (response) {
@@ -188,7 +165,6 @@ export default function ProductInformationAddNew(props) {
             };
           });
           onProductCategoriesChanged(categories);
-
           if (props.route.params.url) {
             request
               .get(
@@ -520,6 +496,34 @@ export default function ProductInformationAddNew(props) {
     }
   }
 
+  function clearTheForm() {
+    onProductNameChanged("");
+    onNoneVariationItemsChanged([]);
+    onOneVariationItemsChanged([]);
+    onTwoVariationItemsChanged([]);
+    onBrandNameChanged("");
+    onPrChanged("");
+    onProductIdChanged("");
+    onProductCategoryChanged("");
+    onProductVariationChanged("none");
+    onPublishStateChanged("");
+    // onPublishDateChanged(new Date());
+    onProductStatusChanged("");
+    onTargetUserChanged("");
+    onPriceChanged("");
+    onStorePriceChanged("");
+    onShippingChanged("");
+    onProductPageDisplayMethodChanged("");
+    onProductImageHtmlChanged([]), onProductImagesChanged([]);
+    onProductDescriptionChanged("");
+    onSpinnerChanged(false);
+    onProductChanged(false);
+    onProductCategoriesChanged([]);
+    onTwoVariationItemsChanged("");
+    onOneVariationItemsChanged("");
+    onNoneVariationItemsChanged("");
+  }
+
   function createProduct(draft) {
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
@@ -604,8 +608,17 @@ export default function ProductInformationAddNew(props) {
           // console.log(response);
           if (response.success) {
             onSpinnerChanged(false);
-            props.navigation.setParams({ url: "" });
-            props.navigation.goBack();
+            // props.navigation.setParams({ url: "" });
+            // props.navigation.goBack();
+            if (user.is_seller) {
+              props.navigation.navigate("ExhibitedProductList", {
+                is_store: true,
+              });
+            } else {
+              props.navigation.navigate("ExhibitedProductList", {
+                is_store: false,
+              });
+            }
           } else {
             if (
               response.errors &&
@@ -762,7 +775,16 @@ export default function ProductInformationAddNew(props) {
           onSpinnerChanged(false);
           response = response.data;
           if (response.success) {
-            props.navigation.goBack();
+            if (user.is_seller) {
+              props.navigation.navigate("ExhibitedProductList", {
+                is_store: true,
+              });
+            } else {
+              props.navigation.navigate("ExhibitedProductList", {
+                is_store: false,
+              });
+            }
+            // props.navigation.goBack();
           } else {
             if (response.errors && Object.keys(response.errors).length > 0) {
               if (Object.keys(response.errors)[0] != "0") {
