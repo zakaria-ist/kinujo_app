@@ -243,8 +243,8 @@ export default function Cart(props) {
                 <Text style={styles.cartTabText}>{product.name}</Text>
                 <Text style={styles.cartTabText}>
                   {is_store
-                    ? format.separator(product.store_price)
-                    : format.separator(product.price)}
+                    ? taxObj ? format.separator(parseFloat(product.store_price) + parseFloat(product.store_price) * taxObj.tax_rate) : format.separator(product.store_price)
+                    : taxObj ? format.separator(parseFloat(product.price) + parseFloat(product.price) * taxObj.tax_rate) : format.separator(product.price)}
                   円
                 </Text>
                 <Text style={styles.cartTabText}>{item.name}</Text>
