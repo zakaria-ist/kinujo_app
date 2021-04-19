@@ -506,12 +506,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -672,12 +672,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -764,7 +764,7 @@ export default function ChatScreen(props) {
               key={chat.id}
             >
               {previousMessageDateElse ==
-              chat.data.timeStamp.toDate().toDateString() ? (
+                chat.data.timeStamp.toDate().toDateString() ? (
                 <Text style={[styles.chat_date]}>{""}</Text>
               ) : (
                 <Text style={[styles.chat_date]}>
@@ -839,12 +839,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1031,12 +1031,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1197,12 +1197,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1289,7 +1289,7 @@ export default function ChatScreen(props) {
               key={chat.id}
             >
               {previousMessageDateElse ==
-              chat.data.timeStamp.toDate().toDateString() ? (
+                chat.data.timeStamp.toDate().toDateString() ? (
                 <Text style={[styles.chat_date]}>{""}</Text>
               ) : (
                 <Text style={[styles.chat_date]}>
@@ -1364,12 +1364,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1556,12 +1556,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1722,12 +1722,12 @@ export default function ChatScreen(props) {
                     });
                     onShowPopUpChanged(true);
                   }}
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1814,7 +1814,7 @@ export default function ChatScreen(props) {
               key={chat.id}
             >
               {previousMessageDateElse ==
-              chat.data.timeStamp.toDate().toDateString() ? (
+                chat.data.timeStamp.toDate().toDateString() ? (
                 <Text style={[styles.chat_date]}>{""}</Text>
               ) : (
                 <Text style={[styles.chat_date]}>
@@ -1888,13 +1888,13 @@ export default function ChatScreen(props) {
                       image: chat.data.image
                     });
                     onShowPopUpChanged(true);
-                  }}  
-                  hyperLinkClicked={(url, text)=>{
-                    if(!tmpMultiSelect){
-                      if(findParams(url, "apn") && findParams(url, "link")){
+                  }}
+                  hyperLinkClicked={(url, text) => {
+                    if (!tmpMultiSelect) {
+                      if (findParams(url, "apn") && findParams(url, "link")) {
                         let link = decodeURIComponent(findParams(url, "link"));
                         console.log(findParams(link, "product_id"));
-                        if(findParams(link, "product_id")){
+                        if (findParams(link, "product_id")) {
                           let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                           props.navigation.navigate("HomeStoreList", {
                             url: apiUrl,
@@ -1945,11 +1945,11 @@ export default function ChatScreen(props) {
     index++;
   }
 
-  async function updateChats(chats){
+  async function updateChats(chats) {
     chats = chats.map((chat) => {
       chat.first = false;
 
-      if(selects.includes(chat.id)){
+      if (selects.includes(chat.id)) {
         chat.selected = true;
       }
       return chat;
@@ -1958,15 +1958,15 @@ export default function ChatScreen(props) {
     //remove duplicates
     // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
     let last = "";
-    for(let i=0; i<chats.length; i++){
+    for (let i = 0; i < chats.length; i++) {
       let chat = chats[i];
       let dates = chat.data.createdAt.split(":");
       let date = dates[0] + ":" + dates[1] + ":" + dates[2];
-      if(date != last){
+      if (date != last) {
         chats[i].first = true;
         last = date;
       }
-      
+
     }
     setChats(chats);
   }
@@ -2013,17 +2013,23 @@ export default function ChatScreen(props) {
         });
         console.log('ifBlockUser Block', isUserBlocked);
       }
-      if (tmpUsers.length == 1) {
-        let images = await request.post("user/images", {
-          users: tmpUsers,
-        });
-        setImages(images.data.images);
-      } else {
-        let images = await request.post("user/images", {
-          users: documentSnapshot.data().users,
-        });
-        setImages(images.data.images);
-      }
+
+      let images = await request.post("user/images", {
+        users: tmpUsers.length == 1 ? tmpUsers : documentSnapshot.data().users,
+      });
+      setImages(images.data.images);
+      //   setImages(images.data.images);
+      // if (tmpUsers.length == 1) {
+      //   let images = await request.post("user/images", {
+      //     users: tmpUsers,
+      //   });
+      //   setImages(images.data.images);
+      // } else {
+      //   let images = await request.post("user/images", {
+      //     users: documentSnapshot.data().users,
+      //   });
+      //   setImages(images.data.images);
+      // }
       if (documentSnapshot.data()["popup_addfriend_" + userId]) {
         alert.warning(Translate.t("please_add_friend"));
       }
@@ -2035,16 +2041,27 @@ export default function ChatScreen(props) {
       }
       totalMessageCount = documentSnapshot.data().totalMessage;
 
-      for (var i = 0; i < users.length; i++) {
-        totalMessageSeenCount = "totalMessageRead_" + users[i];
+      // for (var i = 0; i < users.length; i++) {
+      //   totalMessageSeenCount = "totalMessageRead_" + users[i];
+      //   seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
+      // }
+
+      users.map(user => {
+        totalMessageSeenCount = "totalMessageRead_" + user;
         seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
-      }
+      })
+
       smallestSeenCount = seenMessageCount[0];
-      for (var i = 1; i < seenMessageCount.length; i++) {
-        if (smallestSeenCount > seenMessageCount[i]) {
-          smallestSeenCount = seenMessageCount[i];
+      // for (var i = 1; i < seenMessageCount.length; i++) {
+      //   if (smallestSeenCount > seenMessageCount[i]) {
+      //     smallestSeenCount = seenMessageCount[i];
+      //   }
+      // }
+      seenMessageCount.map(msgCount => {
+        if (smallestSeenCount > msgCount) {
+          smallestSeenCount = msgCount;
         }
-      }
+      })
 
       previousMessageDateToday = null;
       previousMessageDateYesterday = null;
@@ -2065,7 +2082,7 @@ export default function ChatScreen(props) {
         .doc(groupID)
         .collection("messages")
         .orderBy("timeStamp", "asc");
-      
+
       // if(lastDoc){
       //   build = build.startAfter(lastDoc);
       //   chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
@@ -2150,10 +2167,10 @@ export default function ChatScreen(props) {
       //       processChat(chats);
       //     });
       // });
-      
-      if(old30LastDoc){
-        chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(old30LastDoc).get().then((querySnapShot)=>{
-          querySnapShot.forEach((snapShot) => {
+
+      if (old30LastDoc) {
+        chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(old30LastDoc).get().then((querySnapShot) => {
+          querySnapShot.docs.map((snapShot) => {
             let tmpChats = oldChats.filter((chat) => {
               return chat.id == snapShot.id;
             });
@@ -2216,8 +2233,8 @@ export default function ChatScreen(props) {
             }
           }
         })
-        .then(function () {});
-      });
+        .then(function () { });
+    });
 
     return function () {
       if (this?.unsub) {
@@ -2250,16 +2267,16 @@ export default function ChatScreen(props) {
     },
   ];
 
-  function renderItem(item){
+  function renderItem(item) {
     let chat = item["item"];
     let created = chat.data.createdAt;
-    try{
+    try {
       let tStamps = chat.data.timeStamp.toDate();
       created = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
-    } catch(e){
+    } catch (e) {
       console.log('ERROR', e);
     }
-    
+
     // let date = chat.data.createdAt.split(":");
     let date = created.split(":");
     let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
@@ -2388,12 +2405,12 @@ export default function ChatScreen(props) {
                   });
                   onShowPopUpChanged(true);
                 }}
-                hyperLinkClicked={(url, text)=>{
-                  if(!tmpMultiSelect){
-                    if(findParams(url, "apn") && findParams(url, "link")){
+                hyperLinkClicked={(url, text) => {
+                  if (!tmpMultiSelect) {
+                    if (findParams(url, "apn") && findParams(url, "link")) {
                       let link = decodeURIComponent(findParams(url, "link"));
                       console.log(findParams(link, "product_id"));
-                      if(findParams(link, "product_id")){
+                      if (findParams(link, "product_id")) {
                         let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                         props.navigation.navigate("HomeStoreList", {
                           url: apiUrl,
@@ -2525,12 +2542,12 @@ export default function ChatScreen(props) {
                   });
                   onShowPopUpChanged(true);
                 }}
-                hyperLinkClicked={(url, text)=>{
-                  if(!tmpMultiSelect){
-                    if(findParams(url, "apn") && findParams(url, "link")){
+                hyperLinkClicked={(url, text) => {
+                  if (!tmpMultiSelect) {
+                    if (findParams(url, "apn") && findParams(url, "link")) {
                       let link = decodeURIComponent(findParams(url, "link"));
                       console.log(findParams(link, "product_id"));
-                      if(findParams(link, "product_id")){
+                      if (findParams(link, "product_id")) {
                         let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                         props.navigation.navigate("HomeStoreList", {
                           url: apiUrl,
@@ -2574,12 +2591,12 @@ export default function ChatScreen(props) {
                   });
                   onShowPopUpChanged(true);
                 }}
-                hyperLinkClicked={(url, text)=>{
-                  if(!tmpMultiSelect){
-                    if(findParams(url, "apn") && findParams(url, "link")){
+                hyperLinkClicked={(url, text) => {
+                  if (!tmpMultiSelect) {
+                    if (findParams(url, "apn") && findParams(url, "link")) {
                       let link = decodeURIComponent(findParams(url, "link"));
                       console.log(findParams(link, "product_id"));
-                      if(findParams(link, "product_id")){
+                      if (findParams(link, "product_id")) {
                         let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                         props.navigation.navigate("HomeStoreList", {
                           url: apiUrl,
@@ -2742,12 +2759,12 @@ export default function ChatScreen(props) {
                   });
                   onShowPopUpChanged(true);
                 }}
-                hyperLinkClicked={(url, text)=>{
-                  if(!tmpMultiSelect){
-                    if(findParams(url, "apn") && findParams(url, "link")){
+                hyperLinkClicked={(url, text) => {
+                  if (!tmpMultiSelect) {
+                    if (findParams(url, "apn") && findParams(url, "link")) {
                       let link = decodeURIComponent(findParams(url, "link"));
                       console.log(findParams(link, "product_id"));
-                      if(findParams(link, "product_id")){
+                      if (findParams(link, "product_id")) {
                         let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                         props.navigation.navigate("HomeStoreList", {
                           url: apiUrl,
@@ -2791,6 +2808,43 @@ export default function ChatScreen(props) {
       previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
     }
   }
+
+  const onSendImage = (response) => {
+    if (response.uri) {
+      if (response.type.includes("image")) {
+        const reference = storage().ref(uuid.v4() + ".png");
+
+        let imagePath = Platform.select({
+          android: response.path,
+          ios: response.uri.replace("file://", "")
+        })
+
+        reference
+          .putFile(imagePath)
+          .then((response) => {
+            reference.getDownloadURL().then((url) => {
+              let createdAt = getTime();
+
+              chatsRef
+                .doc(groupID)
+                .collection("messages")
+                .add({
+                  userID: userId,
+                  createdAt: createdAt,
+                  message: "Photo",
+                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                  image: url,
+                })
+                .then(function () { });
+            });
+          })
+          .catch((error) => { });
+      } else {
+        alert.warning(Translate.t("image_allowed"))
+      }
+    }
+  }
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -2860,7 +2914,7 @@ export default function ChatScreen(props) {
             onContentSizeChange={() =>
               scrollViewReference.current.scrollToEnd({ animated: true })
             }
-            keyExtractor={chat=> groupID + "_chat_" + chat.id}>
+            keyExtractor={chat => groupID + "_chat_" + chat.id}>
           </FlatList>
         </LinearGradient>
         <Modal
@@ -2881,7 +2935,7 @@ export default function ChatScreen(props) {
                 >
                   <View>
                     <TouchableOpacity
-                      onPress={() => {Clipboard.setString(longPressObj.message); onShowPopUpChanged(false)}}
+                      onPress={() => { Clipboard.setString(longPressObj.message); onShowPopUpChanged(false) }}
                     >
                       <Text style={styles.popUpText}>
                         {Translate.t("copy")}
@@ -2916,19 +2970,19 @@ export default function ChatScreen(props) {
                           });
 
                         chats = chats.map((chat) => {
-                          if(chat.id == longPressObj.id){
+                          if (chat.id == longPressObj.id) {
                             chat.data["delete"] = update["delete"]
                           }
                           return chat;
                         })
                         oldChats = oldChats.map((chat) => {
-                          if(chat.id == longPressObj.id){
+                          if (chat.id == longPressObj.id) {
                             chat.data["delete"] = update["delete"]
                           }
                           return chat;
                         })
                         old30Chats = old30Chats.map((chat) => {
-                          if(chat.id == longPressObj.id){
+                          if (chat.id == longPressObj.id) {
                             chat.data["delete"] = update["delete"]
                           }
                           return chat;
@@ -2961,19 +3015,19 @@ export default function ChatScreen(props) {
                           });
 
                         chats = chats.map((chat) => {
-                          if(chat.id == longPressObj.id){
+                          if (chat.id == longPressObj.id) {
                             chat.data["delete_" + userId] = update["delete_" + userId]
                           }
                           return chat;
                         })
                         oldChats = oldChats.map((chat) => {
-                          if(chat.id == longPressObj.id){
+                          if (chat.id == longPressObj.id) {
                             chat.data["delete_" + userId] = update["delete_" + userId]
                           }
                           return chat;
                         })
                         old30Chats = old30Chats.map((chat) => {
-                          if(chat.id == longPressObj.id){
+                          if (chat.id == longPressObj.id) {
                             chat.data["delete_" + userId] = update["delete_" + userId]
                           }
                           return chat;
@@ -3049,28 +3103,56 @@ export default function ChatScreen(props) {
         {/* Bottom Area */}
 
         <FooterChat
-        inputBarPosition={inputBarPosition}
-        textInputHeight={textInputHeight}
-        shouldShow={shouldShow}
-        hideEmoji={hideEmoji}
-        onHide={() => {
+          inputBarPosition={inputBarPosition}
+          textInputHeight={textInputHeight}
+          shouldShow={shouldShow}
+          hideEmoji={hideEmoji}
+          onHide={() => {
             hideEmoji();
             setShouldShow(!shouldShow);
-        }}
+          }}
 
-        onContentSizeChange={() => {
+          onContentSizeChange={() => {
             scrollViewReference.current.scrollToEnd({
-                animated: true,
+              animated: true,
             })
-            }}
-        messages={messages}
-        onChangeText={(value) => setMessages(value)}
-        handleEmojiIconPressed={handleEmojiIconPressed}
-        shareContact={() =>
+          }}
+          messages={messages}
+          onChangeText={(value) => setMessages(value)}
+          handleEmojiIconPressed={handleEmojiIconPressed}
+          shareContact={() =>
             props.navigation.navigate("ContactShare", {
-                groupID: groupID,
+              groupID: groupID,
             })
+          }
+
+          onSendMsg={() => {
+            console.log('press', isUserBlocked);
+            if (!isUserBlocked) {
+              let tmpMessage = messages;
+              setMessages("");
+              let createdAt = getTime();
+              if (tmpMessage) {
+                let doc = db
+                  .collection("chat")
+                  .doc(groupID)
+                  .collection("messages")
+                  .doc();
+                doc
+                  .set({
+                    userID: userId,
+                    createdAt: createdAt,
+                    timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    message: tmpMessage,
+                  })
+                  .then((item) => { });
+              }
+            } else {
+              setMessages("");
             }
+          }}
+
+          onSendImage={onSendImage}
         />
 
       </KeyboardAvoidingView>
