@@ -44,10 +44,16 @@ import Format from "../lib/format";
 import firebase from "firebase/app";
 import { Notifications } from 'react-native-notifications'
 
+import PushNotificationIOS from "@react-native-community/push-notification-ios";
+import PushNotification from "react-native-push-notification";
+
 import { firebaseConfig } from "../../firebaseConfig.js";
 import { NavigationActions } from "react-navigation";
 import { hide } from "expo-splash-screen";
 import { EventRegister } from 'react-native-event-listeners'
+import notificationHelper from "../lib/notificationHelper";
+import navigationHelper from "../lib/navigationHelper";
+import imageHelper from "../lib/imageHelper";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -122,35 +128,35 @@ export default function Home(props) {
 
   async function updateShop() {
     AsyncStorage.getItem("user").then((url) => {
-        let urls = url.split("/");
-        urls = urls.filter((url) => {
-          return url;
-        });
-        userId = urls[urls.length - 1];
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      userId = urls[urls.length - 1];
 
-        db.collection("users")
-          .doc(userId)
-          .collection("carts")
-          .get()
-          .then((querySnapshot) => {
-              querySnapshot.forEach((documentSnapshot) => {
-                d_params.snapIds.forEach(param_id => {
-                      if (param_id == documentSnapshot.id) {
-                        db.collection("users")
-                          .doc(userId)
-                          .collection("carts")
-                          .doc(documentSnapshot.id)
-                          .delete()
-                          .then(() => {
-                            console.log('Deleted item from cart');
-                          });
-                      }
+      db.collection("users")
+        .doc(userId)
+        .collection("carts")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((documentSnapshot) => {
+            d_params.snapIds.forEach(param_id => {
+              if (param_id == documentSnapshot.id) {
+                db.collection("users")
+                  .doc(userId)
+                  .collection("carts")
+                  .doc(documentSnapshot.id)
+                  .delete()
+                  .then(() => {
+                    console.log('Deleted item from cart');
                   });
-              });
+              }
+            });
           });
+        });
 
-        // add seller for pushnotification
-        pushSeller(userId)
+      // add seller for pushnotification
+      pushSeller(userId)
 
     });
   }
@@ -185,13 +191,13 @@ export default function Home(props) {
             console.log("Document successfully deleted!");
           })
           .catch((error) => {
-              console.error("Error removing document: ", error);
+            console.error("Error removing document: ", error);
           });
       });
 
       db.collection("sellers")
         .add({
-            sellers: d_params.seller,
+          sellers: d_params.seller,
         })
         .then(() => {
           console.log("Seller Document successfully added!");
@@ -201,59 +207,96 @@ export default function Home(props) {
     }
     // update the cart again
     db.collection("users")
-        .doc(userId.toString())
-        .collection("carts")
-        .get()
-        .then((querySnapShot) => {
-            let totalItemQty = 0
-            querySnapShot.forEach(documentSnapshot => {
-              totalItemQty += parseInt(documentSnapshot.data().quantity)
-            });
-            onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
+      .doc(userId.toString())
+      .collection("carts")
+      .get()
+      .then((querySnapShot) => {
+        let totalItemQty = 0
+        querySnapShot.forEach(documentSnapshot => {
+          totalItemQty += parseInt(documentSnapshot.data().quantity)
         });
+        onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
+      });
+  }
+  // Must be outside of any component LifeCycle (such as `componentDidMount`).
+  PushNotification.configure({
+
+    // (required) Called when a remote is received or opened, or local notification is opened
+    onNotification: function (notification) {
+      console.log("NOTIFICATION:", notification);
+      processNoti(notification)
+      // process the notification
+      // alert.warning(notification.data.b)
+      // (required) Called when a remote is received or opened, or local notification is opened
+      notification.finish(PushNotificationIOS.FetchResult.NoData);
+    },
+
+    // (optional) Called when Registered Action is pressed and invokeApp is false, if true onNotification will be called (Android)
+    onAction: function (notification) {
+      // alert.warning(JSON.stringify(notification))
+      processNoti(notification)
+      // process the action
+    },
+
+    // IOS ONLY (optional): default: all - Permissions to register.
+    permissions: {
+      alert: true,
+      badge: true,
+      sound: true,
+    },
+
+    // Should the initial notification be popped automatically
+    // default: true
+    popInitialNotification: true,
+
+    /**
+     * (optional) default: true
+     * - Specified if permissions (ios) and token (android and ios) will requested or not,
+     * - if not, you must call PushNotificationsHandler.requestPermissions() later
+     * - if you are not using remote notification or do not have Firebase installed, use this:
+     *     requestPermissions: Platform.OS === 'ios'
+     */
+    requestPermissions: true,
+  });
+
+  const processNoti = (remoteMessage) => {
+    if (remoteMessage) {
+      console.log('remoteMessage', remoteMessage.data);
+      let groupID = remoteMessage.data.groupID;
+      let groupName = remoteMessage.data.groupName;
+      let groupType = remoteMessage.data.groupType;
+      props.navigation.navigate("ChatScreen", {
+        type: String(groupType),
+        groupID: String(groupID),
+        groupName: String(groupName),
+      });
+    }
   }
 
   React.useEffect(() => {
+
     messaging()
       .getInitialNotification()
-        .then((remoteMessage) => {
-          console.log('remoteMessage', 'getInitialNotification', remoteMessage);
-          if (remoteMessage) {
-            console.log('remoteMessage', remoteMessage.data);
-            let groupID = remoteMessage.data.groupID;
-            let groupName = remoteMessage.data.groupName;
-            let groupType = remoteMessage.data.groupType;
-            props.navigation.navigate("ChatScreen", {
-              type: String(groupType),
-              groupID: String(groupID),
-              groupName: String(groupName),
-            });
-          }
-        });
+      .then((remoteMessage) => {
+        // alert.warning('on init'+ JSON.stringify(remoteMessage))
+        console.log('remoteMessage', 'getInitialNotification', remoteMessage);
+        processNoti(remoteMessage)
+      });
 
     messaging()
       .onNotificationOpenedApp((remoteMessage) => {
         console.log('remoteMessage', 'onNotificationOpenedApp', remoteMessage);
-        if (remoteMessage) {
-          console.log('remoteMessage', remoteMessage.data);
-          let groupID = remoteMessage.data.groupID;
-          let groupName = remoteMessage.data.groupName;
-          let groupType = remoteMessage.data.groupType;
-          props.navigation.navigate("ChatScreen", {
-            type: String(groupType),
-            groupID: String(groupID),
-            groupName: String(groupName),
-          });
-        }
+        processNoti(remoteMessage)
       });
 
-      messaging()
-        .onMessage(({notification}) => {
-          Notifications.postLocalNotification({
-            title: notification.title,
-            body: notification.body
-          })
-        });
+    messaging()
+      .onMessage(({ notification,data }) => {
+        notificationHelper.sendLocalNotification({
+          title: notification.title,
+          body: notification.body,
+          data
+        })
+      });
 
     InteractionManager.runAfterInteractions(() => {
       AsyncStorage.getItem("product").then((product_id) => {
@@ -307,9 +350,9 @@ export default function Home(props) {
                     console.log("tokenID successfully written!");
                   })
                   .catch((error) => {
-                      console.error("Error writing tokenID: ", error);
+                    console.error("Error writing tokenID: ", error);
                   });
-                }
+              }
             });
         }
       })
@@ -352,6 +395,9 @@ export default function Home(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img?.image?.image)
+      })
       // console.log(
       //   product.productVarieties[0].productVarietySelections[0]
       //     .jancode_horizontal[0].jan_code
@@ -395,14 +441,19 @@ export default function Home(props) {
             });
           }}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
+            navigationHelper.gotoHomeStoreList({
+              props,
               url: product.url,
-            });
+              images
+            })
+            // props.navigation.navigate("HomeStoreList", {
+            //   url: product.url,
+            // });
           }}
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -418,9 +469,9 @@ export default function Home(props) {
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
               : Translate.t("shipping") +
-                " : " +
-                format.separator(product.shipping_fee) +
-                "円"
+              " : " +
+              format.separator(product.shipping_fee) +
+              "円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -440,14 +491,16 @@ export default function Home(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
 
+      images = images.map(img=>{
+        return imageHelper.getOriginalImage(img?.image?.image)
+      })
+
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
           product_id={product.id}
           onPress={() => {
-            props.navigation.navigate("HomeStoreList", {
-              url: product.url,
-            });
+            navigationHelper.gotoHomeStoreList({ props, url: product.url, images })
           }}
           onSellerNamePress={() => {
             // console.log("zz");
@@ -485,7 +538,7 @@ export default function Home(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -501,9 +554,9 @@ export default function Home(props) {
             product.shipping_fee == 0
               ? Translate.t("freeShipping")
               : Translate.t("shipping") +
-                " : " +
-                format.separator(product.shipping_fee) +
-                " 円"
+              " : " +
+              format.separator(product.shipping_fee) +
+              " 円"
           }
           addFavourite={(favorite) => {
             showFavoriteText(favorite);
@@ -583,9 +636,9 @@ export default function Home(props) {
             ) {
               alert.warning(
                 error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
               );
             }
           });
@@ -624,9 +677,9 @@ export default function Home(props) {
           ) {
             alert.warning(
               error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
             );
           }
         });
@@ -684,9 +737,9 @@ export default function Home(props) {
           ) {
             alert.warning(
               error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
             );
           }
         });
@@ -698,7 +751,7 @@ export default function Home(props) {
         console.log(response.data.users);
         AsyncStorage.setItem("chatuserlist", JSON.stringify(response.data.users)).then(
           () => {
-        });
+          });
       })
       .catch((error) => {
         if (
@@ -709,9 +762,9 @@ export default function Home(props) {
         ) {
           alert.warning(
             error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
           );
         }
       });
@@ -887,11 +940,11 @@ export default function Home(props) {
         <ScrollView style={styles.home_product_view}>
           {kinujoHtml.length > 0 ? (
             <TouchableWithoutFeedback>
-            <View style={styles.section_header}>
-              <Text style={styles.section_header_text}>
-                {"KINUJO official product"}
-              </Text>
-            </View>
+              <View style={styles.section_header}>
+                <Text style={styles.section_header_text}>
+                  {"KINUJO official product"}
+                </Text>
+              </View>
             </TouchableWithoutFeedback>
           ) : (
             <View></View>
@@ -909,11 +962,11 @@ export default function Home(props) {
             //   }
             // >
             <TouchableWithoutFeedback>
-            <View style={styles.section_header}>
-              <Text style={styles.section_header_text}>
-                {Translate.t("featuredProduct")}
-              </Text>
-            </View>
+              <View style={styles.section_header}>
+                <Text style={styles.section_header_text}>
+                  {Translate.t("featuredProduct")}
+                </Text>
+              </View>
             </TouchableWithoutFeedback>
           ) : (
             // </TouchableWithoutFeedback>
@@ -1005,3 +1058,4 @@ const styles = StyleSheet.create({
     paddingBottom: heightPercentageToDP("2%"),
   },
 });
+
