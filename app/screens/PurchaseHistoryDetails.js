@@ -76,6 +76,13 @@ export default function PurchaseHistoryDetails(props) {
       });
   }
 
+  function getProductImages(order) {
+    return order.product_jan_code.horizontal.product_variety.product
+      .productImages
+      ? order.product_jan_code.horizontal.product_variety.product.productImages
+      : order.product_jan_code.vertical.product_variety.product.productImages;
+  }
+
   function redirectToChat(orderID, orderName) {
     let groupID;
     let groupName;
@@ -161,13 +168,30 @@ export default function PurchaseHistoryDetails(props) {
       />
       <View>
         <View style={styles.productInformationContainer}>
-          <Image
+          {getProductImages(order).length > 0 ? (
+            <Image
+              style={{
+                height: RFValue(45),
+                width: RFValue(45),
+              }}
+              source={{ uri: getProductImages(order)[0].image.image }}
+            />
+          ) : (
+            <Image
+              style={{
+                height: RFValue(45),
+                width: RFValue(45),
+              }}
+              source={require("../assets/Images/cover_img.jpg")}
+            />
+          )}
+          {/* <Image
             style={{
               height: RFValue(45),
               width: RFValue(45),
             }}
             source={require("../assets/Images/cover_img.jpg")}
-          />
+          /> */}
           <View
             style={{
               marginLeft: widthPercentageToDP("3%"),
@@ -184,7 +208,7 @@ export default function PurchaseHistoryDetails(props) {
                 : ""}
             </Text>
             <Text style={styles.productInformationText}>
-              {order.unit_price} 円
+              {order.order.total_amount} 円
             </Text>
           </View>
         </View>
@@ -206,14 +230,14 @@ export default function PurchaseHistoryDetails(props) {
           </Text>
           <Text style={styles.productSourceText}>
             {order && order.order
-              ? kanjidate.format(
-                  "{Y:4}" +
-                    Translate.t("年") +
-                    "{M:2}" +
-                    Translate.t("月") +
-                    "{D:2}" +
-                    Translate.t("日") +
-                    " {h:2}:{M:2}",
+              ? kanjidate.format(kanjidate.f10,
+                  // "{Y:4}" +
+                  //   Translate.t("年") +
+                  //   "{M:2}" +
+                  //   Translate.t("月") +
+                  //   "{D:2}" +
+                  //   Translate.t("日") +
+                  //   " {h:2}:{M:2}",
                   new Date(order.order.created)
                 )
               : ""}
@@ -224,7 +248,7 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("orderNumber")}
           </Text>
           <Text style={styles.productSourceText}>
-            {order && order.order ? order.id : ""}
+            {order && order.order ? order.order.id : ""}
           </Text>
         </View>
         <TouchableWithoutFeedback

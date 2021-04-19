@@ -437,8 +437,8 @@ export default function ProfileInformation(props) {
               >
                 <DatePicker
                   title={date}
-                  placeholder={date}
-                  initialValue={new Date()}
+                  // placeholder={date}
+                  // initialValue={""}
                   style={{
                     borderWidth: 1,
                     width: widthPercentageToDP("30%"),

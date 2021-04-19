@@ -26,6 +26,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
+import NextArrow from "../assets/icons/nextArrow.svg";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -135,10 +136,7 @@ function processProductHtml(props, products, status) {
                 {product.store}
               </Text>
             </View>
-            <Image
-              style={styles.nextIcon}
-              source={require("../assets/Images/next.png")}
-            />
+            <NextArrow style={styles.nextIcon} />
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -333,6 +331,7 @@ export default function ExhibitedProductList(props) {
             props.navigation.navigate("ProductInformationAddNew", {
               type: "newProduct",
               is_store: props.route.params.is_store,
+              url: ""
             });
           }}
         >
@@ -359,10 +358,11 @@ export default function ExhibitedProductList(props) {
 
 const styles = StyleSheet.create({
   nextIcon: {
-    width: win.width / 40,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
+    right: widthPercentageToDP("1%"),
+    alignSelf: "center"
   },
   publishedProductText: {
     borderWidth: 1,
