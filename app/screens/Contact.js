@@ -154,7 +154,7 @@ export default function Contact(props) {
       .get();
 
     tmpName = "";
-    snapShot.forEach((docRef) => {
+    snapShot.docs.map((docRef) => {
       if (docRef.data().displayName && docRef.id == userID) {
         tmpName = docRef.data().displayName;
       }
@@ -172,11 +172,19 @@ export default function Contact(props) {
 
     setFriendCount(users.length);
     let tmpUserHtml = [];
-    for (let i = 0; i < users.length; i++) {
-      let user = users[i];
+
+    let getUserInfoPromise = users.map(async (user,index)=>{
       name = await getFriendName(user.id, user.nickname);
-      users[i].show_name = name;
-    }
+      user.show_name = name;
+    })
+
+    await Promise.all(getUserInfoPromise)
+    // for (let i = 0; i < users.length; i++) {
+    //   let user = users[i];
+    //   name = await getFriendName(user.id, user.nickname);
+    //   users[i].show_name = name;
+    // }
+
     users.sort((a, b) => {
       if (contactPinned[a.id] == undefined) contactPinned[a.id] = false;
       if (contactPinned[b.id] == undefined) contactPinned[b.id] = false;
