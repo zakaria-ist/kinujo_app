@@ -1,0 +1,123 @@
+import React from "react";
+import {
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    TouchableNativeFeedback,
+    Modal,
+} from "react-native";
+
+import {
+    widthPercentageToDP,
+    heightPercentageToDP,
+} from "react-native-responsive-screen";
+import Translate from "../../assets/Translates/Translate";
+import { Colors } from "../../assets/Colors";
+import { RFValue } from "react-native-responsive-fontsize";
+const ChatPopup = ({
+    showPopUp,
+    onCopy,
+    onFoward,
+    onCancel,
+    onAddToFav,
+    onMutiSelect
+}) => {
+
+    const cancelMsgAll = () => {
+        onCancel(true)
+    }
+
+    return React.useMemo(() => {
+        return <Modal
+            presentationStyle={"overFullScreen"}
+            visible={showPopUp}
+            transparent={true}
+        >
+            <TouchableNativeFeedback  >
+                <View style={{ flex: 1, backgroundColor: "transparent" }}>
+                    <View style={showPopUp == true ? styles.popUpView : styles.none}>
+                        <View
+                            style={styles.wrapItem}
+                        >
+                            <PopupItem
+                                onPress={onCopy}
+                                langKey='copy'
+                            />
+                            <PopupItem
+                                onPress={onFoward}
+                                langKey='forward'
+                            />
+                            <PopupItem
+                                onPress={onCancel}
+                                langKey='cancelOnlyMe'
+                            />
+                            <PopupItem
+                                onPress={cancelMsgAll}
+                                langKey='remove'
+                            />
+                            <PopupItem
+                                onPress={onAddToFav}
+                                langKey='addToFav'
+                            />
+                            <PopupItem
+                                onPress={onMutiSelect}
+                                langKey='multiSelect'
+                            />
+                        </View>
+                    </View>
+                </View>
+            </TouchableNativeFeedback>
+        </Modal>
+    }, [showPopUp])
+}
+
+
+const PopupItem = ({
+    onPress,
+    langKey
+}) => {
+    return <TouchableOpacity
+        onPress={onPress}
+    >
+        <Text style={styles.popUpText}>
+            {Translate.t(langKey)}
+        </Text>
+    </TouchableOpacity>
+}
+
+const styles = StyleSheet.create({
+    wrapItem: {
+        marginTop: heightPercentageToDP("1%"),
+        // paddingBottom: heightPercentageToDP("1.5%"),
+        flex: 1,
+        width: "100%",
+    },
+    none: {
+        display: "none",
+    },
+    popUpView: {
+        position: "absolute",
+        backgroundColor: "white",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1,
+        borderWidth: 1,
+        borderColor: Colors.D7CCA6,
+        marginHorizontal: widthPercentageToDP("15%"),
+        marginVertical: heightPercentageToDP("34%"),
+    },
+    popUpText: {
+        marginLeft: widthPercentageToDP("2%"),
+        fontSize: RFValue(12),
+        paddingBottom: heightPercentageToDP("2%"),
+    },
+    selected: {
+        backgroundColor: "#BBD8B3",
+    },
+    non_selected: {},
+});
+
+export default ChatPopup
