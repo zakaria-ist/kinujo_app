@@ -34,6 +34,13 @@ const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioSearchIcon = win.width / 19 / 19;
 const ratioNext = win.width / 38 / 8;
+import firebase from "firebase/app";
+import "firebase/firestore";
+import { firebaseConfig } from "../../firebaseConfig.js";
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
 export default function CustomerList(props) {
   const [customers, onCustomersChanged] = useStateIfMounted({});
@@ -41,6 +48,7 @@ export default function CustomerList(props) {
   const [search, onSearchChanged] = useStateIfMounted("");
   const [customerHtml, onCustomerHtmlChanged] = useStateIfMounted(<View></View>);
   const [user, onUserChanged] = useStateIfMounted({});
+  const [displayName, onDisplayNameChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
   function processCustomerHtml(props, customers, search = "") {
     let tmpCustomerHtml = [];
@@ -83,7 +91,7 @@ export default function CustomerList(props) {
             )}
 
             <Text style={styles.customerListName}>
-              {customer.real_name ? customer.real_name : customer.nickname}
+              {displayName[String(customer.id)] ? displayName[String(customer.id)] : customer.real_name ? customer.real_name : customer.nickname}
             </Text>
             <View
               style={{
@@ -149,7 +157,24 @@ export default function CustomerList(props) {
         request
           .get("customers/" + userId + "/")
           .then(function (response) {
-            console.log(response.data.customers);
+            let displayName = {};
+            
+            for (var i = 0; i < response.data.customers.length; i++) {
+              let customer = response.data.customers[i];
+              db
+                .collection("users")
+                .doc(String(userId))
+                .collection("customers")
+                .doc(String(customer.id))
+                .onSnapshot((documentSnapshot) => {
+                  if (documentSnapshot.data()) {
+                    displayName[String(customer.id)] = documentSnapshot.data().displayName;
+                  } else {
+                    displayName[String(customer.id)] = "";
+                  }
+                  onDisplayNameChanged(displayName);
+                })
+            }
             onCustomersChanged(response.data.customers);
             onCustomerHtmlChanged(
               processCustomerHtml(props, response.data.customers, "")

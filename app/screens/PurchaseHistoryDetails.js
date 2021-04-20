@@ -41,40 +41,44 @@ const ratioStoreIcon = win.width / 12 / 20;
 const ratioNext = win.width / 38 / 8;
 
 export default function PurchaseHistoryDetails(props) {
+  let initImage = props.route.params.image || [];
   const [order, onOrderChanged] = useStateIfMounted({});
   const [loaded, onLoaded] = useStateIfMounted(false);
-
-  if (!loaded) {
-    AsyncStorage.getItem("user").then(function (url) {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
+  // if (!loaded) {
+    React.useEffect(() => {
+      InteractionManager.runAfterInteractions(() => {
+        AsyncStorage.getItem("user").then(function (url) {
+          let urls = url.split("/");
+          urls = urls.filter((url) => {
+            return url;
+          });
+          userId = urls[urls.length - 1];
+        });
+        request
+          .get(props.route.params.url)
+          .then(function (response) {
+            onOrderChanged(response.data);
+            onLoaded(true);
+          })
+          .catch(function (error) {
+            onLoaded(true);
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
       });
-      userId = urls[urls.length - 1];
     });
-    request
-      .get(props.route.params.url)
-      .then(function (response) {
-        onOrderChanged(response.data);
-        onLoaded(true);
-      })
-      .catch(function (error) {
-        onLoaded(true);
-        if (
-          error &&
-          error.response &&
-          error.response.data &&
-          Object.keys(error.response.data).length > 0
-        ) {
-          alert.warning(
-            error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-          );
-        }
-      });
-  }
+  // }
 
   function getProductImages(order) {
     return order.product_jan_code.horizontal.product_variety.product
@@ -168,13 +172,13 @@ export default function PurchaseHistoryDetails(props) {
       />
       <View>
         <View style={styles.productInformationContainer}>
-          {getProductImages(order).length > 0 ? (
+          {initImage.length > 0 ? (
             <Image
               style={{
                 height: RFValue(45),
                 width: RFValue(45),
               }}
-              source={{ uri: getProductImages(order)[0].image.image }}
+              source={{ uri: initImage ? initImage : getProductImages(order)[0].image.image }}
             />
           ) : (
             <Image
@@ -208,7 +212,7 @@ export default function PurchaseHistoryDetails(props) {
                 : ""}
             </Text>
             <Text style={styles.productInformationText}>
-              {order.order.total_amount} 円
+              {order && order.order ? order.order.total_amount : 0} 円
             </Text>
           </View>
         </View>
@@ -293,7 +297,7 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("shippingStatus")}
           </Text>
           <Text
-            style={{ position: "absolute", right: 0, fontSize: RFValue(12) }}
+            style={{ position: "absolute", right: widthPercentageToDP("3%"), fontSize: RFValue(12) }}
           >
             {order && order.order ? (order.order.status == 1 ? Translate.t("shippingProcess") : Translate.t("shippingComplete")) : ""}
           </Text>
@@ -303,7 +307,7 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("cancel")}
           </Text>
           <Text
-            style={{ position: "absolute", right: 0, fontSize: RFValue(12) }}
+            style={{ position: "absolute", right: widthPercentageToDP("3%"), fontSize: RFValue(12) }}
           >
             {Translate.t("no")}
           </Text>
