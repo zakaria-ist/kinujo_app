@@ -22,6 +22,7 @@ import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
+import { Icon } from "react-native-elements";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -91,15 +92,21 @@ export default function CustomerInformation(props) {
   const [existsFlag, onExistsFlag] = useStateIfMounted(false);
   const [store, onStoreChanged] = useStateIfMounted(0);
   const [userLink, onUserLinkChanged] = useStateIfMounted("");
+  const [editDisplayName, onEditDisplayNameChanged] = useStateIfMounted(false);
+  const [displayName, onDisplayNameChanged] = useStateIfMounted("");
 
   React.useEffect(() => {
     setPopupQR(false);
+    onEditDisplayNameChanged(false);
   }, [!isFocused]);
 
   chatPersonID = user.id;
   groupName = user.real_name;
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if (!isFocused) {
+        onEditDisplayNameChanged(false);
+      }
       AsyncStorage.getItem("user").then(function (url) {
         let urls = url.split("/");
         urls = urls.filter((url) => {
@@ -107,63 +114,71 @@ export default function CustomerInformation(props) {
         });
         let userId = urls[urls.length - 1];
         onUserIdChanged(userId);
+        request
+          .get(props.route.params.url)
+          .then(function (response) {
+            onUserChanged(response.data);
+            let customerUrls = props.route.params.url.split("/");
+            customerUrls = customerUrls.filter((url) => {
+              return url;
+            });
+            let customerId = customerUrls[customerUrls.length - 1];
+            onCustomerIdChanged(customerId);
 
-        let customerUrls = props.route.params.url.split("/");
-        customerUrls = customerUrls.filter((url) => {
-          return url;
-        });
-        let customerId = customerUrls[customerUrls.length - 1];
-        onCustomerIdChanged(customerId);
 
+            buildLink(customerId, "1").then(function (link) {
+              onStoreLinkChanged(link);
+            });
+            buildLink(customerId, "0").then(function (link) {
+              onUserLinkChanged(link);
+            });
 
-        buildLink(customerId, "1").then(function (link) {
-          onStoreLinkChanged(link);
-        });
-        buildLink(customerId, "0").then(function (link) {
-          onUserLinkChanged(link);
-        });
-
-        const subscriber = db
-          .collection("users")
-          .doc(userId)
-          .collection("customers")
-          .doc(customerId)
-          .onSnapshot((documentSnapshot) => {
-            if (documentSnapshot.data()) {
-              onFirebaseUserChanged(documentSnapshot.data());
-              onMemoChanged(documentSnapshot.data().memo);
-            } else {
-              onFirebaseUserChanged({
-                memo: "",
-                displayName: "",
-                secret_mode: false,
-                block: false,
+            const subscriber = db
+              .collection("users")
+              .doc(userId)
+              .collection("customers")
+              .doc(customerId)
+              .onSnapshot((documentSnapshot) => {
+                if (documentSnapshot.data()) {
+                  onFirebaseUserChanged(documentSnapshot.data());
+                  onMemoChanged(documentSnapshot.data().memo);
+                  if (!documentSnapshot.data().displayName) {
+                    onDisplayNameChanged(
+                      response.data.nickname ? response.data.nickname : ""
+                    );
+                  } else {
+                    onDisplayNameChanged(documentSnapshot.data().displayName);
+                  }
+                } else {
+                  onDisplayNameChanged(
+                    response.data.nickname ? response.data.nickname : ""
+                  );
+                  onFirebaseUserChanged({
+                    memo: "",
+                    displayName: "",
+                    secret_mode: false,
+                    block: false,
+                  });
+                }
               });
+          })
+          .catch(function (error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
             }
           });
       });
-
-      request
-        .get(props.route.params.url)
-        .then(function (response) {
-          onUserChanged(response.data);
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-                "(" +
-                Object.keys(error.response.data)[0] +
-                ")"
-            );
-          }
-        });
-      });
+    });
   }, [isFocused]);
   const sendMessageHandler = () => {
     let groupID;
@@ -302,7 +317,7 @@ export default function CustomerInformation(props) {
 
       <View
         style={{
-          marginTop: heightPercentageToDP("-7%"),
+          marginTop: heightPercentageToDP("-5%"),
           width: widthPercentageToDP("100%"),
           left: 0,
         }}
@@ -338,20 +353,69 @@ export default function CustomerInformation(props) {
             >
               {user.word}
             </Text>
+          {editDisplayName == true ? (
             <View
               style={{
                 alignItems: "center",
                 position: "absolute",
                 bottom: 0,
                 flexDirection: "row",
+                marginTop: heightPercentageToDP("1%")
+              }}
+            >
+              <TextInput
+                value={displayName}
+                onChangeText={(value) => onDisplayNameChanged(value)}
+                style={styles.textInputEdit}
+              />
+              <Icon
+                reverse
+                name="check"
+                type="font-awesome"
+                size={RFValue("12")}
+                underlayColor="transparent"
+                color="transparent"
+                reverseColor="black"
+                onPress={() => {
+                  onEditDisplayNameChanged(false);
+                  db.collection("users")
+                    .doc(userId)
+                    .collection("customers")
+                    .doc(customerId)
+                    .set({
+                      secretMode: firebaseUser.secretMode
+                        ? firebaseUser.secretMode
+                        : false,
+                      blockMode: firebaseUser.blockMode
+                        ? firebaseUser.blockMode
+                        : false,
+                      displayName: displayName
+                        ? displayName
+                        : firebaseUser.displayName,
+                      memo: firebaseUser.memo
+                        ? firebaseUser.memo
+                        : "",
+                    });
+                }}
+              />
+              
+            </View>
+          ) : (
+            <View
+              style={{
+                alignItems: "center",
+                position: "absolute",
+                bottom: 0,
+                flexDirection: "row",
+                marginTop: heightPercentageToDP("1%")
               }}
             >
               <Text
                 style={{
-                  fontSize: RFValue(14),
+                  fontSize: RFValue(16),
                 }}
               >
-                {user.nickname}
+                {displayName}
               </Text>
               <Image
                 style={{
@@ -361,7 +425,18 @@ export default function CustomerInformation(props) {
                 }}
                 source={require("../assets/Images/profileEditingIcon.png")}
               />
+              <Icon
+                reverse
+                name="pencil"
+                type="font-awesome"
+                size={RFValue("14")}
+                underlayColor="transparent"
+                color="transparent"
+                reverseColor="black"
+                onPress={() => onEditDisplayNameChanged(true)}
+              />
             </View>
+            )}
           </View>
         </View>
         <Text
@@ -703,5 +778,15 @@ const styles = StyleSheet.create({
   },
   none: {
     display: "none",
+  },
+  textInputEdit: {
+    borderRadius: 10,
+    fontSize: RFValue(12),
+    borderWidth: 1,
+    borderColor: "black",
+    height: heightPercentageToDP("4%"),
+    width: widthPercentageToDP("40%"),
+    padding: 0,
+    paddingLeft: 10
   },
 });
