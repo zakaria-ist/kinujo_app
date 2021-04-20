@@ -174,7 +174,8 @@ export default function PurchaseHistory(props) {
                   lastOrderReceipt = {};
                   props.navigation.navigate("PurchaseHistoryDetails", {
                     url: order.url,
-                    order: order
+                    order: order,
+                    image: getProductImages(order)[0].image.image
                   });
                 }}
               >
@@ -304,7 +305,6 @@ export default function PurchaseHistory(props) {
     request
       .get("orderProducts/" + userId + "/")
       .then((response) => {
-        console.log('response.data.orderProducts', response.data.orderProducts);
         let tmpYears = [];
         response.data.orderProducts.map((order) => {
           let year = kanjidate.format("{Y:4}", new Date(order.created));
@@ -380,12 +380,12 @@ export default function PurchaseHistory(props) {
           });
       }
 
-      // if (!loaded) {
+      if (!loaded) {
         if (isFocused) {
           onSpinnerChanged(true);
         }
         loadOrder(userId, "all");
-      // }
+      }
     });
   }
 
