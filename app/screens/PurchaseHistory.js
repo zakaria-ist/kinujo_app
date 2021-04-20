@@ -16,6 +16,8 @@ import {
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
+import Spinner from "react-native-loading-spinner-overlay";
+import { useIsFocused } from "@react-navigation/native";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -48,6 +50,7 @@ const ratioSearch = win.width / 24 / 19;
 const ratioCancel = win.width / 25 / 15;
 let userId;
 export default function PurchaseHistory(props) {
+  const isFocused = useIsFocused();
   const [orders, onOrdersChanged] = useStateIfMounted({});
   const [orderHtml, onOrderHtmlChanged] = useStateIfMounted([]);
   const [user, onUserChanged] = useStateIfMounted({});
@@ -57,6 +60,7 @@ export default function PurchaseHistory(props) {
   const [years, onYearChanged] = useStateIfMounted(<View></View>);
   const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   function getProductImages(order) {
     return order.product_jan_code.horizontal.product_variety.product
       .productImages
@@ -99,21 +103,22 @@ export default function PurchaseHistory(props) {
                 marginTop: heightPercentageToDP("1.5%"),
               }}
             >
-              {kanjidate.format(
-                "{Y:4}" +
-                  Translate.t("年") +
-                  "{M:2}" +
-                  Translate.t("月") +
-                  "{D:2}" +
-                  Translate.t("日") +
-                  " ",
+              {kanjidate.format(kanjidate.f10,
+                // "{Y:4}" +
+                //   Translate.t("年") +
+                //   "{M:2}" +
+                //   Translate.t("月") +
+                //   "{D:2}" +
+                //   Translate.t("日") +
+                //   " ",
                 new Date(order.order.created)
               )}
-              (
+              {/* (
               {Translate.t(
                 kanjidate.format("{W:2}", new Date(order.order.created))
               )}
-              ){kanjidate.format(" {h:2}:{M:2}", new Date(order.order.created))}
+              ){kanjidate.format(" {h:2}:{M:2}", new Date(order.order.created))
+              } */}
             </Text>
             <View style={styles.purchaseHistoryProductContainer}>
               <View style={styles.productInformationContainer}>
@@ -149,7 +154,7 @@ export default function PurchaseHistory(props) {
                       : order.product_jan_code.vertical.product_variety.product
                           .name}
                   </Text>
-                  <Text>{format.separator(order.unit_price)} 円</Text>
+                  <Text>{format.separator(order.order.total_amount)} 円</Text>
                   {/* <Text>{format.separator(order.total_price)} 円</Text> */}
                 </View>
                 <View
@@ -169,6 +174,7 @@ export default function PurchaseHistory(props) {
                   lastOrderReceipt = {};
                   props.navigation.navigate("PurchaseHistoryDetails", {
                     url: order.url,
+                    order: order
                   });
                 }}
               >
@@ -298,6 +304,7 @@ export default function PurchaseHistory(props) {
     request
       .get("orderProducts/" + userId + "/")
       .then((response) => {
+        console.log('response.data.orderProducts', response.data.orderProducts);
         let tmpYears = [];
         response.data.orderProducts.map((order) => {
           let year = kanjidate.format("{Y:4}", new Date(order.created));
@@ -322,6 +329,7 @@ export default function PurchaseHistory(props) {
         onOrdersChanged(tmpOrderProducts);
         onYearHtmlChanged(processYearHtml(tmpYears));
         onOrderHtmlChanged(processOrderHtml(props, tmpOrderProducts, searchText, ""));
+        onSpinnerChanged(false);
         onLoaded(true);
       })
       .catch(function (error) {
@@ -372,9 +380,12 @@ export default function PurchaseHistory(props) {
           });
       }
 
-      if (!loaded) {
+      // if (!loaded) {
+        if (isFocused) {
+          onSpinnerChanged(true);
+        }
         loadOrder(userId, "all");
-      }
+      // }
     });
   }
 
@@ -397,6 +408,7 @@ export default function PurchaseHistory(props) {
                 duration: 500,
                 useNativeDriver: false,
               }).start();
+              onSpinnerChanged(true);
               loadOrder(userId, year);
             });
           }}
@@ -412,9 +424,19 @@ export default function PurchaseHistory(props) {
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if(!isFocused) {
+        onSpinnerChanged(false);
+      }
       load();
     });
-  }, []);
+  }, [isFocused]);
+
+  // React.useEffect(() => {
+  //   InteractionManager.runAfterInteractions(() => {
+  //     onSpinnerChanged(false);
+  //   });
+  // }, [!isFocused]);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <TouchableWithoutFeedback
@@ -442,6 +464,11 @@ export default function PurchaseHistory(props) {
             accountType={
               props.route.params.is_store ? Translate.t("storeAccount") : ""
             }
+          />
+          <Spinner
+            visible={spinner}
+            textContent={"Loading..."}
+            textStyle={styles.spinnerTextStyle}
           />
           <Animated.View
             style={{
@@ -574,6 +601,7 @@ export default function PurchaseHistory(props) {
                     duration: 500,
                     useNativeDriver: false,
                   }).start();
+                  onSpinnerChanged(true);
                   loadOrder(userId, "past_6_months");
                 });
               }}
@@ -785,5 +813,8 @@ const styles = StyleSheet.create({
   },
   dateTabText: {
     fontSize: RFValue(12),
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });

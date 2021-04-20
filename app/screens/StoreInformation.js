@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
+import postal_code from "japan-postal-code-oasis";
 import { Colors } from "../assets/Colors.js";
 import {
   widthPercentageToDP,
@@ -33,7 +34,12 @@ const alert = new CustomAlert();
 function updateUser(user, field, value) {
   if (!value) return;
   let obj = {};
-  obj[field] = value;
+  if (field == 'postal') {
+    obj["zipcode"] = value.zipcode;
+    obj["prefecture"] = value.prefecture;
+  } else {
+    obj[field] = value;
+  }
   request
     .patch(user.url, obj)
     .then(function (response) {})
@@ -77,6 +83,28 @@ export default function StoreInformation(props) {
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      postal_code.configure(
+        "https://kinujo.s3-ap-southeast-1.amazonaws.com/zip/"
+      );
+
+      request.get("prefectures/").then(function (response) {
+        let tmpPrefectures = response.data.map((prefecture) => {
+          return {
+            label: prefecture.name,
+            value: prefecture.url,
+          };
+        });
+        tmpPrefectures.push({
+          label: "Prefecture",
+          value: "",
+        });
+        onPrefecturesChanged(tmpPrefectures);
+      });
+    });
+  }, []);
+
+  React.useEffect(() => {
     if(!isFocused){
       onEditPasswordChanged(false);
       onEditPostalCodeChanged(false);
@@ -105,7 +133,7 @@ export default function StoreInformation(props) {
               onCorporateNameChanged(response.data.corporate_name);
               onRepresentativeNameChanged(response.data.representative_name);
               onPostalCodeChanged(response.data.zipcode);
-              onPrefectureChanged(response.data.prefecture_id);
+              onPrefectureChanged(response.data.prefecture);
               onAddress1Changed(response.data.address1);
               onAddress2Changed(response.data.address2);
             })
@@ -292,12 +320,34 @@ export default function StoreInformation(props) {
                 reverseColor="black"
                 onPress={() => {
                   onEditPostalCodeChanged(false);
-                  updateUser(user, "zipcode", postalCode);
+                  // updateUser(user, "zipcode", postalCode);
+                  let tmpPrefecture = prefecture;
+                  updateUser(user, "postal", {
+                    "zipcode" : postalCode,
+                    "prefecture" : tmpPrefecture
+                  });
                 }}
               />
               <TextInput
                 value={postalCode}
-                onChangeText={(value) => onPostalCodeChanged(value)}
+                keyboardType={"numeric"}
+                onChangeText={(value) => {
+                  onPostalCodeChanged(value);
+                  postal_code(value).then((address) => {
+                    console.log(address);
+                    if (address && address.prefecture) {
+                      let tmpPrefectures = prefectures.filter((prefecture) => {
+                        return prefecture.label == address.prefecture;
+                      });
+              
+                      if (tmpPrefectures.length > 0) {
+                        onPrefectureChanged(tmpPrefectures[0].value);
+                      }
+                      // onAddChanged(address.city + " " + address.area);
+                    }
+                  });
+                }
+                }
                 style={styles.textInput}
               />
             </View>
@@ -437,6 +487,7 @@ export default function StoreInformation(props) {
             onChangeItem={(item) => {
               if (item) {
                 onPrefectureChanged(item.value);
+                updateUser(user, "prefecture", item.value);
               }
             }}
           />
@@ -590,5 +641,6 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
+    paddingLeft: 10
   },
 });

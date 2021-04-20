@@ -148,18 +148,7 @@ export default function Home(props) {
                   .doc(documentSnapshot.id)
                   .delete()
                   .then(() => {
-                    db.collection("users")
-                      .doc(userId.toString())
-                      .collection("carts")
-                      .get()
-                      .then((querySnapShot) => {
-                        let totalItemQty = 0
-                        // onCartCountChanged(querySnapShot.size);
-                        querySnapShot.forEach(documentSnapshot => {
-                          totalItemQty += parseInt(documentSnapshot.data().quantity)
-                        });
-                        onCartCountChanged(querySnapShot.size ? totalItemQty : 0);
-                      });
+                    console.log('Deleted item from cart');
                   });
               }
             });
@@ -173,6 +162,19 @@ export default function Home(props) {
   }
 
   async function pushSeller(userId) {
+    // update cart
+    onCartCountChanged(0);
+    db.collection("users")
+        .doc(userId.toString())
+        .collection("carts")
+        .get()
+        .then((querySnap) => {
+          let totalItemQty = 0;
+          querySnap.forEach(documentSnap => {
+            totalItemQty += parseInt(documentSnap.data().quantity)
+          });
+          onCartCountChanged(totalItemQty);
+        });
     if (d_params.seller != '') {
       let sellerList = [];
       let oldsellers = await db.collection("sellers").get();
@@ -394,7 +396,7 @@ export default function Home(props) {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
       images = images.map(img=>{
-        return imageHelper.getOriginalImage(img.image.image)
+        return imageHelper.getOriginalImage(img?.image?.image)
       })
       // console.log(
       //   product.productVarieties[0].productVarietySelections[0]
@@ -459,8 +461,8 @@ export default function Home(props) {
           seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -490,7 +492,7 @@ export default function Home(props) {
       });
 
       images = images.map(img=>{
-        return imageHelper.getOriginalImage(img.image.image)
+        return imageHelper.getOriginalImage(img?.image?.image)
       })
 
       tmpKinujoHtml.push(
@@ -544,8 +546,8 @@ export default function Home(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -698,12 +700,23 @@ export default function Home(props) {
 
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
-            return (
-              product.is_opened == 1 &&
-              new Date() > date &&
-              product.is_hidden == 0 &&
-              product.is_draft == 0
-            );
+            if (user.is_seller) {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 2)
+              );
+            } else {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 1)
+              );
+            }
           });
 
           kinujoProducts = products.filter((product) => {
@@ -1045,3 +1058,4 @@ const styles = StyleSheet.create({
     paddingBottom: heightPercentageToDP("2%"),
   },
 });
+

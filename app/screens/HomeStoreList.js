@@ -29,6 +29,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
 import { useIsFocused } from "@react-navigation/native";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
+import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import SplashScreen from 'react-native-splash-screen'
 import {
   widthPercentageToDP,
@@ -96,6 +97,7 @@ export default function HomeStoreList(props) {
   const mOpacity = useRef(new Animated.Value(heightPercentageToDP("100%")))
     .current;
   const isFocused = useIsFocused();
+  let showVarientObj = {};
 
   async function share(productId) {
     let url = await AsyncStorage.getItem("user");
@@ -183,6 +185,11 @@ export default function HomeStoreList(props) {
       );
       return [];
     }
+    Object.keys(tmpJanCodes).map((key) => {
+      if (!(key in showVarientObj)) {
+        showVarientObj[key] = true;
+      }
+    })
     let tmpHtml = [];
     Object.keys(tmpJanCodes).map((key) => {
       tmpHtml.push(
@@ -193,19 +200,25 @@ export default function HomeStoreList(props) {
             borderBottomColor: Colors.C2A059,
           }}
         >
-          <TouchableWithoutFeedback>
+          <TouchableOpacity
+              onPress={() => {
+                showVarientObj[key] = !showVarientObj[key];
+                onPopupHtmlChanged(
+                  populatePopupHtml(props, tmpProduct, tmpJanCodes, selected)
+                );
+              }}>
             <View style={styles.variationTabs}>
               <Text style={styles.variationTabsText}>{key}</Text>
-              <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" />
+              {showVarientObj[key] ? <ArrowUpIcon style={styles.widget_icon} resizeMode="contain" /> : <ArrowDownIcon style={styles.widget_icon} resizeMode="contain" />}
             </View>
-          </TouchableWithoutFeedback>
-          {populatePopupList(
+          </TouchableOpacity>
+          {showVarientObj[key] ? populatePopupList(
             props,
             tmpProduct,
             tmpJanCodes[key],
             selected,
             key
-          )}
+          ) : <View></View>}
         </View>
       );
     });
@@ -733,8 +746,8 @@ export default function HomeStoreList(props) {
               <Text>
                 <Text style={styles.priceFont}>
                   {(user.is_seller && user.is_approved
-                    ? format.separator(taxObj ? (parseFloat(product.store_price) + parseInt(product.store_price * taxObj.tax_rate)) : product.store_price)
-                    : format.separator(taxObj ? (parseFloat(product.price) + parseInt(product.price * taxObj.tax_rate)) : product.price))}
+                    ? format.separator(taxObj ? (parseFloat(product.store_price) + parseFloat(product.store_price) * parseFloat(taxObj.tax_rate)) : product.store_price)
+                    : format.separator(taxObj ? (parseFloat(product.price) + parseFloat(product.price) * parseFloat(taxObj.tax_rate)) : product.price))}
                 </Text>
                 <Text style={styles.font_medium}>
                   {"円" +

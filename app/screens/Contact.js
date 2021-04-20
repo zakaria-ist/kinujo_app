@@ -149,7 +149,7 @@ export default function Contact(props) {
   async function getFriendName(userID, realName) {
     let snapShot = await db
       .collection("users")
-      .doc(String(user.id))
+      .doc(String(userId))
       .collection("customers")
       .get();
 
@@ -186,13 +186,16 @@ export default function Contact(props) {
     // }
 
     users.sort((a, b) => {
-      if (!contactPinned[a.id] && contactPinned[b.id]) {
-        return true;
-      }
-      if (contactPinned[a.id] && !contactPinned[b.id]) {
-        return false;
-      }
-      return a.show_name > b.show_name;
+      if (contactPinned[a.id] == undefined) contactPinned[a.id] = false;
+      if (contactPinned[b.id] == undefined) contactPinned[b.id] = false;
+      // if (!contactPinned[a.id] && contactPinned[b.id]) {
+      //   return true;
+      // }
+      // if (contactPinned[a.id] && !contactPinned[b.id]) {
+      //   return false;
+      // }
+      // return a.show_name > b.show_name;
+      return (contactPinned[a.id] === contactPinned[b.id])? 0 : contactPinned[a.id]? -1 : 1;
     });
 
     for (let i = 0; i < users.length; i++) {
@@ -453,8 +456,8 @@ export default function Contact(props) {
             let item = documentSnapshot.data();
             if (!item["delete"]) {
               ids.push(item.id);
-              contactPinned[item.id] = item["pinned"];
-              contactNotify[item.id] = item["notify"];
+              contactPinned[item.id] = item["pinned"] ? item["pinned"] : false;
+              contactNotify[item.id] = item["notify"] ? item["notify"] : false;
             }
 
             if (item["delete"]) {
@@ -909,7 +912,7 @@ export default function Contact(props) {
                   height: heightPercentageToDP("35%"),
                 }}
               >
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       contactPinned[longPressObj.data.id] = contactPinned[
@@ -917,12 +920,12 @@ export default function Contact(props) {
                       ]
                         ? false
                         : true;
+                      
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
                       });
-
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
                         .where("id", "==", String(longPressObj.data.id))
                         .get()
@@ -930,7 +933,7 @@ export default function Contact(props) {
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
                               db.collection("users")
-                                .doc(String(user.id))
+                                .doc(String(userId))
                                 .collection("friends")
                                 .doc(documentSnapshot.id)
                                 .set(
@@ -945,7 +948,7 @@ export default function Contact(props) {
                             });
                           } else {
                             db.collection("users")
-                              .doc(String(user.id))
+                              .doc(String(userId))
                               .collection("friends")
                               .add({
                                 id: String(longPressObj.data.id),
@@ -995,8 +998,8 @@ export default function Contact(props) {
                       "pinned_" + userId
                     ])) ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     // alert.warning("1" + longPressObj.data.data["notify"]);
                     if (longPressObj.type == "user") {
@@ -1089,20 +1092,20 @@ export default function Contact(props) {
                       ? "ON"
                       : "OFF"}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       db.collection("users")
-                        .doc(String(user.id))
+                        .doc(String(userId))
                         .collection("friends")
-                        .where("id", "==", String(longPressObj.id))
+                        .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
                               db.collection("users")
-                                .doc(String(user.id))
+                                .doc(String(userId))
                                 .collection("friends")
                                 .doc(documentSnapshot.id)
                                 .set(
@@ -1162,12 +1165,12 @@ export default function Contact(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("nonRepresent")}
                   </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
+                </TouchableOpacity>
+                <TouchableOpacity
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       globalUsers = globalUsers.filter((user) => {
-                        return user.id != longPressObj.data.id;
+                        return userId != longPressObj.data.id;
                       });
                       processUserHtml(props, globalUsers).then((html) => {
                         onUserHtmlChanged(html);
@@ -1242,9 +1245,9 @@ export default function Contact(props) {
                   <Text style={styles.longPressText}>
                     {Translate.t("remove")}
                   </Text>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
                 {longPressObj.type == "user" ? (
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPressIn={() => onShowChanged(false)}
                     onPress={() => {
                       AsyncStorage.setItem(
@@ -1263,10 +1266,10 @@ export default function Contact(props) {
                     <Text style={styles.longPressText}>
                       {Translate.t("groupChatCreate")}
                     </Text>
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 ) : null}
                 {longPressObj.type == "user" ? (
-                  <TouchableWithoutFeedback
+                  <TouchableOpacity
                     onPressIn={() => onShowChanged(false)}
                     onPress={() => {
                       AsyncStorage.setItem(
@@ -1285,7 +1288,7 @@ export default function Contact(props) {
                     <Text style={styles.longPressText}>
                       {Translate.t("createFolder")}
                     </Text>
-                  </TouchableWithoutFeedback>
+                  </TouchableOpacity>
                 ) : null}
               </View>
             </View>

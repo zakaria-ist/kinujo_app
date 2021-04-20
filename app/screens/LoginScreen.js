@@ -73,7 +73,7 @@ function findParams(data, param) {
         }
       }
     }
-    
+
   }
   return "";
 }
@@ -120,7 +120,7 @@ async function performUrl(props, link) {
   if (store && store != "" && store != "0" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 1});
-  } else {
+  } else if(store && store != "" && store == "0") {
     // props.navigation.navigate("RegistrationGeneral", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 0});
   }
@@ -378,6 +378,7 @@ export default function LoginScreen(props) {
               placeholder={Translate.t("phoneNumber")}
               placeholderTextColor={Colors.D7CCA6}
               style={styles.携帯電話番号}
+              keyboardType={"numeric"}
             ></TextInput>
           </View>
           <TextInput
@@ -404,7 +405,7 @@ export default function LoginScreen(props) {
                   })
                   .then(function (response) {
                     onPasswordChanged("");
-                    onPhoneChanged("");
+                    //onPhoneChanged("");
                     response = response.data;
                     console.log(response);
                     if (response.success) {

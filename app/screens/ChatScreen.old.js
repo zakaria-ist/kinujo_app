@@ -81,6 +81,7 @@ const request = new Request();
 let userId;
 let groupID;
 let groupName;
+let favData;
 let userTotalReadMessageField;
 let totalMessageCount = 0;
 let tmpChatHtml = [];
@@ -136,6 +137,7 @@ function getTime() {
     year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds
   );
 }
+let favIndex = -1;
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = useStateIfMounted(false);
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
@@ -163,6 +165,8 @@ export default function ChatScreen(props) {
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
   groupType = props.route.params.type;
+  favData = props.route.params.favData;
+  console.log('favData', favData);
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
   const insets = useSafeAreaInsets();
@@ -1954,6 +1958,17 @@ export default function ChatScreen(props) {
       return chat;
     });
 
+    if (favData) {
+      for(let i=0; i<chats.length; i++){
+        let chat = chats[i];
+         if (favData.createdAt == chat.data.createdAt && favData.message == chat.data.message) {
+          favIndex = i;
+          console.log('favIndex', favIndex);
+         }
+      }
+    }
+
+
     //remove duplicates
     // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
     let last = "";
@@ -2801,7 +2816,8 @@ export default function ChatScreen(props) {
       {!multiSelect ? (
         <CustomHeader
           text={Translate.t("chat")}
-          onBack={() => props.navigation.goBack()}
+          // onBack={() => props.navigation.goBack()}
+          onBack={() => props.navigation.navigate("ChatList")}
           images={images}
           name={name} userUrl={userUrl}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -2813,6 +2829,9 @@ export default function ChatScreen(props) {
             if (selects.length > 0) {
               props.navigation.navigate("ChatListForward", {
                 messages: selects,
+                groupID: groupID,
+                groupName: groupName,
+                gorupType: groupType ? groupType : "",
               });
             }
           }}
@@ -2859,6 +2878,23 @@ export default function ChatScreen(props) {
             onContentSizeChange={() =>
               scrollViewReference.current.scrollToEnd({ animated: true })
             }
+            onScrollToIndexFailed={(error) => {
+              scrollViewReference.current.scrollToOffset({ offset: error.averageItemLength * error.index, animated: true });
+              setTimeout(() => {
+                if (newChats.length !== 0 && scrollViewReference.current !== null) {
+                  scrollViewReference.current.scrollToIndex({ index: error.index, animated: true });
+                }
+              }, 100);
+            }}
+            onEndReached={() => {
+              if (favIndex != undefined && favIndex != null && favIndex != -1) {
+                setTimeout(() => {
+                  if (scrollViewReference) {
+                    scrollViewReference.current.scrollToIndex({ animated: true, index: favIndex });
+                  }
+                }, 300);
+              }
+            }}
             keyExtractor={chat=> groupID + "_chat_" + chat.id}>
           </FlatList>
         </LinearGradient>
@@ -2866,8 +2902,11 @@ export default function ChatScreen(props) {
           presentationStyle={"overFullScreen"}
           visible={showPopUp}
           transparent={true}
+          animationType="fade"
         >
-          <TouchableNativeFeedback  >
+          <TouchableNativeFeedback onPress={() => {
+            onShowPopUpChanged(false);
+          }} >
             <View style={{ flex: 1, backgroundColor: "transparent" }}>
               <View style={showPopUp == true ? styles.popUpView : styles.none}>
                 <View
@@ -2880,7 +2919,7 @@ export default function ChatScreen(props) {
                 >
                   <View>
                     <TouchableOpacity
-                      onPress={() => {Clipboard.setString(longPressObj.message); onShowPopUpChanged(false)}}
+                      onPress={() => {Clipboard.setString(longPressObj.message); onShowPopUpChanged(false);}}
                     >
                       <Text style={styles.popUpText}>
                         {Translate.t("copy")}
@@ -2892,7 +2931,10 @@ export default function ChatScreen(props) {
                           message: longPressObj.message,
                           contactID: longPressObj.contactID,
                           contactName: longPressObj.contactName,
-                          image: longPressObj.image
+                          image: longPressObj.image,
+                          groupID: groupID,
+                          groupName: groupName,
+                          gorupType: groupType ? groupType : "",
                         })
                       }
                     >
@@ -2990,17 +3032,35 @@ export default function ChatScreen(props) {
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => {
-                        let update = {};
-                        update["favourite_" + userId] = true;
-                        db.collection("chat")
-                          .doc(groupID)
-                          .set(update, {
-                            merge: true,
-                          })
-                          .then(() => {
-                            onShowPopUpChanged(false);
-                            alert.warning(Translate.t("chat_favourite_added"));
-                          });
+                        // let update = {};
+                        // update["favourite_" + userId] = true;
+                        // db.collection("chat")
+                        //   .doc(groupID)
+                        //   .set(update, {
+                        //     merge: true,
+                        //   })
+                        //   .then(() => {
+                        //     onShowPopUpChanged(false);
+                        //     alert.warning(Translate.t("chat_favourite_added"));
+                        //   });
+
+                          db.collection("users")
+                            .doc(userId)
+                            .collection("favouriteMessages")
+                            .doc(String(longPressObj.id))
+                            .set({
+                              createdAt: longPressObj.data.createdAt,
+                              message: longPressObj.message,
+                              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                              groupID: groupID,
+                              groupName: groupName,
+                              gorupType: groupType ? groupType : "",
+                              senderId: String(longPressObj.data.userID)
+                            })
+                            .then(() => {
+                              onShowPopUpChanged(false);
+                              alert.warning(Translate.t("msg_favourite_added"));
+                            });
 
                         // db.collection("users")
                         //   .doc(userId)
@@ -3064,7 +3124,7 @@ export default function ChatScreen(props) {
             }}
           >
             <View style={styles.input_bar_file}>
-              <TouchableNativeFeedback
+              <TouchableOpacity
                 onPress={() => {
                   hideEmoji();
                   setShouldShow(!shouldShow);
@@ -3085,7 +3145,7 @@ export default function ChatScreen(props) {
                     }}
                   />
                 )}
-              </TouchableNativeFeedback>
+              </TouchableOpacity>
             </View>
             <View style={styles.input_bar_text}>
               <View style={styles.input_bar_text_border}>
@@ -3175,7 +3235,8 @@ export default function ChatScreen(props) {
               onPress={() => {
                 const options = {
                   noData: true,
-                  mediaType: "photo"
+                  mediaType: "photo",
+                  allowsEditing: true
                 };
                 ImagePicker.launchCamera(options, (response) => {
                   if (response.uri) {
@@ -3243,7 +3304,8 @@ export default function ChatScreen(props) {
             <TouchableNativeFeedback
               onPress={() => {
                 const options = {
-                  mediaType: "photo"
+                  mediaType: "photo",
+                  allowsEditing: true
                 };
                 ImagePicker.launchImageLibrary(options, (response) => {
                   if (response.uri) {
@@ -3252,10 +3314,10 @@ export default function ChatScreen(props) {
                       onSpinnerChanged(true);
                       if (Platform.OS === "android") {
                         RNFetchBlob.fs.stat(response.uri).then((stat) => {
-                          console.log(stat);
+                          console.log('stat', stat);
                           reference
                             .putFile(stat.path)
-                            .then((response) => {
+                            .then((responses) => {
                               reference.getDownloadURL().then((url) => {
                                 let createdAt = getTime();
   

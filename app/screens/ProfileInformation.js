@@ -96,7 +96,14 @@ export default function ProfileInformation(props) {
       onEditBirthdayChanged(false);
     }
     let obj = {};
-    obj[field] = value;
+    if (field == 'postal') {
+      obj["zipcode"] = value.zipcode;
+      obj["prefecture"] = value.prefecture;
+    } else {
+      obj[field] = value;
+    }
+    
+    console.log(obj);
     request
       .patch(user.url, overrideObj ? overrideObj : obj)
       .then(function (response) {
@@ -104,6 +111,7 @@ export default function ProfileInformation(props) {
           request
             .get(url)
             .then(function (response) {
+              console.log('response', response.data);
               onUserChanged(response.data);
               onNameChanged(response.data.real_name);
               onNicknameChanged(response.data.nickname);
@@ -429,8 +437,8 @@ export default function ProfileInformation(props) {
               >
                 <DatePicker
                   title={date}
-                  placeholder={date}
-                  initialValue={new Date()}
+                  // placeholder={date}
+                  // initialValue={""}
                   style={{
                     borderWidth: 1,
                     width: widthPercentageToDP("30%"),
@@ -518,7 +526,7 @@ export default function ProfileInformation(props) {
                     onEditPostalCodeChanged(false);
                     console.log(postalCode)
                     let tmpPrefecture = prefecture;
-                    updateUser(user, "", {
+                    updateUser(user, "postal", {
                       "zipcode" : postalCode,
                       "prefecture" : tmpPrefecture
                     });
@@ -526,6 +534,7 @@ export default function ProfileInformation(props) {
                 />
                 <TextInput
                   value={postalCode}
+                  keyboardType={"numeric"}
                   onChangeText={(value) => {
                     onPostalCodeChanged(value);
                     postal_code(value).then((address) => {
@@ -684,6 +693,7 @@ export default function ProfileInformation(props) {
               onChangeItem={(item) => {
                 if (item) {
                   onPrefectureChanged(item.value);
+                  updateUser(user, "prefecture", item.value);
                 }
               }}
             />
@@ -878,6 +888,7 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
     alignSelf: "center",
+    paddingLeft: 10
   },
 
   dropDown: {

@@ -93,6 +93,7 @@ export default function HomeByCategory(props) {
   function processFeaturedProductHtml(featuredProducts) {
     let tmpFeaturedHtml = [];
     let featuredProductCount = 0;
+    let idx = 0;
     featuredProducts.map((product) => {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
@@ -101,7 +102,6 @@ export default function HomeByCategory(props) {
       images = images.map(img=>{
         return imageHelper.getOriginalImage(img.image.image)
       })
-
       if (!sellers.includes(product.user.id)) {
         sellers.push(product.user.id);
       }
@@ -116,10 +116,10 @@ export default function HomeByCategory(props) {
               images
             })
           }}
-          idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -127,8 +127,8 @@ export default function HomeByCategory(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -153,6 +153,7 @@ export default function HomeByCategory(props) {
   function processKinujoProductHtml(kinujoProducts) {
     let tmpKinujoHtml = [];
     let officialProductCount = 0;
+    let idx = 0;
     kinujoProducts.map((product) => {
       if (!sellers.includes(product.user.id)) {
         sellers.push(product.user.id);
@@ -160,11 +161,9 @@ export default function HomeByCategory(props) {
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
-
       images = images.map(img=>{
         return imageHelper.getOriginalImage(img.image.image)
       })
-      
       tmpKinujoHtml.push(
         <HomeProducts
           key={product.id}
@@ -176,10 +175,10 @@ export default function HomeByCategory(props) {
               images
             })
           }}
-          idx={product.id}
+          idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -188,8 +187,8 @@ export default function HomeByCategory(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
+              : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -319,12 +318,23 @@ export default function HomeByCategory(props) {
 
         products = products.filter((product) => {
           let date = new Date(product.is_opened);
-          return (
-            product.is_opened == 1 &&
-            new Date() > date &&
-            product.is_hidden == 0 &&
-            product.is_draft == 0
-          );
+          if (user.is_seller) {
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0 &&
+              (product.target == 0 || product.target == 2)
+            );
+          } else {
+            return (
+              product.is_opened == 1 &&
+              new Date() > date &&
+              product.is_hidden == 0 &&
+              product.is_draft == 0 &&
+              (product.target == 0 || product.target == 1)
+            );
+          }
         });
 
         kinujoProducts = products.filter((product) => {
@@ -364,7 +374,8 @@ export default function HomeByCategory(props) {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
           onPress={() =>
-            filterProductsByCateogry(categories, category.id, category.name)
+            {console.log(category.id, category.name);
+            filterProductsByCateogry(categories, category.id, category.name)}
           }
         >
           <View style={styles.categoryContainer} key={category.id}>
@@ -469,12 +480,23 @@ export default function HomeByCategory(props) {
 
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
-            return (
-              product.is_opened == 1 &&
-              new Date() > date &&
-              product.is_hidden == 0 &&
-              product.is_draft == 0
-            );
+            if (user.is_seller) {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 2)
+              );
+            } else {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 1)
+              );
+            }
           });
 
           kinujoProducts = products.filter((product) => {
@@ -555,7 +577,7 @@ export default function HomeByCategory(props) {
     <TouchableWithoutFeedback onPress={() => hideAll()}>
       <SafeAreaView>
         <CustomHeader
-          text="Product List"
+          text={Translate.t("productList")}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
           onPress={() => {
             props.navigation.navigate("Cart");
@@ -726,7 +748,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "latestFirst" ? "orange" : "white",
               }}
             >
-              <Text>Latest First</Text>
+              <Text>{Translate.t("latestFirst")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -741,7 +763,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "LowToHigh" ? "orange" : "white",
               }}
             >
-              <Text>Price Low to High</Text>
+              <Text>{Translate.t("priceLowToHigh")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -756,7 +778,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "HighToLow" ? "orange" : "white",
               }}
             >
-              <Text>Price High to Low</Text>
+              <Text>{Translate.t("priceHighToLow")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -771,7 +793,7 @@ export default function HomeByCategory(props) {
                 backgroundColor: selected == "Popular" ? "orange" : "white",
               }}
             >
-              <Text>Popular</Text>
+              <Text>{Translate.t("popular")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <View
@@ -783,7 +805,7 @@ export default function HomeByCategory(props) {
               // marginTop: heightPercentageToDP("10%"),
               bottom: heightPercentageToDP("3%"),
               right: 0,
-              marginTop: heightPercentageToDP("60%"),
+              marginTop: heightPercentageToDP("50%"),
               // right: widthPercentageToDP("3%"),
               // backgroundColor: "orange",
             }}
@@ -801,7 +823,7 @@ export default function HomeByCategory(props) {
                   paddingHorizontal: widthPercentageToDP("2%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>{"Reset"}</Text>
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={() => hideSortingAimation()}>
@@ -818,7 +840,7 @@ export default function HomeByCategory(props) {
                   paddingHorizontal: widthPercentageToDP("2%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
               </View>
             </TouchableWithoutFeedback>
           </View>

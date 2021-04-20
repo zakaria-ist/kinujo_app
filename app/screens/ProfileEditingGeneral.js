@@ -30,6 +30,7 @@ var uuid = require("react-native-uuid");
 import Translate from "../assets/Translates/Translate";
 import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
+import NextArrow from "../assets/icons/nextArrow.svg";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -993,10 +994,7 @@ export default function ProfileEditingGeneral(props) {
                 >
                   {Translate.t("allIdentityInfo")}
                 </Text>
-                <Image
-                  style={styles.nextIcon}
-                  source={require("../assets/Images/next.png")}
-                />
+                <NextArrow style={styles.nextIcon} />
               </View>
             </View>
           </TouchableWithoutFeedback>
@@ -1006,10 +1004,10 @@ export default function ProfileEditingGeneral(props) {
             </Text>
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
-              thumbColor={addingFriendsByID == 0 ? Colors.D7CCA6 : Colors.grey}
+              thumbColor={addingFriendsByID == 1 ? Colors.D7CCA6 : Colors.grey}
               style={styles.switch}
               onValueChange={(value) => {
-                onAddingFriendsByIDChanged(!value);
+                onAddingFriendsByIDChanged(value);
                 request
                   .patch(user.url, {
                     allowed_by_id: value ? 1 : 0,
@@ -1033,7 +1031,7 @@ export default function ProfileEditingGeneral(props) {
                     }
                   });
               }}
-              value={!addingFriendsByID}
+              value={addingFriendsByID}
             />
           </View>
           {/* <View style={styles.tabContainer}>
@@ -1043,13 +1041,13 @@ export default function ProfileEditingGeneral(props) {
             <Switch
               trackColor={{ true: Colors.F0EEE9, false: Colors.DCDCDC }}
               thumbColor={
-                allowAddingFriendsByPhoneNumber == 0
+                allowAddingFriendsByPhoneNumber == 1
                   ? Colors.D7CCA6
                   : Colors.grey
               }
               style={styles.switch}
               onValueChange={(value) => {
-                onAllowAddingFriendsByPhoneNumber(!value);
+                onAllowAddingFriendsByPhoneNumber(value);
                 request
                   .patch(user.url, {
                     allowed_by_tel: value ? 1 : 0,
@@ -1073,7 +1071,7 @@ export default function ProfileEditingGeneral(props) {
                     }
                   });
               }}
-              value={!allowAddingFriendsByPhoneNumber}
+              value={allowAddingFriendsByPhoneNumber}
             />
           </View> */}
         </View>
@@ -1112,11 +1110,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.F0EEE9,
   },
   nextIcon: {
-    width: win.width / 38,
-    height: 15 * ratioNext,
+    width: RFValue(15),
+    height: RFValue(15),
     position: "absolute",
-    right: 0,
-    alignSelf: "center",
+    right: widthPercentageToDP("1%"),
+    alignSelf: "center"
   },
   textInContainerRight: {
     position: "absolute",
@@ -1147,7 +1145,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     height: heightPercentageToDP("6%"),
-    width: widthPercentageToDP("40%"),
+    width: widthPercentageToDP("60%"),
   },
   contactTabContainer: {
     flexDirection: "row",

@@ -135,7 +135,7 @@ export default function SellerProductList(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
@@ -143,8 +143,8 @@ export default function SellerProductList(props) {
           seller={product.user.shop_name}
           price={
             (user.is_seller && user.is_approved
-              ? format.separator(product.store_price + (product.store_price * taxRate))
-              : format.separator(product.price + (product.price * taxRate))) + " 円"
+              ? format.separator(parseInt(product.store_price) + parseInt(parseFloat(product.store_price) * taxRate))
+              : format.separator(parseInt(product.price) + parseInt(parseFloat(product.price) * taxRate))) + " 円"
           }
           category={product.category.name}
           shipping={
@@ -362,7 +362,6 @@ export default function SellerProductList(props) {
         .get("simple_products/")
         .then(function (response) {
           let products = response.data;
-          // console.log(products)
           products = products.sort((p1, p2) => {
             if (p1.created > p2.created) {
               return -1;
@@ -372,12 +371,23 @@ export default function SellerProductList(props) {
 
           products = products.filter((product) => {
             let date = new Date(product.is_opened);
-            return (
-              product.is_opened == 1 &&
-              new Date() > date &&
-              product.is_hidden == 0 &&
-              product.is_draft == 0
-            );
+            if (user.is_seller) {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 2)
+              );
+            } else {
+              return (
+                product.is_opened == 1 &&
+                new Date() > date &&
+                product.is_hidden == 0 &&
+                product.is_draft == 0 &&
+                (product.target == 0 || product.target == 1)
+              );
+            }
           });
 
           featuredProducts = products.filter((product) => {

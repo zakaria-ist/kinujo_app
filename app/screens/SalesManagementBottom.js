@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
+import Spinner from "react-native-loading-spinner-overlay";
 import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
@@ -31,61 +32,122 @@ import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Format from "../lib/format";
 import Moment from "moment";
+import { indexOf } from "lodash";
 const format = new Format();
 var kanjidate = require("kanjidate");
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
+let userID;
+let isMaster = 0;
+let year = new Date().getFullYear();
+let month = new Date().getMonth() + 1;
+let day = new Date().getDate();
+let commissionProducts = [];
+let userSales = [];
+let userCommissions = [];
+let taxRate = 0;
+let reducedTaxRate = 0;
 
-function processSaleHtml(sales) {
+function processSaleHtml(orders, sales, tmpCommissionProducts) {
   let tmpSaleHtml = [];
-  for (var i = 0; i < sales.length; i++) {
-    let sale = sales[i];
-    tmpSaleHtml.push(
-      <TouchableWithoutFeedback key={i}>
-        <View style={styles.commissionTabContainer}>
-          <Text style={styles.commissionTabText}>
-            {kanjidate.format(
-              "{Y:4}/{M:2}/{D:2}",
-              new Date(sale.order_product.order.created)
-            )}
-          </Text>
-          <View
-            style={{
-              width: widthPercentageToDP("36%"),
-              // position: "absolute",
-              left: 0,
-              marginLeft: widthPercentageToDP("3%"),
-              // paddingBottom: heightPercentageToDP("2%"),
-            }}
-          >
+  for (var i = 0; i < orders.length; i++) {
+    let sale = sales.filter((salee) => {
+      return (salee.order_product.order.id == orders[i]);
+    });
+    if (sale.length) {
+      sale = sale[0];
+      let ttlCommission = 0;
+      tmpCommissionProducts.map((tmpCommission) => {
+        if (tmpCommission.order_product.order.id == orders[i]) {
+          ttlCommission += tmpCommission.is_food 
+              ? parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * reducedTaxRate)
+              : parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * taxRate)
+        }
+      })
+      tmpSaleHtml.push(
+        <TouchableWithoutFeedback key={i}>
+          <View style={styles.commissionTabContainer}>
             <Text style={styles.commissionTabText}>
-              {sale.order_product.product_jan_code.horizontal
-                ? sale.order_product.product_jan_code.horizontal.product_variety.product.name
-                : sale.order_product.product_jan_code.vertical.product_variety.product.name}
+              {kanjidate.format(
+                "{Y:4}/{M:2}/{D:2}",
+                new Date(sale.order_product.order.created)
+              )}
+            </Text>
+            <View
+              style={{
+                width: widthPercentageToDP("17%"),
+                // position: "absolute",
+                left: 0,
+                marginLeft: widthPercentageToDP("2%"),
+                // paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Text style={styles.commissionTabText}>
+                {sale.order_product.product_jan_code.horizontal
+                  ? sale.order_product.product_jan_code.horizontal.product_variety.product.name
+                  : sale.order_product.product_jan_code.vertical.product_variety.product.name}
+              </Text>
+            </View>
+            <View
+              style={{
+                // width: widthPercentageToDP("17%"),
+                position: "absolute",
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+                marginRight: widthPercentageToDP("33%"),
+              }}
+            >
+              <Text style={{
+                  fontSize: RFValue(11),
+                  right: 0,
+                }}
+              >
+                {format.separator(parseInt(sale.order_product.order.amount) + parseInt(sale.order_product.order.tax))}円
+              </Text>
+              <Text style={{
+                  fontSize: RFValue(11),
+                  right: 0,
+                }}>
+                -{format.separator(ttlCommission)}円
+              </Text>
+            </View>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: RFValue(11),
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+                marginRight: widthPercentageToDP("17%"),
+              }}
+            >
+              {format.separator(sale.order_product.order.shipping_fee)}円
+            </Text>
+            <Text
+              style={{
+                position: "absolute",
+                fontSize: RFValue(11),
+                right: 0,
+                paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              {format.separator(parseInt(sale.order_product.order.amount) 
+              + parseInt(sale.order_product.order.tax)
+              + parseInt(sale.order_product.order.shipping_fee)
+              - parseInt(ttlCommission))}円
             </Text>
           </View>
-          <Text
-            style={{
-              position: "absolute",
-              fontSize: RFValue(12),
-              right: 0,
-              paddingBottom: heightPercentageToDP("2%"),
-            }}
-          >
-            {format.separator(sale.amount)}円
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+        </TouchableWithoutFeedback>
+      );
+    }
   }
   return tmpSaleHtml;
 }
 function processCommissionHtml(commissions) {
   let tmpCommissionHtml = [];
   for (var i = 0; i < commissions.length; i++) {
-    let commission = commissions[i];
+    let commission = commissions[i]
     tmpCommissionHtml.push(
       <TouchableWithoutFeedback key={i}>
         <View style={styles.commissionTabContainer}>
@@ -118,12 +180,14 @@ function processCommissionHtml(commissions) {
           <Text
             style={{
               position: "absolute",
-              fontSize: RFValue(12),
+              fontSize: RFValue(11),
               right: 0,
               paddingBottom: heightPercentageToDP("2%"),
             }}
           >
-            {format.separator(commission.amount)}円
+            {commission.is_food 
+            ? format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * reducedTaxRate)) 
+            : format.separator(parseInt(commission.amount) + parseInt(parseFloat(commission.amount) * taxRate))}円
           </Text>
         </View>
       </TouchableWithoutFeedback>
@@ -132,11 +196,6 @@ function processCommissionHtml(commissions) {
   return tmpCommissionHtml;
 }
 
-let userID;
-let year = new Date().getFullYear();
-let month = new Date().getMonth() + 1;
-let day = new Date().getDate();
-let commissionProducts = [];
 // let salesProducts = [];
 
 export default function SalesManagement(props) {
@@ -158,9 +217,13 @@ export default function SalesManagement(props) {
   const [totalCommission, onTotalCommissionChanged] = useStateIfMounted(0);
   const [totalSale, onTotalSaleChanged] = useStateIfMounted(0);
   const [total, onTotalChanged] = useStateIfMounted(0);
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if(!isFocused) {
+        onSpinnerChanged(false);
+      }
       AsyncStorage.getItem("user").then(function (url) {
         let urls = url.split("/");
         urls = urls.filter((url) => {
@@ -189,6 +252,50 @@ export default function SalesManagement(props) {
             }
           });
 
+        // for gst
+        request
+          .get("tax_rates/")
+          .then((response) => {
+            let taxes = response.data.filter((item) => {
+              let nowDate = new Date();
+              if (item.start_date && item.end_date) {
+                if (
+                  nowDate >= new Date(item.start_date) &&
+                  nowDate <= new Date(item.end_date)
+                ) {
+                  return true;
+                }
+              } else if (item.start_date) {
+                if (nowDate >= new Date(item.start_date)) {
+                  return true;
+                }
+              }
+              return false;
+            });
+
+            if (taxes.length > 0) {
+              taxRate = taxes[0].tax_rate;
+              reducedTaxRate = taxes[0].reduced_tax_rate;
+            }
+          })
+          .catch((error) => {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              Object.keys(error.response.data).length > 0
+            ) {
+              alert.warning(
+                error.response.data[Object.keys(error.response.data)[0]][0] +
+                  "(" +
+                  Object.keys(error.response.data)[0] +
+                  ")"
+              );
+            }
+          });
+        if(isFocused) {
+          onSpinnerChanged(true);
+        }
         request
           .get("commissionProducts/" + userId + "/")
           .then(function (response) {
@@ -197,6 +304,18 @@ export default function SalesManagement(props) {
             } else {
               commissionProducts = [];
             }
+            if (response.data.userSales) {
+              userSales = response.data.userSales;
+            } else {
+              userSales = [];
+            }
+            if (response.data.userCommissions) {
+              userCommissions = response.data.userCommissions;
+            } else {
+              userCommissions = [];
+            }
+            isMaster = response.data.isMaster;
+            onSpinnerChanged(false);
             onUpdate();
           })
           .catch(function (error) {
@@ -214,6 +333,7 @@ export default function SalesManagement(props) {
               );
             }
             onCommissionLoaded(true);
+            onSpinnerChanged(false);
           });
 
         // request
@@ -247,7 +367,14 @@ export default function SalesManagement(props) {
     });
   }, [isFocused]);
 
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      onSpinnerChanged(false);
+    })
+  }, [!isFocused]);
+
   function onUpdate(date) {
+    // onSpinnerChanged(true);
     let tmpDate = new Date();
     if (date) {
       tmpDate = date;
@@ -256,27 +383,70 @@ export default function SalesManagement(props) {
     onPlaceHolderDate(
       tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
     );
-    let tmpCommissionProducts = commissionProducts.filter(
+    let orders = [];
+    commissionProducts.map(
       (commissionProduct) => {
-        if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"]) {
-          let periods = commissionProduct["order_product"]["order"][
-            "created"
-          ].split("-");
-          let year = periods[0];
-          let month = periods[1];
-          return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+        let periods = commissionProduct["order_product"]["order"][
+          "created"
+        ].split("-");
+        let year = periods[0];
+        let month = periods[1];
+        if (!commissionProduct["is_hidden"] && isMaster && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
+          if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+            if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
+              orders.push(commissionProduct["order_product"]["order"]['id'])
+            }
+          }
+        }
+        else if (!commissionProduct["is_hidden"] && commissionProduct["order_product"]["order"]["seller"]["id"] == userID) {
+          if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+            if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
+              orders.push(commissionProduct["order_product"]["order"]['id'])
+            }
+          }
         }
       }
     );
-    onCommissionsChanged(tmpCommissionProducts);
+    let tmpCommissionProducts = [];
+    let userCommissionList = [];
+    commissionProducts.map(
+      (commissionProduct) => {
+        let periods = commissionProduct["order_product"]["order"][
+          "created"
+        ].split("-");
+        let year = periods[0];
+        let month = periods[1];
+        if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+          if (isMaster) {
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
+              tmpCommissionProducts.push(commissionProduct) ;
+            }
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] != "1") {
+              userCommissionList.push(commissionProduct) ;
+            }
+          } else {
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["user_id"] != userID) {
+              tmpCommissionProducts.push(commissionProduct) ;
+            }
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["user_id"] == userID) {
+              userCommissionList.push(commissionProduct) ;
+            }
+          }
+        }
+      }
+    );
+    onCommissionsChanged(userCommissionList);
     onComissionHtmlChanged(
-      processCommissionHtml(tmpCommissionProducts, status)
+      processCommissionHtml(userCommissionList)
     );
     let commissionTotal = 0;
-    tmpCommissionProducts.map((commission) => {
-      commissionTotal += commission.amount;
+    userCommissions.map((commission) => {
+      if (commission.year == tmpDate.getFullYear() && commission.month == (tmpDate.getMonth() + 1)) {
+        commissionTotal += commission.total_amount;
+      }
     });
     onTotalCommissionChanged(commissionTotal);
+    console.log('userID', userID);
 
     let tmpSaleProducts = commissionProducts.filter(
       (commissionProduct) => {
@@ -291,19 +461,27 @@ export default function SalesManagement(props) {
       }
     );
     onSalesChanged(tmpSaleProducts);
-    onSaleHtmlChanged(processSaleHtml(tmpSaleProducts, status));
+    onSaleHtmlChanged(processSaleHtml(orders, tmpSaleProducts, tmpCommissionProducts));
     let saleTotal = 0;
-    tmpSaleProducts.map((sale) => {
-      saleTotal += sale.amount;
+    userSales.map((sale) => {
+      if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
+        saleTotal += sale.total_amount;
+      }
     });
     onTotalSaleChanged(saleTotal);
 
     onTotalChanged(
       format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
     );
+    onSpinnerChanged(false);
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <CustomHeader
         text={Translate.t("salesManagement")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -507,12 +685,58 @@ export default function SalesManagement(props) {
                     fontSize: RFValue(12),
                     position: "absolute",
                     left: 0,
-                    marginLeft: widthPercentageToDP("22%"),
+                    marginLeft: widthPercentageToDP("17%"),
                   }}
                 >
                   {status == "commission"
                     ? Translate.t("product") + " / " + Translate.t("price")
                     : " " + Translate.t("product")}
+                </Text>
+                <View
+                  style={{
+                    // width: widthPercentageToDP("17%"),
+                    position: "absolute",
+                    right: 0,
+                    paddingBottom: heightPercentageToDP("2%"),
+                    marginRight: widthPercentageToDP("33%"),
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: RFValue(12),
+                      // position: "absolute",
+                      right: 0,
+                      // marginRight: widthPercentageToDP("32%"),
+                    }}
+                  >
+                    {status == "commission"
+                      ? ""
+                      : " " + Translate.t("price")}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: RFValue(12),
+                      // position: "absolute",
+                      right: 0,
+                      // marginRight: widthPercentageToDP("32%"),
+                    }}
+                  >
+                    {status == "commission"
+                      ? ""
+                      : " " + Translate.t("fee")}
+                  </Text>
+                </View>
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    position: "absolute",
+                    right: 0,
+                    marginRight: widthPercentageToDP("15%"),
+                  }}
+                >
+                  {status == "commission"
+                    ? ""
+                    : " " + Translate.t("shipping")}
                 </Text>
                 <Text
                   style={{
@@ -576,5 +800,8 @@ const styles = StyleSheet.create({
   commissionTabText: {
     // marginBottom: heightPercentageToDP("2%"),
     fontSize: RFValue(11),
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });

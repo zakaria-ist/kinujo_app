@@ -62,7 +62,8 @@ import GroupFolderCreateCompletion from "../Screens/GroupFolderCreateCompletion"
 import ContactShare from "../Screens/ContactShare";
 import ProductInformationAddNew from "../Screens/ProductInformationAddNew";
 import ChatContact from "../Screens/ChatContact";
-import FavoriteChat from "../Screens/FavoriteChat";
+// import FavoriteChat from "../Screens/FavoriteChat";
+import FavoriteMessages from "../Screens/FavoriteMessages";
 import ProductList from "../Screens/ProductList";
 // import KinujoStripeCheckout from "../Screens/KinujoStripeCheckout";
 import { NavigationContainer } from "@react-navigation/native";
@@ -90,7 +91,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 const request = new Request();
 let lastRoute = "";
 
-let regexTestCurrentRoute = /Chat|ChatScreen|GroupChatMember|GroupChatCreation|FolderMemberSelection|GroupFolderCreateCompletion|CreateFolder|FavoriteChat/
+let regexTestCurrentRoute = /Chat|ChatScreen|GroupChatMember|GroupChatCreation|FolderMemberSelection|GroupFolderCreateCompletion|CreateFolder|FavoriteMessages/
 
 function BottomNavigationGeneral(props) {
   if (!props) return null;
@@ -172,11 +173,19 @@ function BottomNavigationGeneral(props) {
             tabBarIcon: () => <ChatLogo width={25} height={25} />,
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="FavoriteChat"
           component={FavoriteChat}
           options={{
             tabBarLabel: "FavoriteChat",
+            tabBarIcon: () => <StarLogo width={25} height={25} />,
+          }}
+        /> */}
+        <Tab.Screen
+          name="FavoriteMessages"
+          component={FavoriteMessages}
+          options={{
+            tabBarLabel: "FavoriteMessages",
             tabBarIcon: () => <StarLogo width={25} height={25} />,
           }}
         />
@@ -1147,11 +1156,19 @@ function BottomNavigationStore(props) {
           name="HomeStoreList"
           component={HomeStoreList}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="FavoriteChat"
           component={FavoriteChat}
           options={{
             tabBarLabel: "FavoriteChat",
+            tabBarIcon: () => <StarLogo width={25} height={25} />,
+          }}
+        /> */}
+        <Tab.Screen
+          name="FavoriteMessages"
+          component={FavoriteMessages}
+          options={{
+            tabBarLabel: "FavoriteMessages",
             tabBarIcon: () => <StarLogo width={25} height={25} />,
           }}
         />
@@ -2055,7 +2072,7 @@ function BottomNavigationStore(props) {
 
 const linking = {
   prefixes: [
-    'com.example.kinujo://',
+    'net.c2sg.kinujo://',
   ],
   config: {
     // screens: {
