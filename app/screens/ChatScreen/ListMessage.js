@@ -15,7 +15,7 @@ import ChatText from "../ChatText";
 import ChatContact from "../ChatContact";
 import moment from 'moment-timezone';
 import { Linking } from "react-native";
-
+import { timezone as myTimeZone } from "expo-localization";
 
 const ListMessage = forwardRef(({
     newChats, groupID, userId, parentProps,
@@ -24,13 +24,32 @@ const ListMessage = forwardRef(({
     redirectToChat, tmpMultiSelect, selectedChat, selects,
     processOldChat, oldChats, findParams, request, showCheckBox, imageMap,
 
-    previousMessageDateElse, updateChats
+    previousMessageDateElse, updateChats, favIndex
 }, ref) => {
 
     const scrollViewReference = useRef();
 
     const scrollToEnd = () => {
         scrollViewReference.current.scrollToEnd({ animated: true })
+    }
+
+    const onScrollToIndexFailed = (error) => {
+        scrollViewReference.current.scrollToOffset({ offset: error.averageItemLength * error.index, animated: true });
+        setTimeout(() => {
+            if (newChats.length !== 0 && scrollViewReference.current !== null) {
+                scrollViewReference.current.scrollToIndex({ index: error.index, animated: true });
+            }
+        }, 100);
+    }
+
+    const onEndReached = () => {
+        if (favIndex != undefined && favIndex != null && favIndex != -1) {
+            setTimeout(() => {
+                if (scrollViewReference) {
+                    scrollViewReference.current.scrollToIndex({ animated: true, index: favIndex });
+                }
+            }, 300);
+        }
     }
 
     useImperativeHandle(ref, () => ({
@@ -206,6 +225,8 @@ const ListMessage = forwardRef(({
             renderItem={renderItem}
             onContentSizeChange={scrollToEnd}
             keyExtractor={chat => groupID + "_chat_" + chat.id}
+            onScrollToIndexFailed={onScrollToIndexFailed}
+            onEndReached={onEndReached}
         />
     </LinearGradient>
 })

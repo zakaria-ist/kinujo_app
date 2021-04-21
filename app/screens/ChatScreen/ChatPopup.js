@@ -21,7 +21,8 @@ const ChatPopup = ({
     onFoward,
     onCancel,
     onAddToFav,
-    onMutiSelect
+    onMutiSelect,
+    onShowPopUpChanged
 }) => {
 
     const cancelMsgAll = () => {
@@ -33,8 +34,11 @@ const ChatPopup = ({
             presentationStyle={"overFullScreen"}
             visible={showPopUp}
             transparent={true}
+            animationType="fade"
         >
-            <TouchableNativeFeedback  >
+            <TouchableNativeFeedback onPress={() => {
+                onShowPopUpChanged(false);
+            }} >
                 <View style={{ flex: 1, backgroundColor: "transparent" }}>
                     <View style={showPopUp == true ? styles.popUpView : styles.none}>
                         <View

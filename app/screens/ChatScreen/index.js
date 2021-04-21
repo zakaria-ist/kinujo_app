@@ -1,47 +1,30 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useRef } from "react";
 import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
-  Image,
   View,
   Dimensions,
-  Switch,
-  TouchableOpacity,
-  TouchableHighlight,
   TouchableNativeFeedback,
   KeyboardAvoidingView,
-  TextInput,
   Platform,
-  Animated,
-  Modal,
-  ScrollView,
   Keyboard,
   SafeAreaView,
-  PixelRatio,
-  FlatList
 } from "react-native";
 
 import Spinner from "react-native-loading-spinner-overlay";
-import dynamicLinks from "@react-native-firebase/dynamic-links";
 import { useStateIfMounted } from "use-state-if-mounted";
-import CachedImage from 'react-native-expo-cached-image';
 import { Colors } from "../../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
-import GroupImages from "../../assets/CustomComponents/GroupImages";
-import RNFetchBlob from "rn-fetch-blob";
-import { LinearGradient } from "expo-linear-gradient";
 import EmojiBoard from "react-native-emoji-board";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../../assets/Translates/Translate";
-import ImagePicker from "react-native-image-picker";
 import { RFValue } from "react-native-responsive-fontsize";
 import AndroidKeyboardAdjust from "react-native-android-keyboard-adjust";
 import CustomHeader from "../../assets/CustomComponents/ChatCustomHeaderWithBackArrow";
-import CustomSecondaryHeader from "../../assets/CustomComponents/CustomSecondaryHeader";
 import CustomSelectHeader from "../../assets/CustomComponents/ChatSelectHeader";
 import ChatText from "../ChatText";
 import ChatContact from "../ChatContact";
@@ -49,15 +32,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "../../../firebaseConfig.js";
-import ArrowDownLogo from "../../assets/icons/arrow_down.svg";
-import PlusCircleLogo from "../../assets/icons/plus_circle.svg";
-import EmojiLogo from "../../assets/icons/emoji.svg";
-import SendLogo from "../../assets/icons/send.svg";
-import CameraLogo from "../../assets/icons/camera.svg";
-import GalleryLogo from "../../assets/icons/gallery.svg";
-import ContactLogo from "../../assets/icons/contact.svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import _, { sample } from "lodash";
 import Request from "../../lib/request";
 import CustomAlert from "../../lib/alert";
 import storage from "@react-native-firebase/storage";
@@ -69,8 +44,6 @@ import ListMessage from "./ListMessage.js";
 import ChatPopup from "./ChatPopup.js";
 const alert = new CustomAlert();
 const { width } = Dimensions.get("window");
-const { height } = Dimensions.get("window");
-const win = Dimensions.get("window");
 var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -86,30 +59,17 @@ let groupID;
 let groupName;
 let userTotalReadMessageField;
 let totalMessageCount = 0;
-let tmpChatHtml = [];
-let messageID = [];
-let tmpMessageCount = 0;
-let previousMessageDateToday;
-let previousMessageDateYesterday;
 let previousMessageDateElse;
 let smallestSeenCount = 0;
 let seenMessageCount = [];
 let updateFriend = false;
-let unsubscribe;
-let unsubscribe1;
-let finalGroupName;
-let chatPersonID;
 let chats = [];
 let old30Chats = [];
 let oldChats = [];
-let totalMessageRead = 0;
-let totalMessage = 0;
-let allUsers = [];
 let imageMap = {};
 let selects = [];
 let day = new Date().getDate();
 let tmpMultiSelect = false;
-let lastDoc = null;
 let old30LastDoc = null;
 let isUserBlocked = false;
 function checkUpdateFriend(user1, user2) {
@@ -139,25 +99,20 @@ function getTime() {
     year + ":" + month + ":" + day + ":" + hour + ":" + minute + ":" + seconds
   );
 }
+let favIndex = -1;
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = useStateIfMounted(false);
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   const [secretMode, setSecretMode] = useStateIfMounted(false);
   const [showPopUp, onShowPopUpChanged] = useStateIfMounted(false);
-  const [loaded, onLoadedChanged] = useStateIfMounted(false);
   const [newChats, setChats] = useStateIfMounted([]);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
-  const [old30ChatHtml, onOld30ChatHtmlChanged] = useStateIfMounted([]);
-  const [oldChatHtml, onOldChatHtmlChanged] = useStateIfMounted([]);
   const [messages, setMessages] = useStateIfMounted("");
   const [showEmoji, onShowEmojiChanged] = useStateIfMounted(false);
   const [prevEmoji, setPrevEmoji] = useStateIfMounted("");
   const [showCheckBox, onShowCheckBoxChanged] = useStateIfMounted(false);
-  const [users, onUserChanged] = useStateIfMounted("");
   const [userUrl, onUserUrlChanged] = useStateIfMounted("group");
   const [images, setImages] = useStateIfMounted([]);
-  const [friendImage, onFriendImageChanged] = useStateIfMounted("");
-  const [copiedText, setCopiedText] = useStateIfMounted("");
   const [multiSelect, setMultiSelect] = useStateIfMounted(false);
   // const [user, processUser] = useStateIfMounted("");
   const [inputBarPosition, setInputBarPosition] = useStateIfMounted(0);
@@ -165,7 +120,8 @@ export default function ChatScreen(props) {
   const isFocused = useIsFocused();
   groupID = props.route.params.groupID;
   groupName = props.route.params.groupName;
-  groupType = props.route.params.type;
+  let groupType = props.route.params.type;
+  let favData = props.route.params.favData;
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
   const insets = useSafeAreaInsets();
@@ -373,1580 +329,11 @@ export default function ChatScreen(props) {
     );
   }
 
-  function processOldChat(tmpChats) {
-    return
-    let tmpChatHtml = [];
-    index = 1;
-    // tmpChats = tmpChats.sort((a, b) => {
+  function processOldChat(tmpChats) { }
 
-    //   return a.data.timeStamp.nanoseconds <= b.data.timeStamp.nanoseconds;
-    // });
-    tmpChats.map((chat) => {
-      let date = chat.data.createdAt.split(":");
-      let tmpMonth = date[1];
-      let tmpDay = date[2]; //message created at
-      let tmpHours = date[3];
-      let tmpMinutes = date[4];
-      let tmpMessageID = messageID.filter((item) => {
-        return item == chat.id;
-      });
-      if (tmpDay == day) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processOldChat(oldChats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateToday == null ? (
-                <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
-              ) : (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      console.log("1");
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processOldChat(oldChats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-        previousMessageDateToday = tmpDay;
-      } else if (tmpDay == day - 1) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processOldChat(oldChats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateYesterday == null ? (
-                <Text style={[styles.chat_date]}>
-                  {Translate.t("yesterday")}
-                </Text>
-              ) : (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processOldChat(oldChats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-        previousMessageDateYesterday = tmpDay;
-      } else if (tmpDay != day && tmpDay != day - 1) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processOldChat(oldChats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateElse ==
-                chat.data.timeStamp.toDate().toDateString() ? (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              ) : (
-                <Text style={[styles.chat_date]}>
-                  {tmpMonth + "/" + tmpDay}
-                </Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processOldChat(oldChats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
+  function processOld30Chat(tmpChats) { }
 
-        previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
-      }
-    });
-    const resultChatHtml = tmpChatHtml.filter((html) => {
-      return !html.props["delete"];
-    });
-    onOldChatHtmlChanged(resultChatHtml);
-    index++;
-  }
-
-  function processOld30Chat(tmpChats) {
-    return;
-    let tmpChatHtml = [];
-    index = 1;
-    // tmpChats = tmpChats.sort((a, b) => {
-
-    //   return a.data.timeStamp.nanoseconds <= b.data.timeStamp.nanoseconds;
-    // });
-    tmpChats.map((chat) => {
-      let date = chat.data.createdAt.split(":");
-      let tmpMonth = date[1];
-      let tmpDay = date[2]; //message created at
-      let tmpHours = date[3];
-      let tmpMinutes = date[4];
-      let tmpMessageID = messageID.filter((item) => {
-        return item == chat.id;
-      });
-      if (tmpDay == day) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processOld30Chat(old30Chats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateToday == null ? (
-                <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
-              ) : (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      console.log("1");
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processOld30Chat(old30Chats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-        previousMessageDateToday = tmpDay;
-      } else if (tmpDay == day - 1) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processOld30Chat(old30Chats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateYesterday == null ? (
-                <Text style={[styles.chat_date]}>
-                  {Translate.t("yesterday")}
-                </Text>
-              ) : (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processOld30Chat(old30Chats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-        previousMessageDateYesterday = tmpDay;
-      } else if (tmpDay != day && tmpDay != day - 1) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processOld30Chat(old30Chats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateElse ==
-                chat.data.timeStamp.toDate().toDateString() ? (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              ) : (
-                <Text style={[styles.chat_date]}>
-                  {tmpMonth + "/" + tmpDay}
-                </Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processOld30Chat(old30Chats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-
-        previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
-      }
-    });
-    const resultChatHtml = tmpChatHtml.filter((html) => {
-      return !html.props["delete"];
-    });
-    onOld30ChatHtmlChanged(resultChatHtml);
-    index++;
-  }
-
-  function processChat(tmpChats) {
-    return;
-    let tmpChatHtml = [];
-    index = 1;
-    // tmpChats = tmpChats.sort((a, b) => {
-
-    //   return a.data.timeStamp.nanoseconds <= b.data.timeStamp.nanoseconds;
-    // });
-    tmpChats.map((chat) => {
-      let date = chat.data.createdAt.split(":");
-      let tmpMonth = date[1];
-      let tmpDay = date[2]; //message created at
-      let tmpHours = date[3];
-      let tmpMinutes = date[4];
-      let tmpMessageID = messageID.filter((item) => {
-        return item == chat.id;
-      });
-      if (tmpDay == day) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processChat(chats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateToday == null ? (
-                <Text style={[styles.chat_date]}>{Translate.t("today")}</Text>
-              ) : (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      console.log("1");
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processChat(chats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-        previousMessageDateToday = tmpDay;
-      } else if (tmpDay == day - 1) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processChat(chats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateYesterday == null ? (
-                <Text style={[styles.chat_date]}>
-                  {Translate.t("yesterday")}
-                </Text>
-              ) : (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processChat(chats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-        previousMessageDateYesterday = tmpDay;
-      } else if (tmpDay != day && tmpDay != day - 1) {
-        tmpChatHtml.push(
-          <TouchableNativeFeedback
-            key={chat.id}
-            delete={
-              chat.data["delete_" + userId] || chat.data["delete"]
-                ? true
-                : false
-            }
-            onPress={() => {
-              if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                  selects = selects.filter((select) => {
-                    return select.id != chat.id;
-                  });
-                } else {
-                  selects.push({
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                  });
-                }
-                processChat(chats);
-              }
-            }}
-            onLongPress={() => {
-              onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-              });
-              onShowPopUpChanged(true);
-            }}
-          >
-            <View
-              style={
-                selectedChat(chat.id) ? styles.selected : styles.non_selected
-              }
-              key={chat.id}
-            >
-              {previousMessageDateElse ==
-                chat.data.timeStamp.toDate().toDateString() ? (
-                <Text style={[styles.chat_date]}>{""}</Text>
-              ) : (
-                <Text style={[styles.chat_date]}>
-                  {tmpMonth + "/" + tmpDay}
-                </Text>
-              )}
-              {/*///////////////////////////////////////*/}
-              {chat.data.contactID ? (
-                <ChatContact
-                  press={() => {
-                    if (!tmpMultiSelect) {
-                      redirectToChat(
-                        chat.data.contactID,
-                        chat.data.contactName
-                      );
-                    } else {
-                      if (selectedChat(chat.id)) {
-                        selects = selects.filter((select) => {
-                          return select.id != chat.id;
-                        });
-                      } else {
-                        selects.push({
-                          id: chat.id,
-                          message: chat.data.message,
-                          contactID: chat.data.contactID,
-                          contactName: chat.data.contactName,
-                          image: chat.data.image
-                        });
-                      }
-                      processChat(chats);
-                    }
-                  }}
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  showCheckBox={showCheckBox}
-                  props={props}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  contactID={chat.data.contactID}
-                  contactName={chat.data.contactName}
-                  image={imageMap[chat.data.userID]}
-                />
-              ) : (
-                <ChatText
-                  longPress={() => {
-                    onLongPressObjChanged({
-                      id: chat.id,
-                      message: chat.data.message,
-                      data: chat.data,
-                      contactID: chat.data.contactID,
-                      contactName: chat.data.contactName,
-                      image: chat.data.image
-                    });
-                    onShowPopUpChanged(true);
-                  }}
-                  hyperLinkClicked={(url, text) => {
-                    if (!tmpMultiSelect) {
-                      if (findParams(url, "apn") && findParams(url, "link")) {
-                        let link = decodeURIComponent(findParams(url, "link"));
-                        console.log(findParams(link, "product_id"));
-                        if (findParams(link, "product_id")) {
-                          let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                          props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                          });
-                        } else {
-                          Linking.openURL(url);
-                        }
-                      } else {
-                        Linking.openURL(url);
-                      }
-                    }
-                  }}
-                  props={props}
-                  showCheckBox={showCheckBox}
-                  date={tmpHours + ":" + tmpMinutes}
-                  isSelf={
-                    chat.data.userID == userId
-                      ? (isSelf = "true")
-                      : (isSelf = "")
-                  }
-                  // seen={
-                  //   totalMessage - index >= totalMessage - totalMessageRead &&
-                  //   chat.data.userID == userId
-                  //     ? (seen = "true")
-                  //     : (seen = "")
-                  // }
-                  text={
-                    chat.data.contactID == null && chat.data.image == null
-                      ? chat.data.message
-                      : ""
-                  }
-                  imageURL={chat.data.image ? chat.data.image : ""}
-                  image={imageMap[chat.data.userID]}
-                />
-              )}
-              {/*///////////////////////////////////////*/}
-            </View>
-          </TouchableNativeFeedback>
-        );
-
-        previousMessageDateElse = chat.data.timeStamp.toDate().toDateString();
-      }
-    });
-    const resultChatHtml = tmpChatHtml.filter((html) => {
-      return !html.props["delete"];
-    });
-    onChatHtmlChanged(resultChatHtml);
-    index++;
-  }
+  function processChat(tmpChats) { }
 
   async function updateChats(chats) {
     chats = chats.map((chat) => {
@@ -1957,6 +344,16 @@ export default function ChatScreen(props) {
       }
       return chat;
     });
+
+    if (favData) {
+      for (let i = 0; i < chats.length; i++) {
+        let chat = chats[i];
+        if (favData.createdAt == chat.data.createdAt && favData.message == chat.data.message) {
+          favIndex = i;
+          console.log('favIndex', favIndex);
+        }
+      }
+    }
 
     //remove duplicates
     // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
@@ -2044,22 +441,12 @@ export default function ChatScreen(props) {
       }
       totalMessageCount = documentSnapshot.data().totalMessage;
 
-      // for (var i = 0; i < users.length; i++) {
-      //   totalMessageSeenCount = "totalMessageRead_" + users[i];
-      //   seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
-      // }
-
       users.map(user => {
         totalMessageSeenCount = "totalMessageRead_" + user;
         seenMessageCount.push(documentSnapshot.data()[totalMessageSeenCount]);
       })
 
       smallestSeenCount = seenMessageCount[0];
-      // for (var i = 1; i < seenMessageCount.length; i++) {
-      //   if (smallestSeenCount > seenMessageCount[i]) {
-      //     smallestSeenCount = seenMessageCount[i];
-      //   }
-      // }
       seenMessageCount.map(msgCount => {
         if (smallestSeenCount > msgCount) {
           smallestSeenCount = msgCount;
@@ -2071,11 +458,6 @@ export default function ChatScreen(props) {
       previousMessageDateElse = null;
       tmpMessageCount = 0;
 
-      // let lastQuerySnapshot = await chatsRef.doc(groupID).collection("messages").orderBy('timeStamp', "desc").limit(1).get();
-      // lastQuerySnapshot.forEach((snapShot)=>{
-      //   lastDoc = snapShot;
-      // })
-
       // Read all message
       chatsRef.doc(groupID).update({
         [userTotalReadMessageField]: totalMessageCount
@@ -2086,33 +468,6 @@ export default function ChatScreen(props) {
         .collection("messages")
         .orderBy("timeStamp", "asc");
 
-      // if(lastDoc){
-      //   build = build.startAfter(lastDoc);
-      //   chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(lastDoc).get().then((querySnapShot)=>{
-      //     querySnapShot.forEach((snapShot) => {
-      //       if(!old30LastDoc){
-      //         old30LastDoc = snapShot;
-      //       }
-      //       let tmpChats = old30Chats.filter((chat) => {
-      //         return chat.id == snapShot.id;
-      //       });
-      //       if (tmpChats.length == 0) {
-      //         old30Chats.push({
-      //           id: snapShot.id,
-      //           data: snapShot.data(),
-      //         });
-      //       } else {
-      //         old30Chats = old30Chats.map((chat) => {
-      //           if (chat.id == snapShot.id) {
-      //             chat.data = snapShot.data();
-      //           }
-      //           return chat;
-      //         });
-      //       }
-      //     })
-      //     updateChats(oldChats.concat(old30Chats, chats))
-      //   })
-      // }
 
       this.unsub = build
         .onSnapshot(
@@ -2144,32 +499,6 @@ export default function ChatScreen(props) {
             updateChats(oldChats.concat(old30Chats, chats))
           }
         );
-
-      // this.unsub1 = chatsRef.doc(groupID).onSnapshot((snapshot) => {
-      //   totalMessage = snapshot.data()["totalMessageRead"];
-      //   totalMessageRead = snapshot.data()["totalMessage"];
-      //   processChat(chats);
-      //   if (
-      //     snapshot.data()["totalMessageRead_" + userId] !=
-      //     snapshot.data()["totalMessage"]
-      //   ) {
-      //     chatsRef.doc(groupID).collection("read").add({
-      //       user_id: userId,
-      //     });
-      //   }
-
-      //   request
-      //     .get("user/byIds/", {
-      //       ids: snapshot.data()["users"],
-      //     })
-      //     .then((response) => {
-      //       allUsers = response.data.users;
-      //       allUsers.map((user) => {
-      //         imageMap[user.id] = user.image ? user.image.image : "";
-      //       });
-      //       processChat(chats);
-      //     });
-      // });
 
       if (old30LastDoc) {
         chatsRef.doc(groupID).collection("messages").orderBy("timeStamp", "asc").endAt(old30LastDoc).get().then((querySnapShot) => {
@@ -2249,8 +578,6 @@ export default function ChatScreen(props) {
       setShouldShow(false);
       onShowPopUpChanged(false);
       onChatHtmlChanged([]);
-      onOldChatHtmlChanged([]);
-      onOld30ChatHtmlChanged([]);
       tmpChatHtml = [];
     };
   }, [isFocused]);
@@ -2269,162 +596,6 @@ export default function ChatScreen(props) {
       title: 'Third Item',
     },
   ];
-
-  function renderItem(item) {
-    let chat = item["item"];
-    let created = chat.data.createdAt;
-    try {
-      let tStamps = chat.data.timeStamp.toDate();
-      created = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
-    } catch (e) {
-      console.log('ERROR', e);
-    }
-
-    // let date = chat.data.createdAt.split(":");
-    let date = created.split(":");
-    let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
-    let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
-    let tmpHours = date[3].length > 1 ? date[3] : '0' + date[3];
-    let tmpMinutes = date[4].length > 1 ? date[4] : '0' + date[4];
-    // let tmpMessageID = messageID.filter((item) => {
-    //     return item == chat.id;
-    // });
-
-    let dateOfMessage = null
-
-    if (chat.first) {
-      if (tmpDay == day) {
-        dateOfMessage = Translate.t("today")
-      } else if (tmpDay == day - 1) {
-        dateOfMessage = Translate.t("yesterday")
-      } else if (previousMessageDateElse ==
-        chat.data.timeStamp.toDate().toDateString()) {
-        dateOfMessage = tmpMonth + "/" + tmpDay
-      }
-
-      dateOfMessage = dateOfMessage ? <Text style={[styles.chat_date]}>
-        {dateOfMessage}
-      </Text> : null
-
-    }
-
-    const onMessageLongPress = () => {
-      onLongPressObjChanged({
-        id: chat.id,
-        message: chat.data.message,
-        data: chat.data,
-        contactID: chat.data.contactID,
-        contactName: chat.data.contactName,
-        image: chat.data.image
-      });
-      onShowPopUpChanged(true);
-    }
-
-    const onPressContact = () => {
-      if (!tmpMultiSelect) {
-        redirectToChat(
-          chat.data.contactID,
-          chat.data.contactName
-        );
-      } else {
-        onSelectMessage()
-      }
-    }
-
-    const onSelectMessage = () => {
-      if (tmpMultiSelect) {
-        if (selectedChat(chat.id)) {
-          selects = selects.filter((select) => {
-            return select.id != chat.id;
-          });
-        } else {
-          selects.push({
-            id: chat.id,
-            message: chat.data.message,
-            contactID: chat.data.contactID,
-            contactName: chat.data.contactName,
-            image: chat.data.image
-          });
-        }
-        if (tmpDay != day) updateChats(newChats);
-        processOldChat(tmpDay == day || tmpDay == day - 1 ? oldChats : false);
-      }
-    }
-
-    const onHyperLinkClicked = (url, text) => {
-      if (!tmpMultiSelect) {
-        if (findParams(url, "apn") && findParams(url, "link")) {
-          let link = decodeURIComponent(findParams(url, "link"));
-          console.log(findParams(link, "product_id"));
-          if (findParams(link, "product_id")) {
-            let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-            props.navigation.navigate("HomeStoreList", {
-              url: apiUrl,
-            });
-          } else {
-            Linking.openURL(url);
-          }
-        } else {
-          Linking.openURL(url);
-        }
-      }
-    }
-
-    const itemProps = {
-      longPress: onMessageLongPress,
-      hyperLinkClicked: onHyperLinkClicked,
-      props,
-      showCheckBox,
-      date: tmpHours + ":" + tmpMinutes,
-      isSelf: chat.data.userID == userId ? 'true' : '',
-      // seen={
-      //   totalMessage - index >= totalMessage - totalMessageRead &&
-      //   chat.data.userID == userId
-      //     ? (seen = "true")
-      //     : (seen = "")
-      // }
-      text: !chat.data.contactID && !chat.data.image
-        ? chat.data.message : "",
-
-      imageURL: chat.data.image ? chat.data.image : "",
-      image: imageMap[chat.data.userID],
-      contactID: chat.data.contactID,
-      contactName: chat.data.contactName
-    }
-
-    return <TouchableNativeFeedback
-      key={chat.id}
-      delete={
-        chat.data["delete_" + userId] || chat.data["delete"]
-          ? true
-          : false
-      }
-      onPress={onSelectMessage}
-      onLongPress={onMessageLongPress}
-    >
-      <View
-        style={
-          selectedChat(chat.id) ? styles.selected : styles.non_selected
-        }
-        key={chat.id}
-      >
-        {dateOfMessage}
-        {/*///////////////////////////////////////*/}
-        {chat.data.contactID ? (
-          <ChatContact
-            press={onPressContact}
-            {...itemProps}
-          />
-        ) : (
-          <ChatText
-            {...itemProps}
-          />
-        )}
-        {/*///////////////////////////////////////*/}
-      </View>
-    </TouchableNativeFeedback>
-
-  }
 
   const onSendImage = (response) => {
     if (response.uri) {
@@ -2469,7 +640,10 @@ export default function ChatScreen(props) {
       message: longPressObj.message,
       contactID: longPressObj.contactID,
       contactName: longPressObj.contactName,
-      image: longPressObj.image
+      image: longPressObj.image,
+      groupID: groupID,
+      groupName: groupName,
+      groupType: groupType ? groupType : "",
     })
 
 
@@ -2518,16 +692,22 @@ export default function ChatScreen(props) {
   }
 
   const onAddToFav = () => {
-    let update = {};
-    update["favourite_" + userId] = true;
-    db.collection("chat")
-      .doc(groupID)
-      .set(update, {
-        merge: true,
+    db.collection("users")
+      .doc(userId)
+      .collection("favouriteMessages")
+      .doc(String(longPressObj.id))
+      .set({
+        createdAt: longPressObj.data.createdAt,
+        message: longPressObj.message,
+        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+        groupID: groupID,
+        groupName: groupName,
+        groupType: groupType ? groupType : "",
+        senderId: String(longPressObj.data.userID)
       })
       .then(() => {
         onShowPopUpChanged(false);
-        alert.warning(Translate.t("chat_favourite_added"));
+        alert.warning(Translate.t("msg_favourite_added"));
       });
   }
 
@@ -2587,12 +767,13 @@ export default function ChatScreen(props) {
       <Spinner
         visible={spinner}
         textContent={"Loading..."}
-        textStyle={styles.spinnerTextStyle}
+        // textStyle={styles.spinnerTextStyle}
       />
       {!multiSelect ? (
         <CustomHeader
           text={Translate.t("chat")}
-          onBack={() => props.navigation.goBack()}
+          // onBack={() => props.navigation.goBack()}
+          onBack={() => props.navigation.navigate("ChatList")}
           images={images}
           name={name} userUrl={userUrl}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
@@ -2604,6 +785,9 @@ export default function ChatScreen(props) {
             if (selects.length > 0) {
               props.navigation.navigate("ChatListForward", {
                 messages: selects,
+                groupID: groupID,
+                groupName: groupName,
+                groupType: groupType ? groupType : "",
               });
             }
           }}
@@ -2636,23 +820,6 @@ export default function ChatScreen(props) {
           onClick={onClick}
           onRemove={onRemove}
         />
-        {/* <LinearGradient
-          colors={[Colors.E4DBC0, Colors.C2A059]}
-          start={[0, 0]}
-          end={[1, 0.6]}
-          style={{ flex: 1 }}
-        >
-          <FlatList
-            ref={scrollViewReference}
-            data={newChats}
-            extraData={newChats}
-            renderItem={renderItem}
-            onContentSizeChange={() =>
-              scrollViewReference.current.scrollToEnd({ animated: true })
-            }
-            keyExtractor={chat => groupID + "_chat_" + chat.id}>
-          </FlatList>
-        </LinearGradient> */}
 
         <ListMessage
           ref={scrollViewReference}
@@ -2677,6 +844,7 @@ export default function ChatScreen(props) {
           imageMap={imageMap}
           updateChats={updateChats}
           previousMessageDateElse={previousMessageDateElse}
+          favIndex={favIndex}
         />
 
         <ChatPopup
@@ -2686,6 +854,7 @@ export default function ChatScreen(props) {
           onCancel={onCancel}
           onAddToFav={onAddToFav}
           onMutiSelect={onMutiSelect}
+          onShowPopUpChanged={onShowPopUpChanged}
         />
 
 
@@ -2712,168 +881,5 @@ export default function ChatScreen(props) {
 
       </KeyboardAvoidingView>
     </SafeAreaView>
-    // </TouchableNativeFeedback>
   );
 }
-
-const styles = StyleSheet.create({
-  textInputArea: {
-    height: heightPercentageToDP("7%"),
-    backgroundColor: "#F0EEE9",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  textInputAreaWithEmoji: {
-    height: heightPercentageToDP("7%"),
-    backgroundColor: "#F0EEE9",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    bottom: RFValue(35),
-  },
-  emojiBoard: {
-    bottom: 0,
-    height: heightPercentageToDP("30%"),
-  },
-  modal_view: {
-    position: "relative",
-    zIndex: 10,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  container: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    borderRadius: 12,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    maxWidth: width - 160,
-    minHeight: 20,
-  },
-  none: {
-    display: "none",
-  },
-  chat_date: {
-    textAlign: "center",
-    fontSize: RFValue(10),
-  },
-  input_bar: {
-    height: heightPercentageToDP("7%"),
-    backgroundColor: "#F0EEE9",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  input_bar_file: {
-    marginLeft: 5,
-    height: heightPercentageToDP("6%"),
-    width: heightPercentageToDP("6%"),
-    padding: 10,
-  },
-  input_bar_text: {
-    height: "100%",
-    flexGrow: 1,
-    padding: 5,
-  },
-  input_bar_text_border: {
-    borderRadius: 25,
-    backgroundColor: "#FFF",
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  popUpView: {
-    position: "absolute",
-    backgroundColor: "white",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1,
-    borderWidth: 1,
-    borderColor: Colors.D7CCA6,
-    // alignSelf: "center",
-    // marginTop: -heightPercentageToDP("15%"),
-    // justifyContent: "space-evenly",
-    marginHorizontal: widthPercentageToDP("15%"),
-    marginVertical: heightPercentageToDP("34%"),
-    // paddingTop: heightPercentageToDP("1%"),
-    // paddingBottom: heightPercentageToDP("3%"),
-    // alignItems: "center",
-  },
-  popUpText: {
-    marginLeft: widthPercentageToDP("2%"),
-    fontSize: RFValue(12),
-    paddingBottom: heightPercentageToDP("2%"),
-  },
-  // user_text_input: {
-  //   width: widthPercentageToDP("15%"),
-  //   height: heightPercentageToDP("5%"),
-  //   backgroundColor: "orange",
-  //   flexGrow: 1,
-  //   color: "black",
-  //   flexDirection: "row",
-  //   justifyContent: "flex-end",
-  //   paddingLeft: 15,
-  // },
-  user_emoji_input: {
-    // height: heightPercentageToDP("6%"),
-    width: heightPercentageToDP("6%"),
-    fontSize: RFValue(10),
-    padding: 10,
-    alignItems: "center",
-  },
-  input_bar_send: {
-    marginRight: 5,
-    height: heightPercentageToDP("6%"),
-    width: heightPercentageToDP("6%"),
-    padding: 10,
-  },
-  input_bar_widget: {
-    height: heightPercentageToDP("10%"),
-    backgroundColor: "#FFF",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-  widget_box: {
-    alignItems: "center",
-    height: heightPercentageToDP("8%"),
-    width: heightPercentageToDP("10%"),
-    padding: 10,
-    color: "#000",
-    textAlign: "center",
-  },
-  widget_icon: {
-    height: heightPercentageToDP("7%") - 20,
-    width: heightPercentageToDP("7%") - 20,
-    margin: "auto",
-  },
-  scrollViewStyleWithoutEmoji: {
-    width: "100%",
-    // paddingTop: heightPercentageToDP("1%"),
-    // paddingBottom: heightPercentageToDP("5%"),
-    marginBottom: 5,
-    paddingBottom: 30,
-    // showEmoji == true ? heightPercentageToDP("30%") : 0,
-  },
-  scrollViewStyleWithEmoji: {
-    width: "100%",
-    // paddingTop: heightPercentageToDP("1%"),
-    // paddingBottom: heightPercentageToDP("5%"),
-    marginBottom: heightPercentageToDP("30%"),
-    paddingBottom: 30,
-    // showEmoji == true ? heightPercentageToDP("30%") : 0,
-  },
-  selected: {
-    backgroundColor: "#BBD8B3",
-  },
-  non_selected: {},
-});

@@ -2,7 +2,7 @@ import React from "react";
 import {
     StyleSheet,
     View,
-    TouchableNativeFeedback,
+    TouchableNativeFeedback, TouchableOpacity,
     TextInput,
     Platform,
     Animated,
@@ -41,7 +41,8 @@ const FooterChat = ({
     const onPhoto = () => {
         const options = {
             mediaType: "photo",
-            includeBase64: false
+            includeBase64: false,
+            allowsEditing: true
         };
         ImagePicker.launchImageLibrary(options, onSendImage);
     }
@@ -50,7 +51,8 @@ const FooterChat = ({
         const options = {
             noData: true,
             mediaType: "photo",
-            includeBase64: false
+            includeBase64: false,
+            allowsEditing: true
         };
         ImagePicker.launchCamera(options, onSendImage);
     }
@@ -58,7 +60,7 @@ const FooterChat = ({
     return <View style={[styles.container, { bottom: inputBarPosition, }]}>
         <View style={[styles.wrapInput, { height: textInputHeight, }]} >
             <View style={styles.input_bar_file}>
-                <TouchableNativeFeedback
+                <TouchableOpacity
                     onPress={onHide}
                 >
                     {shouldShow ? (
@@ -72,7 +74,7 @@ const FooterChat = ({
                             style={styles.plusLogo}
                         />
                     )}
-                </TouchableNativeFeedback>
+                </TouchableOpacity>
             </View>
             <View style={styles.input_bar_text}>
                 <View style={styles.input_bar_text_border}>
