@@ -176,6 +176,7 @@ export default function SellerProductList(props) {
     onFeaturedHtmlChanged(processFeaturedProductHtml(categoryFeaturedProducts));
     // onCategoryHtmlChanged(processCategoryHtml(categories));
     hideCategoryAnimation();
+    filterProductsBySorting(selected);
   }
   function filterProductsBySorting(type) {
     let tmpFeaturedProducts = categoryFeaturedProducts;

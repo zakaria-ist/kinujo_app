@@ -73,6 +73,7 @@ export default function HomeByCategory(props) {
   const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
   const [categoryName, onCategoryName] = useStateIfMounted("");
   const [selected, onSelected] = useStateIfMounted("");
+  const [categorySelected, onCategorySelected] = useStateIfMounted("");
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
@@ -295,15 +296,15 @@ export default function HomeByCategory(props) {
       tmpFeaturedProducts = tmpFeaturedProducts.sort((productA, productB) => {
         let productA_count = productsView[productA.id] ? productsView[productA.id] : 0
         let productB_count = productsView[productB.id] ? productsView[productB.id] : 0
-        return productA_count > productB_count;
+        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
       });
       tmpKinujoProducts = tmpKinujoProducts.sort((productA, productB) => {
         let productA_count = productsView[productA.id] ? productsView[productA.id] : 0
         let productB_count = productsView[productB.id] ? productsView[productB.id] : 0
-        return productA_count > productB_count;
+        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
       });
-      onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
-      onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
+      onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
+      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
     }
     if (type == "reset") {
       onSelected("");
@@ -338,15 +339,17 @@ export default function HomeByCategory(props) {
         });
 
         kinujoProducts = products.filter((product) => {
-          if (product.category.id == categoryID) {
+          // if (product.category.id == categoryID) {
             return product.user.authority.id == 1;
-          }
+          // }
         });
         featuredProducts = products.filter((product) => {
-          if (product.category.id == categoryID) {
+          // if (product.category.id == categoryID) {
             return product.user.authority.id != 1;
-          }
+          // }
         });
+        filteredFeaturedProducts = featuredProducts;
+        filteredKinujoProducts = kinujoProducts;
         onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
         onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
       });
@@ -354,18 +357,23 @@ export default function HomeByCategory(props) {
     hideSortingAimation();
   }
   function filterProductsByCateogry(categories, categoryID, name) {
-    onCategoryName(name);
     filteredFeaturedProducts = featuredProducts;
     filteredKinujoProducts = kinujoProducts;
-    filteredFeaturedProducts = featuredProducts.filter((featured) => {
-      return featured.category.id == categoryID;
-    });
-    filteredKinujoProducts = kinujoProducts.filter((kinujo) => {
-      return kinujo.category.id == categoryID;
-    });
+    if (categoryID != "reset") {
+      onCategoryName(name);
+      filteredFeaturedProducts = featuredProducts.filter((featured) => {
+        return featured.category.id == categoryID;
+      });
+      filteredKinujoProducts = kinujoProducts.filter((kinujo) => {
+        return kinujo.category.id == categoryID;
+      });
+    } else {
+      onCategoryName("すべて");
+    }
     onFeaturedHtmlChanged(processFeaturedProductHtml(filteredFeaturedProducts));
     onKinujoHtmlChanged(processKinujoProductHtml(filteredKinujoProducts));
     hideCategoryAnimation();
+    filterProductsBySorting(selected);
   }
 
   function processCategoryHtml(categories) {
@@ -373,17 +381,35 @@ export default function HomeByCategory(props) {
     categories.map((category) => {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
-          onPress={() =>
-            {console.log(category.id, category.name);
-            filterProductsByCateogry(categories, category.id, category.name)}
-          }
+          onPress={() => {
+            onCategorySelected(String(category.name));
+            filterProductsByCateogry(categories, category.id, category.name)
+          }}
         >
-          <View style={styles.categoryContainer} key={category.id}>
+          <View style={{
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              paddingVertical: heightPercentageToDP("1.5%"),
+              backgroundColor: categorySelected == String(category.name) ? "orange" : "white",
+          }} >
             <Text>{category.name}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
     });
+    tmpCategoryHtml.push(
+      <TouchableWithoutFeedback
+        onPress={() => {
+          onCategorySelected("reset");
+          filterProductsByCateogry(categories, "reset", "");
+        }}
+      >
+        <View style={styles.categoryContainer} >
+          <Text>{Translate.t("reset")}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
@@ -871,23 +897,49 @@ export default function HomeByCategory(props) {
             <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
           </View>
           {categoryHtml}
-          <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
-            <View
-              style={{
-                position: "absolute",
-                bottom: heightPercentageToDP("8%"),
-                right: widthPercentageToDP("3%"),
-                borderWidth: 1,
-                borderRadius: 5,
-                backgroundColor: "white",
-                alignItems: "center",
-                paddingVertical: heightPercentageToDP(".7%"),
-                paddingHorizontal: widthPercentageToDP("2%"),
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              bottom: heightPercentageToDP("8%"),
+              right: 0,
+              marginTop: heightPercentageToDP("60%"),
+            }}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onCategorySelected("reset");
+                filterProductsByCateogry([], "reset");
               }}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </Animated.View>
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
         <ScrollView style={styles.home_product_view}>

@@ -240,6 +240,7 @@ export default function Home(props) {
     });
     onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
     hideCategoryAnimation();
+    filterProductsBySorting(selected);
   }
   function processCategoryHtml(categories) {
     let tmpCategoryHtml = [];
