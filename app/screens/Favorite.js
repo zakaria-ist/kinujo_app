@@ -282,6 +282,14 @@ export default function Favorite(props) {
         processFavouriteHtml(props, users, tmpKinujoProducts)
       );
     }
+    if (type == "reset") {
+      onSelected("");
+
+      onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
+      onFavouriteHtmlChanged(
+        processFavouriteHtml(props, users, tmpKinujoProducts)
+      );
+    }
     hideSortingAnimation();
   }
   React.useEffect(() => {
@@ -499,7 +507,7 @@ export default function Favorite(props) {
               paddingVertical: heightPercentageToDP("1.5%"),
               backgroundColor: selected == "latestFirst" ? "orange" : "white",
             }}>
-              <Text>Latest First</Text>
+              <Text>{Translate.t("latestFirst")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -512,7 +520,7 @@ export default function Favorite(props) {
               paddingVertical: heightPercentageToDP("1.5%"),
               backgroundColor: selected == "LowToHigh" ? "orange" : "white",
             }}>
-              <Text>Price Low to High</Text>
+              <Text>{Translate.t("priceLowToHigh")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -525,26 +533,57 @@ export default function Favorite(props) {
               paddingVertical: heightPercentageToDP("1.5%"),
               backgroundColor: selected == "HighToLow" ? "orange" : "white",
             }}>
-              <Text>Price High to Low</Text>
+              <Text>{Translate.t("priceHighToLow")}</Text>
             </View>
           </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
-            <View
-              style={{
-                position: "absolute",
-                bottom: heightPercentageToDP("8%"),
-                right: widthPercentageToDP("3%"),
-                borderWidth: 1,
-                borderRadius: 5,
-                backgroundColor: "white",
-                alignItems: "center",
-                paddingVertical: heightPercentageToDP(".7%"),
-                paddingHorizontal: widthPercentageToDP("2%"),
-              }}
+          <View
+            style={{
+              flexDirection: "row",
+              // position: "absolute",
+              justifyContent: "space-evenly",
+              // bottom: heightPercentageToDP("8%"),
+              // marginTop: heightPercentageToDP("10%"),
+              bottom: 0,
+              right: 0,
+              marginTop: heightPercentageToDP("60%"),
+              // right: widthPercentageToDP("3%"),
+              // backgroundColor: "orange",
+            }}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => filterProductsBySorting("reset")}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
+              <View
+                style={{
+                  // position: "absolute",
+                  // bottom: heightPercentageToDP("8%"),
+                  // right: widthPercentageToDP("3%"),
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </Animated.View>
         <ScrollView style={styles.home_product_view}>
           {favouriteHtml.length > 0 ? (

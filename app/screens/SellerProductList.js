@@ -56,10 +56,11 @@ const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 let featuredProducts;
+let categoryFeaturedProducts;
 let productsView = {};
 let taxRate = 0;
 export default function SellerProductList(props) {
-  const sellerName = props.route.params.sellerName;
+  let sellerName = props.route.params.sellerName;
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
@@ -67,6 +68,7 @@ export default function SellerProductList(props) {
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
   const [selected, onSelected] = useStateIfMounted("");
+  const [categorySelected, onCategorySelected] = useStateIfMounted("reset");
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
@@ -140,7 +142,7 @@ export default function SellerProductList(props) {
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name : sellerName}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseInt(product.store_price) + parseInt(parseFloat(product.store_price) * taxRate))
@@ -165,18 +167,21 @@ export default function SellerProductList(props) {
     return tmpFeaturedHtml;
   }
   function filterProductsByCateogry(categories, categoryID) {
-    let tmpFeaturedProducts = featuredProducts;
-    tmpFeaturedProducts = featuredProducts.filter((featured) => {
-      return featured.category.id == categoryID;
-    });
-    onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+    categoryFeaturedProducts = featuredProducts;
+    if (categoryID != "reset") {
+      categoryFeaturedProducts = featuredProducts.filter((featured) => {
+        return featured.category.id == categoryID;
+      });
+    }
+    onFeaturedHtmlChanged(processFeaturedProductHtml(categoryFeaturedProducts));
+    // onCategoryHtmlChanged(processCategoryHtml(categories));
     hideCategoryAnimation();
   }
   function filterProductsBySorting(type) {
-    let tmpFeaturedProducts = featuredProducts;
+    let tmpFeaturedProducts = categoryFeaturedProducts;
 
     if (type == "latestFirst") {
-      if (featuredProducts) {
+      if (categoryFeaturedProducts) {
         onSelected("latestFirst");
         tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
           let date1 = new Date(a.opened_date);
@@ -194,7 +199,7 @@ export default function SellerProductList(props) {
       }
     }
     if (type == "HighToLow") {
-      if (featuredProducts) {
+      if (categoryFeaturedProducts) {
         onSelected("HighToLow");
         tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
           return b.store_price - a.store_price;
@@ -204,7 +209,7 @@ export default function SellerProductList(props) {
       }
     }
     if (type == "LowToHigh") {
-      if (featuredProducts) {
+      if (categoryFeaturedProducts) {
         onSelected("LowToHigh");
         tmpFeaturedProducts = tmpFeaturedProducts.sort((a, b) => {
           return a.store_price - b.store_price;
@@ -223,7 +228,8 @@ export default function SellerProductList(props) {
         let productB_count = productsView[productB.id]
           ? productsView[productB.id]
           : 0;
-        return productA_count > productB_count;
+        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
+        
       });
       // tmpKinujoProducts = tmpKinujoProducts.sort((productA, productB) => {
       //   let productA_count = productsView[productA.id]
@@ -239,30 +245,32 @@ export default function SellerProductList(props) {
     }
     if (type == "reset") {
       onSelected("");
-      request.get("products/").then(function (response) {
-        let products = response.data;
-        products = products.sort((p1, p2) => {
-          if (p1.created > p2.created) {
-            return -1;
-          }
-          return 1;
-        });
+      categoryFeaturedProducts = featuredProducts;
+      onFeaturedHtmlChanged(processFeaturedProductHtml(categoryFeaturedProducts));
+      // request.get("products/").then(function (response) {
+      //   let products = response.data;
+      //   products = products.sort((p1, p2) => {
+      //     if (p1.created > p2.created) {
+      //       return -1;
+      //     }
+      //     return 1;
+      //   });
 
-        products = products.filter((product) => {
-          let date = new Date(product.is_opened);
-          return (
-            product.is_opened == 1 &&
-            new Date() > date &&
-            product.is_hidden == 0 &&
-            product.is_draft == 0
-          );
-        });
+      //   products = products.filter((product) => {
+      //     let date = new Date(product.is_opened);
+      //     return (
+      //       product.is_opened == 1 &&
+      //       new Date() > date &&
+      //       product.is_hidden == 0 &&
+      //       product.is_draft == 0
+      //     );
+      //   });
 
-        featuredProducts = products.filter((product) => {
-          return product.user.shop_name == sellerName;
-        });
-        onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
-      });
+      //   featuredProducts = products.filter((product) => {
+      //     return product.user.shop_name == sellerName;
+      //   });
+      //   onFeaturedHtmlChanged(processFeaturedProductHtml(categoryFeaturedProducts));
+      // });
     }
     hideSortingAnimation();
   }
@@ -271,14 +279,35 @@ export default function SellerProductList(props) {
     categories.map((category) => {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
-          onPress={() => filterProductsByCateogry(categories, category.id)}
+          onPress={() => {
+            onCategorySelected(String(category.name));
+            filterProductsByCateogry(categories, category.id)
+          }}
         >
-          <View style={styles.categoryContainer} key={category.id}>
+          <View style={{
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              paddingVertical: heightPercentageToDP("1.5%"),
+              backgroundColor: categorySelected == String(category.name) ? "orange" : "white",
+          }} >
             <Text>{category.name}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
     });
+    tmpCategoryHtml.push(
+      <TouchableWithoutFeedback
+        onPress={() => {
+          onCategorySelected("reset");
+          filterProductsByCateogry(categories, "reset")
+        }}
+      >
+        <View style={styles.categoryContainer} >
+          <Text>{Translate.t("reset")}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
     return tmpCategoryHtml;
   }
 
@@ -391,8 +420,10 @@ export default function SellerProductList(props) {
           });
 
           featuredProducts = products.filter((product) => {
-            return product.user.shop_name == sellerName;
+            let shopName = product.user.shop_name ? product.user.shop_name : product.user.nickname;
+            return shopName == sellerName;
           });
+          categoryFeaturedProducts = featuredProducts;
           onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
         })
         .catch(function (error) {
@@ -629,23 +660,49 @@ export default function SellerProductList(props) {
             <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
           </View>
           {categoryHtml}
-          <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
-            <View
-              style={{
-                position: "absolute",
-                bottom: heightPercentageToDP("8%"),
-                right: widthPercentageToDP("3%"),
-                borderWidth: 1,
-                borderRadius: 5,
-                backgroundColor: "white",
-                alignItems: "center",
-                paddingVertical: heightPercentageToDP(".7%"),
-                paddingHorizontal: widthPercentageToDP("2%"),
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              bottom: heightPercentageToDP("8%"),
+              right: 0,
+              marginTop: heightPercentageToDP("60%"),
+            }}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onCategorySelected("reset");
+                filterProductsByCateogry([], "reset");
               }}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </Animated.View>
         {/* ///////////////////////////////////////////////////////////////////////////////////////////////// */}
         <Animated.View
@@ -684,7 +741,7 @@ export default function SellerProductList(props) {
                 backgroundColor: selected == "latestFirst" ? "orange" : "white",
               }}
             >
-              <Text>Latest First</Text>
+              <Text>{Translate.t("latestFirst")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -699,7 +756,7 @@ export default function SellerProductList(props) {
                 backgroundColor: selected == "LowToHigh" ? "orange" : "white",
               }}
             >
-              <Text>Price Low to High</Text>
+              <Text>{Translate.t("priceLowToHigh")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -714,7 +771,7 @@ export default function SellerProductList(props) {
                 backgroundColor: selected == "HighToLow" ? "orange" : "white",
               }}
             >
-              <Text>Price High to Low</Text>
+              <Text>{Translate.t("priceHighToLow")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
@@ -729,7 +786,7 @@ export default function SellerProductList(props) {
                 backgroundColor: selected == "Popular" ? "orange" : "white",
               }}
             >
-              <Text>Popular</Text>
+              <Text>{Translate.t("popular")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <View
@@ -759,7 +816,7 @@ export default function SellerProductList(props) {
                   paddingHorizontal: widthPercentageToDP("2%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>{"Reset"}</Text>
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
               </View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={() => hideSortingAnimation()}>
@@ -776,7 +833,7 @@ export default function SellerProductList(props) {
                   paddingHorizontal: widthPercentageToDP("2%"),
                 }}
               >
-                <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
               </View>
             </TouchableWithoutFeedback>
           </View>
