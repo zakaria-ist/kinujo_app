@@ -391,11 +391,14 @@ export default function CustomerInformation(props) {
                         : false,
                       displayName: displayName
                         ? displayName
-                        : firebaseUser.displayName,
+                        : user.nickname,
                       memo: firebaseUser.memo
                         ? firebaseUser.memo
                         : "",
                     });
+                    if(!displayName) {
+                      onDisplayNameChanged(user.nickname);
+                    }
                 }}
               />
               
