@@ -50,6 +50,7 @@ export default function CustomerList(props) {
   const [user, onUserChanged] = useStateIfMounted({});
   const [displayName, onDisplayNameChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
+  
   function processCustomerHtml(props, customers, search = "") {
     let tmpCustomerHtml = [];
     let tmpCustomers = customers;
@@ -91,7 +92,7 @@ export default function CustomerList(props) {
             )}
 
             <Text style={styles.customerListName}>
-              {displayName[String(customer.id)] ? displayName[String(customer.id)] : customer.real_name ? customer.real_name : customer.nickname}
+              {displayName[String(customer.id)] ? displayName[String(customer.id)] : customer.nickname ? customer.nickname : customer.real_name}
             </Text>
             <View
               style={{

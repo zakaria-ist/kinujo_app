@@ -136,9 +136,12 @@ export default function AdvanceSetting(props) {
                 }
                 onFirstLoadedChanged(true);
               } else {
+                onDisplayNameChanged(
+                  response.data.nickname ? response.data.nickname : ""
+                );
                 onFirebaseUserChanged({
                   memo: "",
-                  displayName: "",
+                  displayName: response.data.nickname ? response.data.nickname : "",
                   secret_mode: false,
                   block: false,
                 });
@@ -198,9 +201,14 @@ export default function AdvanceSetting(props) {
                     .set({
                       blockMode: blockMode,
                       secretMode: secretMode,
-                      displayName: displayName,
+                      displayName: displayName
+                      ? displayName
+                      : customer.nickname,
                       memo: firebaseUser.memo,
                     });
+                    if(!displayName) {
+                      onDisplayNameChanged(customer.nickname);
+                    }
                 }}
               />
               <TextInput
