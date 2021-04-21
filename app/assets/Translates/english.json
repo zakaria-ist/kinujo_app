@@ -392,5 +392,6 @@
   "Please fill in stock.": "Please fill in stock.",
   "limitedStock": "The requested stock is not available.",
   "cartFilterMsg": "Products are removed from cart for limited or empty stock.",
-  "send": "Send"
+  "send": "Send",
+  "all": "All"
 }
