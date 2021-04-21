@@ -144,12 +144,12 @@ export default function ProductList(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -178,7 +178,6 @@ export default function ProductList(props) {
     let tmpFeaturedHtml = [];
     let idx = 0;
     featuredProducts.map((product) => {
-      // console.log(product.name);
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
@@ -208,12 +207,12 @@ export default function ProductList(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -453,7 +452,7 @@ export default function ProductList(props) {
               width: widthPercentageToDP("65%"),
             }}
           >
-            Product Name : {productName}
+            {Translate.t('productName')} : {productName}
           </Text>
           <View
             style={{

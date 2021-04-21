@@ -298,7 +298,6 @@ export default function PasswordReset(props) {
                               tel_code: callingCode,
                               password: password,
                               confirm_password: confirm_password,
-                              confirm_password: confirm_password,
                             })
                             .then(function (response) {
                               response = response.data;
