@@ -56,6 +56,7 @@ let featuredProducts;
 let categoryFeaturedProducts;
 let productsView = {};
 let taxRate = 0;
+let allCategories = [];
 export default function Home(props) {
   const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
@@ -65,7 +66,6 @@ export default function Home(props) {
   const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
   const [showSorting, onSortingShow] = useStateIfMounted(false);
   const [selected, onSelected] = useStateIfMounted("");
-  const [categorySelected, onCategorySelected] = useStateIfMounted("reset");
   const isFocused = useIsFocused();
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
@@ -74,6 +74,8 @@ export default function Home(props) {
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
   const shopName = props.route.params.shopName;
+  let categorySelected = "";
+  
   function filterProductsBySorting(type) {
     let tmpFeaturedProducts = categoryFeaturedProducts;
 
@@ -233,7 +235,8 @@ export default function Home(props) {
     return tmpFeaturedHtml;
   }
 
-  function filterProductsByCateogry(categories, categoryID) {
+  function filterProductsByCateogry(categories, categoryID, name) {
+    categorySelected = name;
     let tmpFeaturedProducts = featuredProducts;
     tmpFeaturedProducts = featuredProducts.filter((featured) => {
       return featured.category.id == categoryID;
@@ -241,6 +244,7 @@ export default function Home(props) {
     onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
     hideCategoryAnimation();
     filterProductsBySorting(selected);
+    onCategoryHtmlChanged(processCategoryHtml(categories));
   }
   function processCategoryHtml(categories) {
     let tmpCategoryHtml = [];
@@ -248,8 +252,7 @@ export default function Home(props) {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
           onPress={() => {
-            onCategorySelected(String(category.name));
-            filterProductsByCateogry(categories, category.id)
+            filterProductsByCateogry(categories, category.id, category.name)
           }}
         >
           <View style={{
@@ -257,7 +260,7 @@ export default function Home(props) {
               borderBottomWidth: 1,
               borderBottomColor: Colors.D7CCA6,
               paddingVertical: heightPercentageToDP("1.5%"),
-              backgroundColor: categorySelected == String(category.name) ? "orange" : "white",
+              backgroundColor: categorySelected == category.name ? "orange" : "white",
           }} >
             <Text>{category.name}</Text>
           </View>
@@ -267,8 +270,7 @@ export default function Home(props) {
     tmpCategoryHtml.push(
       <TouchableWithoutFeedback
         onPress={() => {
-          onCategorySelected("reset");
-          filterProductsByCateogry(categories, "reset")
+          filterProductsByCateogry(categories, "reset", "reset")
         }}
       >
         <View style={styles.categoryContainer} >
@@ -356,6 +358,7 @@ export default function Home(props) {
           });
       });
       request.get("product_categories/").then(function (response) {
+        allCategories = response.data;
         onCategoryHtmlChanged(processCategoryHtml(response.data));
       });
       request
@@ -624,8 +627,7 @@ export default function Home(props) {
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                onCategorySelected("reset");
-                filterProductsByCateogry([], "reset");
+                filterProductsByCateogry(allCategories, "reset", "reset");
               }}
             >
               <View
