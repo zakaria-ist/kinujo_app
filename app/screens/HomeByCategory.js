@@ -63,7 +63,9 @@ let categoryDetails;
 let sellers = [];
 let productsView = {};
 let taxRate = 0;
+let allCategories = [];
 export default function HomeByCategory(props) {
+  let category_name = props.route.params.categoryName ? props.route.params.categoryName : "";
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   const [userAuthorityId, setUserAuthorityId] = useStateIfMounted(0);
@@ -71,9 +73,8 @@ export default function HomeByCategory(props) {
   const [kinujoHtml, onKinujoHtmlChanged] = useStateIfMounted([]);
   const [showCategory, onCategoryShow] = useStateIfMounted(false);
   const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
-  const [categoryName, onCategoryName] = useStateIfMounted("");
+  const [categoryName, onCategoryName] = useStateIfMounted(category_name);
   const [selected, onSelected] = useStateIfMounted("");
-  const [categorySelected, onCategorySelected] = useStateIfMounted("");
   const rightCategory = React.useRef(
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
@@ -86,6 +87,7 @@ export default function HomeByCategory(props) {
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
   const categoryID = props.route.params.categoryID;
+  let categorySelected = category_name;
 
   React.useEffect(() => {
     hideAll();
@@ -357,6 +359,7 @@ export default function HomeByCategory(props) {
     hideSortingAimation();
   }
   function filterProductsByCateogry(categories, categoryID, name) {
+    categorySelected = name;
     filteredFeaturedProducts = featuredProducts;
     filteredKinujoProducts = kinujoProducts;
     if (categoryID != "reset") {
@@ -374,6 +377,7 @@ export default function HomeByCategory(props) {
     onKinujoHtmlChanged(processKinujoProductHtml(filteredKinujoProducts));
     hideCategoryAnimation();
     filterProductsBySorting(selected);
+    onCategoryHtmlChanged(processCategoryHtml(categories));
   }
 
   function processCategoryHtml(categories) {
@@ -382,7 +386,6 @@ export default function HomeByCategory(props) {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
           onPress={() => {
-            onCategorySelected(String(category.name));
             filterProductsByCateogry(categories, category.id, category.name)
           }}
         >
@@ -391,7 +394,7 @@ export default function HomeByCategory(props) {
               borderBottomWidth: 1,
               borderBottomColor: Colors.D7CCA6,
               paddingVertical: heightPercentageToDP("1.5%"),
-              backgroundColor: categorySelected == String(category.name) ? "orange" : "white",
+              backgroundColor: categorySelected == category.name ? "orange" : "white",
           }} >
             <Text>{category.name}</Text>
           </View>
@@ -401,7 +404,6 @@ export default function HomeByCategory(props) {
     tmpCategoryHtml.push(
       <TouchableWithoutFeedback
         onPress={() => {
-          onCategorySelected("reset");
           filterProductsByCateogry(categories, "reset", "");
         }}
       >
@@ -457,6 +459,7 @@ export default function HomeByCategory(props) {
       onFeaturedHtmlChanged([]);
       onKinujoHtmlChanged([]);
       onCategoryName(props.route.params.categoryName);
+      categorySelected = props.route.params.categoryName;
 
       db.collection("products").get().then((querySnapshot) => {
         querySnapshot.forEach((documentSnapshot) => {
@@ -488,6 +491,7 @@ export default function HomeByCategory(props) {
           });
       });
       request.get("product_categories/").then(function (response) {
+        allCategories = response.data;
         onCategoryHtmlChanged(processCategoryHtml(response.data));
       });
       request
@@ -908,8 +912,7 @@ export default function HomeByCategory(props) {
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                onCategorySelected("reset");
-                filterProductsByCateogry([], "reset");
+                filterProductsByCateogry(allCategories, "reset", "");
               }}
             >
               <View

@@ -79,6 +79,8 @@ export default function HomeProducts({
         .then(function (doc) {
           if (doc.exists) {
             setFavourite(true);
+          } else {
+            setFavourite(false);
           }
         });
     });

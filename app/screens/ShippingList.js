@@ -147,11 +147,7 @@ export default function ShippingList(props) {
                 <View style={styles.tabContainer}>
                   <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
                   <Text style={styles.textInTabContainer}>{address.zip1}</Text>
-                  <Text style={styles.textInTabContainer}>
-                    {address.address1}
-                  </Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text
+                  <Text
                       style={{
                         fontSize: RFValue(12),
                         marginTop: heightPercentageToDP(".5%"),
@@ -159,6 +155,10 @@ export default function ShippingList(props) {
                     >
                       {address.prefecture.name}
                     </Text>
+                  <Text style={styles.textInTabContainer}>
+                    {address.address1}
+                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <View
                       style={{
                         flexDirection: "row-reverse",
@@ -243,6 +243,12 @@ export default function ShippingList(props) {
                       </TouchableWithoutFeedback>
                     </View>
                   </View>
+                  <Text style={{
+                        fontSize: RFValue(12),
+                        marginTop: heightPercentageToDP(".5%"),
+                      }}>
+                        {address.address2}
+                  </Text>
                 </View>
               </TouchableWithoutFeedback>
             );
