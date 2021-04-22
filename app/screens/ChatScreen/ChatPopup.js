@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
     StyleSheet,
     Text,
@@ -29,6 +29,10 @@ const ChatPopup = ({
         onCancel(true)
     }
 
+    const hidePopUp = () => {
+        onShowPopUpChanged(false);
+    }
+
     return React.useMemo(() => {
         return <Modal
             presentationStyle={"overFullScreen"}
@@ -36,10 +40,8 @@ const ChatPopup = ({
             transparent={true}
             animationType="fade"
         >
-            <TouchableNativeFeedback onPress={() => {
-                onShowPopUpChanged(false);
-            }} >
-                <View style={{ flex: 1, backgroundColor: "transparent" }}>
+            <TouchableNativeFeedback onPress={hidePopUp} >
+                <View style={styles.container}>
                     <View style={showPopUp == true ? styles.popUpView : styles.none}>
                         <View
                             style={styles.wrapItem}
@@ -81,16 +83,19 @@ const PopupItem = ({
     onPress,
     langKey
 }) => {
-    return <TouchableOpacity
-        onPress={onPress}
-    >
-        <Text style={styles.popUpText}>
-            {Translate.t(langKey)}
-        </Text>
-    </TouchableOpacity>
+    return useMemo(() => {
+        return <TouchableOpacity
+            onPress={onPress}
+        >
+            <Text style={styles.popUpText}>
+                {Translate.t(langKey)}
+            </Text>
+        </TouchableOpacity>
+    }, [])
 }
 
 const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: "transparent" },
     wrapItem: {
         marginTop: heightPercentageToDP("1%"),
         // paddingBottom: heightPercentageToDP("1.5%"),

@@ -1,11 +1,6 @@
 import React, { useRef } from "react";
 import { InteractionManager } from 'react-native';
 import {
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  TouchableNativeFeedback,
   KeyboardAvoidingView,
   Platform,
   Keyboard,
@@ -14,36 +9,28 @@ import {
 
 import Spinner from "react-native-loading-spinner-overlay";
 import { useStateIfMounted } from "use-state-if-mounted";
-import { Colors } from "../../assets/Colors.js";
 import { useIsFocused } from "@react-navigation/native";
-import EmojiBoard from "react-native-emoji-board";
 import {
-  widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../../assets/Translates/Translate";
-import { RFValue } from "react-native-responsive-fontsize";
 import AndroidKeyboardAdjust from "react-native-android-keyboard-adjust";
 import CustomHeader from "../../assets/CustomComponents/ChatCustomHeaderWithBackArrow";
 import CustomSelectHeader from "../../assets/CustomComponents/ChatSelectHeader";
-import ChatText from "../ChatText";
-import ChatContact from "../ChatContact";
 import AsyncStorage from "@react-native-community/async-storage";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "../../../firebaseConfig.js";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Request from "../../lib/request";
 import CustomAlert from "../../lib/alert";
 import storage from "@react-native-firebase/storage";
 import Clipboard from "@react-native-community/clipboard";
-import moment from 'moment-timezone';
-import * as Localization from "expo-localization";
 import FooterChat from "./FooterChat.js";
 import ListMessage from "./ListMessage.js";
 import ChatPopup from "./ChatPopup.js";
+import EmojiKeyboard from "./EmojiKeyboard";
+import { StyleSheet } from "react-native";
 const alert = new CustomAlert();
-const { width } = Dimensions.get("window");
 var uuid = require("react-native-uuid");
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -67,11 +54,12 @@ let chats = [];
 let old30Chats = [];
 let oldChats = [];
 let imageMap = {};
-let selects = [];
+// let selects = [];
 let day = new Date().getDate();
 let tmpMultiSelect = false;
 let old30LastDoc = null;
 let isUserBlocked = false;
+
 function checkUpdateFriend(user1, user2) {
   if (!updateFriend && user1 && user2 && user1 != user2) {
     db.collection("users")
@@ -100,6 +88,98 @@ function getTime() {
   );
 }
 let favIndex = -1;
+
+function findParams(data, param) {
+  let tmps = data.split("?");
+  if (tmps.length > 0) {
+    let tmp = tmps[1];
+    let params = tmp.split("&");
+    let searchParams = params.filter((tmpParam) => {
+      return tmpParam.indexOf(param) >= 0;
+    });
+    if (searchParams.length > 0) {
+      let foundParam = searchParams[0];
+      let foundParams = foundParam.split("=");
+      if (foundParams.length > 0) {
+        return foundParams[1];
+      }
+    }
+  }
+  return "";
+}
+
+async function getName(ownId, data) {
+  if (data.type && data.type == "group") {
+    return data.groupName;
+  }
+  if (data.users.length > 2) return data.groupName;
+  let users = data.users.filter((user) => {
+    return user != ownId;
+  });
+  let snapShot = await db
+    .collection("users")
+    .doc(ownId)
+    .collection("customers")
+    .get();
+
+  tmpName = "";
+  snapShot.forEach((docRef) => {
+    if (docRef.data().displayName && docRef.id == users[0]) {
+      tmpName = docRef.data().displayName;
+
+      if (docRef.data().secretMode) {
+        setSecretMode(true);
+      }
+    }
+  });
+  if (tmpName) return tmpName;
+  if (users.length > 0) {
+    let user = users[0];
+    onUserUrlChanged("profiles/" + user);
+    user = await request.get("profiles/" + user);
+    user = user.data;
+
+    return user.nickname;
+  }
+  return "";
+}
+
+const onSendImage = (response) => {
+  if (response.uri) {
+    if (response.type.includes("image")) {
+      const reference = storage().ref(uuid.v4() + ".png");
+
+      let imagePath = Platform.select({
+        android: response.path,
+        ios: response.uri.replace("file://", "")
+      })
+
+      reference
+        .putFile(imagePath)
+        .then((response) => {
+          reference.getDownloadURL().then((url) => {
+            let createdAt = getTime();
+
+            chatsRef
+              .doc(groupID)
+              .collection("messages")
+              .add({
+                userID: userId,
+                createdAt: createdAt,
+                message: "Photo",
+                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                image: url,
+              })
+              .then(function () { });
+          });
+        })
+        .catch((error) => { });
+    } else {
+      alert.warning(Translate.t("image_allowed"))
+    }
+  }
+}
+
 export default function ChatScreen(props) {
   const [shouldShow, setShouldShow] = useStateIfMounted(false);
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
@@ -124,36 +204,16 @@ export default function ChatScreen(props) {
   let favData = props.route.params.favData;
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
-  const insets = useSafeAreaInsets();
-  const myTimeZone = Localization.timezone;
+  const [selects, setSelected] = useStateIfMounted([])
 
-
-  function findParams(data, param) {
-    let tmps = data.split("?");
-    if (tmps.length > 0) {
-      let tmp = tmps[1];
-      let params = tmp.split("&");
-      let searchParams = params.filter((tmpParam) => {
-        return tmpParam.indexOf(param) >= 0;
-      });
-      if (searchParams.length > 0) {
-        let foundParam = searchParams[0];
-        let foundParams = foundParam.split("=");
-        if (foundParams.length > 0) {
-          return foundParams[1];
-        }
-      }
-    }
-    return "";
-  }
-
-  React.useEffect(() => {
-    hideEmoji();
-    setMultiSelect(false);
-    tmpMultiSelect = false;
-    selects = []
-    setChats([]);
-  }, [!isFocused]);
+  // React.useEffect(() => {
+  //   hideEmoji();
+  //   setMultiSelect(false);
+  //   tmpMultiSelect = false;
+  //   // selects = []
+  //   setSelected([])
+  //   setChats([]);
+  // }, [!isFocused]);
 
   function redirectToChat(contactID, contactName) {
     AsyncStorage.getItem("user").then((url) => {
@@ -232,42 +292,6 @@ export default function ChatScreen(props) {
           }
         });
     });
-  }
-
-  async function getName(ownId, data) {
-    if (data.type && data.type == "group") {
-      return data.groupName;
-    }
-    if (data.users.length > 2) return data.groupName;
-    let users = data.users.filter((user) => {
-      return user != ownId;
-    });
-    let snapShot = await db
-      .collection("users")
-      .doc(ownId)
-      .collection("customers")
-      .get();
-
-    tmpName = "";
-    snapShot.forEach((docRef) => {
-      if (docRef.data().displayName && docRef.id == users[0]) {
-        tmpName = docRef.data().displayName;
-
-        if (docRef.data().secretMode) {
-          setSecretMode(true);
-        }
-      }
-    });
-    if (tmpName) return tmpName;
-    if (users.length > 0) {
-      let user = users[0];
-      onUserUrlChanged("profiles/" + user);
-      user = await request.get("profiles/" + user);
-      user = user.data;
-
-      return user.nickname;
-    }
-    return "";
   }
 
   const onClick = (emoji) => {
@@ -597,41 +621,7 @@ export default function ChatScreen(props) {
     },
   ];
 
-  const onSendImage = (response) => {
-    if (response.uri) {
-      if (response.type.includes("image")) {
-        const reference = storage().ref(uuid.v4() + ".png");
 
-        let imagePath = Platform.select({
-          android: response.path,
-          ios: response.uri.replace("file://", "")
-        })
-
-        reference
-          .putFile(imagePath)
-          .then((response) => {
-            reference.getDownloadURL().then((url) => {
-              let createdAt = getTime();
-
-              chatsRef
-                .doc(groupID)
-                .collection("messages")
-                .add({
-                  userID: userId,
-                  createdAt: createdAt,
-                  message: "Photo",
-                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                  image: url,
-                })
-                .then(function () { });
-            });
-          })
-          .catch((error) => { });
-      } else {
-        alert.warning(Translate.t("image_allowed"))
-      }
-    }
-  }
 
   const onCopy = () => { Clipboard.setString(longPressObj.message); onShowPopUpChanged(false) }
 
@@ -762,12 +752,17 @@ export default function ChatScreen(props) {
     })
   }
 
+  const onHideFooter = () => {
+    hideEmoji();
+    setShouldShow(!shouldShow);
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
       <Spinner
         visible={spinner}
         textContent={"Loading..."}
-        // textStyle={styles.spinnerTextStyle}
+      // textStyle={styles.spinnerTextStyle}
       />
       {!multiSelect ? (
         <CustomHeader
@@ -794,7 +789,8 @@ export default function ChatScreen(props) {
           onCancel={() => {
             setMultiSelect(false);
             tmpMultiSelect = false;
-            selects = [];
+            setSelected([])
+            // selects = [];
             processChat(chats);
             processOld30Chat(old30Chats);
             processOldChat(oldChats);
@@ -805,22 +801,15 @@ export default function ChatScreen(props) {
       <KeyboardAvoidingView
         behavior={Platform.OS == "ios" ? "padding" : null}
         keyboardVerticalOffset={Platform.OS == "ios" ? 20 : 0}
-        style={{ flex: 1 }}
+        style={styles.container}
       >
-        <EmojiBoard
-          numCols={parseInt(heightPercentageToDP("30%") / 60)}
-          showBoard={showEmoji}
-          style={{
-            height: heightPercentageToDP("50%"),
-            marginBottom: heightPercentageToDP("10%"),
-          }}
-          containerStyle={{
-            height: heightPercentageToDP("30%"),
-          }}
+
+        <EmojiKeyboard
+          showEmoji={showEmoji}
           onClick={onClick}
           onRemove={onRemove}
+          messages={messages}
         />
-
         <ListMessage
           ref={scrollViewReference}
           newChats={newChats}
@@ -828,7 +817,6 @@ export default function ChatScreen(props) {
           userId={userId}
           tmpMultiSelect={tmpMultiSelect}
           parentProps={props}
-
           day={day}
           onLongPressObjChanged={onLongPressObjChanged}
           onShowPopUpChanged={onShowPopUpChanged}
@@ -836,6 +824,7 @@ export default function ChatScreen(props) {
           tmpMultiSelect={tmpMultiSelect}
           selectedChat={selectedChat}
           selects={selects}
+          setSelected={setSelected}
           processOldChat={processOldChat}
           oldChats={oldChats}
           findParams={findParams}
@@ -846,7 +835,6 @@ export default function ChatScreen(props) {
           previousMessageDateElse={previousMessageDateElse}
           favIndex={favIndex}
         />
-
         <ChatPopup
           showPopUp={showPopUp}
           onCopy={onCopy}
@@ -856,8 +844,6 @@ export default function ChatScreen(props) {
           onMutiSelect={onMutiSelect}
           onShowPopUpChanged={onShowPopUpChanged}
         />
-
-
         {/* Bottom Area */}
 
         <FooterChat
@@ -865,10 +851,7 @@ export default function ChatScreen(props) {
           textInputHeight={textInputHeight}
           shouldShow={shouldShow}
           hideEmoji={hideEmoji}
-          onHide={() => {
-            hideEmoji();
-            setShouldShow(!shouldShow);
-          }}
+          onHide={onHideFooter}
 
           onContentSizeChange={scrollToEnd}
           messages={messages}
@@ -883,3 +866,7 @@ export default function ChatScreen(props) {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 }
+})

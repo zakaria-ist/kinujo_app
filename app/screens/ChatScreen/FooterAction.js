@@ -16,7 +16,7 @@ export default FooterAction = ({
                 </Text>
             </View>
         </TouchableNativeFeedback>
-    })
+    }, [])
 }
 
 const styles = StyleSheet.create({

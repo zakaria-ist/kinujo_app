@@ -128,11 +128,12 @@ const FooterChat = ({
                 i18key={'contact'}
             />
         </Animated.View>
-        <View style={{ flex: 1 }} />
+        <View style={styles.container} />
     </View>
 }
 
 const styles = StyleSheet.create({
+    container: { flex: 1 },
     container: {
         width: "100%",
         left: 0,
