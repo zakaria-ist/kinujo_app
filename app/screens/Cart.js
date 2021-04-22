@@ -133,60 +133,65 @@ export default function Cart(props) {
         </View>
       );
     } else {
-      tmpAddresses.push(
-        <View style={styles.deliveryTabContainer} key={pAddresses.id}>
-          <View
-            style={{
-              position: "absolute",
-              marginLeft: widthPercentageToDP("4%"),
-            }}
-          >
-            <Text style={{ fontSize: RFValue(12) }}>
-              {Translate.t("destination")}
-            </Text>
-            <TouchableWithoutFeedback
-              onPress={() =>
-                props.navigation.navigate("ShippingList", {
-                  type: "cart",
-                })
-              }
-            >
-              <View style={styles.buttonContainer}>
-                <Text style={{ fontSize: RFValue(11), color: "white" }}>
-                  {Translate.t("change")}
+      request.get(pAddresses.prefecture)
+        .then(res => {
+          let pref = res.data.name
+          tmpAddresses.push(
+            <View style={styles.deliveryTabContainer} key={pAddresses.id}>
+              <View
+                style={{
+                  position: "absolute",
+                  marginLeft: widthPercentageToDP("4%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>
+                  {Translate.t("destination")}
                 </Text>
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    props.navigation.navigate("ShippingList", {
+                      type: "cart",
+                    })
+                  }
+                >
+                  <View style={styles.buttonContainer}>
+                    <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                      {Translate.t("change")}
+                    </Text>
+                  </View>
+                </TouchableWithoutFeedback>
               </View>
-            </TouchableWithoutFeedback>
-          </View>
-          <View
-            style={{
-              // marginRight: widthPercentageToDP("4%"),
-              position: "absolute",
-              right: 0,
-              justifyContent: "center",
-            }}
-          >
-            <Text
-              style={{
-                fontSize: RFValue(12),
-                // backgroundColor: "orange",
-                width: widthPercentageToDP("45%"),
-              }}
-            >
-              {pAddresses.name}
-            </Text>
-            <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
-            <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
-
-            <Text style={styles.textInTabContainer}>
-              {pAddresses.prefecture.name}
-            </Text>
-            <Text style={styles.textInTabContainer}>{pAddresses.address2}</Text>
-          </View>
-        </View>
-      );
+              <View
+                style={{
+                  // marginRight: widthPercentageToDP("4%"),
+                  position: "absolute",
+                  right: 0,
+                  justifyContent: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: RFValue(12),
+                    // backgroundColor: "orange",
+                    width: widthPercentageToDP("45%"),
+                  }}
+                >
+                  {pAddresses.name}
+                </Text>
+                <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
+                <Text style={styles.textInTabContainer}>
+                  {/* {pAddresses.prefecture.name} */}
+                  {pref}
+                </Text>
+                <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
+                <Text style={styles.textInTabContainer}>{pAddresses.address2}</Text>
+              </View>
+            </View>
+          )
+        })
     }
-    return tmpAddresses[0];
+    // return tmpAddresses[0];
+    return tmpAddresses;
   }
 
   function onValueChanged(id, itemValue, is_store) {

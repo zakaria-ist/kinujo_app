@@ -60,7 +60,7 @@ export default function BankAccountRegistration(props) {
               payload: payload,
             })
             .then(function(response) {
-              if(user.is_approved){
+              if(user.is_approved || props.route.params.authority != "store"){
                 props.navigation.reset({
                   index: 0,
                   routes: [{ name: "HomeStore" }],
@@ -147,9 +147,19 @@ export default function BankAccountRegistration(props) {
           </View>
         </TouchableOpacity>
         <View
-          onPress={() => props.navigation.navigate("AccountExamination", {
-            "authority" : props.route.params.authority
-          })}
+          onPress={() => {
+            if (props.route.params.authority != "store") {
+              props.navigation.reset({
+                index: 0,
+                routes: [{ name: "HomeStore" }],
+              });
+            }
+            else {
+              props.navigation.navigate("AccountExamination", {
+                "authority" : props.route.params.authority
+              })
+            }
+          }}
           style={{
             flexDirection: "row",
             justifyContent: "center",

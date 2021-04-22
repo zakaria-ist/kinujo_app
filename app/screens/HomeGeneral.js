@@ -81,6 +81,7 @@ export default function Home(props) {
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
+  let tempUser = {};
 
   let userId = "";
   let d_params = {
@@ -460,7 +461,7 @@ export default function Home(props) {
           name={product.name}
           seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
-            (user.is_seller && user.is_approved
+            ((user && user.is_seller && user.is_approved) || (tempUser && tempUser.is_seller && tempUser.is_approved)
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
               : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
@@ -545,7 +546,7 @@ export default function Home(props) {
           name={product.name}
           seller={product.user.shop_name}
           price={
-            (user.is_seller && user.is_approved
+            ((user && user.is_seller && user.is_approved) || (tempUser && tempUser.is_seller && tempUser.is_approved)
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
               : format.separator(parseFloat(product.price) + (parseFloat(product.price) * taxRate))) + " 円"
           }
@@ -624,8 +625,67 @@ export default function Home(props) {
           .get(url)
           .then(function (response) {
             onUserChanged(response.data);
+            tempUser = response.data;
             setUserAuthorityId(response.data.authority.id);
             requestUserPermission(response.data);
+
+            request
+              .get("simple_products/")
+              .then(function (response) {
+                let products = response.data;
+                // console.log(products)
+                products = products.sort((p1, p2) => {
+                  if (p1.created > p2.created) {
+                    return -1;
+                  }
+                  return 1;
+                });
+
+                products = products.filter((product) => {
+                  let date = new Date(product.is_opened);
+                  if (user.is_seller) {
+                    return (
+                      product.is_opened == 1 &&
+                      new Date() > date &&
+                      product.is_hidden == 0 &&
+                      product.is_draft == 0 &&
+                      (product.target == 0 || product.target == 2)
+                    );
+                  } else {
+                    return (
+                      product.is_opened == 1 &&
+                      new Date() > date &&
+                      product.is_hidden == 0 &&
+                      product.is_draft == 0 &&
+                      (product.target == 0 || product.target == 1)
+                    );
+                  }
+                });
+
+                kinujoProducts = products.filter((product) => {
+                  return product.user.authority.id == 1;
+                });
+                featuredProducts = products.filter((product) => {
+                  return product.user.authority.id != 1;
+                });
+                onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
+                onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
+              })
+              .catch(function (error) {
+                if (
+                  error &&
+                  error.response &&
+                  error.response.data &&
+                  Object.keys(error.response.data).length > 0
+                ) {
+                  alert.warning(
+                    error.response.data[Object.keys(error.response.data)[0]][0] +
+                    "(" +
+                    Object.keys(error.response.data)[0] +
+                    ")"
+                  );
+                }
+              });
           })
           .catch(function (error) {
             if (
@@ -686,69 +746,11 @@ export default function Home(props) {
       request.get("product_categories/").then(function (response) {
         onCategoryHtmlChanged(processCategoryHtml(response.data));
       });
-      request
-        .get("simple_products/")
-        .then(function (response) {
-          let products = response.data;
-          // console.log(products)
-          products = products.sort((p1, p2) => {
-            if (p1.created > p2.created) {
-              return -1;
-            }
-            return 1;
-          });
-
-          products = products.filter((product) => {
-            let date = new Date(product.is_opened);
-            if (user.is_seller) {
-              return (
-                product.is_opened == 1 &&
-                new Date() > date &&
-                product.is_hidden == 0 &&
-                product.is_draft == 0 &&
-                (product.target == 0 || product.target == 2)
-              );
-            } else {
-              return (
-                product.is_opened == 1 &&
-                new Date() > date &&
-                product.is_hidden == 0 &&
-                product.is_draft == 0 &&
-                (product.target == 0 || product.target == 1)
-              );
-            }
-          });
-
-          kinujoProducts = products.filter((product) => {
-            return product.user.authority.id == 1;
-          });
-          featuredProducts = products.filter((product) => {
-            return product.user.authority.id != 1;
-          });
-          onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
-          onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
-        })
-        .catch(function (error) {
-          if (
-            error &&
-            error.response &&
-            error.response.data &&
-            Object.keys(error.response.data).length > 0
-          ) {
-            alert.warning(
-              error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
-            );
-          }
-        });
     });
     // chat users
     request
       .post("user/alluser/data")
       .then((response) => {
-        console.log(response.data.users);
         AsyncStorage.setItem("chatuserlist", JSON.stringify(response.data.users)).then(
           () => {
           });
