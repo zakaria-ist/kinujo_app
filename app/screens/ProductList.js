@@ -57,6 +57,8 @@ const { height } = Dimensions.get("window");
 const win = Dimensions.get("window");
 let featuredProducts;
 let kinujoProducts;
+let filterfeaturedProducts;
+let filterkinujoProducts;
 let count = 0;
 let taxRate = 0;
 export default function ProductList(props) {
@@ -69,6 +71,7 @@ export default function ProductList(props) {
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
   const [selected, onSelected] = useStateIfMounted("");
+  const [categorySelected, onCategorySelected] = useStateIfMounted("reset");
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   //   const [totalItemsCount, onTotalItemsCount] = useStateIfMounted(0);
@@ -144,12 +147,12 @@ export default function ProductList(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -178,7 +181,6 @@ export default function ProductList(props) {
     let tmpFeaturedHtml = [];
     let idx = 0;
     featuredProducts.map((product) => {
-      // console.log(product.name);
       let images = product.productImages.filter((image) => {
         return image.is_hidden == 0 && image.image.is_hidden == 0;
       });
@@ -208,12 +210,12 @@ export default function ProductList(props) {
           idx={idx++}
           image={
             images.length > 0
-              ? images[0].image.image
+              ? images[0]
               : "https://lovemychinchilla.com/wp-content/themes/shakey/assets/images/default-shakey-large-thumbnail.jpg"
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name: product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -236,16 +238,19 @@ export default function ProductList(props) {
     return tmpFeaturedHtml;
   }
   function filterProductsByCateogry(categories, categoryID) {
-    let tmpFeaturedProducts = featuredProducts;
-    tmpFeaturedProducts = featuredProducts.filter((featured) => {
-      return featured.category.id == categoryID;
-    });
-    tmpKinujoProducts = kinujoProducts.filter((kinujo) => {
-      return kinujo.category.id == categoryID;
-    });
+    filterfeaturedProducts = featuredProducts;
+    filterkinujoProducts = kinujoProducts;
+    if (categoryID != "reset") {
+      filterfeaturedProducts = featuredProducts.filter((featured) => {
+        return featured.category.id == categoryID;
+      });
+      filterkinujoProducts = kinujoProducts.filter((kinujo) => {
+        return kinujo.category.id == categoryID;
+      });
+    }
     count = 0;
-    onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
-    onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
+    onKinujoHtmlChanged(processKinujoProductHtml(filterkinujoProducts));
+    onFeaturedHtmlChanged(processFeaturedProductHtml(filterfeaturedProducts));
     hideCategoryAnimation();
   }
 
@@ -254,14 +259,35 @@ export default function ProductList(props) {
     categories.map((category) => {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
-          onPress={() => filterProductsByCateogry(categories, category.id)}
+          onPress={() => {
+            onCategorySelected(String(category.name));
+            filterProductsByCateogry(categories, category.id)
+          }}
         >
-          <View style={styles.categoryContainer} key={category.id}>
+          <View style={{
+              alignItems: "center",
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.D7CCA6,
+              paddingVertical: heightPercentageToDP("1.5%"),
+              backgroundColor: categorySelected == String(category.name) ? "orange" : "white",
+          }} >
             <Text>{category.name}</Text>
           </View>
         </TouchableWithoutFeedback>
       );
     });
+    tmpCategoryHtml.push(
+      <TouchableWithoutFeedback
+        onPress={() => {
+          onCategorySelected("reset");
+          filterProductsByCateogry(categories, "reset")
+        }}
+      >
+        <View style={styles.categoryContainer} >
+          <Text>{Translate.t("reset")}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
     return tmpCategoryHtml;
   }
 
@@ -453,7 +479,7 @@ export default function ProductList(props) {
               width: widthPercentageToDP("65%"),
             }}
           >
-            Product Name : {productName}
+            {Translate.t('productName')} : {productName}
           </Text>
           <View
             style={{
@@ -563,23 +589,49 @@ export default function ProductList(props) {
             <Text style={styles.categoryTitle}>{Translate.t("category")}</Text>
           </View>
           {categoryHtml}
-          <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
-            <View
-              style={{
-                position: "absolute",
-                bottom: heightPercentageToDP("8%"),
-                right: widthPercentageToDP("3%"),
-                borderWidth: 1,
-                borderRadius: 5,
-                backgroundColor: "white",
-                alignItems: "center",
-                paddingVertical: heightPercentageToDP(".7%"),
-                paddingHorizontal: widthPercentageToDP("2%"),
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-evenly",
+              bottom: heightPercentageToDP("8%"),
+              right: 0,
+              marginTop: heightPercentageToDP("60%"),
+            }}
+          >
+            <TouchableWithoutFeedback
+              onPress={() => {
+                onCategorySelected("reset");
+                filterProductsByCateogry([], "reset");
               }}
             >
-              <Text style={{ fontSize: RFValue(12) }}>{"Finish"}</Text>
-            </View>
-          </TouchableWithoutFeedback>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("reset")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => hideCategoryAnimation()}>
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  backgroundColor: "white",
+                  alignItems: "center",
+                  paddingVertical: heightPercentageToDP(".7%"),
+                  paddingHorizontal: widthPercentageToDP("2%"),
+                }}
+              >
+                <Text style={{ fontSize: RFValue(12) }}>{Translate.t("finish")}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
         </Animated.View>
 
         <ScrollView style={styles.home_product_view}>
@@ -590,7 +642,7 @@ export default function ProductList(props) {
           </View>
 
           {kinujoHtml.length > 0 ? (
-            <View style={styles.section_product}>{kinujoHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product}>{kinujoHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -610,7 +662,7 @@ export default function ProductList(props) {
             <View></View>
           )}
           {featuredHtml.length > 0 ? (
-            <View style={styles.section_product}>{featuredHtml}</View>
+            <TouchableWithoutFeedback><View style={styles.section_product_2}>{featuredHtml}</View></TouchableWithoutFeedback>
           ) : (
             <View></View>
           )}
@@ -674,6 +726,12 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
+    marginBottom: heightPercentageToDP("2%"),
+    flexDirection: "row",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  section_product_2: {
     marginBottom: heightPercentageToDP("20%"),
     flexDirection: "row",
     alignItems: "flex-start",

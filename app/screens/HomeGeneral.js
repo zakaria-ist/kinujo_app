@@ -409,7 +409,7 @@ export default function Home(props) {
           onSellerNamePress={() => {
             // console.log("zz");
             props.navigation.navigate("SellerProductList", {
-              sellerName: product.user.shop_name,
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
             });
           }}
           //pass janCode
