@@ -486,7 +486,7 @@ export default function SettingStore(props) {
                         .delete();
                       props.navigation.reset({
                         index: 0,
-                        routes: [{ name: "LoginScreen" }],
+                        routes: [{ name: "LoginScreen", params: { url: "" } }],
                       });
                     });
                     AsyncStorage.removeItem("defaultAddress");

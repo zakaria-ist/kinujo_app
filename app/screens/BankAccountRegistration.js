@@ -315,13 +315,19 @@ export default function BankAccountRegistration(props) {
                               onBranchNameChanged("");
                               onFinancialNameChanged("");
                               onAccountTypeChanged("");
-                              if(props.route.params.register){
+                              if(props.route.params.register && props.route.params.authority == "store"){
                                 props.navigation.navigate("AccountExamination", {
                                   "authority" : props.route.params.authority
                                 })
-                              } else {
-                                props.navigation.goBack();
-                              }
+                              } else if (props.route.params.authority != "store") {
+                                props.navigation.reset({
+                                  index: 0,
+                                  routes: [{ name: "HomeStore" }],
+                                });
+                                }
+                                else {
+                                  props.navigation.goBack();
+                                }
                             })
                             .catch(function (error) {
                               alert.warning(
@@ -349,13 +355,19 @@ export default function BankAccountRegistration(props) {
                               onBranchNameChanged("");
                               onFinancialNameChanged("");
                               onAccountTypeChanged("");
-                              if(props.route.params.register){
+                              if(props.route.params.register && props.route.params.authority == "store"){
                                 props.navigation.navigate("AccountExamination", {
                                   "authority" : props.route.params.authority
                                 })
-                              } else {
-                                props.navigation.goBack();
-                              }
+                              }  else if (props.route.params.authority != "store") {
+                                props.navigation.reset({
+                                  index: 0,
+                                  routes: [{ name: "HomeStore" }],
+                                });
+                                }
+                                else {
+                                  props.navigation.goBack();
+                                }
                             })
                             .catch(function (error) {
                               alert.warning(
@@ -371,7 +383,7 @@ export default function BankAccountRegistration(props) {
                       alert.warning(Translate.t("fieldNotFilled"));
                     }
                   } else {
-                    alert.warning("Invalid Account Number");
+                    alert.warning(Translate.t("invalidAcountNumber"));
                   }
                 }}
               >

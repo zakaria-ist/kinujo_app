@@ -108,7 +108,32 @@ export default function StoreAccountSelection(props) {
           </Text>
           <TouchableOpacity
             onPress={() => {
-              updateProfile();
+              AsyncStorage.getItem("user").then(function(url) {
+                request
+                  .get(url)
+                  .then(function(response) {
+                    request
+                      .patch(response.data.url, {
+                        salon_category: 1,
+                      })
+                      .then(function (response) {
+                        console.log('response', response.data);
+                        if (response.data.url) {
+                          updateProfile();
+                        }
+                      })
+                      .catch(function(error) {
+                        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                        }
+                      });
+                  })
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
+                  });
+              })
             }}
           >
             <View style={styles.registerSalonShopButton}>
@@ -119,7 +144,32 @@ export default function StoreAccountSelection(props) {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              updateProfile();
+              AsyncStorage.getItem("user").then(function(url) {
+                request
+                  .get(url)
+                  .then(function(response) {
+                    request
+                      .patch(response.data.url, {
+                        salon_category: 2,
+                      })
+                      .then(function (response) {
+                        console.log('response', response.data);
+                        if (response.data.url) {
+                          updateProfile();
+                        }
+                      })
+                      .catch(function(error) {
+                        if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                          alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                        }
+                      });
+                  })
+                  .catch(function(error) {
+                    if(error && error.response && error.response.data && Object.keys(error.response.data).length > 0){
+                      alert.warning(error.response.data[Object.keys(error.response.data)[0]][0] + "(" + Object.keys(error.response.data)[0] + ")");
+                    }
+                  });
+              })
             }}
           >
             <View style={styles.registerHairDresserButton}>

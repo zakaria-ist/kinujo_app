@@ -125,7 +125,7 @@ export default function AdvanceSetting(props) {
                 onFirebaseUserChanged(documentSnapshot.data());
                 onBlockModeChanged(tmpUser.blockMode);
                 onSecretModeChanged(tmpUser.secretMode);
-                if (!firstLoaded) {
+                // if (!firstLoaded) {
                   if (!tmpUser.displayName) {
                     onDisplayNameChanged(
                       response.data.nickname ? response.data.nickname : ""
@@ -133,7 +133,7 @@ export default function AdvanceSetting(props) {
                   } else {
                     onDisplayNameChanged(tmpUser.displayName);
                   }
-                }
+                // }
                 onFirstLoadedChanged(true);
               } else {
                 onDisplayNameChanged(
@@ -145,11 +145,11 @@ export default function AdvanceSetting(props) {
                   secret_mode: false,
                   block: false,
                 });
-                if (!firstLoaded) {
+                // if (!firstLoaded) {
                   onBlockModeChanged(false);
                   onSecretModeChanged(false);
                   onDisplayNameChanged("");
-                }
+                // }
                 onFirstLoadedChanged(true);
               }
             });

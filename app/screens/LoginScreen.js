@@ -420,8 +420,13 @@ export default function LoginScreen(props) {
                           "user",
                           user.url,
                           function (response) {
-                            if (user.authority.id == 2 || user.authority.id == 3) {
-                              if (
+                            if (user.authority.id == 1 || user.authority.id == 2 || user.authority.id == 3) {
+                              if (user.is_master || user.authority.id == 1) {
+                                props.navigation.reset({
+                                  index: 0,
+                                  routes: [{ name: "HomeStore" }],
+                                });
+                              } else if (
                                 user.is_seller &&
                                 !user.is_master &&
                                 !user.payload.bank_skipped &&
@@ -458,7 +463,8 @@ export default function LoginScreen(props) {
                             } else if (
                               user.is_seller &&
                               !user.is_master &&
-                              !user.payload.bank_skipped
+                              !user.payload.bank_skipped &&
+                              !user.bank
                             ) {
                               props.navigation.navigate(
                                 "BankAccountRegistrationOption",

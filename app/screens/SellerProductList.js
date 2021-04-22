@@ -59,6 +59,7 @@ let featuredProducts;
 let categoryFeaturedProducts;
 let productsView = {};
 let taxRate = 0;
+let allCategories = [];
 export default function SellerProductList(props) {
   let sellerName = props.route.params.sellerName;
   const rightCategory = React.useRef(
@@ -68,7 +69,6 @@ export default function SellerProductList(props) {
     new Animated.Value(widthPercentageToDP("-80%"))
   ).current;
   const [selected, onSelected] = useStateIfMounted("");
-  const [categorySelected, onCategorySelected] = useStateIfMounted("reset");
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
@@ -79,6 +79,7 @@ export default function SellerProductList(props) {
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
+  let categorySelected = "";
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -166,7 +167,8 @@ export default function SellerProductList(props) {
     });
     return tmpFeaturedHtml;
   }
-  function filterProductsByCateogry(categories, categoryID) {
+  function filterProductsByCateogry(categories, categoryID, name) {
+    categorySelected = name;
     categoryFeaturedProducts = featuredProducts;
     if (categoryID != "reset") {
       categoryFeaturedProducts = featuredProducts.filter((featured) => {
@@ -177,6 +179,7 @@ export default function SellerProductList(props) {
     // onCategoryHtmlChanged(processCategoryHtml(categories));
     hideCategoryAnimation();
     filterProductsBySorting(selected);
+    onCategoryHtmlChanged(processCategoryHtml(categories));
   }
   function filterProductsBySorting(type) {
     let tmpFeaturedProducts = categoryFeaturedProducts;
@@ -281,8 +284,7 @@ export default function SellerProductList(props) {
       tmpCategoryHtml.push(
         <TouchableWithoutFeedback
           onPress={() => {
-            onCategorySelected(String(category.name));
-            filterProductsByCateogry(categories, category.id)
+            filterProductsByCateogry(categories, category.id, category.name)
           }}
         >
           <View style={{
@@ -290,7 +292,7 @@ export default function SellerProductList(props) {
               borderBottomWidth: 1,
               borderBottomColor: Colors.D7CCA6,
               paddingVertical: heightPercentageToDP("1.5%"),
-              backgroundColor: categorySelected == String(category.name) ? "orange" : "white",
+              backgroundColor: categorySelected == category.name ? "orange" : "white",
           }} >
             <Text>{category.name}</Text>
           </View>
@@ -300,8 +302,7 @@ export default function SellerProductList(props) {
     tmpCategoryHtml.push(
       <TouchableWithoutFeedback
         onPress={() => {
-          onCategorySelected("reset");
-          filterProductsByCateogry(categories, "reset")
+          filterProductsByCateogry(categories, "reset", "reset")
         }}
       >
         <View style={styles.categoryContainer} >
@@ -386,6 +387,7 @@ export default function SellerProductList(props) {
           });
       });
       request.get("product_categories/").then(function (response) {
+        allCategories = response.data;
         onCategoryHtmlChanged(processCategoryHtml(response.data));
       });
       request
@@ -672,8 +674,7 @@ export default function SellerProductList(props) {
           >
             <TouchableWithoutFeedback
               onPress={() => {
-                onCategorySelected("reset");
-                filterProductsByCateogry([], "reset");
+                filterProductsByCateogry(allCategories, "reset", "reset");
               }}
             >
               <View
