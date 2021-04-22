@@ -18,9 +18,8 @@ import AndroidKeyboardAdjust from "react-native-android-keyboard-adjust";
 import CustomHeader from "../../assets/CustomComponents/ChatCustomHeaderWithBackArrow";
 import CustomSelectHeader from "../../assets/CustomComponents/ChatSelectHeader";
 import AsyncStorage from "@react-native-community/async-storage";
-import firebase from "firebase/app";
-import "firebase/firestore";
-import { firebaseConfig } from "../../../firebaseConfig.js";
+import firestore from '@react-native-firebase/firestore';
+
 import Request from "../../lib/request";
 import CustomAlert from "../../lib/alert";
 import storage from "@react-native-firebase/storage";
@@ -32,14 +31,11 @@ import EmojiKeyboard from "./EmojiKeyboard";
 import { StyleSheet } from "react-native";
 const alert = new CustomAlert();
 var uuid = require("react-native-uuid");
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
+
 if (Platform.OS === "android") {
   AndroidKeyboardAdjust.setAdjustResize();
 }
-const db = firebase.firestore();
-const chatsRef = db.collection("chat");
+
 const request = new Request();
 let userId;
 let groupID;
@@ -60,22 +56,7 @@ let tmpMultiSelect = false;
 let old30LastDoc = null;
 let isUserBlocked = false;
 
-function checkUpdateFriend(user1, user2) {
-  if (!updateFriend && user1 && user2 && user1 != user2) {
-    db.collection("users")
-      .doc(user1)
-      .collection("friends")
-      .where("id", "==", user2)
-      .get()
-      .then((querySnapshot) => {
-        if (querySnapshot.size > 0) {
-        } else {
-          request.addFriend(user1, user2);
-        }
-      });
-    updateFriend = true;
-  }
-}
+
 function getTime() {
   let year = new Date().getFullYear();
   let month = new Date().getMonth() + 1;
@@ -108,79 +89,65 @@ function findParams(data, param) {
   return "";
 }
 
-async function getName(ownId, data) {
-  if (data.type && data.type == "group") {
-    return data.groupName;
-  }
-  if (data.users.length > 2) return data.groupName;
-  let users = data.users.filter((user) => {
-    return user != ownId;
-  });
-  let snapShot = await db
-    .collection("users")
-    .doc(ownId)
-    .collection("customers")
-    .get();
 
-  tmpName = "";
-  snapShot.forEach((docRef) => {
-    if (docRef.data().displayName && docRef.id == users[0]) {
-      tmpName = docRef.data().displayName;
-
-      if (docRef.data().secretMode) {
-        setSecretMode(true);
-      }
-    }
-  });
-  if (tmpName) return tmpName;
-  if (users.length > 0) {
-    let user = users[0];
-    onUserUrlChanged("profiles/" + user);
-    user = await request.get("profiles/" + user);
-    user = user.data;
-
-    return user.nickname;
-  }
-  return "";
-}
-
-const onSendImage = (response) => {
-  if (response.uri) {
-    if (response.type.includes("image")) {
-      const reference = storage().ref(uuid.v4() + ".png");
-
-      let imagePath = Platform.select({
-        android: response.path,
-        ios: response.uri.replace("file://", "")
-      })
-
-      reference
-        .putFile(imagePath)
-        .then((response) => {
-          reference.getDownloadURL().then((url) => {
-            let createdAt = getTime();
-
-            chatsRef
-              .doc(groupID)
-              .collection("messages")
-              .add({
-                userID: userId,
-                createdAt: createdAt,
-                message: "Photo",
-                timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-                image: url,
-              })
-              .then(function () { });
-          });
-        })
-        .catch((error) => { });
-    } else {
-      alert.warning(Translate.t("image_allowed"))
-    }
-  }
-}
 
 export default function ChatScreen(props) {
+  const db = firestore();
+  const chatsRef = db.collection("chat");
+
+  const onSendImage = (response) => {
+    if (response.uri) {
+      if (response.type.includes("image")) {
+        const reference = storage().ref(uuid.v4() + ".png");
+
+        let imagePath = Platform.select({
+          android: response.path,
+          ios: response.uri.replace("file://", "")
+        })
+
+        reference
+          .putFile(imagePath)
+          .then((response) => {
+            reference.getDownloadURL().then((url) => {
+              let createdAt = getTime();
+
+              chatsRef
+                .doc(groupID)
+                .collection("messages")
+                .add({
+                  userID: userId,
+                  createdAt: createdAt,
+                  message: "Photo",
+                  timeStamp: firestore.FieldValue.serverTimestamp(),
+                  image: url,
+                })
+                .then(function () { });
+            });
+          })
+          .catch((error) => { });
+      } else {
+        alert.warning(Translate.t("image_allowed"))
+      }
+    }
+  }
+
+  function checkUpdateFriend(user1, user2) {
+    if (!updateFriend && user1 && user2 && user1 != user2) {
+      db.collection("users")
+        .doc(user1)
+        .collection("friends")
+        .where("id", "==", user2)
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.size > 0) {
+          } else {
+            request.addFriend(user1, user2);
+          }
+        });
+      updateFriend = true;
+    }
+  }
+
   const [shouldShow, setShouldShow] = useStateIfMounted(false);
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   const [secretMode, setSecretMode] = useStateIfMounted(false);
@@ -215,6 +182,43 @@ export default function ChatScreen(props) {
   //   setChats([]);
   // }, [!isFocused]);
 
+
+  async function getName(ownId, data) {
+    if (data.type && data.type == "group") {
+      return data.groupName;
+    }
+    if (data.users.length > 2) return data.groupName;
+    let users = data.users.filter((user) => {
+      return user != ownId;
+    });
+    let snapShot = await db
+      .collection("users")
+      .doc(ownId)
+      .collection("customers")
+      .get();
+
+    tmpName = "";
+    snapShot.docs.map((docRef) => {
+      if (docRef.data().displayName && docRef.id == users[0]) {
+        tmpName = docRef.data().displayName;
+
+        if (docRef.data().secretMode) {
+          setSecretMode(true);
+        }
+      }
+    });
+    if (tmpName) return tmpName;
+    if (users.length > 0) {
+      let user = users[0];
+      onUserUrlChanged("profiles/" + user);
+      user = await request.get("profiles/" + user);
+      user = user.data;
+
+      return user.nickname;
+    }
+    return "";
+  }
+
   function redirectToChat(contactID, contactName) {
     AsyncStorage.getItem("user").then((url) => {
       let urls = url.split("/");
@@ -230,7 +234,7 @@ export default function ChatScreen(props) {
         .where("users", "array-contains", userId)
         .get()
         .then((querySnapshot) => {
-          querySnapshot.docChanges().forEach((snapShot) => {
+          querySnapshot.docChanges().map((snapShot) => {
             if (
               snapShot.doc.data().type != "groups" &&
               snapShot.doc.data().users.length == 2
@@ -360,39 +364,36 @@ export default function ChatScreen(props) {
   function processChat(tmpChats) { }
 
   async function updateChats(chats) {
-    chats = chats.map((chat) => {
+
+    //remove duplicates
+    // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
+    let last = "";
+
+    chats = chats.map((chat, i) => {
       chat.first = false;
 
       if (selects.includes(chat.id)) {
         chat.selected = true;
       }
-      return chat;
-    });
 
-    if (favData) {
-      for (let i = 0; i < chats.length; i++) {
-        let chat = chats[i];
+      // check fav
+      if (favData) {
+        // for (let i = 0; i < chats.length; i++) {
+        // let chat = chats[i];
         if (favData.createdAt == chat.data.createdAt && favData.message == chat.data.message) {
           favIndex = i;
           console.log('favIndex', favIndex);
         }
       }
-    }
-
-    //remove duplicates
-    // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
-    let last = "";
-    for (let i = 0; i < chats.length; i++) {
-      let chat = chats[i];
       let dates = chat.data.createdAt.split(":");
       let date = dates[0] + ":" + dates[1] + ":" + dates[2];
       if (date != last) {
         chats[i].first = true;
         last = date;
       }
-
-    }
-    setChats(chats);
+      return chat;
+    });
+    setChats(chats.reverse());
   }
 
   async function firstLoad(data) {
@@ -499,7 +500,7 @@ export default function ChatScreen(props) {
             includeMetadataChanges: false,
           },
           (querySnapShot) => {
-            querySnapShot.forEach((snapShot) => {
+            querySnapShot.docs.map((snapShot) => {
               if (snapShot && snapShot.exists) {
                 let tmpChats = chats.filter((chat) => {
                   return chat.id == snapShot.id;
@@ -689,7 +690,7 @@ export default function ChatScreen(props) {
       .set({
         createdAt: longPressObj.data.createdAt,
         message: longPressObj.message,
-        timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+        timeStamp: firestore.FieldValue.serverTimestamp(),
         groupID: groupID,
         groupName: groupName,
         groupType: groupType ? groupType : "",
@@ -717,27 +718,25 @@ export default function ChatScreen(props) {
 
   const onSendMsg = () => {
     console.log('press', isUserBlocked);
+    setMessages("");
     if (!isUserBlocked) {
       let tmpMessage = messages;
-      setMessages("");
       let createdAt = getTime();
       if (tmpMessage) {
-        let doc = db
-          .collection("chat")
-          .doc(groupID)
+        chatsRef.doc(groupID)
           .collection("messages")
-          .doc();
-        doc
-          .set({
+          .doc().set({
             userID: userId,
             createdAt: createdAt,
-            timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+            timeStamp: firestore.FieldValue.serverTimestamp(),
             message: tmpMessage,
           })
-          .then((item) => { });
+          .then((item) => {
+            console.log('====================================');
+            console.log('==', item);
+            console.log('====================================');
+          });
       }
-    } else {
-      setMessages("");
     }
   }
 
@@ -852,7 +851,7 @@ export default function ChatScreen(props) {
           shouldShow={shouldShow}
           hideEmoji={hideEmoji}
           onHide={onHideFooter}
-
+          showEmoji={showEmoji}
           onContentSizeChange={scrollToEnd}
           messages={messages}
           onChangeText={(value) => setMessages(value)}

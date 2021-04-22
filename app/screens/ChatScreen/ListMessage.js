@@ -1,7 +1,8 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import {
     StyleSheet,
-    FlatList
+    FlatList,
+    SectionList
 } from "react-native";
 
 import { Colors } from "../../assets/Colors.js";
@@ -14,14 +15,14 @@ const ListMessage = forwardRef((props, ref) => {
     const scrollViewReference = useRef();
 
     const scrollToEnd = () => {
-        scrollViewReference.current.scrollToEnd({ animated: true })
+        // scrollViewReference.current.scrollToEnd({ animated: true })
     }
 
     const onScrollToIndexFailed = (error) => {
         scrollViewReference.current.scrollToOffset({ offset: error.averageItemLength * error.index, animated: true });
         setTimeout(() => {
             if (newChats.length !== 0 && scrollViewReference.current !== null) {
-                scrollViewReference.current.scrollToIndex({ index: error.index, animated: true });
+                // scrollViewReference.current.scrollToIndex({ index: error.index, animated: true });
             }
         }, 100);
     }
@@ -30,7 +31,7 @@ const ListMessage = forwardRef((props, ref) => {
         if (favIndex != undefined && favIndex != null && favIndex != -1) {
             setTimeout(() => {
                 if (scrollViewReference) {
-                    scrollViewReference.current.scrollToIndex({ animated: true, index: favIndex });
+                    // scrollViewReference.current.scrollToIndex({ animated: true, index: favIndex });
                 }
             }, 300);
         }
@@ -53,7 +54,7 @@ const ListMessage = forwardRef((props, ref) => {
         end={[1, 0.6]}
         style={styles.container}
     >
-        <FlatList
+        {/* <FlatList
             ref={scrollViewReference}
             data={newChats}
             extraData={newChats}
@@ -62,6 +63,18 @@ const ListMessage = forwardRef((props, ref) => {
             keyExtractor={chat => groupID + "_chat_" + chat.id}
             onScrollToIndexFailed={onScrollToIndexFailed}
             onEndReached={onEndReached}
+        /> */}
+
+        <SectionList
+            ref={scrollViewReference}
+            inverted
+            extraData={selects.length}
+            sections={[{
+                title: '',
+                data: newChats
+            }]}
+            renderItem={renderItem}
+            keyExtractor={chat => groupID + "_chat_" + chat.id}
         />
     </LinearGradient>
 })

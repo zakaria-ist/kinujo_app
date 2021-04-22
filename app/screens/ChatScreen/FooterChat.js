@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
     StyleSheet,
     View,
@@ -34,102 +34,103 @@ if (Platform.OS === "android") {
 
 const FooterChat = ({
     inputBarPosition, textInputHeight, shouldShow, hideEmoji, onHide, onContentSizeChange, messages,
-    onChangeText, handleEmojiIconPressed, shareContact, onSendMsg, onSendImage
+    onChangeText, handleEmojiIconPressed, shareContact, onSendMsg, onSendImage, showEmoji
 }) => {
 
+    return useMemo(() => {
+        const onPhoto = () => {
+            const options = {
+                mediaType: "photo",
+                includeBase64: false,
+                allowsEditing: true
+            };
+            ImagePicker.launchImageLibrary(options, onSendImage);
+        }
 
-    const onPhoto = () => {
-        const options = {
-            mediaType: "photo",
-            includeBase64: false,
-            allowsEditing: true
-        };
-        ImagePicker.launchImageLibrary(options, onSendImage);
-    }
+        const onCamera = () => {
+            const options = {
+                noData: true,
+                mediaType: "photo",
+                includeBase64: false,
+                allowsEditing: true
+            };
+            ImagePicker.launchCamera(options, onSendImage);
+        }
 
-    const onCamera = () => {
-        const options = {
-            noData: true,
-            mediaType: "photo",
-            includeBase64: false,
-            allowsEditing: true
-        };
-        ImagePicker.launchCamera(options, onSendImage);
-    }
-
-    return <View style={[styles.container, { bottom: inputBarPosition, }]}>
-        <View style={[styles.wrapInput, { height: textInputHeight, }]} >
-            <View style={styles.input_bar_file}>
-                <TouchableOpacity
-                    onPress={onHide}
-                >
-                    {shouldShow ? (
-                        <ArrowDownLogo
-                            width={"100%"}
-                            height={"100%"}
-                            resizeMode="contain"
+        return <View style={[styles.container, { bottom: inputBarPosition, }]}>
+            <View style={[styles.wrapInput, { height: textInputHeight, }]} >
+                <View style={styles.input_bar_file}>
+                    <TouchableOpacity
+                        onPress={onHide}
+                    >
+                        {shouldShow ? (
+                            <ArrowDownLogo
+                                width={"100%"}
+                                height={"100%"}
+                                resizeMode="contain"
+                            />
+                        ) : (
+                            <PlusCircleLogo
+                                style={styles.plusLogo}
+                            />
+                        )}
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.input_bar_text}>
+                    <View style={styles.input_bar_text_border}>
+                        <TextInput
+                            onContentSizeChange={onContentSizeChange}
+                            onFocus={hideEmoji}
+                            multiline={true}
+                            value={messages}
+                            onChangeText={onChangeText}
+                            placeholder="Type a message"
+                            style={styles.inputStyle}
                         />
-                    ) : (
-                        <PlusCircleLogo
-                            style={styles.plusLogo}
+
+                        <TouchableOpacity
+                            onPress={handleEmojiIconPressed}
+                        >
+                            <View style={styles.user_emoji_input}>
+                                <EmojiLogo
+                                    style={styles.emojiLogo}
+                                />
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                {/* SEND BUTTON */}
+                <TouchableOpacity onPress={onSendMsg} >
+                    <View style={styles.input_bar_send}>
+                        <SendLogo
+                            style={styles.btnSend}
                         />
-                    )}
+                    </View>
                 </TouchableOpacity>
             </View>
-            <View style={styles.input_bar_text}>
-                <View style={styles.input_bar_text_border}>
-                    <TextInput
-                        onContentSizeChange={onContentSizeChange}
-                        onFocus={hideEmoji}
-                        multiline={true}
-                        value={messages}
-                        onChangeText={onChangeText}
-                        placeholder="Type a message"
-                        style={styles.inputStyle}
-                    />
+            <Animated.View
+                style={[shouldShow ? styles.input_bar_widget : styles.none]}
+            >
+                <FooterAction
+                    onPress={onCamera}
+                    Logo={CameraLogo}
+                    i18key={'camera'}
+                />
+                <FooterAction
+                    onPress={onPhoto}
+                    Logo={GalleryLogo}
+                    i18key={'gallery'}
+                />
 
-                    <TouchableNativeFeedback
-                        onPress={handleEmojiIconPressed}
-                    >
-                        <View style={styles.user_emoji_input}>
-                            <EmojiLogo
-                                style={styles.emojiLogo}
-                            />
-                        </View>
-                    </TouchableNativeFeedback>
-                </View>
-            </View>
-            {/* SEND BUTTON */}
-            <TouchableNativeFeedback onPress={onSendMsg} >
-                <View style={styles.input_bar_send}>
-                    <SendLogo
-                        style={styles.btnSend}
-                    />
-                </View>
-            </TouchableNativeFeedback>
+                <FooterAction
+                    onPress={shareContact}
+                    Logo={ContactLogo}
+                    i18key={'contact'}
+                />
+            </Animated.View>
+            <View style={styles.container} />
         </View>
-        <Animated.View
-            style={[shouldShow ? styles.input_bar_widget : styles.none]}
-        >
-            <FooterAction
-                onPress={onCamera}
-                Logo={CameraLogo}
-                i18key={'camera'}
-            />
-            <FooterAction
-                onPress={onPhoto}
-                Logo={GalleryLogo}
-                i18key={'gallery'}
-            />
-
-            <FooterAction
-                onPress={shareContact}
-                Logo={ContactLogo}
-                i18key={'contact'}
-            />
-        </Animated.View>
-        <View style={styles.container} />
-    </View>
+    }, [messages, shouldShow, showEmoji])
 }
 
 const styles = StyleSheet.create({
