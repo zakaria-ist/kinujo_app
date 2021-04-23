@@ -152,8 +152,8 @@ export default function ChatScreen(props) {
   const [showPopUp, onShowPopUpChanged] = useStateIfMounted(false);
   const [newChats, setChats] = useStateIfMounted([]);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
-  const [showEmoji, onShowEmojiChanged] = useStateIfMounted(false);
-  const [prevEmoji, setPrevEmoji] = useStateIfMounted("");
+  // const [showEmoji, onShowEmojiChanged] = useStateIfMounted(false);
+  // const [prevEmoji, setPrevEmoji] = useStateIfMounted("");
   const [showCheckBox, onShowCheckBoxChanged] = useStateIfMounted(false);
   const [userUrl, onUserUrlChanged] = useStateIfMounted("group");
   const [images, setImages] = useStateIfMounted([]);
@@ -730,10 +730,26 @@ export default function ChatScreen(props) {
     })
   }
 
-  // const onHideFooter = () => {
-  //   hideEmoji();
-  //   setShouldShow(!shouldShow);
-  // }
+  const sendMultiSelect = () => {
+    if (selects.length > 0) {
+      props.navigation.navigate("ChatListForward", {
+        messages: selects,
+        groupID: groupID,
+        groupName: groupName,
+        groupType: groupType ? groupType : "",
+      });
+    }
+  }
+
+  const cancelMultiSelect = () => {
+    setMultiSelect(false);
+    tmpMultiSelect = false;
+    setSelected([])
+    // selects = [];
+    processChat(chats);
+    processOld30Chat(old30Chats);
+    processOldChat(oldChats);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -754,25 +770,8 @@ export default function ChatScreen(props) {
         />
       ) : (
         <CustomSelectHeader
-          onSend={() => {
-            if (selects.length > 0) {
-              props.navigation.navigate("ChatListForward", {
-                messages: selects,
-                groupID: groupID,
-                groupName: groupName,
-                groupType: groupType ? groupType : "",
-              });
-            }
-          }}
-          onCancel={() => {
-            setMultiSelect(false);
-            tmpMultiSelect = false;
-            setSelected([])
-            // selects = [];
-            processChat(chats);
-            processOld30Chat(old30Chats);
-            processOldChat(oldChats);
-          }}
+          onSend={sendMultiSelect}
+          onCancel={cancelMultiSelect}
         />
       )}
 
@@ -820,12 +819,7 @@ export default function ChatScreen(props) {
         <FooterChat
           inputBarPosition={inputBarPosition}
           textInputHeight={textInputHeight}
-          shouldShow={shouldShow}
-          // hideEmoji={hideEmoji}
-          // onHide={onHideFooter}
-          showEmoji={showEmoji}
           onContentSizeChange={scrollToEnd}
-          // handleEmojiIconPressed={handleEmojiIconPressed}
           shareContact={onShareContact}
           onSendMsg={onSendMsg}
           onSendImage={onSendImage}
