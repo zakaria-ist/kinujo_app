@@ -24,6 +24,7 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -576,6 +577,8 @@ export default function SalesManagement(props) {
           <MonthPicker
             initialValue={new Date()}
             value={date}
+            confirmTitle={Translate.t("confirm")}
+            cancelTitle={Translate.t("cancel")}
             // placeholder={placeholderDate}
             onChange={onUpdate}
             style={{
@@ -603,6 +606,9 @@ export default function SalesManagement(props) {
             }}
           >
             {placeholderDate}
+            <View>
+            <Icon name="chevron-down" size={12} style={{marginLeft: 5}}/>
+            </View>
           </Text>
           <View
             style={{
