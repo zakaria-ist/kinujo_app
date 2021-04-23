@@ -267,17 +267,17 @@ export default function Home(props) {
         </TouchableWithoutFeedback>
       );
     });
-    tmpCategoryHtml.push(
-      <TouchableWithoutFeedback
-        onPress={() => {
-          filterProductsByCateogry(categories, "reset", "reset")
-        }}
-      >
-        <View style={styles.categoryContainer} >
-          <Text>{Translate.t("reset")}</Text>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+    // tmpCategoryHtml.push(
+    //   <TouchableWithoutFeedback
+    //     onPress={() => {
+    //       filterProductsByCateogry(categories, "reset", "reset")
+    //     }}
+    //   >
+    //     <View style={styles.categoryContainer} >
+    //       <Text>{Translate.t("reset")}</Text>
+    //     </View>
+    //   </TouchableWithoutFeedback>
+    // );
     return tmpCategoryHtml;
   }
   React.useEffect(() => {
@@ -620,7 +620,7 @@ export default function Home(props) {
             style={{
               flexDirection: "row",
               justifyContent: "space-evenly",
-              bottom: heightPercentageToDP("8%"),
+              bottom: heightPercentageToDP("15%"),
               right: 0,
               marginTop: heightPercentageToDP("60%"),
             }}

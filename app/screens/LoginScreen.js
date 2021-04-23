@@ -117,7 +117,7 @@ async function performUrl(props, link) {
     console.log('store', store);
   }
   await AsyncStorage.setItem("referUser", userId);
-  if (store && store != "" && store != "0" ) {
+  if (store && store != "" && store != "1" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 1});
   } else if(store && store != "" && store == "0") {
@@ -422,6 +422,14 @@ export default function LoginScreen(props) {
                           function (response) {
                             if (user.authority.id == 1 || user.authority.id == 2 || user.authority.id == 3) {
                               if (user.is_master || user.authority.id == 1) {
+                                props.navigation.reset({
+                                  index: 0,
+                                  routes: [{ name: "HomeStore" }],
+                                });
+                              } else if (
+                                !user.is_master &&
+                                user.bank
+                              ) {
                                 props.navigation.reset({
                                   index: 0,
                                   routes: [{ name: "HomeStore" }],
