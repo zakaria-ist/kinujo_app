@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     StyleSheet,
     View,
@@ -26,16 +26,50 @@ import CameraLogo from "../../assets/icons/camera.svg";
 import GalleryLogo from "../../assets/icons/gallery.svg";
 import ContactLogo from "../../assets/icons/contact.svg";
 import FooterAction from "./FooterAction.js";
+import EmojiKeyboard from "./EmojiKeyboard.js";
+import { Keyboard } from "react-native";
 
 if (Platform.OS === "android") {
     AndroidKeyboardAdjust.setAdjustResize();
 }
 
+let msg = ''
 
 const FooterChat = ({
-    inputBarPosition, textInputHeight, shouldShow, hideEmoji, onHide, onContentSizeChange, messages,
-    onChangeText, handleEmojiIconPressed, shareContact, onSendMsg, onSendImage, showEmoji
+    textInputHeight, hideEmoji,
+    shareContact, onSendMsg, onSendImage, scrollToEnd
 }) => {
+
+    useEffect(() => {
+        msg = ''
+    }, [])
+
+    const inputRef = useRef();
+    const [shouldShow, setShouldShow] = useState(false)
+    const [showEmoji, onShowEmojiChanged] = useState(false);
+    const [inputBarPosition, setInputBarPosition] = useState(0)
+    const handleEmojiIconPressed = () => {
+        if (showEmoji == false) {
+            onShowEmojiChanged(true);
+            setInputBarPosition(heightPercentageToDP("30%"));
+            scrollToEnd();
+        } else {
+            hideEmoji();
+        }
+        setShouldShow(false);
+
+        Keyboard.dismiss();
+    }
+
+    function hideEmoji() {
+        onShowEmojiChanged(false);
+        setInputBarPosition(-2);
+    }
+
+    const onHideFooter = () => {
+        hideEmoji();
+        setShouldShow(!shouldShow);
+    }
 
     return useMemo(() => {
         const onPhoto = () => {
@@ -57,80 +91,113 @@ const FooterChat = ({
             ImagePicker.launchCamera(options, onSendImage);
         }
 
-        return <View style={[styles.container, { bottom: inputBarPosition, }]}>
-            <View style={[styles.wrapInput, { height: textInputHeight, }]} >
-                <View style={styles.input_bar_file}>
-                    <TouchableOpacity
-                        onPress={onHide}
-                    >
-                        {shouldShow ? (
-                            <ArrowDownLogo
-                                width={"100%"}
-                                height={"100%"}
-                                resizeMode="contain"
-                            />
-                        ) : (
-                            <PlusCircleLogo
-                                style={styles.plusLogo}
-                            />
-                        )}
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.input_bar_text}>
-                    <View style={styles.input_bar_text_border}>
-                        <TextInput
-                            onContentSizeChange={onContentSizeChange}
-                            onFocus={hideEmoji}
-                            multiline={true}
-                            value={messages}
-                            onChangeText={onChangeText}
-                            placeholder="Type a message"
-                            style={styles.inputStyle}
-                        />
+        const onClickEmoji = ({ code }) => {
+            let text = msg + code
+            msg = text
+            inputRef.current.setNativeProps({ text });
+        }
 
+        const onRemoveEmoji = () => {
+            msg = msg.slice(0, -2)
+            inputRef.current.setNativeProps({ text: msg });
+        }
+
+        const onChangeMessage = (message) => {
+            msg = message
+        }
+
+        const onSendPress = () => {
+            if (!msg) return
+            inputRef.current.clear()
+            setTimeout(() => {
+                onSendMsg(msg);
+                msg = ''
+            }, 10);
+        }
+
+        return <>
+            <EmojiKeyboard
+                showEmoji={showEmoji}
+                onClick={onClickEmoji}
+                onRemove={onRemoveEmoji}
+            // messages={messages}
+            />
+            <View style={[styles.container, { paddingBottom: inputBarPosition, }]}>
+                <View style={[styles.wrapInput, { height: textInputHeight, }]} >
+                    <View style={styles.input_bar_file}>
                         <TouchableOpacity
-                            onPress={handleEmojiIconPressed}
+                            onPress={onHideFooter}
                         >
-                            <View style={styles.user_emoji_input}>
-                                <EmojiLogo
-                                    style={styles.emojiLogo}
+                            {shouldShow ? (
+                                <ArrowDownLogo
+                                    width={"100%"}
+                                    height={"100%"}
+                                    resizeMode="contain"
                                 />
-                            </View>
+                            ) : (
+                                <PlusCircleLogo
+                                    style={styles.plusLogo}
+                                />
+                            )}
                         </TouchableOpacity>
                     </View>
-                </View>
-                {/* SEND BUTTON */}
-                <TouchableOpacity onPress={onSendMsg} >
-                    <View style={styles.input_bar_send}>
-                        <SendLogo
-                            style={styles.btnSend}
-                        />
-                    </View>
-                </TouchableOpacity>
-            </View>
-            <Animated.View
-                style={[shouldShow ? styles.input_bar_widget : styles.none]}
-            >
-                <FooterAction
-                    onPress={onCamera}
-                    Logo={CameraLogo}
-                    i18key={'camera'}
-                />
-                <FooterAction
-                    onPress={onPhoto}
-                    Logo={GalleryLogo}
-                    i18key={'gallery'}
-                />
+                    <View style={styles.input_bar_text}>
+                        <View style={styles.input_bar_text_border}>
+                            <TextInput
+                                ref={inputRef}
+                                onContentSizeChange={scrollToEnd}
+                                onFocus={hideEmoji}
+                                multiline={true}
+                                // value={messages}
+                                onChangeText={onChangeMessage}
+                                placeholder="Type a message"
+                                style={styles.inputStyle}
+                            />
 
-                <FooterAction
-                    onPress={shareContact}
-                    Logo={ContactLogo}
-                    i18key={'contact'}
-                />
-            </Animated.View>
-            <View style={styles.container} />
-        </View>
-    }, [messages, shouldShow, showEmoji])
+                            <TouchableOpacity
+                                onPress={handleEmojiIconPressed}
+                            >
+                                <View style={styles.user_emoji_input}>
+                                    <EmojiLogo
+                                        style={styles.emojiLogo}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    {/* SEND BUTTON */}
+                    <TouchableOpacity onPress={onSendPress} >
+                        <View style={styles.input_bar_send}>
+                            <SendLogo
+                                style={styles.btnSend}
+                            />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <Animated.View
+                    style={[shouldShow ? styles.input_bar_widget : styles.none]}
+                >
+                    <FooterAction
+                        onPress={onCamera}
+                        Logo={CameraLogo}
+                        i18key={'camera'}
+                    />
+                    <FooterAction
+                        onPress={onPhoto}
+                        Logo={GalleryLogo}
+                        i18key={'gallery'}
+                    />
+
+                    <FooterAction
+                        onPress={shareContact}
+                        Logo={ContactLogo}
+                        i18key={'contact'}
+                    />
+                </Animated.View>
+                <View style={styles.container} />
+            </View>
+        </>
+    }, [shouldShow, showEmoji])
 }
 
 const styles = StyleSheet.create({

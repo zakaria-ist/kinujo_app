@@ -21,7 +21,9 @@ const EmojiKeyboard = ({
             onClick={onClick}
             onRemove={onRemove}
         />
-    }, [showEmoji, messages])
+    }, [showEmoji
+        // , messages
+    ])
 }
 
 const styles = StyleSheet.create({

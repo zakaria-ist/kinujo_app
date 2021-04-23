@@ -24,10 +24,77 @@ const ChatItem = ({
     previousMessageDateElse, updateChats, item
 }) => {
 
+    let chat = item
+    let isSelected = selects.find(el => el?.id == chat?.id) ? true : false
+    let created = chat.data.createdAt;
+    let date = created.split(":");
+    let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
+
+    const onMessageLongPress = () => {
+        onLongPressObjChanged({
+            id: chat.id,
+            message: chat.data.message,
+            data: chat.data,
+            contactID: chat.data.contactID,
+            contactName: chat.data.contactName,
+            image: chat.data.image
+        });
+        onShowPopUpChanged(true);
+    }
+
+    const onPressContact = () => {
+        if (tmpMultiSelect) {
+            onSelectMessage()
+        } else {
+            redirectToChat(
+                chat.data.contactID,
+                chat.data.contactName
+            );
+        }
+    }
+
+    const onSelectMessage = () => {
+        if (tmpMultiSelect) {
+            if (isSelected) {
+                let _selects = selects.filter((select) => select.id != chat.id);
+                setSelected(_selects)
+            } else {
+                let selectMsg = {
+                    id: chat.id,
+                    message: chat.data.message,
+                    contactID: chat.data.contactID,
+                    contactName: chat.data.contactName,
+                    image: chat.data.image
+                }
+                setSelected(selects.concat(selectMsg))
+            }
+            if (tmpDay != day) updateChats(newChats);
+            processOldChat(tmpDay == day || tmpDay == day - 1 ? oldChats : false);
+        }
+    }
+
+    const onHyperLinkClicked = (url, text) => {
+        if (!tmpMultiSelect) {
+            if (findParams(url, "apn") && findParams(url, "link")) {
+                let link = decodeURIComponent(findParams(url, "link"));
+                console.log(findParams(link, "product_id"));
+                if (findParams(link, "product_id")) {
+                    let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
+                    props.navigation.navigate("HomeStoreList", {
+                        url: apiUrl,
+                    });
+                } else {
+                    Linking.openURL(url);
+                }
+            } else {
+                Linking.openURL(url);
+            }
+        }
+    }
+
+
     return useMemo(() => {
         let props = parentProps
-        let chat = item
-        let created = chat.data.createdAt;
         try {
             let tStamps = chat.data.timeStamp.toDate();
             created = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
@@ -36,9 +103,8 @@ const ChatItem = ({
         }
 
         // let date = chat.data.createdAt.split(":");
-        let date = created.split(":");
+
         let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
-        let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
         let tmpHours = date[3].length > 1 ? date[3] : '0' + date[3];
         let tmpMinutes = date[4].length > 1 ? date[4] : '0' + date[4];
         // let tmpMessageID = messageID.filter((item) => {
@@ -61,67 +127,6 @@ const ChatItem = ({
                 {dateOfMessage}
             </Text> : null
 
-        }
-
-        const onMessageLongPress = () => {
-            onLongPressObjChanged({
-                id: chat.id,
-                message: chat.data.message,
-                data: chat.data,
-                contactID: chat.data.contactID,
-                contactName: chat.data.contactName,
-                image: chat.data.image
-            });
-            onShowPopUpChanged(true);
-        }
-
-        const onPressContact = () => {
-            if (tmpMultiSelect) {
-                onSelectMessage()
-            } else {
-                redirectToChat(
-                    chat.data.contactID,
-                    chat.data.contactName
-                );
-            }
-        }
-
-        const onSelectMessage = () => {
-            if (tmpMultiSelect) {
-                if (selectedChat(chat.id)) {
-                    let _selects = selects.filter((select) => select.id != chat.id);
-                    setSelected(_selects)
-                } else {
-                    selects.push({
-                        id: chat.id,
-                        message: chat.data.message,
-                        contactID: chat.data.contactID,
-                        contactName: chat.data.contactName,
-                        image: chat.data.image
-                    });
-                }
-                if (tmpDay != day) updateChats(newChats);
-                processOldChat(tmpDay == day || tmpDay == day - 1 ? oldChats : false);
-            }
-        }
-
-        const onHyperLinkClicked = (url, text) => {
-            if (!tmpMultiSelect) {
-                if (findParams(url, "apn") && findParams(url, "link")) {
-                    let link = decodeURIComponent(findParams(url, "link"));
-                    console.log(findParams(link, "product_id"));
-                    if (findParams(link, "product_id")) {
-                        let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                        props.navigation.navigate("HomeStoreList", {
-                            url: apiUrl,
-                        });
-                    } else {
-                        Linking.openURL(url);
-                    }
-                } else {
-                    Linking.openURL(url);
-                }
-            }
         }
 
         const itemProps = {
@@ -177,7 +182,7 @@ const ChatItem = ({
                 {/*///////////////////////////////////////*/}
             </View>
         </TouchableNativeFeedback>
-    }, [selects.length])
+    }, [isSelected, tmpMultiSelect, selects.length])
 }
 
 const styles = StyleSheet.create({

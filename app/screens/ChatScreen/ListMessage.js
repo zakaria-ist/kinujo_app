@@ -15,7 +15,13 @@ const ListMessage = forwardRef((props, ref) => {
     const scrollViewReference = useRef();
 
     const scrollToEnd = () => {
-        // scrollViewReference.current.scrollToEnd({ animated: true })
+        scrollViewReference.current.scrollToLocation({
+            sectionIndex: 0,
+            itemIndex: 0,
+            viewPosition: 0,
+            // viewOffset: 1000,
+            animated: true,
+          });
     }
 
     const onScrollToIndexFailed = (error) => {

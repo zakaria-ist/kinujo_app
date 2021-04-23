@@ -9,11 +9,12 @@
     "fixbuild": "node ./android-release-gradle-fix.js;",
     "postinstall": "yarn fixbuild; npx jetify; cd ios; pod install",
     "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
-    "ra": "yarn kj; fastlane android rl; yarn s",
-    "da": "yarn kj; fastlane android db",
+    "ra": "yarn kj; fastlane android rl; yarn noti; yarn s",
+    "da": "yarn kj; fastlane android db; yarn noti; yarn s",
     "o": "open android/app/build/outputs/apk",
     "s": "serve android/app/build/outputs",
-    "kj": "killall -9 java"
+    "kj": "killall -9 java",
+    "noti": "osascript -e 'display notification \"Đã build xong!!!!\" with title \"Success!\"'"
   },
   "dependencies": {
     "react-native-push-notification": "^7.2.3",

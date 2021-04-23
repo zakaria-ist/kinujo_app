@@ -3,7 +3,6 @@ import { InteractionManager } from 'react-native';
 import {
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
   SafeAreaView,
 } from "react-native";
 
@@ -27,7 +26,6 @@ import Clipboard from "@react-native-community/clipboard";
 import FooterChat from "./FooterChat.js";
 import ListMessage from "./ListMessage.js";
 import ChatPopup from "./ChatPopup.js";
-import EmojiKeyboard from "./EmojiKeyboard";
 import { StyleSheet } from "react-native";
 const alert = new CustomAlert();
 var uuid = require("react-native-uuid");
@@ -154,7 +152,6 @@ export default function ChatScreen(props) {
   const [showPopUp, onShowPopUpChanged] = useStateIfMounted(false);
   const [newChats, setChats] = useStateIfMounted([]);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
-  const [messages, setMessages] = useStateIfMounted("");
   const [showEmoji, onShowEmojiChanged] = useStateIfMounted(false);
   const [prevEmoji, setPrevEmoji] = useStateIfMounted("");
   const [showCheckBox, onShowCheckBoxChanged] = useStateIfMounted(false);
@@ -174,7 +171,7 @@ export default function ChatScreen(props) {
   const [selects, setSelected] = useStateIfMounted([])
 
   // React.useEffect(() => {
-  //   hideEmoji();
+  //   // hideEmoji();
   //   setMultiSelect(false);
   //   tmpMultiSelect = false;
   //   // selects = []
@@ -298,38 +295,9 @@ export default function ChatScreen(props) {
     });
   }
 
-  const onClick = (emoji) => {
-    {
-      {
-        messages == ""
-          ? setMessages(emoji.code)
-          : setMessages(messages + emoji.code);
-      }
-    }
-    setPrevEmoji(emoji.code);
-  };
-  const onRemove = () => {
-    setMessages(messages.slice(0, -2));
-  };
   const [textInputHeight, setTextInputHeight] = useStateIfMounted(
     heightPercentageToDP("8%")
   );
-  function handleEmojiIconPressed() {
-    if (showEmoji == false) {
-      onShowEmojiChanged(true);
-      setInputBarPosition(heightPercentageToDP("30%"));
-      scrollViewReference.current.scrollToEnd();
-    } else {
-      hideEmoji();
-    }
-    setShouldShow(false);
-
-    Keyboard.dismiss();
-  }
-  function hideEmoji() {
-    onShowEmojiChanged(false);
-    setInputBarPosition(-2);
-  }
 
   function selectedChat(chatId) {
     let tmpSelects = selects.filter((select) => {
@@ -716,25 +684,34 @@ export default function ChatScreen(props) {
     onShowPopUpChanged(false);
   }
 
-  const onSendMsg = () => {
+  const onSendMsg = (msg) => {
     console.log('press', isUserBlocked);
-    setMessages("");
+    // setMessages("");
     if (!isUserBlocked) {
-      let tmpMessage = messages;
+      let tmpMessage = msg;
       let createdAt = getTime();
+      const data = {
+        userID: userId,
+        createdAt: createdAt,
+        timeStamp: firestore.FieldValue.serverTimestamp(),
+        message: tmpMessage,
+      }
+      let idMsg = uuid.v4()
+      let newMsg = {
+        data,
+        "first": true,
+        "id": idMsg
+      }
+      updateChats(chats.concat([newMsg]))
       if (tmpMessage) {
         chatsRef.doc(groupID)
           .collection("messages")
-          .doc().set({
-            userID: userId,
-            createdAt: createdAt,
-            timeStamp: firestore.FieldValue.serverTimestamp(),
-            message: tmpMessage,
-          })
+          .doc().set(data)
           .then((item) => {
-            console.log('====================================');
-            console.log('==', item);
-            console.log('====================================');
+
+          }).catch(err => {
+            let newListMsg = newChats.filter(el => el.id != idMsg)
+            setChats(newListMsg)
           });
       }
     }
@@ -751,10 +728,10 @@ export default function ChatScreen(props) {
     })
   }
 
-  const onHideFooter = () => {
-    hideEmoji();
-    setShouldShow(!shouldShow);
-  }
+  // const onHideFooter = () => {
+  //   hideEmoji();
+  //   setShouldShow(!shouldShow);
+  // }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -803,24 +780,17 @@ export default function ChatScreen(props) {
         style={styles.container}
       >
 
-        <EmojiKeyboard
-          showEmoji={showEmoji}
-          onClick={onClick}
-          onRemove={onRemove}
-          messages={messages}
-        />
         <ListMessage
           ref={scrollViewReference}
           newChats={newChats}
           groupID={groupID}
           userId={userId}
-          tmpMultiSelect={tmpMultiSelect}
+          tmpMultiSelect={multiSelect}
           parentProps={props}
           day={day}
           onLongPressObjChanged={onLongPressObjChanged}
           onShowPopUpChanged={onShowPopUpChanged}
           redirectToChat={redirectToChat}
-          tmpMultiSelect={tmpMultiSelect}
           selectedChat={selectedChat}
           selects={selects}
           setSelected={setSelected}
@@ -849,16 +819,15 @@ export default function ChatScreen(props) {
           inputBarPosition={inputBarPosition}
           textInputHeight={textInputHeight}
           shouldShow={shouldShow}
-          hideEmoji={hideEmoji}
-          onHide={onHideFooter}
+          // hideEmoji={hideEmoji}
+          // onHide={onHideFooter}
           showEmoji={showEmoji}
           onContentSizeChange={scrollToEnd}
-          messages={messages}
-          onChangeText={(value) => setMessages(value)}
-          handleEmojiIconPressed={handleEmojiIconPressed}
+          // handleEmojiIconPressed={handleEmojiIconPressed}
           shareContact={onShareContact}
           onSendMsg={onSendMsg}
           onSendImage={onSendImage}
+          scrollToEnd={scrollToEnd}
         />
 
       </KeyboardAvoidingView>
