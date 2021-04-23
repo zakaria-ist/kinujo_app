@@ -594,7 +594,8 @@ export default function ChatScreen(props) {
 
   const onCopy = () => { Clipboard.setString(longPressObj.message); onShowPopUpChanged(false) }
 
-  const onFoward = () =>
+  const onFoward = () => {
+    props.navigation.goBack()
     props.navigation.navigate("ChatListForward", {
       message: longPressObj.message,
       contactID: longPressObj.contactID,
@@ -604,6 +605,7 @@ export default function ChatScreen(props) {
       groupName: groupName,
       groupType: groupType ? groupType : "",
     })
+  }
 
 
   const onCancel = (isOnlyme) => {

@@ -21,14 +21,17 @@ const ListMessage = forwardRef((props, ref) => {
             viewPosition: 0,
             // viewOffset: 1000,
             animated: true,
-          });
+        });
     }
 
     const onScrollToIndexFailed = (error) => {
         scrollViewReference.current.scrollToOffset({ offset: error.averageItemLength * error.index, animated: true });
         setTimeout(() => {
             if (newChats.length !== 0 && scrollViewReference.current !== null) {
-                // scrollViewReference.current.scrollToIndex({ index: error.index, animated: true });
+                scrollViewReference.current.scrollToLocation({
+                    sectionIndex: 0,
+                    viewPosition: 0, itemIndex: error.index, animated: true
+                });
             }
         }, 100);
     }
@@ -37,7 +40,11 @@ const ListMessage = forwardRef((props, ref) => {
         if (favIndex != undefined && favIndex != null && favIndex != -1) {
             setTimeout(() => {
                 if (scrollViewReference) {
-                    // scrollViewReference.current.scrollToIndex({ animated: true, index: favIndex });
+                    scrollViewReference.current.scrollToOffset({
+                        animated: true,
+                        sectionIndex: 0,
+                        viewPosition: 0, itemIndex: favIndex
+                    });
                 }
             }, 300);
         }
@@ -79,7 +86,9 @@ const ListMessage = forwardRef((props, ref) => {
                 title: '',
                 data: newChats
             }]}
+            onEndReached={onEndReached}
             renderItem={renderItem}
+            onScrollToIndexFailed={onScrollToIndexFailed}
             keyExtractor={chat => groupID + "_chat_" + chat.id}
         />
     </LinearGradient>
