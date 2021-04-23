@@ -383,7 +383,7 @@ export default function BankAccountRegistration(props) {
                       alert.warning(Translate.t("fieldNotFilled"));
                     }
                   } else {
-                    alert.warning(Translate.t("invalidAcountNumber"));
+                    alert.warning(Translate.t("invalidAccountNumber"));
                   }
                 }}
               >

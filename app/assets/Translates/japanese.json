@@ -312,7 +312,7 @@
   "payment": "お支払い",
   "person": "人",
   "wrongLoginDetails": "入力された情報が正しくありません",
-  "cannotUndone": "この顧客を削除しますか？ これは元に戻せません。",
+  "cannotUndone": "削除すると元に戻せず、トーク履歴も消えます。よろしいですか？",
   "and": "そして",
   "productQuantity": "量",
   "invalidUser": "無効なユーザー",
@@ -393,5 +393,5 @@
   "cartFilterMsg": "在庫が限られているか空の場合、商品はカートから削除されます",
   "send": "送信",
   "all": "すべて",
-  "invalidAcountNumber": "正しい口座番号を入力してください"
+  "invalidAccountNumber": "正しい口座番号を入力してください"
 }
