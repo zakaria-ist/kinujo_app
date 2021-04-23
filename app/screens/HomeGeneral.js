@@ -176,6 +176,9 @@ export default function Home(props) {
           });
           onCartCountChanged(totalItemQty);
         });
+    // set new purchase flag
+    AsyncStorage.setItem("newPurchase", "1").then(() => {console.log('Purchase flag true')});
+
     if (d_params.seller != '') {
       let sellerList = [];
       let oldsellers = await db.collection("sellers").get();

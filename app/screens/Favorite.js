@@ -282,6 +282,29 @@ export default function Favorite(props) {
         processFavouriteHtml(props, users, tmpKinujoProducts)
       );
     }
+    if (type == "Popular") {
+      onSelected("Popular");
+      tmpFeaturedProducts = tmpFeaturedProducts.sort((productA, productB) => {
+        let productA_count = productsView[productA.id]
+          ? productsView[productA.id]
+          : 0;
+        let productB_count = productsView[productB.id]
+          ? productsView[productB.id]
+          : 0;
+        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
+        
+      });
+      tmpKinujoProducts = tmpKinujoProducts.sort((productA, productB) => {
+        let productA_count = productsView[productA.id]
+          ? productsView[productA.id]
+          : 0;
+        let productB_count = productsView[productB.id]
+          ? productsView[productB.id]
+          : 0;
+        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
+        
+      });
+    }
     if (type == "reset") {
       onSelected("");
 
@@ -534,6 +557,21 @@ export default function Favorite(props) {
               backgroundColor: selected == "HighToLow" ? "orange" : "white",
             }}>
               <Text>{Translate.t("priceHighToLow")}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => filterProductsBySorting("Popular")}
+          >
+            <View
+              style={{
+                alignItems: "center",
+                borderBottomWidth: 1,
+                borderBottomColor: Colors.D7CCA6,
+                paddingVertical: heightPercentageToDP("1.5%"),
+                backgroundColor: selected == "Popular" ? "orange" : "white",
+              }}
+            >
+              <Text>{Translate.t("popular")}</Text>
             </View>
           </TouchableWithoutFeedback>
           <View
