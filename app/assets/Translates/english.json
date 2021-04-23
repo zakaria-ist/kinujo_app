@@ -265,7 +265,7 @@
   "addressee": "Addressee",
   "registerNewAddress": "Register a new address",
   "addressRegister": "Register",
-  "invalidAcountNumber": "Invalid Account Number",
+  "invalidAccountNumber": "Invalid Account Number",
 
   "addToCart": "Add to cart",
   "cart": "Cart",
