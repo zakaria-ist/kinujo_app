@@ -68,8 +68,8 @@ const ChatItem = ({
                 }
                 setSelected(selects.concat(selectMsg))
             }
-            if (tmpDay != day) updateChats(newChats);
-            processOldChat(tmpDay == day || tmpDay == day - 1 ? oldChats : false);
+            // if (tmpDay != day) updateChats(newChats);
+            // processOldChat(tmpDay == day || tmpDay == day - 1 ? oldChats : false);
         }
     }
 
