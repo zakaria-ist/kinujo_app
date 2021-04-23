@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { InteractionManager } from 'react-native';
 import {
   KeyboardAvoidingView,
@@ -48,7 +48,7 @@ let chats = [];
 let old30Chats = [];
 let oldChats = [];
 let imageMap = {};
-// let selects = [];
+let selects = [];
 let day = new Date().getDate();
 let tmpMultiSelect = false;
 let old30LastDoc = null;
@@ -168,16 +168,15 @@ export default function ChatScreen(props) {
   let favData = props.route.params.favData;
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
-  const [selects, setSelected] = useStateIfMounted([])
 
-  // React.useEffect(() => {
-  //   // hideEmoji();
-  //   setMultiSelect(false);
-  //   tmpMultiSelect = false;
-  //   // selects = []
-  //   setSelected([])
-  //   setChats([]);
-  // }, [!isFocused]);
+  React.useEffect(() => {
+    // hideEmoji();
+    setMultiSelect(false);
+    tmpMultiSelect = false;
+    selects = []
+    // setSelected([])
+    setChats([]);
+  }, [!isFocused]);
 
 
   async function getName(ownId, data) {
@@ -682,7 +681,7 @@ export default function ChatScreen(props) {
       contactID: longPressObj.contactID,
       contactName: longPressObj.contactName,
       image: longPressObj.image
-    });
+    })
     onShowPopUpChanged(false);
   }
 
@@ -744,11 +743,20 @@ export default function ChatScreen(props) {
   const cancelMultiSelect = () => {
     setMultiSelect(false);
     tmpMultiSelect = false;
-    setSelected([])
-    // selects = [];
+    // setSelected([])
+    selects = [];
     processChat(chats);
     processOld30Chat(old30Chats);
     processOldChat(oldChats);
+  }
+
+  let setSelectMsg = (chat, isRemove) => {
+    if (isRemove) {
+      let itemIndex = selects.findIndex(el => el.id == chat.id)
+      selects.splice(itemIndex, 1)
+    } else {
+      selects.push(chat)
+    }
   }
 
   return (
@@ -789,12 +797,12 @@ export default function ChatScreen(props) {
           tmpMultiSelect={multiSelect}
           parentProps={props}
           day={day}
+          setSelectMsg={setSelectMsg}
           onLongPressObjChanged={onLongPressObjChanged}
           onShowPopUpChanged={onShowPopUpChanged}
           redirectToChat={redirectToChat}
           selectedChat={selectedChat}
           selects={selects}
-          setSelected={setSelected}
           processOldChat={processOldChat}
           oldChats={oldChats}
           findParams={findParams}

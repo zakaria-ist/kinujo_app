@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -19,13 +19,14 @@ const ChatItem = ({
 
     day, onLongPressObjChanged, onShowPopUpChanged,
     redirectToChat, tmpMultiSelect, selectedChat, selects, setSelected,
-    processOldChat, oldChats, findParams, request, showCheckBox, imageMap,
+    processOldChat, oldChats, findParams, request, showCheckBox, imageMap, setSelectMsg,
 
     previousMessageDateElse, updateChats, item
 }) => {
 
     let chat = item
     let isSelected = selects.find(el => el?.id == chat?.id) ? true : false
+
     let created = chat.data.createdAt;
     let date = created.split(":");
     let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
@@ -53,26 +54,6 @@ const ChatItem = ({
         }
     }
 
-    const onSelectMessage = () => {
-        if (tmpMultiSelect) {
-            if (isSelected) {
-                let _selects = selects.filter((select) => select.id != chat.id);
-                setSelected(_selects)
-            } else {
-                let selectMsg = {
-                    id: chat.id,
-                    message: chat.data.message,
-                    contactID: chat.data.contactID,
-                    contactName: chat.data.contactName,
-                    image: chat.data.image
-                }
-                setSelected(selects.concat(selectMsg))
-            }
-            // if (tmpDay != day) updateChats(newChats);
-            // processOldChat(tmpDay == day || tmpDay == day - 1 ? oldChats : false);
-        }
-    }
-
     const onHyperLinkClicked = (url, text) => {
         if (!tmpMultiSelect) {
             if (findParams(url, "apn") && findParams(url, "link")) {
@@ -92,6 +73,19 @@ const ChatItem = ({
         }
     }
 
+    const [isSelect, setIsSelect] = useState(false)
+
+    useEffect(() => {
+        if (!tmpMultiSelect) setIsSelect(false)
+        if (isSelected) setIsSelect(true)
+    }, [tmpMultiSelect])
+
+    const onSelectMessage = () => {
+        if (tmpMultiSelect) {
+            setSelectMsg(chat, isSelect)
+            setIsSelect(!isSelect)
+        }
+    }
 
     return useMemo(() => {
         let props = parentProps
@@ -163,7 +157,7 @@ const ChatItem = ({
         >
             <View
                 style={
-                    selectedChat(chat.id) ? styles.selected : styles.non_selected
+                    tmpMultiSelect && isSelect ? styles.selected : styles.non_selected
                 }
                 key={chat.id}
             >
@@ -182,7 +176,7 @@ const ChatItem = ({
                 {/*///////////////////////////////////////*/}
             </View>
         </TouchableNativeFeedback>
-    }, [isSelected, tmpMultiSelect, selects.length])
+    }, [isSelect, tmpMultiSelect])
 }
 
 const styles = StyleSheet.create({
