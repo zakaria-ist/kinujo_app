@@ -136,7 +136,7 @@ export default function ProductList(props) {
           }}
           onSellerNamePress={() => {
             props.navigation.navigate("SellerProductList", {
-              sellerName: product.user.shop_name,
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
             });
           }}
           onProductNamePress={() => {
@@ -196,7 +196,9 @@ export default function ProductList(props) {
           key={product.id}
           product_id={product.id}
           onSellerNamePress={() => {
-            props.navigation.navigate("SellerProductList", {});
+            props.navigation.navigate("SellerProductList", {
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
+            });
           }}
           onPress={() => {
             navigationHelper.gotoHomeStoreList({
@@ -733,7 +735,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   section_product_2: {
-    marginBottom: heightPercentageToDP("20%"),
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

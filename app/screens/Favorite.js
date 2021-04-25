@@ -94,7 +94,7 @@ export default function Favorite(props) {
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name : product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -156,7 +156,7 @@ export default function Favorite(props) {
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name : product.user.nickname}
           price={
             (user.is_seller && user.is_approved
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -581,7 +581,7 @@ export default function Favorite(props) {
               justifyContent: "space-evenly",
               // bottom: heightPercentageToDP("8%"),
               // marginTop: heightPercentageToDP("10%"),
-              bottom: 0,
+              bottom: heightPercentageToDP("15%"),
               right: 0,
               marginTop: heightPercentageToDP("60%"),
               // right: widthPercentageToDP("3%"),
@@ -744,7 +744,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   section_product_2: {
-    marginBottom: heightPercentageToDP("15%"),
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
