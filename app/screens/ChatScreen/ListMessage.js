@@ -81,7 +81,6 @@ const ListMessage = forwardRef((props, ref) => {
         <SectionList
             ref={scrollViewReference}
             inverted
-            extraData={selects.length}
             sections={[{
                 title: '',
                 data: newChats

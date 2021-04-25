@@ -75,9 +75,11 @@ const ChatItem = ({
 
     const [isSelect, setIsSelect] = useState(false)
 
+
+    if (isSelected && !isSelect) setIsSelect(true)
+
     useEffect(() => {
         if (!tmpMultiSelect) setIsSelect(false)
-        if (isSelected) setIsSelect(true)
     }, [tmpMultiSelect])
 
     const onSelectMessage = () => {
