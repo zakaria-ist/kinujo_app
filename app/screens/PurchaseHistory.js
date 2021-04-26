@@ -385,6 +385,18 @@ export default function PurchaseHistory(props) {
           onSpinnerChanged(true);
         }
         loadOrder(userId, "all");
+      } else {
+        AsyncStorage.getItem("newPurchase").then((flag) => {
+          if (flag && flag == '1') {
+            if (isFocused) {
+              onSpinnerChanged(true);
+            }
+            loadOrder(userId, "all");
+            AsyncStorage.setItem("newPurchase", "0").then(() => {console.log('Purchase flag false')});
+          } else {
+            AsyncStorage.setItem("newPurchase", "0").then(() => {console.log('Purchase flag false')});
+          }
+        });
       }
     });
   }

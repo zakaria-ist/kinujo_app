@@ -278,17 +278,17 @@ export default function ProductList(props) {
         </TouchableWithoutFeedback>
       );
     });
-    tmpCategoryHtml.push(
-      <TouchableWithoutFeedback
-        onPress={() => {
-          filterProductsByCateogry(categories, "reset", "reset");
-        }}
-      >
-        <View style={styles.categoryContainer} >
-          <Text>{Translate.t("reset")}</Text>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+    // tmpCategoryHtml.push(
+    //   <TouchableWithoutFeedback
+    //     onPress={() => {
+    //       filterProductsByCateogry(categories, "reset", "reset");
+    //     }}
+    //   >
+    //     <View style={styles.categoryContainer} >
+    //       <Text>{Translate.t("reset")}</Text>
+    //     </View>
+    //   </TouchableWithoutFeedback>
+    // );
     return tmpCategoryHtml;
   }
 
@@ -595,7 +595,7 @@ export default function ProductList(props) {
             style={{
               flexDirection: "row",
               justifyContent: "space-evenly",
-              bottom: heightPercentageToDP("8%"),
+              bottom: heightPercentageToDP("15%"),
               right: 0,
               marginTop: heightPercentageToDP("60%"),
             }}
