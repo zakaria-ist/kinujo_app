@@ -117,7 +117,7 @@ async function performUrl(props, link) {
     console.log('store', store);
   }
   await AsyncStorage.setItem("referUser", userId);
-  if (store && store != "" && store != "1" ) {
+  if (store && store != "" && store == "1" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 1});
   } else if(store && store != "" && store == "0") {
@@ -133,7 +133,7 @@ async function init(props, foreground) {
       Linking.getInitialURL().then((url) => {
         if (url) {
           url = decodeURI(url);
-          url = url.replace("https://kinujo.page.link/?link=", "")
+          url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
           url = url.replaceAll("%3D", '=');
           url = url.replaceAll("%26", '&');
           saveProduct(props, url);
@@ -183,7 +183,7 @@ async function init(props, foreground) {
         if (url) {
           url = decodeURI(url);
           console.log('url', url);
-          url = url.replace("https://kinujo.page.link/?link=", "")
+          url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
           url = url.replaceAll("%3D", '=');
           url = url.replaceAll("%26", '&');
           saveProduct(props, url);

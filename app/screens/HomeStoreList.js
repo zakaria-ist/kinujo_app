@@ -719,7 +719,7 @@ export default function HomeStoreList(props) {
             </Text>
             <TouchableWithoutFeedback onPress={()=>{
               props.navigation.navigate("SellerProductList", {
-                sellerName: product.user.shop_name,
+                sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
               });
             }}>
               <Text style={styles.sellerFont}>
