@@ -509,7 +509,7 @@ export default function Home(props) {
           onSellerNamePress={() => {
             // console.log("zz");
             props.navigation.navigate("SellerProductList", {
-              sellerName: product.user.shop_name,
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
             });
           }}
           onProductNamePress={() => {
@@ -547,7 +547,7 @@ export default function Home(props) {
           }
           office={product.brand_name}
           name={product.name}
-          seller={product.user.shop_name}
+          seller={product.user.shop_name ? product.user.shop_name : product.user.nickname}
           price={
             ((user && user.is_seller && user.is_approved) || (tempUser && tempUser.is_seller && tempUser.is_approved)
               ? format.separator(parseFloat(product.store_price) + (parseFloat(product.store_price) * taxRate))
@@ -1045,7 +1045,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   section_product_2: {
-    marginBottom: heightPercentageToDP("15%"),
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

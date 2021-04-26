@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   section_product_2: {
-    marginBottom: heightPercentageToDP("15%"),
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",

@@ -215,7 +215,7 @@ export default function ChatListForward(props) {
             .add(field)
             .then(function () {
               onSpinnerChanged(false);
-              // props.navigation.goBack();
+              props.navigation.goBack();
               props.navigation.navigate("ChatScreen", {
                 type: groupType,
                 groupID: groupId,
@@ -223,7 +223,7 @@ export default function ChatListForward(props) {
               })
             }).catch(()=>{
               onSpinnerChanged(false);
-              // props.navigation.goBack();
+              props.navigation.goBack();
               props.navigation.navigate("ChatScreen", {
                 type: groupType,
                 groupID: groupId,
@@ -258,7 +258,7 @@ export default function ChatListForward(props) {
           }
           batch.commit().then(()=>{
             onSpinnerChanged(false);
-            // props.navigation.goBack();
+            props.navigation.goBack();
             props.navigation.navigate("ChatScreen", {
               type: groupType,
               groupID: groupId,
@@ -266,7 +266,7 @@ export default function ChatListForward(props) {
             })
           }).catch((error)=>{
             onSpinnerChanged(false);
-            // props.navigation.goBack();
+            props.navigation.goBack();
             props.navigation.navigate("ChatScreen", {
               type: groupType,
               groupID: groupId,
@@ -343,7 +343,7 @@ export default function ChatListForward(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>{chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
-              </View>
+                </View>
               <View style={styles.tabRightContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -377,7 +377,7 @@ export default function ChatListForward(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>{chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
-              </View>
+                </View>
               <View style={styles.tabRightContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -412,7 +412,7 @@ export default function ChatListForward(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>{chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
-              </View>
+                </View>
               <View style={styles.tabRightContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -514,30 +514,31 @@ export default function ChatListForward(props) {
   }
 
   React.useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      AsyncStorage.getItem("chat").then((item) => {
-        if (item) {
-          AsyncStorage.removeItem("chat");
-          item = JSON.parse(item);
-          props.navigation.push("ChatScreen", item);
-        }
-      });
-
-      let unsubscribe;
-      chats = [];
-      firstLoad().then((unsub) => {
-        unsubscribe = unsub;
-      });
-
-      return function () {
-        chats = [];
-        onChatHtmlChanged([]);
-        if (unsubscribe) {
-          unsubscribe();
-        }
-      };
+    // InteractionManager.runAfterInteractions(() => {
+    AsyncStorage.getItem("chat").then((item) => {
+      if (item) {
+        AsyncStorage.removeItem("chat");
+        item = JSON.parse(item);
+        props.navigation.push("ChatScreen", item);
+      }
     });
-  }, [isFocused]);
+
+    let unsubscribe;
+    chats = [];
+    firstLoad().then((unsub) => {
+      unsubscribe = unsub;
+    });
+
+    return function () {
+      chats = [];
+      onChatHtmlChanged([]);
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+    // });
+  }, []);
+
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <SafeAreaView style={{ flex: 1 }}>
