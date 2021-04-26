@@ -171,17 +171,19 @@ export default function QRCode(props) {
             alert.warning(Translate.t('friendAlreadyExist'));
           } else {
             request.addFriend(userId, code).then(() => {
-              Alert.alert(
-                Translate.t("information"),
-                Translate.t("friendAdded"),
-                [
-                  {
-                    text: "OK",
-                    onPress: () => {},
-                  },
-                ],
-                { cancelable: false }
-              );
+              request.addFriend(code, userId).then(() => {
+                Alert.alert(
+                  Translate.t("information"),
+                  Translate.t("friendAdded"),
+                  [
+                    {
+                      text: "OK",
+                      onPress: () => {},
+                    },
+                  ],
+                  { cancelable: false }
+                );
+              });
             });
           }
         })

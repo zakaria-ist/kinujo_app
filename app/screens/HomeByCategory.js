@@ -119,6 +119,17 @@ export default function HomeByCategory(props) {
               images
             })
           }}
+          onSellerNamePress={() => {
+            props.navigation.navigate("SellerProductList", {
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
+            });
+          }}
+          onProductNamePress={() => {
+            props.navigation.navigate("ProductList", {
+              "id": product.id,
+              "productName" : product.name
+            });
+          }}
           idx={idx++}
           image={
             images.length > 0
@@ -177,6 +188,17 @@ export default function HomeByCategory(props) {
               url: product.url,
               images
             })
+          }}
+          onSellerNamePress={() => {
+            props.navigation.navigate("SellerProductList", {
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
+            });
+          }}
+          onProductNamePress={() => {
+            props.navigation.navigate("ProductList", {
+              "id": product.id,
+              "productName" : product.name
+            });
           }}
           idx={idx++}
           image={

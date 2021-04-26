@@ -116,12 +116,13 @@ export default function ReceiptView(props) {
     if (orderReceipt) {
       let updateData = {
         to_name: issueName,
+        is_copy: 1
       };
 
-      if (issueName != oldIssueName) {
-        updateData["is_copy"] = 1;
-      }
-
+      // if (issueName != oldIssueName) {
+        // updateData["is_copy"] = 1;
+      // }
+      console.log(updateData);
       request.patch(orderReceipt.url, updateData).then(() => {
         props.navigation.navigate("ReceiptView", {
           url: props.route.params.url,
@@ -152,8 +153,7 @@ export default function ReceiptView(props) {
         />
         <View style={styles.receiptEditingContainer}>
           <Text style={{ fontSize: RFValue(16) }}>
-            {Translate.t("invoice")}
-            {lastOrderReceipt.is_copy ? Translate.t("reissue") : ""}
+            {lastOrderReceipt.is_copy ? Translate.t("reissue") : Translate.t("invoice")}
           </Text>
           <View style={styles.invoiceInputContainer}>
             <TextInput
@@ -172,7 +172,7 @@ export default function ReceiptView(props) {
           </View>
 
           <Text style={styles.receivedMoneyText}>
-            {format.separator(order.total_price)} 円
+            {format.separator(order && order.order ? order.order.total_amount : 0)} 円
           </Text>
           <Text
             style={{
@@ -192,7 +192,7 @@ export default function ReceiptView(props) {
               <Text style={styles.receiptEditingDetailsText}>
                 {kanjidate.format(
                   "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+"",
-                  new Date(order.created)
+                  new Date(order && order.order ? order.order.created : "")
                 )}
               </Text>
             </View>
@@ -203,7 +203,7 @@ export default function ReceiptView(props) {
               <Text style={styles.receiptEditingDetailsText}>
                 {kanjidate.format(
                   "{Y:4}"+Translate.t("年")+"{M:2}"+Translate.t("月")+"{D:2}"+Translate.t("日")+"",
-                  new Date(order.created)
+                  new Date(order && order.order ? order.order.created : "")
                 )}
               </Text>
             </View>
@@ -212,7 +212,7 @@ export default function ReceiptView(props) {
                 {Translate.t("orderNumber")} :{" "}
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
-                {order ? order.id : ""}
+                {order && order.order ? order.order.id : ""}
               </Text>
             </View>
             <View
@@ -255,21 +255,23 @@ export default function ReceiptView(props) {
               {order && order.order ? order.order.tel : ""}
             </Text>
             <Text style={styles.receiptEditingDetailsText}>
-              {order && order.order ? order.order.address1 : ""}
+              {order && order.order ? order.order.address1 : ""}  {order && order.order ? (order.order.address2 ? order.order.address2 : "") : ""}
             </Text>
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.receiptEditingDetailsText}>
                 {Translate.t("paymentMethod")} :{" "}
               </Text>
               <Text style={styles.receiptEditingDetailsText}>
-                {order && order.order ? order.order.payment : ""}
+                {order && order.order ? (order.order.payment ? order.order.payment : "CARD") : ""}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.receiptEditingDetailsText}>
                 {Translate.t("partOfTheCardNumber")} :
               </Text>
-              <Text style={styles.receiptEditingDetailsText}>****</Text>
+              <Text style={styles.receiptEditingDetailsText}>{order && order.order 
+              ? (order.order.card_no ? order.order.card_no : "****_****_****_****") 
+              : "****_****_****_****"}</Text>
             </View>
           </View>
           <View
