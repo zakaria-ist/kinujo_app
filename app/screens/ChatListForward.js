@@ -107,6 +107,7 @@ async function getDetail(ownId, data) {
     image: "",
   };
 }
+let selected = []
 
 export default function ChatListForward(props) {
   let messageToForward = props.route.params.message;
@@ -152,9 +153,12 @@ export default function ChatListForward(props) {
     tmpChats = tmpChats.map((chat) => {
       if (chat.id == groupID) {
         if (chat.checkBoxStatus == true) {
+          selected = selected.filter(el => el.id != chat.id)
           chat.checkBoxStatus = false;
         } else {
           chat.checkBoxStatus = true;
+          let isInSelected = selected.find(el => el.id == chat.id)
+          !isInSelected && selected.push(chat)
         }
       }
       return chat;
@@ -202,30 +206,28 @@ export default function ChatListForward(props) {
       return 0
 
     } catch (error) {
+      console.log('====================================');
+      console.log('chat error', error);
+      console.log('====================================');
       return 1
     }
   }
 
   async function forwardMessage() {
+    console.time('chat')
     onSpinnerChanged(true);
-
-    let waitAll = chats.map(chat => {
-
-      if (chat.checkBoxStatus == true) {
-
-        if (messageToForward) {
-
-          return sendMsg(messageToForward, chat.id)
-
-        } else if (messages) {
-          return messages.map(message => {
-            return sendMsg(message, chat.id)
-          })
-        }
+    let waitAll = selected.map(chat => {
+      if (messageToForward) {
+        return sendMsg(messageToForward, chat.id)
+      } else if (messages) {
+        return messages.map((message) => {
+          return sendMsg(message, chat.id)
+        })
       }
     })
 
     Promise.all(waitAll).then(rs => {
+      console.timeEnd('chat')
       onSpinnerChanged(false);
       props.navigation.goBack();
       props.navigation.navigate("ChatScreen", {
@@ -236,6 +238,7 @@ export default function ChatListForward(props) {
     })
 
   }
+
   function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
@@ -497,9 +500,10 @@ export default function ChatListForward(props) {
     firstLoad().then((unsub) => {
       unsubscribe = unsub;
     });
-    
+
     return function () {
       chats = [];
+      selected = [];
       onChatHtmlChanged([]);
       if (unsubscribe) {
         unsubscribe();
