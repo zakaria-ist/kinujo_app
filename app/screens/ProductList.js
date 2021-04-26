@@ -139,12 +139,6 @@ export default function ProductList(props) {
               sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
             });
           }}
-          onProductNamePress={() => {
-            props.navigation.navigate("ProductList", {
-              "id": product.id,
-              "productName" : product.name
-            });
-          }}
           idx={idx++}
           image={
             images.length > 0

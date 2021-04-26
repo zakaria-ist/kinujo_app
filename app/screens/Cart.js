@@ -133,9 +133,9 @@ export default function Cart(props) {
         </View>
       );
     } else {
-      request.get(pAddresses.prefecture)
+      request.get(pAddresses.prefecture.url)
         .then(res => {
-          let pref = res.data.name
+          let pref = res.data.name;
           tmpAddresses.push(
             <View style={styles.deliveryTabContainer} key={pAddresses.id}>
               <View
