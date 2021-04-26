@@ -243,6 +243,7 @@ function BottomNavigationGeneral(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
@@ -715,6 +716,7 @@ function BottomNavigationGeneral(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
@@ -1208,6 +1210,7 @@ function BottomNavigationStore(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),
@@ -1712,6 +1715,7 @@ function BottomNavigationStore(props) {
         />
         <Tab.Screen
           options={{
+            unmountOnBlur: true,
             tabBarButton: (props) => (
               <CustomTabButton show={false} {...props} />
             ),

@@ -35,7 +35,7 @@ const db = firebase.firestore();
 
 const win = Dimensions.get("window");
 let userId;
-export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
+export default function CustomKinujoWord({ text, onFavoritePress, onPress, onCartCount }) {
   const [cartCount, onCartChanged] = useStateIfMounted(0);
   const ratioKinujo = win.width / 4 / 78;
   const ratioFavorite = win.width / 14 / 24;
@@ -50,7 +50,7 @@ export default function CustomKinujoWord({ text, onFavoritePress, onPress }) {
         request.get(url).then((response) => {
           onUserChanged(response.data);
           onUserAuthorityIDChanged(response.data.authority.id);
-  
+
           const subscriber = db
             .collection("users")
             .doc(String(response.data.id))
