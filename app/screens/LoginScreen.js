@@ -117,7 +117,7 @@ async function performUrl(props, link) {
     console.log('store', store);
   }
   await AsyncStorage.setItem("referUser", userId);
-  if (store && store != "" && store != "1" ) {
+  if (store && store != "" && store == "1" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
     props.navigation.navigate("TermsOfCondition", {"referUser": userId, "store": 1});
   } else if(store && store != "" && store == "0") {

@@ -123,7 +123,9 @@ export default function SellerProductList(props) {
           key={product.id}
           product_id={product.id}
           onSellerNamePress={() => {
-            props.navigation.navigate("SellerProductList", {});
+            props.navigation.navigate("SellerProductList", {
+              sellerName: product.user.shop_name ? product.user.shop_name : product.user.nickname,
+            });
           }}
           onPress={() => {
             navigationHelper.gotoHomeStoreList({
@@ -798,7 +800,7 @@ export default function SellerProductList(props) {
               justifyContent: "space-evenly",
               // bottom: heightPercentageToDP("8%"),
               // marginTop: heightPercentageToDP("10%"),
-              bottom: 0,
+              bottom: heightPercentageToDP("15%"),
               right: 0,
               marginTop: heightPercentageToDP("60%"),
               // right: widthPercentageToDP("3%"),
@@ -921,7 +923,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   section_product: {
-    marginBottom: heightPercentageToDP("20%"),
+    marginBottom: heightPercentageToDP("25%"),
     flexDirection: "row",
     alignItems: "flex-start",
     flexWrap: "wrap",
