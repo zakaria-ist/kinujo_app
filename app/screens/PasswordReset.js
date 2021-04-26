@@ -11,6 +11,7 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  Linking
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -214,6 +215,7 @@ export default function PasswordReset(props) {
             <TouchableWithoutFeedback
               disabled={timer == 0 ? false : true}
               onPress={() => {
+                Linking.openURL('mailto:app@kinujo.jp');
                 if(timer == 0){
                   if (phone != "") {
                     setTimer(30);
@@ -232,7 +234,7 @@ export default function PasswordReset(props) {
                   marginHorizontal: widthPercentageToDP("10%"),
                   color: Colors.deepGrey,
                   textAlign: "center",
-                  borderBottomWidth: 1,
+                  textDecorationLine: "underline",
                   borderBottomColor: Colors.black,
                 }}
               >
