@@ -133,9 +133,9 @@ export default function Cart(props) {
         </View>
       );
     } else {
-      request.get(pAddresses.prefecture.url)
+      request
+        .get(pAddresses.prefecture)
         .then(res => {
-          let pref = res.data.name;
           tmpAddresses.push(
             <View style={styles.deliveryTabContainer} key={pAddresses.id}>
               <View
@@ -180,8 +180,7 @@ export default function Cart(props) {
                 </Text>
                 <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
                 <Text style={styles.textInTabContainer}>
-                  {/* {pAddresses.prefecture.name} */}
-                  {pref}
+                  {res.data.name}
                 </Text>
                 <Text style={styles.textInTabContainer}>{pAddresses.address1}</Text>
                 <Text style={styles.textInTabContainer}>{pAddresses.address2}</Text>
@@ -189,6 +188,7 @@ export default function Cart(props) {
             </View>
           )
         })
+        
     }
     // return tmpAddresses[0];
     return tmpAddresses;
@@ -796,6 +796,7 @@ export default function Cart(props) {
 
         AsyncStorage.getItem("defaultAddress").then((address) => {
           if (address != null) {
+
             request.get(address).then((response) => {
               // onAddressHtmlChanged(getAddressHtml(response.data, ""));
               // onSelectedChanged(response.data.id);
