@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   View,
   Dimensions,
   Image,
@@ -122,7 +123,7 @@ export default function SMSAuthentication(props) {
             onChangeText={(text) => onCodeChanged(text.replace(/[^0-9]/g, ""))}
             value={code}
           ></TextInput>
-          <TouchableWithoutFeedback
+          <TouchableOpacity
             onPress={() => {
               if (!code) return;
               if (!confirm) return;
@@ -224,7 +225,7 @@ export default function SMSAuthentication(props) {
           >
             <View
               style={
-                code
+                code && confirm
                   ? styles.smsAuthenticateButton
                   : styles.smsDisabledAuthenticateButton
               }
@@ -233,8 +234,8 @@ export default function SMSAuthentication(props) {
                 {Translate.t("authenticate")}
               </Text>
             </View>
-          </TouchableWithoutFeedback>
-          <TouchableWithoutFeedback
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => {
               AsyncStorage.setItem("verified", "0").then(() => {
                 props.navigation.pop();
@@ -246,7 +247,7 @@ export default function SMSAuthentication(props) {
                 {Translate.t("cancel")}
               </Text>
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
     </LinearGradient>
