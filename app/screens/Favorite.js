@@ -50,6 +50,7 @@ if (!firebase.apps.length) {
 }
 let taxRate = 0;
 const db = firebase.firestore();
+let productsView = {};
 
 export default function Favorite(props) {
   const [favouriteHtml, onFavouriteHtmlChanged] = useStateIfMounted(<View></View>);
@@ -377,6 +378,13 @@ export default function Favorite(props) {
         }
       });
     InteractionManager.runAfterInteractions(() => {
+      db.collection("products")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((documentSnapshot) => {
+            productsView[documentSnapshot.id] = documentSnapshot.data()["view"];
+          });
+        });
       AsyncStorage.getItem("user").then(function (url) {
         let urls = url.split("/");
         urls = urls.filter((url) => {

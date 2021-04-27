@@ -215,7 +215,7 @@ export default function PasswordReset(props) {
             <TouchableWithoutFeedback
               disabled={timer == 0 ? false : true}
               onPress={() => {
-                Linking.openURL('mailto:app@kinujo.jp');
+                Linking.openURL('mailto:info@kinujo.jp');
                 if(timer == 0){
                   if (phone != "") {
                     setTimer(30);
