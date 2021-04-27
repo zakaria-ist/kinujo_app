@@ -572,7 +572,7 @@ export default function ChatScreen(props) {
       onChatHtmlChanged([]);
       tmpChatHtml = [];
     };
-  }, [isFocused]);
+  }, []);
 
   const DATA = [
     {

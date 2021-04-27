@@ -167,7 +167,7 @@ export default function ChatListForward(props) {
     processChat(tmpChats, ownUserID);
   }
 
-  const sendMsg = async (message, chatId) => {
+  const sendMsg = async (message, chatId, batch) => {
     let createdAt =
       year +
       ":" +
@@ -198,45 +198,57 @@ export default function ChatListForward(props) {
     }
 
     try {
-      await db.collection("chat")
+      let chatRef = db.collection("chat")
         .doc(chatId)
-        .collection("messages")
-        .add(field)
+        .collection("messages").doc();
 
+      batch.set(chatRef, field)
+      // .add(field)
       return 0
 
     } catch (error) {
-      console.log('====================================');
-      console.log('chat error', error);
-      console.log('====================================');
       return 1
     }
   }
 
   async function forwardMessage() {
-    console.time('chat')
+    let batch = db.batch()
     onSpinnerChanged(true);
     let waitAll = selected.map(chat => {
       if (messageToForward) {
-        return sendMsg(messageToForward, chat.id)
+        return sendMsg(messageToForward, chat.id, batch)
       } else if (messages) {
         return messages.map((message) => {
-          return sendMsg(message, chat.id)
+          return sendMsg(message, chat.id, batch)
         })
       }
     })
 
-    Promise.all(waitAll).then(rs => {
-      console.timeEnd('chat')
-      onSpinnerChanged(false);
-      props.navigation.goBack();
-      props.navigation.navigate("ChatScreen", {
-        type: groupType,
-        groupID: groupId,
-        groupName: groupName,
+    try {
+      await Promise.all(waitAll)
+      let timeoutGoBack = setTimeout(()=>{
+        navigateToChatScreen();
+        timeoutGoBack = null
+      }, 4000);
+      batch.commit().then(rs=>{
+        if(timeoutGoBack){
+          navigateToChatScreen()
+          clearTimeout(timeoutGoBack)}
       })
-    })
 
+    } catch (error) {
+
+    }
+  }
+
+  let navigateToChatScreen = () => {
+    onSpinnerChanged(false);
+    props.navigation.goBack();
+    props.navigation.navigate("ChatScreen", {
+      type: groupType,
+      groupID: groupId,
+      groupName: groupName,
+    })
   }
 
   function processChat(tmpChats, ownUserID) {
