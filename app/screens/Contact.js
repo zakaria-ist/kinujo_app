@@ -456,8 +456,8 @@ export default function Contact(props) {
             let item = documentSnapshot.data();
             if (!item["delete"]) {
               ids.push(item.id);
-              contactPinned[item.id] = item["pinned"] ? item["pinned"] : false;
-              contactNotify[item.id] = item["notify"] ? item["notify"] : false;
+              contactPinned[item.id] = item["pinned"];
+              contactNotify[item.id] = item["notify"];
             }
 
             if (item["delete"]) {
@@ -1022,6 +1022,9 @@ export default function Contact(props) {
                             querySnapshot.forEach((snapShot) => {
                               console.log(contactNotify[snapShot.data().id])
                               let notification = snapShot.data().notify;
+                              if (notification == null || notification == undefined) {
+                                notification = false;
+                              }
                               // alert.warning(snapShot.id);
                               db.collection("users")
                                 .doc(String(userId))
