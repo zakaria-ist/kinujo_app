@@ -84,7 +84,7 @@ const ChatItem = ({
 
     const onSelectMessage = () => {
         if (tmpMultiSelect) {
-            setSelectMsg(chat, isSelect)
+            setSelectMsg({ ...chat, ...chat?.data }, isSelect)
             setIsSelect(!isSelect)
         }
     }
@@ -196,4 +196,5 @@ const styles = StyleSheet.create({
 })
 
 export default ChatItem
+
 
