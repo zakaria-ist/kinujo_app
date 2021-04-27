@@ -293,12 +293,13 @@ export default function Home(props) {
         processNoti(remoteMessage)
       });
 
-    messaging()
-      .onMessage(({ notification,data }) => {
+   messaging()
+      .onMessage(({ notification,data, messageId }) => {
         notificationHelper.sendLocalNotification({
           title: notification.title,
           body: notification.body,
-          data
+          data,
+          messageId
         })
       });
 

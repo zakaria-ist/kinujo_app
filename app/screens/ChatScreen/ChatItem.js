@@ -25,6 +25,7 @@ const ChatItem = ({
 }) => {
 
     let chat = item
+    if (!chat?.data?.userID) return null
     let isSelected = selects.find(el => el?.id == chat?.id) ? true : false
 
     let created = chat.data.createdAt;
@@ -84,7 +85,7 @@ const ChatItem = ({
 
     const onSelectMessage = () => {
         if (tmpMultiSelect) {
-            setSelectMsg(chat, isSelect)
+            setSelectMsg({ ...chat, ...chat?.data }, isSelect)
             setIsSelect(!isSelect)
         }
     }
@@ -196,4 +197,5 @@ const styles = StyleSheet.create({
 })
 
 export default ChatItem
+
 
