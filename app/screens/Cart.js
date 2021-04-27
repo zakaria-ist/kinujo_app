@@ -734,7 +734,7 @@ export default function Cart(props) {
         let tax = taxObj ? taxObj.tax_rate * subTotal : 0;
         shop.tax = tax;
         // shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
-        shop.total = tmpShipping + subTotal + tax
+        shop.total = Math.round(tmpShipping + subTotal + tax)
         shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store);
         processCartView(props, shop, shopFirebaseProducts);
     });
