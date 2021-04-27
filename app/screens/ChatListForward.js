@@ -471,7 +471,7 @@ export default function ChatListForward(props) {
                     checkBoxStatus: false,
                   });
                   resolve(1)
-                  // processChat(chats, ownUserID);
+                  processChat(chats, ownUserID);
                 });
               } else {
                 chats = chats.map((chat) => {
@@ -481,7 +481,7 @@ export default function ChatListForward(props) {
                   return chat;
                 });
                 resolve(1)
-                // processChat(chats, ownUserID);
+                processChat(chats, ownUserID);
               }
             } else {
               resolve(0)
@@ -489,9 +489,9 @@ export default function ChatListForward(props) {
           })
         });
 
-        Promise.all(waitEachSnapshot).then(rs => {
-          processChat(chats, ownUserID);
-        })
+        // Promise.all(waitEachSnapshot).then(rs => {
+        //   processChat(chats, ownUserID);
+        // })
 
       });
     return unsubscribe;
