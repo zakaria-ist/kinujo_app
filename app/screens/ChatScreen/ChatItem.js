@@ -25,6 +25,7 @@ const ChatItem = ({
 }) => {
 
     let chat = item
+    if (!chat?.data?.userID) return null
     let isSelected = selects.find(el => el?.id == chat?.id) ? true : false
 
     let created = chat.data.createdAt;
