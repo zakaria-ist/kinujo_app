@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { InteractionManager } from 'react-native';
 import {
   StyleSheet,
   Text,
@@ -13,7 +12,6 @@ import {
   ScrollView,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
-import CachedImage from 'react-native-expo-cached-image';
 import CheckBox from "@react-native-community/checkbox";
 import { Colors } from "../assets/Colors.js";
 import {
@@ -25,21 +23,11 @@ import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import AsyncStorage from "@react-native-community/async-storage";
-import firebase from "firebase/app";
 import _ from "lodash";
-import { useIsFocused } from "@react-navigation/native";
-import "firebase/firestore";
-import { firebaseConfig } from "../../firebaseConfig.js";
-import { block } from "react-native-reanimated";
-import CustomAlert from "../lib/alert";
+import firestore from '@react-native-firebase/firestore'
 import Request from "../lib/request";
-import Clipboard from "@react-native-community/clipboard";
 import Spinner from "react-native-loading-spinner-overlay";
-const alert = new CustomAlert();
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
+const db = firestore();
 const chatRef = db.collection("chat");
 const win = Dimensions.get("window");
 let groupID = [];
@@ -98,7 +86,7 @@ async function getDetail(ownId, data) {
     .get();
 
   firebaseName = "";
-  snapShot.forEach((docRef) => {
+  snapShot.docs.map((docRef) => {
     if (docRef.data().displayName && docRef.id == users) {
       firebaseName = docRef.data().displayName;
     }
@@ -119,6 +107,7 @@ async function getDetail(ownId, data) {
     image: "",
   };
 }
+let selected = []
 
 export default function ChatListForward(props) {
   let messageToForward = props.route.params.message;
@@ -127,19 +116,19 @@ export default function ChatListForward(props) {
   let groupId = props.route.params.groupID;
   let groupName = props.route.params.groupName;
   let groupType = props.route.params.type;
-  const isFocused = useIsFocused();
-  const [show, onShowChanged] = useStateIfMounted(false);
+  // const isFocused = useIsFocused();
+  // const [show, onShowChanged] = useStateIfMounted(false);
   const [totalUnread, setTotalUnread] = useStateIfMounted(false);
-  const [loaded, onLoadedChanged] = useStateIfMounted(false);
+  // const [loaded, onLoadedChanged] = useStateIfMounted(false);
   const [chatHtml, onChatHtmlChanged] = useStateIfMounted([]);
-  const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
+  // const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
   // if (!isFocused) {
   //   onShowChanged(false);
   // }
-  React.useEffect(() => {
-    onShowChanged(false);
-  }, [!isFocused]);
+  // React.useEffect(() => {
+  //   onShowChanged(false);
+  // }, [!isFocused]);
   function getUnseenMessageCount(groupID, userID) {
     let userTotalMessageReadField = "totalMessageRead_" + userID;
     let userTotalMessageReadCount;
@@ -164,9 +153,12 @@ export default function ChatListForward(props) {
     tmpChats = tmpChats.map((chat) => {
       if (chat.id == groupID) {
         if (chat.checkBoxStatus == true) {
+          selected = selected.filter(el => el.id != chat.id)
           chat.checkBoxStatus = false;
         } else {
           chat.checkBoxStatus = true;
+          let isInSelected = selected.find(el => el.id == chat.id)
+          !isInSelected && selected.push(chat)
         }
       }
       return chat;
@@ -174,110 +166,91 @@ export default function ChatListForward(props) {
     chats = tmpChats
     processChat(tmpChats, ownUserID);
   }
-  async function forwardMessage() {
-    onSpinnerChanged(true);
-    for(j=0;j<chats.length; j++){
-      let chat = chats[j];
-      if (chat.checkBoxStatus == true) {
-        let createdAt =
-          year +
-          ":" +
-          month +
-          ":" +
-          day +
-          ":" +
-          hour +
-          ":" +
-          minute +
-          ":" +
-          seconds;
 
-        if(messageToForward){
-          let field = {
-            timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-            message: messageToForward,
-            userID: String(ownUserID),
-            createdAt: createdAt,
-          }
-          if(message["contactID"]){
-            field['contactID'] = message["contactID"]
-          }
-          if(message["contactName"]){
-            field['contactName'] = message["contactName"]
-          }
-          if(message["image"]){
-            field['image'] = message["image"]
-          }
+  const sendMsg = async (message, chatId, batch) => {
+    let createdAt =
+      year +
+      ":" +
+      month +
+      ":" +
+      day +
+      ":" +
+      hour +
+      ":" +
+      minute +
+      ":" +
+      seconds;
 
-          db.collection("chat")
-            .doc(chat.id)
-            .collection("messages")
-            .add(field)
-            .then(function () {
-              onSpinnerChanged(false);
-              props.navigation.goBack();
-              props.navigation.navigate("ChatScreen", {
-                type: groupType,
-                groupID: groupId,
-                groupName: groupName,
-              })
-            }).catch(()=>{
-              onSpinnerChanged(false);
-              props.navigation.goBack();
-              props.navigation.navigate("ChatScreen", {
-                type: groupType,
-                groupID: groupId,
-                groupName: groupName,
-              })
-            })
-        } else if(messages){
-          const batch = db.batch();
-          for(i=0; i<messages.length; i++){
-            let message = messages[i];
-
-            let field = {
-              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-              message: message["message"],
-              userID: String(ownUserID),
-              createdAt: createdAt,
-            }
-            if(message["contactID"]){
-              field['contactID'] = message["contactID"]
-            }
-            if(message["contactName"]){
-              field['contactName'] = message["contactName"]
-            }
-            if(message["image"]){
-              field['image'] = message["image"]
-            }
-            let newDoc = db.collection("chat")
-              .doc(chat.id)
-              .collection("messages")
-              .doc();
-            batch.set(newDoc, field);
-          }
-          batch.commit().then(()=>{
-            onSpinnerChanged(false);
-            props.navigation.goBack();
-            props.navigation.navigate("ChatScreen", {
-              type: groupType,
-              groupID: groupId,
-              groupName: groupName,
-            })
-          }).catch((error)=>{
-            onSpinnerChanged(false);
-            props.navigation.goBack();
-            props.navigation.navigate("ChatScreen", {
-              type: groupType,
-              groupID: groupId,
-              groupName: groupName,
-            })
-          })
-        }
-      }
+    let field = {
+      timeStamp: firestore.FieldValue.serverTimestamp(),
+      message: message?.message || messageToForward,
+      userID: String(ownUserID),
+      createdAt: createdAt,
+    }
+    if (message["contactID"]) {
+      field['contactID'] = message["contactID"]
+    }
+    if (message["contactName"]) {
+      field['contactName'] = message["contactName"]
+    }
+    if (message["image"]) {
+      field['image'] = message["image"]
     }
 
+    try {
+      let chatRef = db.collection("chat")
+        .doc(chatId)
+        .collection("messages").doc();
+
+      batch.set(chatRef, field)
+      // .add(field)
+      return 0
+
+    } catch (error) {
+      return 1
+    }
   }
+
+  async function forwardMessage() {
+    let batch = db.batch()
+    onSpinnerChanged(true);
+    let waitAll = selected.map(chat => {
+      if (messageToForward) {
+        return sendMsg(messageToForward, chat.id, batch)
+      } else if (messages) {
+        return messages.map((message) => {
+          return sendMsg(message, chat.id, batch)
+        })
+      }
+    })
+
+    try {
+      await Promise.all(waitAll)
+      let timeoutGoBack = setTimeout(()=>{
+        navigateToChatScreen();
+        timeoutGoBack = null
+      }, 4000);
+      batch.commit().then(rs=>{
+        if(timeoutGoBack){
+          navigateToChatScreen()
+          clearTimeout(timeoutGoBack)}
+      })
+
+    } catch (error) {
+
+    }
+  }
+
+  let navigateToChatScreen = () => {
+    onSpinnerChanged(false);
+    props.navigation.goBack();
+    props.navigation.navigate("ChatScreen", {
+      type: groupType,
+      groupID: groupId,
+      groupName: groupName,
+    })
+  }
+
   function processChat(tmpChats, ownUserID) {
     let tmpChatHtml = [];
     lastReadDateField = "lastReadDate_" + ownUserID;
@@ -342,8 +315,8 @@ export default function ChatListForward(props) {
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
-                </View>
+                <Text style={styles.tabText}>{chat.data.lastMessage.substring(0, 30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
+              </View>
               <View style={styles.tabRightContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -376,8 +349,8 @@ export default function ChatListForward(props) {
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
-                </View>
+                <Text style={styles.tabText}>{chat.data.lastMessage.substring(0, 30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
+              </View>
               <View style={styles.tabRightContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -411,8 +384,8 @@ export default function ChatListForward(props) {
               )}
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
-                <Text style={styles.tabText}>{chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
-                </View>
+                <Text style={styles.tabText}>{chat.data.lastMessage.substring(0, 30)}{chat.data.lastMessage.length > 30 ? "..." : ""}</Text>
+              </View>
               <View style={styles.tabRightContainer}>
                 <CheckBox
                   color={Colors.E6DADE}
@@ -482,33 +455,44 @@ export default function ChatListForward(props) {
     const unsubscribe = chatRef
       .where("users", "array-contains", String(ownUserID))
       .onSnapshot((querySnapShot) => {
-        querySnapShot.forEach((snapShot) => {
-          if (snapShot && snapShot.exists) {
-            tmpChats = chats.filter((chat) => {
-              return chat.id == snapShot.id;
-            });
-            if (tmpChats.length == 0) {
-              getDetail(ownUserID, snapShot.data()).then(function (detail) {
-                chats.push({
-                  id: snapShot.id,
-                  data: snapShot.data(),
-                  name: detail.name,
-                  image: detail.image,
-                  checkBoxStatus: false,
+        const waitEachSnapshot = querySnapShot.docs.map((snapShot) => {
+          return new Promise(resolve => {
+            if (snapShot && snapShot.exists) {
+              tmpChats = chats.filter((chat) => {
+                return chat.id == snapShot.id;
+              });
+              if (tmpChats.length == 0) {
+                getDetail(ownUserID, snapShot.data()).then(function (detail) {
+                  chats.push({
+                    id: snapShot.id,
+                    data: snapShot.data(),
+                    name: detail.name,
+                    image: detail.image,
+                    checkBoxStatus: false,
+                  });
+                  resolve(1)
+                  processChat(chats, ownUserID);
                 });
+              } else {
+                chats = chats.map((chat) => {
+                  if (chat.id == snapShot.id) {
+                    chat.data = snapShot.data();
+                  }
+                  return chat;
+                });
+                resolve(1)
                 processChat(chats, ownUserID);
-              });
+              }
             } else {
-              chats = chats.map((chat) => {
-                if (chat.id == snapShot.id) {
-                  chat.data = snapShot.data();
-                }
-                return chat;
-              });
-              processChat(chats, ownUserID);
+              resolve(0)
             }
-          }
+          })
         });
+
+        // Promise.all(waitEachSnapshot).then(rs => {
+        //   processChat(chats, ownUserID);
+        // })
+
       });
     return unsubscribe;
   }
@@ -531,6 +515,7 @@ export default function ChatListForward(props) {
 
     return function () {
       chats = [];
+      selected = [];
       onChatHtmlChanged([]);
       if (unsubscribe) {
         unsubscribe();
@@ -540,208 +525,56 @@ export default function ChatListForward(props) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Spinner
-          visible={spinner}
-          textContent={"Loading..."}
-          textStyle={styles.spinnerTextStyle}
-        />
-        <CustomHeader
-          text={Translate.t("chat")}
-          onPress={() => props.navigation.navigate("Cart")}
-          onBack={() => {
-            props.navigation.navigate("ChatScreen", {
-              type: groupType,
-              groupID: groupId,
-              groupName: groupName,
-            })
+    <SafeAreaView style={{ flex: 1 }}>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
+      <CustomHeader
+        text={Translate.t("chat")}
+        onPress={() => props.navigation.navigate("Cart")}
+        onBack={() => {
+          props.navigation.navigate("ChatScreen", {
+            type: groupType,
+            groupID: groupId,
+            groupName: groupName,
+          })
+        }}
+        onFavoriteChanged="noFavorite"
+      />
+      <ScrollView>
+        <View
+          style={{
+            marginHorizontal: widthPercentageToDP("4%"),
           }}
-          onFavoriteChanged="noFavorite"
-        />
-        <ScrollView>
+        >
           <View
             style={{
-              marginHorizontal: widthPercentageToDP("4%"),
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "flex-start",
-                // backgroundColor: "orange",
-                paddingBottom: heightPercentageToDP("3%"),
-                marginTop: heightPercentageToDP("3%"),
-                height: heightPercentageToDP("5%"),
-              }}
-            >
-              <TouchableWithoutFeedback onPress={() => forwardMessage()}>
-                <Text
-                  style={{
-                    fontSize: RFValue(12),
-                    right: 0,
-                    position: "absolute",
-                  }}
-                >
-                  {Translate.t("forward")}
-                </Text>
-              </TouchableWithoutFeedback>
-            </View>
-            {chatHtml}
-          </View>
-        </ScrollView>
-        {/* <View style={show == true ? styles.popUp : styles.none}>
-          <View
-            style={{
-              zIndex: 1,
-              borderWidth: 1,
-              backgroundColor: "white",
-              alignSelf: "center",
-              marginTop: heightPercentageToDP("30%"),
-              borderColor: Colors.D7CCA6,
+              flexDirection: "row",
               alignItems: "flex-start",
-              paddingLeft: widthPercentageToDP("5%"),
-              paddingRight: widthPercentageToDP("25%"),
+              // backgroundColor: "orange",
+              paddingBottom: heightPercentageToDP("3%"),
+              marginTop: heightPercentageToDP("3%"),
+              height: heightPercentageToDP("5%"),
             }}
           >
-            <View
-              style={{
-                marginTop: heightPercentageToDP("3%"),
-              }}
-            >
-              <Text style={{ fontSize: RFValue(14) }}>
-                {longPressObj ? longPressObj.name : ""}
-              </Text>
-              <View
+            <TouchableWithoutFeedback onPress={() => forwardMessage()}>
+              <Text
                 style={{
-                  marginTop: heightPercentageToDP("2%"),
-                  justifyContent: "space-evenly",
-                  height: heightPercentageToDP("35%"),
+                  fontSize: RFValue(12),
+                  right: 0,
+                  position: "absolute",
                 }}
               >
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["pinned_" + ownUserID] =
-                      longPressObj.data["pinned_" + ownUserID] == "" ||
-                      longPressObj.data["pinned_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("upperFixed")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["notify_" + ownUserID] =
-                      longPressObj.data["notify_" + ownUserID] == "" ||
-                      longPressObj.data["notify_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("notification")} OFF
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["hide_" + ownUserID] =
-                      longPressObj.data["hide_" + ownUserID] == "" ||
-                      longPressObj.data["hide_" + ownUserID]
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("nonRepresent")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    let update = {};
-                    update["delete_" + ownUserID] =
-                      longPressObj.data["delete_" + ownUserID] == "" ||
-                      longPressObj.data["delete_" + ownUserID] == false;
-                    longPressObj.data["delete_" + ownUserID] ? false : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("remove")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  // onPressIn={() => onShowChanged(false)}
-                  onPress={() => {
-                    onShowChanged(false);
-                    let tmpUsers = longPressObj.data.users.filter((user) => {
-                      return user != ownUserID;
-                    });
-                    AsyncStorage.setItem("ids", JSON.stringify(tmpUsers)).then(
-                      () => {
-                        AsyncStorage.setItem(
-                          "tmpIds",
-                          JSON.stringify(tmpUsers)
-                        ).then(() => {
-                          props.navigation.navigate("GroupChatCreation");
-                        });
-                      }
-                    );
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("groupChatCreate")}
-                  </Text>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback
-                  // onPressIn={() => onShowChanged(false)}
-                  onPress={() => {
-                    onShowChanged(false);
-                    let tmpUsers = longPressObj.data.users.filter((user) => {
-                      return user != ownUserID;
-                    });
-                    AsyncStorage.setItem("ids", JSON.stringify(tmpUsers)).then(
-                      () => {
-                        AsyncStorage.setItem(
-                          "tmpIds",
-                          JSON.stringify(tmpUsers)
-                        ).then(() => {
-                          props.navigation.navigate("CreateFolder");
-                        });
-                      }
-                    );
-                  }}
-                >
-                  <Text style={styles.longPressText}>
-                    {Translate.t("createFolder")}
-                  </Text>
-                </TouchableWithoutFeedback>
-              </View>
-            </View>
+                {Translate.t("forward")}
+              </Text>
+            </TouchableWithoutFeedback>
           </View>
-        </View> */}
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+          {chatHtml}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

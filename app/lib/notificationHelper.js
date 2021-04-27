@@ -1,8 +1,9 @@
 // import PushNotification from "react-native-push-notification";
+import { Platform } from 'react-native'
 import { Notifications } from 'react-native-notifications'
-
+let msgSent = []
 const notificationHelper = {
-    sendLocalNotification: ({ title, body, data }) => {
+    sendLocalNotification: ({ title, body, data, messageId }) => {
         // if (Platform.OS === 'android') {
         // PushNotification.localNotification({
         //     /* Android Only Properties */
@@ -40,11 +41,13 @@ const notificationHelper = {
         //     // repeatType: "day", // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
         // });
         // } else {
+        if (msgSent.indexOf(messageId) > -1) return
         Platform.OS === 'ios' && Notifications.postLocalNotification({
             title,
             body,
             ...data
         })
+        msgSent.push(messageId)
         // }
     }
 }
