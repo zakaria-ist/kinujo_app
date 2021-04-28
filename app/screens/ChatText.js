@@ -117,8 +117,7 @@ export default function ChatText({
                     longPress();
                   }
                 }}
-                onPress={(url, text) => {
-                }}
+                onPress={hyperLinkClicked}
               >
                 <Text>{text}</Text>
               </Hyperlink>

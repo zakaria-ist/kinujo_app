@@ -86,6 +86,7 @@ import MoneyLogo from "../assets/icons/money.svg";
 // import { EventRegister } from 'react-native-event-listeners';
 import Translate from "../assets/Translates/Translate";
 import AsyncStorage from "@react-native-community/async-storage";
+import navigationHelper from "../lib/navigationHelper";
 // import { useIsFocused } from "@react-navigation/native";
 
 const request = new Request();
@@ -2103,7 +2104,7 @@ const linking = {
 
 export default function LoginStack() {
   return (
-    <NavigationContainer linking={linking}>
+    <NavigationContainer linking={linking} ref={navigationHelper.navigationRef}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

@@ -13,6 +13,7 @@ import ChatContact from "../ChatContact";
 import moment from 'moment-timezone';
 import { Linking } from "react-native";
 import { timezone as myTimeZone } from "expo-localization";
+import navigationHelper from "../../lib/navigationHelper";
 
 const ChatItem = ({
     userId, parentProps, newChats, groupID, favIndex,
@@ -62,8 +63,9 @@ const ChatItem = ({
                 console.log(findParams(link, "product_id"));
                 if (findParams(link, "product_id")) {
                     let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
-                    props.navigation.navigate("HomeStoreList", {
+                    navigationHelper.navigate("HomeStoreList", {
                         url: apiUrl,
+                        images:[]
                     });
                 } else {
                     Linking.openURL(url);
