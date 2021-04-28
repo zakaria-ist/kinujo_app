@@ -43,7 +43,10 @@ export default function ProductNoneVariations({
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       if (pItems) {
+        console.log('pItems', pItems);
         setJanCode(pItems.janCode);
+        setStock(pItems.stock);
+        setId(pItems.id);
         if (pItems.editStock) {
           console.log(pItems.editStock)
           if(pItems.editStock != "+" && pItems.editStock != "-"){
@@ -53,6 +56,8 @@ export default function ProductNoneVariations({
               setEditStock("");
             }
           }
+        } else {
+          setEditStock(pItems.stock);
         }
       } else {
         setJanCode("");
@@ -84,8 +89,10 @@ export default function ProductNoneVariations({
             setJanCode(value);
             if (onItemsChanged) {
               onItemsChanged({
+                id: id,
                 janCode: value,
                 stock: stock,
+                editStock: editStock
               });
             }
           }}
