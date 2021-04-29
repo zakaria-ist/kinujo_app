@@ -270,7 +270,7 @@ export default function HomeStoreList(props) {
         });
 
       onSelectedJanCodeChanged("");
-      onSelectedJanStockChanged(null);
+      onSelectedJanStockChanged("");
       for (var i = 1; i < 10; i++) {
         if (
           cartItems.filter((item) => {
@@ -949,11 +949,13 @@ export default function HomeStoreList(props) {
                     }}
                     onChangeItem={(item) => {
                       if (item) {
-                        if (selectedJanStock) {
+                        if (parseInt(selectedJanStock) >= 0) {
                           if (selectedJanStock >= item.value) {
                             onQuantityChanged(item.value);
                           } else {
-                            onQuantityChanged(selectedJanStock);
+                            if (parseInt(selectedJanStock) >= 0) {
+                              onQuantityChanged(selectedJanStock);
+                            }
                           }
                         } else {
                           alert.warning(
@@ -1015,7 +1017,7 @@ export default function HomeStoreList(props) {
 
                           if(product.variety != 0){
                             onSelectedJanCodeChanged(null);
-                            onSelectedJanStockChanged(null);
+                            onSelectedJanStockChanged("");
                           }
                           onShowText(true);
                           setTimeout(
