@@ -166,27 +166,29 @@ export default function FriendSearch(props) {
           key={friend.id}
           onPress={() => {
             db.collection("users")
-                        .doc(String(ownUserID))
-                        .collection("friends")
-                        .get()
-                        .then((querySnapshot) => {
-                          let existing_friend = []
-                          querySnapshot.forEach(documentSnapshot => {
-                            existing_friend.push(documentSnapshot.data().id)
-                          });
-                          
-                          if(existing_friend.includes(friend.id.toString())) {
-                            alert.warning(Translate.t('friendAlreadyExist'));
-                            redirectToChat(friend.id, friend.real_name);
-                            onSearchTextChanged("");
-                          } else {
-                            request.addFriend(ownUserID, friend.id).then(() => {
-                              alert.warning(Translate.t('friendAdded'));
-                              redirectToChat(friend.id, friend.real_name);
-                              onSearchTextChanged("");
-                            });
-                          }
-                        })
+              .doc(String(ownUserID))
+              .collection("friends")
+              .get()
+              .then((querySnapshot) => {
+                let existing_friend = []
+                querySnapshot.forEach(documentSnapshot => {
+                  existing_friend.push(documentSnapshot.data().id)
+                });
+                
+                if(existing_friend.includes(friend.id.toString())) {
+                  alert.warning(Translate.t('friendAlreadyExist'));
+                  redirectToChat(friend.id, friend.real_name);
+                  onSearchTextChanged("");
+                } else {
+                  request.addFriend(ownUserID, friend.id).then(() => {
+                    request.addFriend(friend.id, ownUserID).then(() => {
+                      alert.warning(Translate.t('friendAdded'));
+                      redirectToChat(friend.id, friend.real_name);
+                      onSearchTextChanged("");
+                    });
+                  });
+                }
+              })
           }}
         >
           <View style={styles.friendListContainer}>
@@ -232,10 +234,14 @@ export default function FriendSearch(props) {
                     tmpFriend = response.data.filter((item) => {
                       return item.allowed_by_id && item.is_hidden == 0 && item.id != ownUserID;
                     });
-                    console.log(tmpFriend);
-                    onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
+                    if (tmpFriend.length) {
+                      onFriendHtmlChanged(processFriendHtml(props, tmpFriend));
+                    } else {
+                      onFriendHtmlChanged(<View></View>);
+                    }
                   })
                   .catch(function (error) {
+                    onFriendHtmlChanged(<View></View>);
                     if (
                       error &&
                       error.response &&
@@ -253,7 +259,7 @@ export default function FriendSearch(props) {
                     }
                   });
               } else {
-                onFriendHtmlChanged([]);
+                onFriendHtmlChanged(<View></View>);
               }
             }}
             value={searchText}

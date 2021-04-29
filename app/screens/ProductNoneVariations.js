@@ -26,9 +26,9 @@ import AsyncStorage from "@react-native-community/async-storage";
 import DustBinIcon from "../assets/icons/dustbin.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
-let janCode;
-let stock;
-let items = [];
+// let janCode;
+// let stock;
+// let items = [];
 export default function ProductNoneVariations({
   props,
   pItems,
@@ -37,31 +37,31 @@ export default function ProductNoneVariations({
 }) {
   const [invt, hideInvt] = useStateIfMounted(false);
   const [janCode, setJanCode] = useStateIfMounted("");
-  const [stock, setStock] = useStateIfMounted(0);
-  const [editStock, setEditStock] = useStateIfMounted(0);
+  const [curStock, setStock] = useStateIfMounted("0");
+  const [editStock, setEditStock] = useStateIfMounted("");
   const [id, setId] = useStateIfMounted("");
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
       if (pItems) {
         console.log('pItems', pItems);
-        setJanCode(pItems.janCode);
         setStock(pItems.stock);
+        setJanCode(pItems.janCode);
         setId(pItems.id);
-        if (pItems.editStock) {
-          console.log(pItems.editStock)
-          if(pItems.editStock != "+" && pItems.editStock != "-"){
-            if(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)){
-              setEditStock(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)[0]);
-            } else {
-              setEditStock("");
-            }
-          }
-        } else {
-          setEditStock(pItems.stock);
-        }
+        setEditStock(pItems.editStock);
+        
+        // if (pItems.editStock) {
+        //   console.log(pItems.editStock)
+        //   if(pItems.editStock != "+" && pItems.editStock != "-"){
+        //     if(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)){
+        //       setEditStock(String(pItems.editStock).match(/[-|+]?[0-9]\d*(\.\d+)?/g)[0]);
+        //     } else {
+        //       setEditStock("");
+        //     }
+        //   }
+        // }
       } else {
         setJanCode("");
-        setStock(0);
+        setStock("0");
         setEditStock("");
       }
     });
@@ -71,7 +71,17 @@ export default function ProductNoneVariations({
       onItemsChanged({
         id: id,
         janCode: janCode,
-        stock: stock,
+        stock: value,
+        editStock: editStock
+      });
+    }
+  }
+  function handleEditStock(value) {
+    if (onItemsChanged) {
+      onItemsChanged({
+        id: id,
+        janCode: janCode,
+        stock: curStock,
         editStock: value
       });
     }
@@ -91,7 +101,7 @@ export default function ProductNoneVariations({
               onItemsChanged({
                 id: id,
                 janCode: value,
-                stock: stock,
+                stock: curStock,
                 editStock: editStock
               });
             }
@@ -102,9 +112,9 @@ export default function ProductNoneVariations({
         <TextInput
           keyboardType={"numeric"}
           style={styles.textInput}
-          value={editStock}
+          value={curStock}
           onChangeText={(value) => {
-            setEditStock(value);
+            setStock(value);
             handleStock(value);
           }}
         ></TextInput>
@@ -169,7 +179,20 @@ export default function ProductNoneVariations({
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <TextInput style={styles.variantInput}></TextInput>
+                <TextInput 
+                  style={styles.variantInput}
+                  value={editStock}
+                  onChangeText={(value) => {
+                    if(String(value).match(/[+\-0-9]\d*(\.\d+)?/g)){
+                      value = String(value).match(/[+\-0-9]\d*(\.\d+)?/g)[0];
+                      setEditStock(value);
+                      handleEditStock(value);
+                    } else {
+                      setEditStock("");
+                      handleEditStock("");
+                    }
+                  }}
+                ></TextInput>
                 <Text style={styles.variantText}>
                   {Translate.t("inStock")} :
                 </Text>

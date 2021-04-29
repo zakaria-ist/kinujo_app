@@ -41,7 +41,7 @@ const ratioNext = win.width / 40 / 8;
 function processProductHtml(props, products, status) {
   let tmpProductHtml = [];
   let tmpProducts = products.filter((product) => {
-    console.log(status, product);
+    // console.log(status, product);
     if (product.is_hidden == 1) {
       return false;
     }
