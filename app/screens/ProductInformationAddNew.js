@@ -262,7 +262,8 @@ export default function ProductInformationAddNew(props) {
                   onNoneVariationItemsChanged({
                     id: horizontal.id,
                     janCode: horizontal.jan_code,
-                    stock: horizontal.stock,
+                    stock: String(horizontal.stock),
+                    editStock: ""
                   });
                 }
                 if (response.data.variety == 1) {
@@ -519,9 +520,9 @@ export default function ProductInformationAddNew(props) {
     onSpinnerChanged(false);
     onProductChanged(false);
     onProductCategoriesChanged([]);
-    onTwoVariationItemsChanged("");
-    onOneVariationItemsChanged("");
-    onNoneVariationItemsChanged("");
+    // onTwoVariationItemsChanged("");
+    // onOneVariationItemsChanged("");
+    // onNoneVariationItemsChanged("");
   }
 
   function createProduct(draft) {
@@ -538,10 +539,16 @@ export default function ProductInformationAddNew(props) {
       let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
 
       if (productVariation == "none") {
-        if (tmpNoneVariation["editStock"]) {
-          tmpNoneVariation["stock"] =
-            parseInt(tmpNoneVariation["stock"]) +
-            parseInt(tmpNoneVariation["editStock"]);
+        if (tmpNoneVariation["editStock"].length) {
+          if (tmpNoneVariation["editStock"][0] == '+' || tmpNoneVariation["editStock"][0] == '-') {
+            tmpNoneVariation["stock"] =
+              parseInt(tmpNoneVariation["stock"]) +
+              parseInt(tmpNoneVariation["editStock"]);
+          }
+          else {
+            tmpNoneVariation["stock"] =
+              parseInt(tmpNoneVariation["editStock"]);
+          }
         }
       } else if (productVariation == "one") {
         let items = tmpOneVariation["items"];
@@ -678,10 +685,18 @@ export default function ProductInformationAddNew(props) {
       let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
 
       if (productVariation == "none") {
-        if (tmpNoneVariation["editStock"]) {
-          tmpNoneVariation["stock"] =
-            parseInt(tmpNoneVariation["stock"]) +
-            parseInt(tmpNoneVariation["editStock"]);
+        if (tmpNoneVariation["editStock"].length) {
+          if (tmpNoneVariation["editStock"][0] == '+' || tmpNoneVariation["editStock"][0] == '-') {
+            console.log('PLUS')
+            tmpNoneVariation["stock"] =
+              parseInt(tmpNoneVariation["stock"]) +
+              parseInt(tmpNoneVariation["editStock"]);
+          } 
+          else {
+            console.log('NUMBER')
+            tmpNoneVariation["stock"] =
+              parseInt(tmpNoneVariation["editStock"]);
+          }
         }
       } else if (productVariation == "one") {
         let items = tmpOneVariation["items"];
@@ -822,9 +837,9 @@ export default function ProductInformationAddNew(props) {
     let number = value.replace(/,/g, "");
     onPriceChanged(String(number).replace(/[^0-9]/g, ""));
     if (user.is_master) {
-      onStorePriceChanged(String(number * 0.7));
+      onStorePriceChanged(String(parseInt(number * 0.7)));
     } else if (user.is_seller) {
-      onStorePriceChanged(String(number * 0.8));
+      onStorePriceChanged(String(parseInt(number * 0.8)));
     }
   }
   function handleShippingPrice(value) {
