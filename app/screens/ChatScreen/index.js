@@ -458,6 +458,8 @@ export default function ChatScreen(props) {
       let build = chatsRef
         .doc(groupID)
         .collection("messages")
+        // .where('delete','==', '')
+        // .where(`delete_${userId}`,'!=', true)
         .orderBy("timeStamp", "asc");
 
 
@@ -487,6 +489,8 @@ export default function ChatScreen(props) {
                 }
               }
             });
+
+            chats = chats.filter(el=> !el?.data?.delete && !el?.data?.[`delete_${userId}`] )
             processChat(chats);
             updateChats(oldChats.concat(old30Chats, chats))
           }
@@ -607,17 +611,18 @@ export default function ChatScreen(props) {
   }
 
 
-  const onCancel = (isOnlyme) => {
+  const onCancel = (isCancelAll) => {
 
     let query = "delete"
 
-    if (isOnlyme) {
+    if (isCancelAll === true) {
       query = `delete_${userId}`
     }
     let update = {};
-    update[query] = longPressObj.data[query]
-      ? false
-      : true;
+    update[query] = true
+    // longPressObj.data[query]
+    // ? false
+    // : true;
     db.collection("chat")
       .doc(groupID)
       .collection("messages")
@@ -814,6 +819,7 @@ export default function ChatScreen(props) {
           favIndex={favIndex}
         />
         <ChatPopup
+          needShowCancel={longPressObj?.data?.userID == userId}
           showPopUp={showPopUp}
           onCopy={onCopy}
           onFoward={onFoward}
