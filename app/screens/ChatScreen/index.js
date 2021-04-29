@@ -466,10 +466,10 @@ export default function ChatScreen(props) {
       this.unsub = build
         .onSnapshot(
           {
-          includeMetadataChanges: false,
-        },
-        (querySnapShot) => {
-          querySnapShot.docs.map((snapShot) => {
+            includeMetadataChanges: false,
+          },
+          (querySnapShot) => {
+            querySnapShot.docs.map((snapShot) => {
               if (snapShot && snapShot.exists) {
                 let tmpChats = chats.filter((chat) => {
                   return chat.id == snapShot.id;
@@ -621,8 +621,8 @@ export default function ChatScreen(props) {
     let update = {};
     update[query] = true
     // longPressObj.data[query]
-      // ? false
-      // : true;
+    // ? false
+    // : true;
     db.collection("chat")
       .doc(groupID)
       .collection("messages")
@@ -819,6 +819,7 @@ export default function ChatScreen(props) {
           favIndex={favIndex}
         />
         <ChatPopup
+          needShowCancel={longPressObj?.data?.userID == userId}
           showPopUp={showPopUp}
           onCopy={onCopy}
           onFoward={onFoward}
