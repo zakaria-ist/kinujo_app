@@ -22,7 +22,7 @@ const ChatPopup = ({
     onCancel,
     onAddToFav,
     onMutiSelect,
-    onShowPopUpChanged
+    onShowPopUpChanged, needShowCancel
 }) => {
 
     const cancelMsgAll = () => {
@@ -54,10 +54,10 @@ const ChatPopup = ({
                                 onPress={onFoward}
                                 langKey='forward'
                             />
-                            <PopupItem
+                            {needShowCancel && <PopupItem
                                 onPress={onCancel}
                                 langKey='cancelOnlyMe'
-                            />
+                            />}
                             <PopupItem
                                 onPress={cancelMsgAll}
                                 langKey='remove'
@@ -75,7 +75,7 @@ const ChatPopup = ({
                 </View>
             </TouchableNativeFeedback>
         </Modal>
-    }, [showPopUp])
+    }, [showPopUp, needShowCancel])
 }
 
 
