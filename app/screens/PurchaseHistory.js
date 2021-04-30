@@ -395,6 +395,7 @@ export default function PurchaseHistory(props) {
             AsyncStorage.setItem("newPurchase", "0").then(() => {console.log('Purchase flag false')});
           } else {
             AsyncStorage.setItem("newPurchase", "0").then(() => {console.log('Purchase flag false')});
+            onOrderHtmlChanged(processOrderHtml(props, orders, "", ""));
           }
         });
       }
