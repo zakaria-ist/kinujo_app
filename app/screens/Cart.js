@@ -792,12 +792,17 @@ export default function Cart(props) {
 
         AsyncStorage.getItem("defaultAddress").then((address) => {
           if (address != null) {
-
             request.get(address).then((response) => {
+              let prefectureUrl = response.data.prefecture;
+              let address = response.data;
+              selected = response.data.id;
+              request.get(prefectureUrl).then((response) => {
+                let prefecture = response.data;
+                address['prefecture'] = prefecture; 
+                addressHtml = getAddressHtml(address, "");
+              });
               // onAddressHtmlChanged(getAddressHtml(response.data, ""));
               // onSelectedChanged(response.data.id);
-              addressHtml = getAddressHtml(response.data, "");
-              selected = response.data.id;
             });
           } else {
             request
