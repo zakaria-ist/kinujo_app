@@ -911,9 +911,7 @@ export default function Cart(props) {
                 timeStamp: tStamps
               });
             });
-            console.log('items', items);
             items.sort((a, b) => (a.timeStamp < b.timeStamp) ? 1 : -1);
-            console.log('items', items);
             ids = tmpIds;
             firebaseProducts = items;
 
