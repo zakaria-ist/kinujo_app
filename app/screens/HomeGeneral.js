@@ -90,8 +90,8 @@ export default function Home(props) {
   };
 
   var handleOpenURL = (url) => {
-    console.log('handlerCount', handlerCount);
     if (handlerCount == 0) {
+      console.log('handlerCount', handlerCount);
       console.log('handleOpenURL', url);
       let type = typeof url;
       if (type == "object") {
@@ -102,15 +102,9 @@ export default function Home(props) {
         var strList = url.replace('net.c2sg.kinujo://complete/success/', '').split('/');
         d_params.snapIds = strList[0].split(',');
         d_params.seller = strList[1];
-        // alert.warning(
-        //   "Payment Success"
-        // );
         updateShop();
       } else if (url.includes('cancel')) {
         console.log('HomeStore Cart url', url);
-        // alert.warning(
-        //   "Payment Cancelled"
-        // );
       } else {
         console.log('Linking other url', url);
       }
