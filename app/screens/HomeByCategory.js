@@ -18,7 +18,7 @@ import {
   Platform,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
-import CachedImage from 'react-native-expo-cached-image';
+// import CachedImage from 'react-native-expo-cached-image';
 import { getStatusBarHeight } from "react-native-status-bar-height";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -28,10 +28,10 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import { useIsFocused } from "@react-navigation/native";
-import messaging from "@react-native-firebase/messaging";
+// import messaging from "@react-native-firebase/messaging";
 import {
   widthPercentageToDP,
-  heightPercentageToDP,
+  heightPercentageToDP
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -39,11 +39,12 @@ import { Colors } from "../assets/Colors";
 import Format from "../lib/format";
 import firebase from "firebase/app";
 import { firebaseConfig } from "../../firebaseConfig.js";
-import { NavigationActions } from "react-navigation";
-import { keys } from "lodash";
-import { cos } from "react-native-reanimated";
+// import { NavigationActions } from "react-navigation";
+// import { keys } from "lodash";
+// import { cos } from "react-native-reanimated";
 import navigationHelper from "../lib/navigationHelper";
 import imageHelper from "../lib/imageHelper";
+// import { black } from "react-native-paper/lib/typescript/styles/colors";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -644,9 +645,19 @@ export default function HomeByCategory(props) {
           }
         />
         <View style={styles.discription_header}>
-          <View>
+          <View
+            style={{
+              position: "absolute",
+              left: 0,
+              justifyContent: "center",
+              paddingTop: heightPercentageToDP("3%"),
+              // backgroundColor: "orange",
+              height: heightPercentageToDP("20%"),
+              width: widthPercentageToDP("35%"),
+            }}
+          >
             <Text style={styles.disc_title_text}>
-              {Translate.t("category") + ":" + categoryName}
+              {Translate.t("category")} : {categoryName}
             </Text>
           </View>
           <View
@@ -1032,8 +1043,8 @@ const styles = StyleSheet.create({
     // marginTop: heightPercentageToDP("1%"),
   },
   disc_title_text: {
-    paddingTop: heightPercentageToDP("15%"),
-    paddingLeft: 15,
+    paddingTop: heightPercentageToDP("7%"),
+    paddingLeft: widthPercentageToDP("4%"),
     fontSize: RFValue(14),
   },
   disc_button_group: {

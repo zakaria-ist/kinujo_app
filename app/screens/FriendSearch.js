@@ -179,12 +179,14 @@ export default function FriendSearch(props) {
                   alert.warning(Translate.t('friendAlreadyExist'));
                   redirectToChat(friend.id, friend.real_name);
                   onSearchTextChanged("");
+                  onFriendHtmlChanged(<View></View>);
                 } else {
                   request.addFriend(ownUserID, friend.id).then(() => {
                     request.addFriend(friend.id, ownUserID).then(() => {
                       alert.warning(Translate.t('friendAdded'));
                       redirectToChat(friend.id, friend.real_name);
                       onSearchTextChanged("");
+                      onFriendHtmlChanged(<View></View>);
                     });
                   });
                 }
