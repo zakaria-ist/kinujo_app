@@ -105,7 +105,6 @@ function BottomNavigationGeneral(props) {
         request
           .get(url)
           .then(function (response) {
-            console.log('APPROVED', response.data)
             if (response.data.is_approved && response.data.is_seller && response.data.authority.id == 4) {
               alert.warning(Translate.t("account_approved"), () => {
                 // props.navigation.navigate("HomeStore");

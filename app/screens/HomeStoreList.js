@@ -949,12 +949,12 @@ export default function HomeStoreList(props) {
                     }}
                     onChangeItem={(item) => {
                       if (item) {
-                        if (parseInt(selectedJanStock) >= 0) {
+                        if (parseInt(selectedJanStock) > 0) {
                           if (selectedJanStock >= item.value) {
                             onQuantityChanged(item.value);
                           } else {
-                            if (parseInt(selectedJanStock) >= 0) {
-                              onQuantityChanged(selectedJanStock);
+                            if (parseInt(selectedJanStock) > 0) {
+                              onQuantityChanged(String(selectedJanStock));
                             }
                           }
                         } else {
@@ -974,7 +974,7 @@ export default function HomeStoreList(props) {
                 >
                   <TouchableWithoutFeedback
                     onPress={() => {
-                      if (quantity <= selectedJanStock) {
+                      if (parseInt(quantity) < parseInt(selectedJanStock)) {
                         if ((selectedJanCode || !name) && quantity) {
                           onShowChanged(false);
                           db.collection("users")
