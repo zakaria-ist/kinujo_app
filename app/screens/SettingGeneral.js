@@ -352,6 +352,7 @@ export default function SettingGeneral(props) {
                   });
                 });
                 AsyncStorage.removeItem("defaultAddress");
+                AsyncStorage.setItem("newUser", "0").then(() => {});
               })
             }}
           >

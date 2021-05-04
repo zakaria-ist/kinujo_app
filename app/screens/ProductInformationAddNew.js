@@ -252,7 +252,6 @@ export default function ProductInformationAddNew(props) {
                   }
                 });
                 onProductImageHtmlChanged(html);
-                console.log(response.data);
                 if (response.data.variety == 0) {
                   let productVariety = response.data.productVarieties[0];
                   let productVarietySelection =
@@ -260,9 +259,9 @@ export default function ProductInformationAddNew(props) {
                   let horizontal =
                     productVarietySelection.jancode_horizontal[0];
                   onNoneVariationItemsChanged({
-                    id: horizontal.id,
-                    janCode: horizontal.jan_code,
-                    stock: String(horizontal.stock),
+                    id: horizontal.id ? horizontal.id : "",
+                    janCode: horizontal.jan_code ? horizontal.jan_code : horizontal.jan_code,
+                    stock: horizontal.stock ? String(horizontal.stock) : "",
                     editStock: ""
                   });
                 }
@@ -685,15 +684,13 @@ export default function ProductInformationAddNew(props) {
       let tmpNoneVariation = JSON.parse(JSON.stringify(noneVariationItems));
 
       if (productVariation == "none") {
-        if (tmpNoneVariation["editStock"].length) {
+        if (tmpNoneVariation["editStock"] && tmpNoneVariation["editStock"].length) {
           if (tmpNoneVariation["editStock"][0] == '+' || tmpNoneVariation["editStock"][0] == '-') {
-            console.log('PLUS')
             tmpNoneVariation["stock"] =
               parseInt(tmpNoneVariation["stock"]) +
               parseInt(tmpNoneVariation["editStock"]);
           } 
           else {
-            console.log('NUMBER')
             tmpNoneVariation["stock"] =
               parseInt(tmpNoneVariation["editStock"]);
           }
