@@ -490,6 +490,7 @@ export default function SettingStore(props) {
                       });
                     });
                     AsyncStorage.removeItem("defaultAddress");
+                    AsyncStorage.setItem("newUser", "0").then(() => {});
                   });
                 }}
               >

@@ -116,6 +116,8 @@ async function performUrl(props, link) {
     console.log('userId', userId);
     console.log('store', store);
   }
+  console.log('userId', userId);
+  console.log('store', store);
   await AsyncStorage.setItem("referUser", userId);
   if (store && store != "" && store == "1" ) {
     // props.navigation.navigate("RegistrationStore", {"referUser": userId});
@@ -128,7 +130,8 @@ async function performUrl(props, link) {
 
 async function init(props, foreground) {
   let url = await AsyncStorage.getItem("user");
-  if (url) {
+  console.log('ASYNC URL', url);
+  if (url && url != "") {
     if (Platform.OS === 'ios') {
       Linking.getInitialURL().then((url) => {
         if (url) {
@@ -177,35 +180,41 @@ async function init(props, foreground) {
       });
   } else {
     SplashScreen.hide();
-    let link = "";
-    if (Platform.OS === 'ios') {
-      Linking.getInitialURL().then((url) => {
-        if (url) {
-          url = decodeURI(url);
-          console.log('url', url);
-          url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
-          url = url.replaceAll("%3D", '=');
-          url = url.replaceAll("%26", '&');
-          saveProduct(props, url);
-          performUrl(props, url);
-        }
-        else {
-          if (foreground) {
-            foreground();
+    let newUser = await AsyncStorage.getItem("newUser");
+    console.log('ASYNC newUser', newUser);
+    if (newUser == null) {
+      let link = "";
+      if (Platform.OS === 'ios') {
+        Linking.getInitialURL().then((url) => {
+          if (url) {
+            url = decodeURI(url);
+            console.log('url', url);
+            url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
+            url = url.replaceAll("%3D", '=');
+            url = url.replaceAll("%26", '&');
+            saveProduct(props, url);
+            performUrl(props, url);
           }
-        }
-      }).catch(err => {console.log('Linking ERROR', err)})
-    } else {
-      link = await dynamicLinks().getInitialLink();
-    }
-    if (link) {
-      console.log('url', link.url);
-      await saveProduct(props, link.url);
-      await performUrl(props, link.url);
-    } else {
-      if (foreground) {
-        foreground();
+          else {
+            if (foreground) {
+              foreground();
+            }
+          }
+        }).catch(err => {console.log('Linking ERROR', err)})
+      } else {
+        link = await dynamicLinks().getInitialLink();
       }
+      if (link) {
+        console.log('url', link.url);
+        await saveProduct(props, link.url);
+        await performUrl(props, link.url);
+      } else {
+        if (foreground) {
+          foreground();
+        }
+      }
+    } else {
+      AsyncStorage.removeItem("newUser");
     }
   }
 }
