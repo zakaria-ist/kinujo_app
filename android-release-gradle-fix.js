@@ -8,7 +8,7 @@ try {
         var dataFix = fs.readFileSync(`${curDir}/android-react-gradle-fix`, 'utf8')
         var data = fs.readFileSync(file, 'utf8')
 
-        var doLast = "doLast \{"
+        var doLast = "drawable-xxhdpi"
         if (data.indexOf(doLast) !== -1) {
             throw "Already fixed."
         }
