@@ -222,7 +222,7 @@ export default function Home(props) {
     // (required) Called when a remote is received or opened, or local notification is opened
     onNotification: function (notification) {
       console.log("NOTIFICATION:", notification);
-      processNoti(notification)
+      (Platform.OS === "ios" ||  notification.userInteraction) && processNoti(notification)
       // process the notification
       // alert.warning(notification.data.b)
       // (required) Called when a remote is received or opened, or local notification is opened
