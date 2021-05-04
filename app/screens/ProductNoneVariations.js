@@ -44,10 +44,10 @@ export default function ProductNoneVariations({
     InteractionManager.runAfterInteractions(() => {
       if (pItems) {
         console.log('pItems', pItems);
-        setStock(pItems.stock);
-        setJanCode(pItems.janCode);
-        setId(pItems.id);
-        setEditStock(pItems.editStock);
+        setStock(pItems.stock ? pItems.stock : "");
+        setJanCode(pItems.janCode ? pItems.janCode : "");
+        setId(pItems.id ? pItems.id : "");
+        setEditStock(pItems.editStock ? pItems.editStock : "");
         
         // if (pItems.editStock) {
         //   console.log(pItems.editStock)
@@ -60,6 +60,7 @@ export default function ProductNoneVariations({
         //   }
         // }
       } else {
+        setId("");
         setJanCode("");
         setStock("0");
         setEditStock("");
