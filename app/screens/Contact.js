@@ -15,7 +15,6 @@ import {
 
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
-import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
 import { Colors } from "../assets/Colors";
@@ -25,8 +24,7 @@ import {
   widthPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
-import { firebaseConfig } from "../../firebaseConfig.js";
-import firebase from "firebase/app";
+import firestore from '@react-native-firebase/firestore'
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
@@ -36,7 +34,6 @@ import { useIsFocused } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import Person from "../assets/icons/personPink.svg";
 import GroupImages from "../assets/CustomComponents/GroupImages";
-import { block } from "react-native-reanimated";
 const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
@@ -55,10 +52,7 @@ let contactNotify = {};
 let selectedUserId;
 let userId;
 let blocks = [];
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
+const db = firestore();
 
 function getID(url) {
   let urls = url.split("/");
@@ -184,10 +178,14 @@ export default function Contact(props) {
     //   name = await getFriendName(user.id, user.nickname);
     //   users[i].show_name = name;
     // }
-
+    
     users.sort((a, b) => {
       if (contactPinned[a.id] == undefined) contactPinned[a.id] = false;
       if (contactPinned[b.id] == undefined) contactPinned[b.id] = false;
+
+      if(contactPinned[a.id] && contactPinned[b.id]){
+        return contactPinned[a.id] > contactPinned[b.id] ? -1 : 1
+      }
       // if (!contactPinned[a.id] && contactPinned[b.id]) {
       //   return true;
       // }
@@ -456,7 +454,7 @@ export default function Contact(props) {
             let item = documentSnapshot.data();
             if (!item["delete"]) {
               ids.push(item.id);
-              contactPinned[item.id] = item["pinned"];
+              contactPinned[item.id] = item["pinned"] ? item["pinnedTime"] : false;
               contactNotify[item.id] = item["notify"];
             }
 
@@ -563,6 +561,92 @@ export default function Contact(props) {
       props.navigation.setParams({ user_id: "" });
     });
   }, [isFocused]);
+
+  const upperFixPress = () => {
+    if (longPressObj.type == "user") {
+      let newServeTimeStamp = new Date() //firestore.FieldValue.serverTimestamp();
+
+      contactPinned[longPressObj.data.id] = contactPinned[
+        longPressObj.data.id
+      ]
+        ? false
+        : newServeTimeStamp;
+      
+        let pinned = contactPinned[
+          longPressObj.data.id
+        ] ? true: false
+      
+      processUserHtml(props, globalUsers).then((html) => {
+        onUserHtmlChanged(html);
+      });
+      db.collection("users")
+        .doc(String(userId))
+        .collection("friends")
+        .where("id", "==", String(longPressObj.data.id))
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.size > 0) {
+            querySnapshot.forEach((documentSnapshot) => {
+              db.collection("users")
+                .doc(String(userId))
+                .collection("friends")
+                .doc(documentSnapshot.id)
+                .set(
+                  {
+                    pinned,
+                    pinnedTime : newServeTimeStamp,
+                  },
+                  {
+                    merge: true,
+                  }
+                )
+                .then(() => {});
+            });
+          } else {
+            db.collection("users")
+              .doc(String(userId))
+              .collection("friends")
+              .add({
+                id: String(longPressObj.data.id),
+                pinned,
+                pinnedTime : newServeTimeStamp,
+              })
+              .then(() => {});
+          }
+        });
+    } else if (longPressObj.type == "folder") {
+      let update = {};
+      update["pinned"] = longPressObj.data.data["pinned"]
+        ? false
+        : true;
+      db.collection("users")
+        .doc(String(userId))
+        .collection("folders")
+        .doc(longPressObj.data.id.toString())
+        .set(update, {
+          merge: true,
+        })
+        .then(() => {
+          populateFolder();
+        });
+    } else if (longPressObj.type == "group") {
+      let update = {};
+      update["pinned_" + userId] = longPressObj.data.data[
+        "pinned_" + userId
+      ]
+        ? false
+        : true;
+      db.collection("chat")
+        .doc(longPressObj.data.id)
+        .set(update, {
+          merge: true,
+        })
+        .then(() => {
+          populateGroup();
+        });
+    }
+    onShowChanged(false);
+  }
 
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
@@ -913,83 +997,7 @@ export default function Contact(props) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => {
-                    if (longPressObj.type == "user") {
-                      contactPinned[longPressObj.data.id] = contactPinned[
-                        longPressObj.data.id
-                      ]
-                        ? false
-                        : true;
-                      
-                      processUserHtml(props, globalUsers).then((html) => {
-                        onUserHtmlChanged(html);
-                      });
-                      db.collection("users")
-                        .doc(String(userId))
-                        .collection("friends")
-                        .where("id", "==", String(longPressObj.data.id))
-                        .get()
-                        .then((querySnapshot) => {
-                          if (querySnapshot.size > 0) {
-                            querySnapshot.forEach((documentSnapshot) => {
-                              db.collection("users")
-                                .doc(String(userId))
-                                .collection("friends")
-                                .doc(documentSnapshot.id)
-                                .set(
-                                  {
-                                    pinned: contactPinned[longPressObj.data.id],
-                                  },
-                                  {
-                                    merge: true,
-                                  }
-                                )
-                                .then(() => {});
-                            });
-                          } else {
-                            db.collection("users")
-                              .doc(String(userId))
-                              .collection("friends")
-                              .add({
-                                id: String(longPressObj.data.id),
-                                pinned: contactPinned[longPressObj.data.id],
-                              })
-                              .then(() => {});
-                          }
-                        });
-                    } else if (longPressObj.type == "folder") {
-                      let update = {};
-                      update["pinned"] = longPressObj.data.data["pinned"]
-                        ? false
-                        : true;
-                      db.collection("users")
-                        .doc(String(userId))
-                        .collection("folders")
-                        .doc(longPressObj.data.id.toString())
-                        .set(update, {
-                          merge: true,
-                        })
-                        .then(() => {
-                          populateFolder();
-                        });
-                    } else if (longPressObj.type == "group") {
-                      let update = {};
-                      update["pinned_" + userId] = longPressObj.data.data[
-                        "pinned_" + userId
-                      ]
-                        ? false
-                        : true;
-                      db.collection("chat")
-                        .doc(longPressObj.data.id)
-                        .set(update, {
-                          merge: true,
-                        })
-                        .then(() => {
-                          populateGroup();
-                        });
-                    }
-                    onShowChanged(false);
-                  }}
+                  onPress={upperFixPress}
                 >
                   <Text style={styles.longPressText}>
                     {(longPressObj && longPressObj.data && (longPressObj.type == 'user' && contactPinned[longPressObj.data.id]) || 
