@@ -31,6 +31,7 @@ import Translate from "../assets/Translates/Translate";
 import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
 import NextArrow from "../assets/icons/nextArrow.svg";
+import Camera from "../assets/icons/camera.svg";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
 import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
@@ -527,7 +528,7 @@ export default function ProfileEditingGeneral(props) {
                   handleChoosePhoto("background_img");
                 }}
               >
-                <Image
+                {/* <Image
                   style={{
                     position: "absolute",
                     right: 0,
@@ -537,7 +538,17 @@ export default function ProfileEditingGeneral(props) {
                     height: 23 * ratioCameraIcon,
                   }}
                   source={require("../assets/Images/cameraIcon.png")}
-                />
+                /> */}
+              <Camera 
+                  style={{
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("5%"),
+                      marginTop: heightPercentageToDP("1%"),
+                      width: win.width / 12,
+                      height: 23 * ratioCameraIcon,
+                    }} 
+                  />
               </TouchableWithoutFeedback>
             </ImageBackground>
           ) : (
@@ -553,7 +564,7 @@ export default function ProfileEditingGeneral(props) {
                   handleChoosePhoto("background_img");
                 }}
               >
-                <Image
+                {/* <Image
                   style={{
                     position: "absolute",
                     right: 0,
@@ -563,7 +574,17 @@ export default function ProfileEditingGeneral(props) {
                     height: 23 * ratioCameraIcon,
                   }}
                   source={require("../assets/Images/cameraIcon.png")}
-                />
+                /> */}
+                <Camera 
+                  style={{
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("5%"),
+                      marginTop: heightPercentageToDP("1%"),
+                      width: win.width / 12,
+                      height: 23 * ratioCameraIcon,
+                    }} 
+                  />
               </TouchableWithoutFeedback>
             </ImageBackground>
           )}
@@ -599,10 +620,13 @@ export default function ProfileEditingGeneral(props) {
                     handleChoosePhoto("image", "user_" + user.id + ".jpg");
                   }}
                 >
-                  <Image
+                  {/* <Image
                     style={styles.cameraIconInsideProfilePicture}
                     source={require("../assets/Images/cameraIcon.png")}
-                  />
+                  /> */}
+                  <Camera 
+                    style={styles.cameraIconInsideProfilePicture}
+                    />
                 </TouchableWithoutFeedback>
               </ImageBackground>
             ) : (
@@ -622,10 +646,9 @@ export default function ProfileEditingGeneral(props) {
                     handleChoosePhoto("image", "user_" + user.id + ".jpg");
                   }}
                 >
-                  <Image
+                  <Camera 
                     style={styles.cameraIconInsideProfilePicture}
-                    source={require("../assets/Images/cameraIcon.png")}
-                  />
+                    />
                 </TouchableWithoutFeedback>
               </ImageBackground>
             )}
@@ -1146,6 +1169,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("60%"),
+    paddingLeft: 10
   },
   contactTabContainer: {
     flexDirection: "row",
