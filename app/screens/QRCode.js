@@ -454,7 +454,20 @@ export default function QRCode(props) {
           </View>
 
           <View style={inviteShow ? null : styles.none}>
-            <View style={styles.button_frame}>
+            <View style={styles.button_frame_invite}>
+            <TouchableNativeFeedback onPress={() => setInviteShow(false)}>
+              <CloseBlackIcon
+                  style={{
+                    position: "absolute",
+                    alignSelf: "flex-start",
+                    width: width / 18,
+                    height: 20 * ratioBackArrow,
+                    bottom: 55,
+                    marginLeft: -(heightPercentageToDP("3%")),
+                    // marginTop: widthPercentageToDP("12%"),
+                  }}
+                />
+              </TouchableNativeFeedback>
               <TouchableOpacity
                 style={[
                   styles.submit,
@@ -635,6 +648,11 @@ const styles = StyleSheet.create({
     width: "80%",
     marginLeft: "10%",
     marginTop: RFValue(10),
+  },
+  button_frame_invite: {
+    width: "80%",
+    marginLeft: "10%",
+    marginTop: RFValue(50),
   },
   submit: {
     width: "100%",

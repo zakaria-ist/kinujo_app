@@ -15,22 +15,22 @@ import {
   Modal,
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
-import CachedImage from 'react-native-expo-cached-image';
+// import CachedImage from 'react-native-expo-cached-image';
 import Share from "react-native-share";
 import { getStatusBarHeight } from "react-native-status-bar-height";
-import { Picker } from "@react-native-picker/picker";
+// import { Picker } from "@react-native-picker/picker";
 import DropDownPicker from "react-native-dropdown-picker";
 import { RadioButton } from "react-native-paper";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
-import { SliderBox } from "react-native-image-slider-box";
+// import { SliderBox } from "react-native-image-slider-box";
 import { ScrollView } from "react-native-gesture-handler";
-import FastImage from "react-native-fast-image";
+// import FastImage from "react-native-fast-image";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Colors } from "../assets/Colors";
 import { useIsFocused } from "@react-navigation/native";
 import ArrowUpIcon from "../assets/icons/arrow_up.svg";
 import ArrowDownIcon from "../assets/icons/arrow_down.svg";
-import SplashScreen from 'react-native-splash-screen'
+// import SplashScreen from 'react-native-splash-screen';
 import {
   widthPercentageToDP,
   heightPercentageToDP,
@@ -45,7 +45,7 @@ import "firebase/firestore";
 import Format from "../lib/format";
 import Translate from "../assets/Translates/Translate";
 import dynamicLinks from "@react-native-firebase/dynamic-links";
-import { method } from "lodash";
+// import { method } from "lodash";
 import MySliderBox from "../Component/MySliderBox";
 import imageHelper from "../lib/imageHelper";
 const format = new Format();
@@ -249,7 +249,6 @@ export default function HomeStoreList(props) {
           });
 
           if (taxes.length > 0) {
-            console.log(taxes[0])
             setTaxObj(taxes[0])
           }
         })
@@ -607,6 +606,7 @@ export default function HomeStoreList(props) {
         <View></View>
       )}
       <CustomHeader
+        text={Translate.t("productDetails")}
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
@@ -747,11 +747,10 @@ export default function HomeStoreList(props) {
                 <Text style={styles.priceFont}>
                   {(user.is_seller && user.is_approved
                     ? format.separator(taxObj ? (parseFloat(product.store_price) + parseFloat(product.store_price) * parseFloat(taxObj.tax_rate)) : product.store_price)
-                    : format.separator(taxObj ? (parseFloat(product.price) + parseFloat(product.price) * parseFloat(taxObj.tax_rate)) : product.price))}
+                    : format.separator(taxObj ? (parseFloat(product.price) + parseFloat(product.price) * parseFloat(taxObj.tax_rate)) : product.price))}{"円"}
                 </Text>
                 <Text style={styles.font_medium}>
-                  {"円" +
-                    Translate.t("taxNotIncluded")}
+                  {Translate.t("taxNotIncluded")}
                 </Text>
               </Text>
             </View>
@@ -819,245 +818,262 @@ export default function HomeStoreList(props) {
         transparent={true}
         presentationStyle="overFullScreen"
       >
-        <ScrollView
-          style={{
-            backgroundColor: Colors.F0EEE9,
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
-            // zIndex: 1,
-            flex: 1,
-            marginHorizontal: widthPercentageToDP("10%"),
-            marginVertical: heightPercentageToDP("25%"),
-            position: "absolute",
-          }}
-        >
+        <TouchableWithoutFeedback onPress={() => {
+            onShowChanged(false);
+          }}>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              marginHorizontal: widthPercentageToDP("2%"),
-              marginTop: heightPercentageToDP("2%"),
-              height: heightPercentageToDP("5%"),
+              flex: 1,
+              backgroundColor: "transparent"
             }}
           >
-            <Text style={{ fontSize: RFValue(14) }}>
-              {Translate.t("addToCart")}
-            </Text>
-            <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
-              <Image
-                style={{
-                  position: "absolute",
-                  marginRight: widthPercentageToDP("2%"),
-                  right: 0,
-                  width: win.width / 20,
-                  height: 15 * ratioCancelIcon,
-                }}
-                source={require("../assets/Images/cancelIcon.png")}
-              />
-            </TouchableWithoutFeedback>
-          </View>
-          <View
-            style={{
-              backgroundColor: Colors.BC9747,
-              height: heightPercentageToDP("5%"),
-              alignItems: "center",
-              marginTop: heightPercentageToDP("2%"),
-              flexDirection: "row",
-            }}
-          >
-            <Text
+            <ScrollView
               style={{
-                fontSize: RFValue(12),
-                padding: widthPercentageToDP("5%"),
+                backgroundColor: Colors.F0EEE9,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                // zIndex: 1,
+                flex: 1,
+                marginHorizontal: widthPercentageToDP("10%"),
+                marginVertical: heightPercentageToDP("20%"),
+                position: "absolute",
               }}
             >
-              {name != "none" ? name : ""}
-            </Text>
-          </View>
-
-          <View>
-            <View>
-              {popupHtml}
-              <View
-                style={{
-                  flex: 1,
-                  // backgroundColor: "orange",
-                  flexDirection: "row",
-                  marginTop: heightPercentageToDP("3%"),
-                  paddingBottom: heightPercentageToDP("35%"),
-                  alignItems: "flex-start",
-                }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
+              <TouchableWithoutFeedback onPress={() => {
+                onShowChanged(true);
+              }}>
+                <View>
+                  <View
                     style={{
-                      fontSize: RFValue(12),
-                      marginLeft: widthPercentageToDP("1.3%"),
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      marginHorizontal: widthPercentageToDP("2%"),
+                      marginTop: heightPercentageToDP("2%"),
+                      height: heightPercentageToDP("5%"),
                     }}
                   >
-                    {Translate.t("unit")}
-                  </Text>
-                  <DropDownPicker
-                    zIndex={999}
+                    <Text style={{ fontSize: RFValue(14) }}>
+                      {Translate.t("addToCart")}
+                    </Text>
+                    <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
+                      <Image
+                        style={{
+                          position: "absolute",
+                          marginRight: widthPercentageToDP("2%"),
+                          right: 0,
+                          width: win.width / 20,
+                          height: 15 * ratioCancelIcon,
+                        }}
+                        source={require("../assets/Images/cancelIcon.png")}
+                      />
+                    </TouchableWithoutFeedback>
+                  </View>
+                  <View
                     style={{
-                      borderWidth: 1,
-                      backgroundColor: "white",
-                      borderColor: "transparent",
-                      color: "black",
-                      borderRadius: 0,
-                      fontSize: RFValue(12),
-                      marginLeft: widthPercentageToDP("2%"),
-                      height: heightPercentageToDP("5.5%"),
-                      paddingLeft: widthPercentageToDP("2%"),
-                      marginVertical: heightPercentageToDP("1%"),
-                    }}
-                    items={cartItems}
-                    placeholder={quantity}
-                    defaultValue={quantity ? quantity + "" : ""}
-                    containerStyle={{
-                      paddingVertical: 0,
-                      width: widthPercentageToDP("25%"),
-                    }}
-                    labelStyle={{
-                      fontSize: RFValue(12),
-                      color: "grey",
-                    }}
-                    itemStyle={{
-                      justifyContent: "flex-start",
-                    }}
-                    selectedtLabelStyle={{
-                      color: Colors.F0EEE9,
-                    }}
-                    // dropDownMaxHeight={RFValue(36)}
-                    dropDownStyle={{
-                      marginLeft: widthPercentageToDP("2%"),
-                      width: widthPercentageToDP("23%"),
-                      height: heightPercentageToDP("30%"),
-                      backgroundColor: "#FFFFFF",
-                      color: "black",
-                      position: "absolute",
-                    }}
-                    onChangeItem={(item) => {
-                      if (item) {
-                        if (parseInt(selectedJanStock) > 0) {
-                          if (selectedJanStock >= item.value) {
-                            onQuantityChanged(item.value);
-                          } else {
-                            if (parseInt(selectedJanStock) > 0) {
-                              onQuantityChanged(String(selectedJanStock));
-                            }
-                          }
-                        } else {
-                          alert.warning(
-                            Translate.t("limitedStock")
-                          );
-                        }
-                      }
-                    }}
-                  />
-                </View>
-                <View
-                  style={{
-                    alignSelf: "center",
-                    flex: 1,
-                  }}
-                >
-                  <TouchableWithoutFeedback
-                    onPress={() => {
-                      if (parseInt(quantity) < parseInt(selectedJanStock)) {
-                        if ((selectedJanCode || !name) && quantity) {
-                          onShowChanged(false);
-                          db.collection("users")
-                            .doc(user.id.toString())
-                            .collection("carts")
-                            .doc(selectedJanCode.toString())
-                            .get()
-                            .then((snapshot) => {
-                              let tmpQuantity = parseInt(quantity);
-                              if (snapshot.data()) {
-                                tmpQuantity += parseInt(snapshot.data().quantity);
-                              }
-                              db.collection("users")
-                                .doc(user.id.toString())
-                                .collection("carts")
-                                .doc(selectedJanCode.toString())
-                                .set({
-                                  id: product.id,
-                                  quantity: tmpQuantity,
-                                  url: selectedJanCode,
-                                  name: selectedName,
-                                  timeStamp: firebase.firestore.FieldValue.serverTimestamp()
-                                }).then(()=>{
-                                  onSelectedNameChanged("");
-                                  const subscriber = db
-                                    .collection("users")
-                                    .doc(user.id.toString())
-                                    .collection("carts")
-                                    .get()
-                                    .then((querySnapShot) => {
-                                      let totalItemQty = 0
-                                      // onCartCountChanged(querySnapShot.size);
-                                      querySnapShot.forEach(documentSnapshot => {
-                                        totalItemQty += parseInt(documentSnapshot.data().quantity)
-                                      });
-                                      onCartCountChanged(totalItemQty);
-                                    });
-                                })
-                            });
-
-                          if(product.variety != 0){
-                            onSelectedJanCodeChanged(null);
-                            onSelectedJanStockChanged("");
-                          }
-                          onShowText(true);
-                          setTimeout(
-                            function () {
-                              onShowText(false);
-                            }.bind(this),
-                            2000
-                          );
-                        } else {
-                          alert.warning(
-                            Translate.t("no_select_jancode")
-                          );
-                        }
-                      } else {
-                        alert.warning(
-                          Translate.t("limitedStock")
-                        );
-                      }
+                      backgroundColor: Colors.BC9747,
+                      height: heightPercentageToDP("5%"),
+                      alignItems: "center",
+                      marginTop: heightPercentageToDP("2%"),
+                      flexDirection: "row",
                     }}
                   >
-                    <View
+                    <Text
                       style={{
-                        backgroundColor: Colors.deepGrey,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 5,
-                        paddingVertical: 5,
-                        marginHorizontal: widthPercentageToDP("5%"),
+                        fontSize: RFValue(12),
+                        padding: widthPercentageToDP("5%"),
                       }}
                     >
-                      <Text style={{ fontSize: RFValue(11), color: "white" }}>
-                        {Translate.t("addToCartBtn")}
-                      </Text>
+                      {name != "none" ? name : ""}
+                    </Text>
+                  </View>
+
+                  <View>
+                    <View>
+                      {popupHtml}
+                      <View
+                        style={{
+                          flex: 1,
+                          // backgroundColor: "orange",
+                          flexDirection: "row",
+                          marginTop: heightPercentageToDP("3%"),
+                          paddingBottom: heightPercentageToDP("35%"),
+                          alignItems: "flex-start",
+                        }}
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: RFValue(12),
+                              marginLeft: widthPercentageToDP("1.3%"),
+                            }}
+                          >
+                            {Translate.t("unit")}
+                          </Text>
+                          <DropDownPicker
+                            zIndex={999}
+                            style={{
+                              borderWidth: 1,
+                              backgroundColor: "white",
+                              borderColor: "transparent",
+                              color: "black",
+                              borderRadius: 0,
+                              fontSize: RFValue(12),
+                              marginLeft: widthPercentageToDP("2%"),
+                              height: heightPercentageToDP("5.5%"),
+                              paddingLeft: widthPercentageToDP("2%"),
+                              marginVertical: heightPercentageToDP("1%"),
+                            }}
+                            items={cartItems}
+                            placeholder={quantity}
+                            defaultValue={quantity ? quantity + "" : ""}
+                            containerStyle={{
+                              paddingVertical: 0,
+                              width: widthPercentageToDP("25%"),
+                            }}
+                            labelStyle={{
+                              fontSize: RFValue(12),
+                              color: "grey",
+                            }}
+                            itemStyle={{
+                              justifyContent: "flex-start",
+                            }}
+                            selectedtLabelStyle={{
+                              color: Colors.F0EEE9,
+                            }}
+                            // dropDownMaxHeight={RFValue(36)}
+                            dropDownStyle={{
+                              marginLeft: widthPercentageToDP("2%"),
+                              width: widthPercentageToDP("23%"),
+                              height: heightPercentageToDP("30%"),
+                              backgroundColor: "#FFFFFF",
+                              color: "black",
+                              position: "absolute",
+                            }}
+                            onChangeItem={(item) => {
+                              if (item) {
+                                if (parseInt(selectedJanStock) > 0) {
+                                  if (selectedJanStock >= item.value) {
+                                    onQuantityChanged(item.value);
+                                  } else {
+                                    if (parseInt(selectedJanStock) > 0) {
+                                      onQuantityChanged(String(selectedJanStock));
+                                    }
+                                  }
+                                } else {
+                                  alert.warning(
+                                    Translate.t("limitedStock")
+                                  );
+                                }
+                              }
+                            }}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            alignSelf: "center",
+                            flex: 1,
+                          }}
+                        >
+                          <TouchableWithoutFeedback
+                            onPress={() => {
+                              if (parseInt(quantity) < parseInt(selectedJanStock)) {
+                                if ((selectedJanCode || !name) && quantity) {
+                                  onShowChanged(false);
+                                  db.collection("users")
+                                    .doc(user.id.toString())
+                                    .collection("carts")
+                                    .doc(selectedJanCode.toString())
+                                    .get()
+                                    .then((snapshot) => {
+                                      let tmpQuantity = parseInt(quantity);
+                                      if (snapshot.data()) {
+                                        tmpQuantity += parseInt(snapshot.data().quantity);
+                                      }
+                                      db.collection("users")
+                                        .doc(user.id.toString())
+                                        .collection("carts")
+                                        .doc(selectedJanCode.toString())
+                                        .set({
+                                          id: product.id,
+                                          quantity: tmpQuantity,
+                                          url: selectedJanCode,
+                                          name: selectedName,
+                                          timeStamp: firebase.firestore.FieldValue.serverTimestamp()
+                                        }).then(()=>{
+                                          onSelectedNameChanged("");
+                                          const subscriber = db
+                                            .collection("users")
+                                            .doc(user.id.toString())
+                                            .collection("carts")
+                                            .get()
+                                            .then((querySnapShot) => {
+                                              let totalItemQty = 0
+                                              // onCartCountChanged(querySnapShot.size);
+                                              querySnapShot.forEach(documentSnapshot => {
+                                                totalItemQty += parseInt(documentSnapshot.data().quantity)
+                                              });
+                                              onCartCountChanged(totalItemQty);
+                                            });
+                                        })
+                                    });
+
+                                  if(product.variety != 0){
+                                    onSelectedJanCodeChanged(null);
+                                    onSelectedJanStockChanged("");
+                                  }
+                                  onShowText(true);
+                                  setTimeout(
+                                    function () {
+                                      onShowText(false);
+                                    }.bind(this),
+                                    2000
+                                  );
+                                } else {
+                                  alert.warning(
+                                    Translate.t("no_select_jancode")
+                                  );
+                                }
+                              } else {
+                                alert.warning(
+                                  Translate.t("limitedStock")
+                                );
+                              }
+                            }}
+                          >
+                            <View
+                              style={{
+                                backgroundColor: Colors.deepGrey,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                borderRadius: 5,
+                                paddingVertical: 5,
+                                marginHorizontal: widthPercentageToDP("5%"),
+                              }}
+                            >
+                              <Text style={{ fontSize: RFValue(11), color: "white" }}>
+                                {Translate.t("addToCartBtn")}
+                              </Text>
+                            </View>
+                          </TouchableWithoutFeedback>
+                        </View>
+                      </View>
                     </View>
-                  </TouchableWithoutFeedback>
+                  </View>
                 </View>
-              </View>
-            </View>
+              </TouchableWithoutFeedback>
+            </ScrollView>
           </View>
-        </ScrollView>
+        </TouchableWithoutFeedback>
       </Modal>
 
       {showText == true ? (
@@ -1261,7 +1277,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     fontSize: RFValue(11),
     //fontFamily: "sans-serif",
-    padding: 2,
+    padding: 2
   },
   product_title: {
     //fontFamily: "sans-serif",

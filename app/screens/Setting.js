@@ -389,7 +389,8 @@ export default function Setting(props) {
                     // backgroundColor: "orange",
                     width: widthPercentageToDP("30%"),
                     paddingLeft: widthPercentageToDP("1%"),
-                    alignSelf: "center"
+                    alignSelf: "center",
+                    paddingLeft: 10
                   }}
                 />
                   <CountrySearch onNavigate={
@@ -942,5 +943,6 @@ const styles = StyleSheet.create({
     borderColor: "black",
     height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("60%"),
+    paddingLeft: 10
   },
 });

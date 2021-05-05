@@ -36,6 +36,7 @@ import CustomAlert from "../lib/alert";
 import ImagePicker from "react-native-image-picker";
 import { Icon } from "react-native-elements";
 import NextArrow from "../assets/icons/nextArrow.svg";
+import Camera from "../assets/icons/camera.svg";
 import { Keyboard } from "react-native";
 const request = new Request();
 const alert = new CustomAlert();
@@ -536,7 +537,17 @@ export default function ProfileEditingStore(props) {
                   handleChoosePhoto("background_img");
                 }}
               >
-                <Image
+                <Camera 
+                  style={{
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("5%"),
+                      marginTop: heightPercentageToDP("1%"),
+                      width: win.width / 12,
+                      height: 23 * ratioCameraIcon,
+                    }} 
+                  />
+                {/* <Image
                   style={{
                     position: "absolute",
                     right: 0,
@@ -546,7 +557,7 @@ export default function ProfileEditingStore(props) {
                     height: 23 * ratioCameraIcon,
                   }}
                   source={require("../assets/Images/cameraIcon.png")}
-                />
+                /> */}
               </TouchableWithoutFeedback>
             </ImageBackground>
           ) : (
@@ -562,7 +573,17 @@ export default function ProfileEditingStore(props) {
                   handleChoosePhoto("background_img");
                 }}
               >
-                <Image
+                <Camera 
+                  style={{
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("5%"),
+                      marginTop: heightPercentageToDP("1%"),
+                      width: win.width / 12,
+                      height: 23 * ratioCameraIcon,
+                    }} 
+                  />
+                {/* <Image
                   style={{
                     position: "absolute",
                     right: 0,
@@ -572,7 +593,7 @@ export default function ProfileEditingStore(props) {
                     height: 23 * ratioCameraIcon,
                   }}
                   source={require("../assets/Images/cameraIcon.png")}
-                />
+                /> */}
               </TouchableWithoutFeedback>
             </ImageBackground>
           )}
@@ -608,10 +629,13 @@ export default function ProfileEditingStore(props) {
                     handleChoosePhoto("image", "user_" + user.id + ".jpg");
                   }}
                 >
-                  <Image
+                  {/* <Image
                     style={styles.cameraIconInsideProfilePicture}
                     source={require("../assets/Images/cameraIcon.png")}
-                  />
+                  /> */}
+                  <Camera 
+                    style={styles.cameraIconInsideProfilePicture}
+                    />
                 </TouchableWithoutFeedback>
               </ImageBackground>
             ) : (
@@ -631,10 +655,13 @@ export default function ProfileEditingStore(props) {
                     handleChoosePhoto("image", "user_" + user.id + ".jpg");
                   }}
                 >
-                  <Image
+                  {/* <Image
                     style={styles.cameraIconInsideProfilePicture}
                     source={require("../assets/Images/cameraIcon.png")}
-                  />
+                  /> */}
+                  <Camera 
+                    style={styles.cameraIconInsideProfilePicture}
+                    />
                 </TouchableWithoutFeedback>
               </ImageBackground>
             )}
@@ -1288,6 +1315,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     height: heightPercentageToDP("6%"),
     width: widthPercentageToDP("60%"),
+    paddingLeft: 10
   },
   contactTabContainer: {
     flexDirection: "row",
