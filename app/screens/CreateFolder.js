@@ -150,7 +150,7 @@ export default function CreateFolder(props) {
               usersName: friendNames,
             })
             .then((docRef) => {
-              // setFolderName("");
+              setFolderName("");
               console.log(friendIds);
               console.log(friendNames);
               props.navigation.navigate("GroupFolderCreateCompletion", {
@@ -187,7 +187,7 @@ export default function CreateFolder(props) {
   }
 
   function backHandler() {
-    // setFolderName("");
+    setFolderName("");
     props.navigation.goBack();
   }
   return (
