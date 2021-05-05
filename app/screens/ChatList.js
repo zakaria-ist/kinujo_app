@@ -277,8 +277,18 @@ export default function ChatList(props) {
     }
     chats = chats.filter((v,i,a)=>a.findIndex(t=>(t.id === v.id))===i) // remove duplicates
     chats.sort(function(x, y) {
+      let pinQuery = "pinned_" + ownUserID
+      let pinTimeQuery = pinQuery + '_pintime'
+      try {
+        if(x?.data[pinQuery] && y.data[pinQuery]){
+          return x.data[pinTimeQuery] > y.data[pinTimeQuery] ? -1 : 1
+         }
+      } catch (error) {
+        
+      }
+      
         // true values first
-        return (x.data['pinned_'+ownUserID] === y.data['pinned_'+ownUserID])? 0 : x.data['pinned_'+ownUserID]? -1 : 1;
+        return (x.data[pinQuery] === y.data[pinQuery])? 0 : x.data[pinQuery]? -1 : 1;
     });
     processChat(chats, ownUserID, true);
   }
@@ -543,40 +553,40 @@ export default function ChatList(props) {
       for (var i in unseenObj) {
         totalUnseenMessage += unseenObj[i];
       }
-      tmpChatHtml.sort((html1, html2) => {
-        // if (html1.props["pinned"] && !html2.props["pinned"]) {
-        //   return 1;
-        // }
+      // tmpChatHtml.sort((html1, html2) => {
+      //   // if (html1.props["pinned"] && !html2.props["pinned"]) {
+      //   //   return 1;
+      //   // }
 
-        // if (!html1.props["pinned"] && html2.props["pinned"]) {
-        //   return -1;
-        // }
+      //   // if (!html1.props["pinned"] && html2.props["pinned"]) {
+      //   //   return -1;
+      //   // }
 
-        // if (html1.props["pinned"] && html2.props["pinned"]) {
-        //   let date1 = getDate(html1.props["date"]);
-        //   let date2 = getDate(html2.props["date"]);
+      //   // if (html1.props["pinned"] && html2.props["pinned"]) {
+      //   //   let date1 = getDate(html1.props["date"]);
+      //   //   let date2 = getDate(html2.props["date"]);
 
-        //   if (date1 > date2) {
-        //     return -1;
-        //   }
-        //   if (date1 < date2) {
-        //     return 1;
-        //   }
-        // }
+      //   //   if (date1 > date2) {
+      //   //     return -1;
+      //   //   }
+      //   //   if (date1 < date2) {
+      //   //     return 1;
+      //   //   }
+      //   // }
 
-        if (!html1.props["pinned"] && !html2.props["pinned"]) {
-          let date1 = getDate(html1.props["date"]);
-          let date2 = getDate(html2.props["date"]);
+      //   if (!html1.props["pinned"] && !html2.props["pinned"]) {
+      //     let date1 = getDate(html1.props["date"]);
+      //     let date2 = getDate(html2.props["date"]);
 
-          if (date1 > date2) {
-            return -1;
-          }
-          if (date1 < date2) {
-            return 1;
-          }
-        }
-        return 0;
-      });
+      //     if (date1 > date2) {
+      //       return -1;
+      //     }
+      //     if (date1 < date2) {
+      //       return 1;
+      //     }
+      //   }
+      //   return 0;
+      // });
       const resultChatHtml = tmpChatHtml.filter((html) => {
         return !html.props["hide"] && !html.props["delete"];
       });
@@ -645,6 +655,22 @@ export default function ChatList(props) {
       }
     };
   }, [isFocused]);
+
+    const onUpperFix = () => {
+      let update = {};
+      let pinQuery = "pinned_" + ownUserID
+      let pinTimeQuery = pinQuery + '_pintime'
+      update[pinQuery] = !longPressObj.data[pinQuery]
+        // longPressObj.data["pinned_" + ownUserID] == "" ||
+        // !longPressObj.data[pinQuery]
+      update[pinQuery] && (update[pinTimeQuery] = new Date().getTime())
+      
+      db.collection("chat").doc(longPressObj.id).set(update, {
+        merge: true,
+      });
+      onShowChanged(false);
+    }
+
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -719,18 +745,7 @@ export default function ChatList(props) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => {
-                    let update = {};
-                    update["pinned_" + ownUserID] =
-                      // longPressObj.data["pinned_" + ownUserID] == "" ||
-                      longPressObj.data["pinned_" + ownUserID] == true
-                        ? false
-                        : true;
-                    db.collection("chat").doc(longPressObj.id).set(update, {
-                      merge: true,
-                    });
-                    onShowChanged(false);
-                  }}
+                  onPress={onUpperFix}
                 >
                   <Text style={styles.longPressText}>
                     {longPressObj && longPressObj.data && longPressObj.data["pinned_" + ownUserID] == true ? Translate.t("removeUpperFixed") : Translate.t("upperFixed")}
