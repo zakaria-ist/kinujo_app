@@ -713,6 +713,42 @@ export default function ProfileEditingGeneral(props) {
               </View>
             </View>
           </View>
+          {user && user.authority && user.authority.id != 5 ? 
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: heightPercentageToDP("2%"),
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(10),
+                  marginLeft: widthPercentageToDP("5%"),
+                }}
+              >
+                KINUJO ID : {user.user_code}
+              </Text>
+              <View
+                style={{
+                  marginTop: heightPercentageToDP("1.5%"),
+                  flexDirection: "row-reverse",
+                  position: "absolute",
+                  right: 0,
+                  marginRight: widthPercentageToDP("4%"),
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: RFValue(10),
+                    marginRight: widthPercentageToDP("2%"),
+                  }}
+                >
+                  {Translate.t("notApproved")}
+                </Text>
+              </View>
+            </View>
+          : []}
 
           {/* ALL TABS CONTAINER */}
           <View style={{ marginTop: heightPercentageToDP("3%") }}>

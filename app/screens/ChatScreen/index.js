@@ -613,10 +613,10 @@ export default function ChatScreen(props) {
 
   const onCancel = (isCancelAll) => {
 
-    let query = "delete"
+    let query = `delete_${userId}`
 
     if (isCancelAll === true) {
-      query = `delete_${userId}`
+      query = "delete"
     }
     let update = {};
     update[query] = true
@@ -690,6 +690,20 @@ export default function ChatScreen(props) {
     onShowPopUpChanged(false);
   }
 
+  const onCustomerInformation = () => {
+    let customerId = longPressObj.data.userID;
+    if (customerId) {
+      request.get("profiles/" + customerId).then((response) => {
+        if (response.data.url) {
+          props.navigation.navigate("CustomerInformation", {
+            url: response.data.url,
+          });
+        }
+      });
+    }
+    onShowPopUpChanged(false);
+  }
+
   const onSendMsg = (msg) => {
     console.log('press', isUserBlocked);
     // setMessages("");
@@ -714,7 +728,7 @@ export default function ChatScreen(props) {
           .collection("messages")
           .doc().set(data)
           .then((item) => {
-
+            updateUnseenMessageCount(groupID, userId);
           }).catch(err => {
             let newListMsg = newChats.filter(el => el.id != idMsg)
             setChats(newListMsg)
@@ -762,6 +776,25 @@ export default function ChatScreen(props) {
     } else {
       selects.push(chat)
     }
+  }
+
+  function updateUnseenMessageCount(groupID, userID) {
+    let userTotalMessageReadField = "totalMessageRead_" + userID;
+    let userTotalMessageReadCount;
+    chatsRef
+      .doc(groupID)
+      .get()
+      .then(function (doc) {
+        if (doc.exists) {
+          userTotalMessageReadCount = doc.data()[userTotalMessageReadField];
+        }
+      })
+      .then(function () {
+        chatsRef.doc(groupID).update({
+          [userTotalMessageReadField]:
+            userTotalMessageReadCount + 1,
+        });
+      });
   }
 
   return (
@@ -826,6 +859,7 @@ export default function ChatScreen(props) {
           onCancel={onCancel}
           onAddToFav={onAddToFav}
           onMutiSelect={onMutiSelect}
+          onCustomerInformation={onCustomerInformation}
           onShowPopUpChanged={onShowPopUpChanged}
         />
         {/* Bottom Area */}
