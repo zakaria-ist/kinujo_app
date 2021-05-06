@@ -62,6 +62,18 @@ function processProductHtml(props, products, status) {
 
   for (var i = 0; i < tmpProducts.length; i++) {
     let product = tmpProducts[i];
+    let stockArray = []
+    product.productVarieties.map((variety) => {
+      variety.productVarietySelections.map((selection) => {
+        if (selection.jancode_horizontal.length) {
+          stockArray.push(selection.jancode_horizontal[0].stock)
+        }
+        else if (selection.jancode_vertical.length) {
+          stockArray.push(selection.jancode_vertical[0].stock)
+        }
+      })
+    })
+    console.log('stockArray', stockArray);
     let productImages = product.productImages.filter((image)=>{
       return !image.is_hidden && !image.image.is_hidden;
     });
@@ -132,9 +144,29 @@ function processProductHtml(props, products, status) {
                   {format.separator(product.store_price)}円
                 </Text>
               </View>
-              <Text style={styles.productTabContainerText}>
-                {product.store}
-              </Text>
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.productTabContainerText}>
+                  {stockArray[0] ? stockArray[0] : ""}
+                </Text>
+                {stockArray[1] ? <Text style={styles.productTabContainerText}>
+                  {stockArray[1] ? stockArray[1] : ""}
+                </Text> : []}
+                {stockArray[2] ? <Text style={styles.productTabContainerText}>
+                  {stockArray[2] ? stockArray[2] : ""}
+                </Text> : []}
+                {stockArray[3] ? <Text style={styles.productTabContainerText}>
+                  {stockArray[3] ? stockArray[3] : ""}
+                </Text> : []}
+                {stockArray[4] ? <Text style={styles.productTabContainerText}>
+                  {stockArray[4] ? stockArray[4] : ""}
+                </Text> : []}
+              </View>
             </View>
             <NextArrow style={styles.nextIcon} />
           </View>
