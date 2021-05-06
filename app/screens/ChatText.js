@@ -31,6 +31,8 @@ import { RFValue } from "react-native-responsive-fontsize";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import CheckBox from "@react-native-community/checkbox";
+import { TouchableOpacity } from "react-native";
+import navigationHelper from "../lib/navigationHelper.js";
 const { width } = Dimensions.get("window");
 const { height } = Dimensions.get("window");
 const { leftMessageBackground } = "#fff";
@@ -48,7 +50,8 @@ export default function ChatText({
   image,
   props,
   longPress,
-  hyperLinkClicked
+  hyperLinkClicked,
+  chatId
 }) {
 
   function findParams(data, param) {
@@ -70,21 +73,31 @@ export default function ChatText({
     return "";
   }
 
+  function navigateToContactDetail (){
+    navigationHelper.navigate("CustomerInformation", {
+      url: chatId
+    })
+  }
+
   return (
     <SafeAreaView>
       {/*Right Side*/}
       <View style={isSelf ? styles.right : styles.left} collapsable={false}>
         <View style={isSelf ? styles.selfPadding : styles.notSelfPadding}>
           {image && !isSelf ? (
-            <Image
-              style={[isSelf ? styles.nonae : styles.avatar]}
-              source={{ uri: image }}
-            />
+              <Image
+                style={[isSelf ? styles.nonae : styles.avatar]}
+                source={{ uri: image }}
+              />
           ) : (
-            <Image
-              style={[isSelf ? styles.nonae : styles.avatar]}
-              source={require("../assets/Images/profileEditingIcon.png")}
-            />
+            <TouchableOpacity
+                onPress={navigateToContactDetail}
+              >
+              <Image
+                style={[isSelf ? styles.nonae : styles.avatar]}
+                source={require("../assets/Images/profileEditingIcon.png")}
+              />
+            </TouchableOpacity>
           )}
         </View>
         <View
@@ -224,9 +237,9 @@ export default function ChatText({
                 justifyContent: "flex-start"
               }}>
                 <AutoHeightImage
-                    width={RFValue(150)}
-                source={{ uri: imageURL }}
-              />
+                  width={RFValue(150)}
+                  source={{ uri: imageURL }}
+                />
               </View>
             </View>
           ) : (

@@ -113,12 +113,20 @@ export default function CustomerInformation(props) {
           return url;
         });
         let userId = urls[urls.length - 1];
+      let customerUrls = props.route.params.url 
+        
+      if(!/http/.test(props.route.params.url)){
+        customerUrls = urls.slice(0,urls.length - 1)
+      customerUrls.push(props.route.params.url)
+      customerUrls=customerUrls.join('/').replace(':/','://')
+      }
+       
         onUserIdChanged(userId);
         request
-          .get(props.route.params.url)
+          .get(customerUrls)
           .then(function (response) {
             onUserChanged(response.data);
-            let customerUrls = props.route.params.url.split("/");
+            customerUrls = customerUrls.split("/");
             customerUrls = customerUrls.filter((url) => {
               return url;
             });
