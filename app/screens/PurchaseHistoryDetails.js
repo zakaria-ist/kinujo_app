@@ -212,7 +212,7 @@ export default function PurchaseHistoryDetails(props) {
                 : ""}
             </Text>
             <Text style={styles.productInformationText}>
-              {order && order.order ? order.order.total_amount : 0} 円
+              {order && order.order ? format.separator(order.order.total_amount) : 0} 円
             </Text>
           </View>
         </View>

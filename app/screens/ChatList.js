@@ -290,6 +290,7 @@ export default function ChatList(props) {
         // true values first
         return (x.data[pinQuery] === y.data[pinQuery])? 0 : x.data[pinQuery]? -1 : 1;
     });
+    setTotalUnread(0);
     processChat(chats, ownUserID, true);
   }
 
@@ -299,7 +300,6 @@ export default function ChatList(props) {
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
     let unreadMessage = 0;
     // setTotalUnread(unreadMessage);
-    console.log('totalUnread', totalUnread);
     
     tmpChats = tmpChats.filter((chat) => {
       return (
@@ -310,9 +310,15 @@ export default function ChatList(props) {
       );
     });
     tmpChats.map((chat) => {
-      console.log('chat', chat);
-      if (updateUnread &&
-        parseInt(chat.data["unseenMessageCount_" + ownUserID]) > 0
+      console.log('chat', chat.data['lastMessage']);
+      let myMsgSeenCount = parseInt(chat.data["totalMessageRead_" + ownUserID]);
+      let totalMsgCount = parseInt(chat.data["totalMessage"]);
+      let myUnreadCount = totalMsgCount - myMsgSeenCount;
+      // console.log('myMsgSeenCount', myMsgSeenCount)
+      // console.log('totalMsgCount', totalMsgCount)
+      // console.log('myUnreadCount', myUnreadCount)
+      if (updateUnread && myUnreadCount
+        // parseInt(chat.data["unseenMessageCount_" + ownUserID]) > 0
       ) {
         unreadMessage++;
         console.log('unreadMessage', unreadMessage);
@@ -401,11 +407,18 @@ export default function ChatList(props) {
                 ) : (
                   <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
-                {chat.data[unseenMessageCountField] &&
+                {/* {chat.data[unseenMessageCountField] &&
                 chat.data[unseenMessageCountField] > 0 ? (
                   <View style={styles.notificationNumberContainer}>
                     <Text style={styles.notificationNumberText}>
                       {chat.data[unseenMessageCountField]}
+                    </Text>
+                  </View> */}
+                {myUnreadCount &&
+                myUnreadCount > 0 ? (
+                  <View style={styles.notificationNumberContainer}>
+                    <Text style={styles.notificationNumberText}>
+                      {myUnreadCount}
                     </Text>
                   </View>
                 ) : (
@@ -469,11 +482,11 @@ export default function ChatList(props) {
                 ) : (
                   <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
-                {chat.data[unseenMessageCountField] &&
-                chat.data[unseenMessageCountField] > 0 ? (
+                {myUnreadCount &&
+                myUnreadCount > 0 ? (
                   <View style={styles.notificationNumberContainer}>
                     <Text style={styles.notificationNumberText}>
-                      {chat.data[unseenMessageCountField]}
+                      {myUnreadCount}
                     </Text>
                   </View>
                 ) : (
