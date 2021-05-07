@@ -16,22 +16,14 @@ import { timezone as myTimeZone } from "expo-localization";
 import navigationHelper from "../../lib/navigationHelper";
 
 const ChatItem = ({
-    userId, parentProps, newChats, groupID, favIndex,
-
-    day, onLongPressObjChanged, onShowPopUpChanged,
-    redirectToChat, tmpMultiSelect, selectedChat, selects, setSelected,
-    processOldChat, oldChats, findParams, request, showCheckBox, imageMap, setSelectMsg,
-
-    previousMessageDateElse, updateChats, item
+    userId, parentProps, onLongPressObjChanged, onShowPopUpChanged,
+    redirectToChat, tmpMultiSelect, selects, findParams, request,
+    showCheckBox, imageMap, setSelectMsg, item
 }) => {
 
     let chat = item
     if (!chat?.data?.userID) return null
     let isSelected = selects.find(el => el?.id == chat?.id) ? true : false
-
-    let created = chat.data.createdAt;
-    let date = created.split(":");
-    let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
 
     const onMessageLongPress = () => {
         onLongPressObjChanged({
@@ -65,7 +57,7 @@ const ChatItem = ({
                     let apiUrl = request.getApiUrl() + "products/" + findParams(link, "product_id");
                     navigationHelper.navigate("HomeStoreList", {
                         url: apiUrl,
-                        images:[]
+                        images: []
                     });
                 } else {
                     Linking.openURL(url);
@@ -94,32 +86,19 @@ const ChatItem = ({
 
     return useMemo(() => {
         let props = parentProps
-        try {
-            let tStamps = chat.data.timeStamp.toDate();
-            created = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
-        } catch (e) {
-            console.log('ERROR', e);
-        }
-
-        // let date = chat.data.createdAt.split(":");
-
-        let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
-        let tmpHours = date[3].length > 1 ? date[3] : '0' + date[3];
-        let tmpMinutes = date[4].length > 1 ? date[4] : '0' + date[4];
-        // let tmpMessageID = messageID.filter((item) => {
-        //     return item == chat.id;
-        // });
 
         let dateOfMessage = null
-
+        let now = moment().tz(myTimeZone);
+        let momentDateOfMsg = moment(chat.data.createdAt, 'YYYY:MM:DD:HH:mm').tz(myTimeZone)
+        let yesterday = now.clone(); yesterday.subtract(1, 'd')
         if (chat.first) {
-            if (tmpDay == day) {
+            if (now.isSame(momentDateOfMsg, 'd')) {
                 dateOfMessage = Translate.t("today")
-            } else if (tmpDay == day - 1) {
+            } else if (yesterday.isSame(momentDateOfMsg, 'd')) {
                 dateOfMessage = Translate.t("yesterday")
-            } else if (previousMessageDateElse ==
-                chat.data.timeStamp.toDate().toDateString()) {
-                dateOfMessage = tmpMonth + "/" + tmpDay
+            } else {
+                dateOfMessage = momentDateOfMsg.format('YYYY/MM/DD');
+                // dateOfMessage = tmpMonth + "/" + tmpDay
             }
 
             dateOfMessage = dateOfMessage ? <Text style={[styles.chat_date]}>
@@ -133,7 +112,7 @@ const ChatItem = ({
             hyperLinkClicked: onHyperLinkClicked,
             props,
             showCheckBox,
-            date: tmpHours + ":" + tmpMinutes,
+            date: momentDateOfMsg.format('HH:mm'),//tmpHours + ":" + tmpMinutes,
             isSelf: chat.data.userID == userId ? 'true' : '',
             // seen={
             //   totalMessage - index >= totalMessage - totalMessageRead &&
@@ -167,7 +146,6 @@ const ChatItem = ({
                 key={chat.id}
             >
                 {dateOfMessage}
-                {/*///////////////////////////////////////*/}
                 {chat.data.contactID ? (
                     <ChatContact
                         press={onPressContact}
@@ -178,7 +156,6 @@ const ChatItem = ({
                         {...itemProps}
                     />
                 )}
-                {/*///////////////////////////////////////*/}
             </View>
         </TouchableNativeFeedback>
     }, [isSelect, tmpMultiSelect])
