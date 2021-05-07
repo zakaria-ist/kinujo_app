@@ -393,5 +393,7 @@
   "limitedStock": "The requested stock is not available.",
   "cartFilterMsg": "Products are removed from cart for limited or empty stock.",
   "send": "Send",
-  "all": "All"
+  "all": "All",
+  "notApproved": "Approve In Process",
+  "unregisteredPhone": "Unregistered phone number"
 }

@@ -42,8 +42,22 @@ const ratioNext = win.width / 38 / 8;
 
 export default function PurchaseHistoryDetails(props) {
   let initImage = props.route.params.image || [];
+  let orderDate = props.route.params.orderDate || "";
   const [order, onOrderChanged] = useStateIfMounted({});
   const [loaded, onLoaded] = useStateIfMounted(false);
+
+  Date.prototype.yyyymmdd = function() {
+    var mm = this.getMonth() + 1; // getMonth() is zero-based
+    var dd = this.getDate();
+    var H = this.getHours();
+    var M = this.getMinutes();
+  
+    return [this.getFullYear(), '-',
+            (mm>9 ? '' : '0') + mm, '-',
+            (dd>9 ? '' : '0') + dd, ' ', H, ':', M
+           ].join('');
+  };
+
   // if (!loaded) {
     React.useEffect(() => {
       InteractionManager.runAfterInteractions(() => {
@@ -59,6 +73,16 @@ export default function PurchaseHistoryDetails(props) {
           .then(function (response) {
             onOrderChanged(response.data);
             onLoaded(true);
+            if (orderDate == "") {
+              orderDate = new Date(response.data.order.created).yyyymmdd();
+              let year = new Date(response.data.order.created).getFullYear();
+              if (defaultLanguage == 'ja') {
+                jOrderDate = kanjidate.format(kanjidate.f10, new Date(response.data.order.created));
+                jOrderDate = jOrderDate.split('');
+                jOrderDate.splice(0, 4);
+                orderDate = year + jOrderDate.join('');
+              }
+            }
           })
           .catch(function (error) {
             onLoaded(true);
@@ -212,7 +236,7 @@ export default function PurchaseHistoryDetails(props) {
                 : ""}
             </Text>
             <Text style={styles.productInformationText}>
-              {order && order.order ? order.order.total_amount : 0} 円
+              {order && order.order ? format.separator(order.order.total_amount) : 0} 円
             </Text>
           </View>
         </View>
@@ -233,7 +257,8 @@ export default function PurchaseHistoryDetails(props) {
             {Translate.t("orderDate")}
           </Text>
           <Text style={styles.productSourceText}>
-            {order && order.order
+            {order && order.order ? orderDate : ""}
+            {/* {order && order.order
               ? kanjidate.format(kanjidate.f10,
                   // "{Y:4}" +
                   //   Translate.t("年") +
@@ -244,7 +269,7 @@ export default function PurchaseHistoryDetails(props) {
                   //   " {h:2}:{M:2}",
                   new Date(order.order.created)
                 )
-              : ""}
+              : ""} */}
           </Text>
         </View>
         <View style={styles.productInformationContainer}>

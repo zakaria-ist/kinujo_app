@@ -177,13 +177,23 @@ export default function PasswordReset(props) {
             disabled={verficaitonButtonClicked ? true : false}
             onPress={() => {
               if (phone != "") {
-                onVerficaitonButtonClicked(true);
-                signInWithPhoneNumber("+" + callingCode + phone)
-                  .then(() => {})
-                  .catch((error) => {
-                    alert.warning(error.code);
-                  });
-                onTriggerTimer(true);
+                console.log(callingCode, phone)
+                request.post("user/check-phone", {
+                  tel: phone,
+                  tel_code: "+" + callingCode,
+                }).then(function(response) {
+                  if (!response.data.success) {
+                    onVerficaitonButtonClicked(true);
+                    signInWithPhoneNumber("+" + callingCode + phone)
+                      .then(() => {})
+                      .catch((error) => {
+                        alert.warning(error.code);
+                      });
+                    onTriggerTimer(true);
+                  } else {
+                    alert.warning(Translate.t("unregisteredPhone"));
+                  }
+                })
               } else {
                 alert.warning(Translate.t("fieldNotFilled"));
               }
@@ -216,14 +226,14 @@ export default function PasswordReset(props) {
               disabled={timer == 0 ? false : true}
               onPress={() => {
                 Linking.openURL('mailto:info@kinujo.jp');
-                if(timer == 0){
-                  if (phone != "") {
-                    setTimer(30);
-                    signInWithPhoneNumber("+" + callingCode + phone);
-                  } else {
-                    alert.warning(Translate.t("fieldNotFilled"));
-                  }
-                }
+                // if(timer == 0){
+                //   if (phone != "") {
+                //     setTimer(30);
+                //     signInWithPhoneNumber("+" + callingCode + phone);
+                //   } else {
+                //     alert.warning(Translate.t("fieldNotFilled"));
+                //   }
+                // }
               }}
             >
               <Text

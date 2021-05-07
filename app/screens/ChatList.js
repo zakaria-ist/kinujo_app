@@ -286,10 +286,15 @@ export default function ChatList(props) {
       } catch (error) {
         
       }
-      
+
+      if(!x?.data[pinQuery] && !y.data[pinQuery]){
+        return x.timeStamp > y.timeStamp ? -1 : 1
+      }
+
         // true values first
         return (x.data[pinQuery] === y.data[pinQuery])? 0 : x.data[pinQuery]? -1 : 1;
     });
+    setTotalUnread(0);
     processChat(chats, ownUserID, true);
   }
 
@@ -299,7 +304,6 @@ export default function ChatList(props) {
     unseenMessageCountField = "unseenMessageCount_" + ownUserID;
     let unreadMessage = 0;
     // setTotalUnread(unreadMessage);
-    console.log('totalUnread', totalUnread);
     
     tmpChats = tmpChats.filter((chat) => {
       return (
@@ -310,9 +314,15 @@ export default function ChatList(props) {
       );
     });
     tmpChats.map((chat) => {
-      console.log('chat', chat);
-      if (updateUnread &&
-        parseInt(chat.data["unseenMessageCount_" + ownUserID]) > 0
+      console.log('chat', chat.data['lastMessage']);
+      let myMsgSeenCount = parseInt(chat.data["totalMessageRead_" + ownUserID]);
+      let totalMsgCount = parseInt(chat.data["totalMessage"]);
+      let myUnreadCount = totalMsgCount - myMsgSeenCount;
+      // console.log('myMsgSeenCount', myMsgSeenCount)
+      // console.log('totalMsgCount', totalMsgCount)
+      // console.log('myUnreadCount', myUnreadCount)
+      if (updateUnread && myUnreadCount
+        // parseInt(chat.data["unseenMessageCount_" + ownUserID]) > 0
       ) {
         unreadMessage++;
         console.log('unreadMessage', unreadMessage);
@@ -334,7 +344,14 @@ export default function ChatList(props) {
         tmpChatHtml = _.without(tmpChatHtml, chat.id);
       }
       getUnseenMessageCount(chat.id, ownUserID);
-      let date = chat.timeStamp ? chat.timeStamp.split(':') : chat.data.lastMessageTime
+      let lastTimeStamp = null;
+      if (chat.data["lastMessageTimeStamp_" + ownUserID] ) {
+        let tStamps = chat.data["lastMessageTimeStamp_" + ownUserID].toDate();
+        lastTimeStamp = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
+      }
+      let date = lastTimeStamp ? lastTimeStamp.split(":") : chat.timeStamp 
+        ? chat.timeStamp.split(':') : chat.data["lastMessageTime_" + ownUserID] 
+        ? chat.data["lastMessageTime_" + ownUserID].split(":") : chat.data.lastMessageTime
         ? chat.data.lastMessageTime.split(":")
         : tmpCreatedAt.split(":");
       let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
@@ -345,6 +362,7 @@ export default function ChatList(props) {
 
       name = chat.name;
       images = chat.images;
+      lastMessage = chat.data["lastMessage_" + ownUserID] ? chat.data["lastMessage_" + ownUserID].substring(0,30) : chat.data.lastMessage.substring(0,30)
       if (tmpDay == today && chat.data.totalMessage > 0) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
@@ -390,7 +408,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                  {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
+                  {chat.secret ? "" : lastMessage}{lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
@@ -401,11 +419,18 @@ export default function ChatList(props) {
                 ) : (
                   <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
-                {chat.data[unseenMessageCountField] &&
+                {/* {chat.data[unseenMessageCountField] &&
                 chat.data[unseenMessageCountField] > 0 ? (
                   <View style={styles.notificationNumberContainer}>
                     <Text style={styles.notificationNumberText}>
                       {chat.data[unseenMessageCountField]}
+                    </Text>
+                  </View> */}
+                {myUnreadCount &&
+                myUnreadCount > 0 ? (
+                  <View style={styles.notificationNumberContainer}>
+                    <Text style={styles.notificationNumberText}>
+                      {myUnreadCount}
                     </Text>
                   </View>
                 ) : (
@@ -460,7 +485,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
+                {chat.secret ? "" : lastMessage}{lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
@@ -469,11 +494,11 @@ export default function ChatList(props) {
                 ) : (
                   <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
-                {chat.data[unseenMessageCountField] &&
-                chat.data[unseenMessageCountField] > 0 ? (
+                {myUnreadCount &&
+                myUnreadCount > 0 ? (
                   <View style={styles.notificationNumberContainer}>
                     <Text style={styles.notificationNumberText}>
-                      {chat.data[unseenMessageCountField]}
+                      {myUnreadCount}
                     </Text>
                   </View>
                 ) : (
@@ -528,7 +553,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
+                {chat.secret ? "" : lastMessage}{lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>

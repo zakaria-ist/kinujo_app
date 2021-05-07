@@ -113,12 +113,20 @@ export default function CustomerInformation(props) {
           return url;
         });
         let userId = urls[urls.length - 1];
+      let customerUrls = props.route.params.url 
+        
+      if(!/http/.test(props.route.params.url)){
+        customerUrls = urls.slice(0,urls.length - 1)
+      customerUrls.push(props.route.params.url)
+      customerUrls=customerUrls.join('/').replace(':/','://')
+      }
+       
         onUserIdChanged(userId);
         request
-          .get(props.route.params.url)
+          .get(customerUrls)
           .then(function (response) {
             onUserChanged(response.data);
-            let customerUrls = props.route.params.url.split("/");
+            customerUrls = customerUrls.split("/");
             customerUrls = customerUrls.filter((url) => {
               return url;
             });
@@ -232,6 +240,7 @@ export default function CustomerInformation(props) {
     });
     ownUserID = urls[urls.length - 1];
   });
+  let notViewPageHeader = props.route.params.notViewHeader
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -243,7 +252,7 @@ export default function CustomerInformation(props) {
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
-        text={Translate.t("customerInformation")}
+        text={notViewPageHeader ? '' :Translate.t("customerInformation") }
       />
       <View>
         <ImageBackground
@@ -654,7 +663,7 @@ export default function CustomerInformation(props) {
                       alignSelf: "center",
                     }}
                   >
-                    Save
+                    {Translate.t("save")}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>
