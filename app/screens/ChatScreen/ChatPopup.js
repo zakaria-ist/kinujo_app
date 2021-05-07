@@ -22,7 +22,7 @@ const ChatPopup = ({
     onCancel,
     onAddToFav,
     onMutiSelect,
-    onCustomerInformation,
+    // onCustomerInformation,
     onShowPopUpChanged, needShowCancel
 }) => {
 
@@ -71,10 +71,10 @@ const ChatPopup = ({
                                 onPress={onMutiSelect}
                                 langKey='multiSelect'
                             />
-                            {!needShowCancel && <PopupItem
+                            {/* {!needShowCancel && <PopupItem
                                 onPress={onCustomerInformation}
                                 langKey='customerInformation'
-                            />}
+                            />} */}
                         </View>
                     </View>
                 </View>
