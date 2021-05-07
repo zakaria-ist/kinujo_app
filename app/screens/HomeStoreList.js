@@ -986,67 +986,70 @@ export default function HomeStoreList(props) {
                         >
                           <TouchableWithoutFeedback
                             onPress={() => {
-                              if (parseInt(quantity) < parseInt(selectedJanStock)) {
-                                if ((selectedJanCode || !name) && quantity) {
-                                  onShowChanged(false);
-                                  db.collection("users")
-                                    .doc(user.id.toString())
-                                    .collection("carts")
-                                    .doc(selectedJanCode.toString())
-                                    .get()
-                                    .then((snapshot) => {
-                                      let tmpQuantity = parseInt(quantity);
-                                      if (snapshot.data()) {
-                                        tmpQuantity += parseInt(snapshot.data().quantity);
-                                      }
-                                      db.collection("users")
-                                        .doc(user.id.toString())
-                                        .collection("carts")
-                                        .doc(selectedJanCode.toString())
-                                        .set({
-                                          id: product.id,
-                                          quantity: tmpQuantity,
-                                          url: selectedJanCode,
-                                          name: selectedName,
-                                          timeStamp: firebase.firestore.FieldValue.serverTimestamp()
-                                        }).then(()=>{
-                                          onSelectedNameChanged("");
-                                          const subscriber = db
-                                            .collection("users")
-                                            .doc(user.id.toString())
-                                            .collection("carts")
-                                            .get()
-                                            .then((querySnapShot) => {
-                                              let totalItemQty = 0
-                                              // onCartCountChanged(querySnapShot.size);
-                                              querySnapShot.forEach(documentSnapshot => {
-                                                totalItemQty += parseInt(documentSnapshot.data().quantity)
+                              if(selectedJanCode != '') {
+                                if (parseInt(quantity) < parseInt(selectedJanStock)) {
+                                  console.log(selectedJanCode)
+                                  if ((selectedJanCode || !name) && quantity) {
+                                    onShowChanged(false);
+                                    db.collection("users")
+                                      .doc(user.id.toString())
+                                      .collection("carts")
+                                      .doc(selectedJanCode.toString())
+                                      .get()
+                                      .then((snapshot) => {
+                                        let tmpQuantity = parseInt(quantity);
+                                        if (snapshot.data()) {
+                                          tmpQuantity += parseInt(snapshot.data().quantity);
+                                        }
+                                        db.collection("users")
+                                          .doc(user.id.toString())
+                                          .collection("carts")
+                                          .doc(selectedJanCode.toString())
+                                          .set({
+                                            id: product.id,
+                                            quantity: tmpQuantity,
+                                            url: selectedJanCode,
+                                            name: selectedName,
+                                            timeStamp: firebase.firestore.FieldValue.serverTimestamp()
+                                          }).then(()=>{
+                                            onSelectedNameChanged("");
+                                            const subscriber = db
+                                              .collection("users")
+                                              .doc(user.id.toString())
+                                              .collection("carts")
+                                              .get()
+                                              .then((querySnapShot) => {
+                                                let totalItemQty = 0
+                                                // onCartCountChanged(querySnapShot.size);
+                                                querySnapShot.forEach(documentSnapshot => {
+                                                  totalItemQty += parseInt(documentSnapshot.data().quantity)
+                                                });
+                                                onCartCountChanged(totalItemQty);
                                               });
-                                              onCartCountChanged(totalItemQty);
-                                            });
-                                        })
-                                    });
-
-                                  if(product.variety != 0){
-                                    onSelectedJanCodeChanged(null);
-                                    onSelectedJanStockChanged("");
+                                          })
+                                      });
+  
+                                    if(product.variety != 0){
+                                      onSelectedJanCodeChanged(null);
+                                      onSelectedJanStockChanged("");
+                                    }
+                                    onShowText(true);
+                                    setTimeout(
+                                      function () {
+                                        onShowText(false);
+                                      }.bind(this),
+                                      2000
+                                    );
                                   }
-                                  onShowText(true);
-                                  setTimeout(
-                                    function () {
-                                      onShowText(false);
-                                    }.bind(this),
-                                    2000
-                                  );
                                 } else {
                                   alert.warning(
-                                    Translate.t("no_select_jancode")
+                                    Translate.t("limitedStock")
                                   );
                                 }
                               } else {
                                 alert.warning(
-                                  Translate.t("limitedStock")
-                                );
+                                  Translate.t("no_select_jancode")
+                                )
                               }
                             }}
                           >
