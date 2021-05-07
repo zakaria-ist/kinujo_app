@@ -37,6 +37,7 @@ const ratioNext = win.width / 38 / 8;
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
+import navigationHelper from "../lib/navigationHelper.js";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
@@ -50,7 +51,7 @@ export default function CustomerList(props) {
   const [user, onUserChanged] = useStateIfMounted({});
   const [displayName, onDisplayNameChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
-  
+
   function processCustomerHtml(props, customers, search = "") {
     let tmpCustomerHtml = [];
     let tmpCustomers = customers;
@@ -65,8 +66,9 @@ export default function CustomerList(props) {
         <TouchableWithoutFeedback
           key={i}
           onPress={() => {
-            props.navigation.navigate("CustomerInformation", {
+            navigationHelper.navigate("CustomerInformation", {
               url: customer.url,
+              notViewHeader: false
             });
           }}
         >
@@ -137,9 +139,9 @@ export default function CustomerList(props) {
         ) {
           alert.warning(
             error.response.data[Object.keys(error.response.data)[0]][0] +
-              "(" +
-              Object.keys(error.response.data)[0] +
-              ")"
+            "(" +
+            Object.keys(error.response.data)[0] +
+            ")"
           );
         }
       });
@@ -159,7 +161,7 @@ export default function CustomerList(props) {
           .get("customers/" + userId + "/")
           .then(function (response) {
             let displayName = {};
-            
+
             for (var i = 0; i < response.data.customers.length; i++) {
               let customer = response.data.customers[i];
               db
@@ -191,9 +193,9 @@ export default function CustomerList(props) {
             ) {
               alert.warning(
                 error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
+                "(" +
+                Object.keys(error.response.data)[0] +
+                ")"
               );
             }
             onLoaded(true);

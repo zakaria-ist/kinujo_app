@@ -240,6 +240,7 @@ export default function CustomerInformation(props) {
     });
     ownUserID = urls[urls.length - 1];
   });
+  let notViewPageHeader = props.route.params.notViewHeader
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
@@ -251,7 +252,7 @@ export default function CustomerInformation(props) {
         onPress={() => {
           props.navigation.navigate("Cart");
         }}
-        text={Translate.t("customerInformation")}
+        text={notViewPageHeader ? '' :Translate.t("customerInformation") }
       />
       <View>
         <ImageBackground
