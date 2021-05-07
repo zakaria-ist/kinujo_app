@@ -75,7 +75,8 @@ export default function ChatText({
 
   function navigateToContactDetail (){
     navigationHelper.navigate("CustomerInformation", {
-      url: chatId
+      url: chatId,
+      notViewHeader: true
     })
   }
 
