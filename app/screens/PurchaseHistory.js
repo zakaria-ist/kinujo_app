@@ -36,6 +36,7 @@ import Search from "../assets/icons/search.svg";
 import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import Shop from "../assets/icons/shop.svg";
+import i18n from "i18n-js";
 const db = firebase.firestore();
 var kanjidate = require("kanjidate");
 import Format from "../lib/format";
@@ -49,6 +50,7 @@ const ratioNext = win.width / 38 / 8;
 const ratioSearch = win.width / 24 / 19;
 const ratioCancel = win.width / 25 / 15;
 let userId;
+let defaultLanguage = 'ja';
 export default function PurchaseHistory(props) {
   const isFocused = useIsFocused();
   const [orders, onOrdersChanged] = useStateIfMounted({});
@@ -61,6 +63,19 @@ export default function PurchaseHistory(props) {
   const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const right = useRef(new Animated.Value(widthPercentageToDP("-80%"))).current;
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
+
+  AsyncStorage.getItem("language").then((language) => {
+    if (language) {
+      defaultLanguage = language;
+    } else {
+      if (i18n.locale.includes('ja') || i18n.locale.includes('JP')) {
+        defaultLanguage = 'ja';
+      } else {
+        defaultLanguage = 'en';
+      }
+    }
+  });
+
   function getProductImages(order) {
     return order.product_jan_code.horizontal.product_variety.product
       .productImages
@@ -87,13 +102,32 @@ export default function PurchaseHistory(props) {
       });
     }
 
+    Date.prototype.yyyymmdd = function() {
+      var mm = this.getMonth() + 1; // getMonth() is zero-based
+      var dd = this.getDate();
+      var H = this.getHours();
+      var M = this.getMinutes();
+    
+      return [this.getFullYear(), '-',
+              (mm>9 ? '' : '0') + mm, '-',
+              (dd>9 ? '' : '0') + dd, ' ', H, ':', M
+             ].join('');
+    };
+
     let tmpOrderHtml = [];
     for (var i = 0; i < orders.length; i++) {
       let order = orders[i];
       // if (getProductImages(order).length > 0) {
       //   console.log(getProductImages(order)[0].image.image);
       // }
-
+      let orderDate = new Date(order.order.created).yyyymmdd();
+      let year = new Date(order.order.created).getFullYear();
+      if (defaultLanguage == 'ja') {
+        jOrderDate = kanjidate.format(kanjidate.f10, new Date(order.order.created));
+        jOrderDate = jOrderDate.split('');
+        jOrderDate.splice(0, 4);
+        orderDate = year + jOrderDate.join('');
+      }
       tmpOrderHtml.push(
         <TouchableWithoutFeedback key={i}>
           <View>
@@ -103,7 +137,8 @@ export default function PurchaseHistory(props) {
                 marginTop: heightPercentageToDP("1.5%"),
               }}
             >
-              {kanjidate.format(kanjidate.f10,
+              {orderDate}
+              {/* {kanjidate.format(kanjidate.f10,
                 // "{Y:4}" +
                 //   Translate.t("年") +
                 //   "{M:2}" +
@@ -112,7 +147,7 @@ export default function PurchaseHistory(props) {
                 //   Translate.t("日") +
                 //   " ",
                 new Date(order.order.created)
-              )}
+              )} */}
               {/* (
               {Translate.t(
                 kanjidate.format("{W:2}", new Date(order.order.created))
@@ -175,7 +210,8 @@ export default function PurchaseHistory(props) {
                   props.navigation.navigate("PurchaseHistoryDetails", {
                     url: order.url,
                     order: order,
-                    image: getProductImages(order)[0].image.image
+                    image: getProductImages(order)[0].image.image,
+                    orderDate: orderDate
                   });
                 }}
               >
