@@ -394,5 +394,6 @@
   "cartFilterMsg": "Products are removed from cart for limited or empty stock.",
   "send": "Send",
   "all": "All",
-  "notApproved": "Approve In Process"
+  "notApproved": "Approve In Process",
+  "unregisteredPhone": "Unregistered phone number"
 }
