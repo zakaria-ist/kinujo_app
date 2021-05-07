@@ -114,6 +114,7 @@ const ChatItem = ({
             showCheckBox,
             date: momentDateOfMsg.format('HH:mm'),//tmpHours + ":" + tmpMinutes,
             isSelf: chat.data.userID == userId ? 'true' : '',
+            chatId: chat.data.userID,
             // seen={
             //   totalMessage - index >= totalMessage - totalMessageRead &&
             //   chat.data.userID == userId
