@@ -344,7 +344,14 @@ export default function ChatList(props) {
         tmpChatHtml = _.without(tmpChatHtml, chat.id);
       }
       getUnseenMessageCount(chat.id, ownUserID);
-      let date = chat.timeStamp ? chat.timeStamp.split(':') : chat.data.lastMessageTime
+      let lastTimeStamp = null;
+      if (chat.data["lastMessageTimeStamp_" + ownUserID] ) {
+        let tStamps = chat.data["lastMessageTimeStamp_" + ownUserID].toDate();
+        lastTimeStamp = moment(tStamps).tz(myTimeZone).format('YYYY:MM:DD:HH:mm:ss');
+      }
+      let date = lastTimeStamp ? lastTimeStamp.split(":") : chat.timeStamp 
+        ? chat.timeStamp.split(':') : chat.data["lastMessageTime_" + ownUserID] 
+        ? chat.data["lastMessageTime_" + ownUserID].split(":") : chat.data.lastMessageTime
         ? chat.data.lastMessageTime.split(":")
         : tmpCreatedAt.split(":");
       let tmpMonth = date[1].length > 1 ? date[1] : '0' + date[1];
@@ -355,6 +362,7 @@ export default function ChatList(props) {
 
       name = chat.name;
       images = chat.images;
+      lastMessage = chat.data["lastMessage_" + ownUserID] ? chat.data["lastMessage_" + ownUserID].substring(0,30) : chat.data.lastMessage.substring(0,30)
       if (tmpDay == today && chat.data.totalMessage > 0) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
@@ -400,7 +408,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                  {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
+                  {chat.secret ? "" : lastMessage}{lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
@@ -477,7 +485,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
+                {chat.secret ? "" : lastMessage}{lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
@@ -545,7 +553,7 @@ export default function ChatList(props) {
               <View style={styles.descriptionContainer}>
                 <Text style={styles.tabText}>{name}</Text>
                 <Text style={styles.tabText}>
-                {chat.secret ? "" : chat.data.lastMessage.substring(0,30)}{chat.data.lastMessage.length > 30 ? "..." : ""}
+                {chat.secret ? "" : lastMessage}{lastMessage.length > 30 ? "..." : ""}
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>

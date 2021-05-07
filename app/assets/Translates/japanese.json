@@ -394,5 +394,6 @@
   "send": "送信",
   "all": "すべて",
   "invalidAccountNumber": "正しい口座番号を入力してください",
-  "notApproved": "ストア承認中"
+  "notApproved": "ストア承認中",
+  "unregisteredPhone": "登録されていない電話番号です"
 }
