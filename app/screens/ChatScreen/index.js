@@ -690,19 +690,19 @@ export default function ChatScreen(props) {
     onShowPopUpChanged(false);
   }
 
-  const onCustomerInformation = () => {
-    let customerId = longPressObj.data.userID;
-    if (customerId) {
-      request.get("profiles/" + customerId).then((response) => {
-        if (response.data.url) {
-          props.navigation.navigate("CustomerInformation", {
-            url: response.data.url,
-          });
-        }
-      });
-    }
-    onShowPopUpChanged(false);
-  }
+  // const onCustomerInformation = () => {
+  //   let customerId = longPressObj.data.userID;
+  //   if (customerId) {
+  //     request.get("profiles/" + customerId).then((response) => {
+  //       if (response.data.url) {
+  //         props.navigation.navigate("CustomerInformation", {
+  //           url: response.data.url,
+  //         });
+  //       }
+  //     });
+  //   }
+  //   onShowPopUpChanged(false);
+  // }
 
   const onSendMsg = (msg) => {
     console.log('press', isUserBlocked);
@@ -859,7 +859,7 @@ export default function ChatScreen(props) {
           onCancel={onCancel}
           onAddToFav={onAddToFav}
           onMutiSelect={onMutiSelect}
-          onCustomerInformation={onCustomerInformation}
+          // onCustomerInformation={onCustomerInformation}
           onShowPopUpChanged={onShowPopUpChanged}
         />
         {/* Bottom Area */}
