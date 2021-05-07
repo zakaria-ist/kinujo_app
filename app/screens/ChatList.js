@@ -286,7 +286,11 @@ export default function ChatList(props) {
       } catch (error) {
         
       }
-      
+
+      if(!x?.data[pinQuery] && !y.data[pinQuery]){
+        return x.timeStamp > y.timeStamp ? -1 : 1
+      }
+
         // true values first
         return (x.data[pinQuery] === y.data[pinQuery])? 0 : x.data[pinQuery]? -1 : 1;
     });

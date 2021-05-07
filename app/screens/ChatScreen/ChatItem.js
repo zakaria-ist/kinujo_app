@@ -90,10 +90,11 @@ const ChatItem = ({
         let dateOfMessage = null
         let now = moment().tz(myTimeZone);
         let momentDateOfMsg = moment(chat.data.createdAt, 'YYYY:MM:DD:HH:mm').tz(myTimeZone)
+        let yesterday = now.clone(); yesterday.subtract(1, 'd')
         if (chat.first) {
             if (now.isSame(momentDateOfMsg, 'd')) {
                 dateOfMessage = Translate.t("today")
-            } else if (now.diff(momentDateOfMsg, 'd') === 1) {
+            } else if (yesterday.isSame(momentDateOfMsg, 'd')) {
                 dateOfMessage = Translate.t("yesterday")
             } else {
                 dateOfMessage = momentDateOfMsg.format('YYYY/MM/DD');
