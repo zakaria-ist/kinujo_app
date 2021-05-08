@@ -1151,14 +1151,14 @@ export default function ProfileEditingStore(props) {
             </View>
             <TouchableWithoutFeedback
               onPress={() =>
-                props.navigation.navigate("ProfileInformation", {
+                props.navigation.navigate("StoreInformation", {
                   is_store: true,
                 })
               }
             >
               <View style={styles.tabContainer}>
                 <Text style={styles.textInContainerLeft}>
-                  {Translate.t("personalInformation")}
+                  {Translate.t("storeInformation")}
                 </Text>
                 <View
                   style={{

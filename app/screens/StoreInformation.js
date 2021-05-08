@@ -42,7 +42,11 @@ function updateUser(user, field, value) {
   }
   request
     .patch(user.url, obj)
-    .then(function (response) {})
+    .then(function (response) {
+      if (response.data) {
+        onUserChanged(response.data);
+      }
+    })
     .catch(function (error) {
       if (
         error &&
@@ -80,6 +84,10 @@ export default function StoreInformation(props) {
   const [address1, onAddress1Changed] = useStateIfMounted("");
   const [address2, onAddress2Changed] = useStateIfMounted("");
   const [user, onUserChanged] = useStateIfMounted({});
+  const [nickName, onNickNameChanged] = useStateIfMounted("");
+  const [editNickName, onEditNickNameChanged] = useStateIfMounted(false);
+  const [editRealName, onEditRealNameChanged] = useStateIfMounted(false);
+  const [realName, onRealNameChanged] = useStateIfMounted("");
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
@@ -109,7 +117,10 @@ export default function StoreInformation(props) {
       onEditPasswordChanged(false);
       onEditPostalCodeChanged(false);
       onEditPrefectureChanged(false);
+      onEditCorporateNameChanged(false);
       onEditRepresentativeNameChanged(false);
+      onEditNickNameChanged(false);
+      onEditRealNameChanged(false);
     }
     InteractionManager.runAfterInteractions(() => {
       request.get("prefectures/").then(function (response) {
@@ -130,6 +141,8 @@ export default function StoreInformation(props) {
             .get(url)
             .then(function (response) {
               onUserChanged(response.data);
+              onNickNameChanged(response.data.nickname);
+              onRealNameChanged(response.data.real_name);
               onCorporateNameChanged(response.data.corporate_name);
               onRepresentativeNameChanged(response.data.representative_name);
               onPostalCodeChanged(response.data.zipcode);
@@ -173,6 +186,128 @@ export default function StoreInformation(props) {
         accountType={Translate.t("storeAccount")}
       />
       <View style={{ marginTop: heightPercentageToDP("2%") }}>
+        <View style={styles.productInformationContainer}>
+          <Text style={styles.productInformationTitle}>
+            {Translate.t("realName")}
+          </Text>
+          {editRealName == true ? (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginRight: widthPercentageToDP("-3%"),
+                // paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Icon
+                reverse
+                name="check"
+                type="font-awesome"
+                size={RFValue("12")}
+                underlayColor="transparent"
+                color="transparent"
+                reverseColor="black"
+                onPress={() => {
+                  onEditRealNameChanged(false);
+                  updateUser(user, "real_name", realName);
+                }}
+              />
+              <TextInput
+                value={realName}
+                onChangeText={(value) => onRealNameChanged(value)}
+                style={styles.textInput}
+              />
+            </View>
+          ) : (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginRight: widthPercentageToDP("-3%"),
+                // paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Icon
+                reverse
+                name="pencil"
+                type="font-awesome"
+                size={RFValue("12")}
+                underlayColor="transparent"
+                color="transparent"
+                reverseColor="black"
+                onPress={() => onEditRealNameChanged(true)}
+              />
+              <Text style={{ fontSize: RFValue(12) }}>{realName}</Text>
+            </View>
+          )}
+        </View>
+        <View style={styles.productInformationContainer}>
+          <Text style={styles.productInformationTitle}>
+            {Translate.t("name")}
+          </Text>
+          {editNickName == true ? (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginRight: widthPercentageToDP("-3%"),
+                // paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Icon
+                reverse
+                name="check"
+                type="font-awesome"
+                size={RFValue("12")}
+                underlayColor="transparent"
+                color="transparent"
+                reverseColor="black"
+                onPress={() => {
+                  onEditNickNameChanged(false);
+                  updateUser(user, "nickname", nickName);
+                }}
+              />
+              <TextInput
+                value={nickName}
+                onChangeText={(value) => onNickNameChanged(value)}
+                style={styles.textInput}
+              />
+            </View>
+          ) : (
+            <View
+              style={{
+                position: "absolute",
+                right: 0,
+                flexDirection: "row-reverse",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                marginRight: widthPercentageToDP("-3%"),
+                // paddingBottom: heightPercentageToDP("2%"),
+              }}
+            >
+              <Icon
+                reverse
+                name="pencil"
+                type="font-awesome"
+                size={RFValue("12")}
+                underlayColor="transparent"
+                color="transparent"
+                reverseColor="black"
+                onPress={() => onEditNickNameChanged(true)}
+              />
+              <Text style={{ fontSize: RFValue(12) }}>{nickName}</Text>
+            </View>
+          )}
+        </View>
         <View style={styles.productInformationContainer}>
           <Text style={styles.productInformationTitle}>
             {Translate.t("corporateName")}
