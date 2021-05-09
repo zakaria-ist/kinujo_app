@@ -1030,7 +1030,7 @@ export default function ProfileEditingGeneral(props) {
           <TouchableWithoutFeedback
             onPress={() =>
               props.navigation.navigate("ProfileInformation", {
-                is_store: true,
+                is_store: false,
               })
             }
           >
