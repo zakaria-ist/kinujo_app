@@ -395,5 +395,6 @@
   "send": "Send",
   "all": "All",
   "notApproved": "Approve In Process",
-  "unregisteredPhone": "Unregistered phone number"
+  "unregisteredPhone": "Unregistered phone number",
+  "realName": "Name"
 }
