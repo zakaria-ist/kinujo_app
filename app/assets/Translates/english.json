@@ -185,6 +185,8 @@
   "messageReceivedNotification": "Message received notification",
   "mobile": "Mobile",
   "storeName,PersonInCharge,Address": "Store name / person in charge / address",
+  "corporate,representative,Address": "Corporate Name / Representative's Name / Address",
+  "corporatePhoneNumber": "Corporate Phone",
   "corporateName": "Corporate Name",
   "representativeName": "Representative Name",
   "postalCode": "Postal Code",

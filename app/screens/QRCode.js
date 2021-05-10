@@ -557,7 +557,7 @@ export default function QRCode(props) {
                 fontSize: RFValue(15),
               }}
             >
-              {inviteShow ? "App invitation QR code" : "My QR Code"}
+              {inviteShow ? Translate.t("appInviteQR") : Translate.t("QRCode")}
             </Text>
             <View
               style={{

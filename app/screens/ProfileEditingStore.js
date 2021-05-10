@@ -1173,7 +1173,7 @@ export default function ProfileEditingStore(props) {
                       fontSize: RFValue(7),
                     }}
                   >
-                    {Translate.t("allIdentityInfo")}
+                    {Translate.t("corporate,representative,Address")}
                   </Text>
                   <NextArrow style={styles.nextIcon} />
                 </View>

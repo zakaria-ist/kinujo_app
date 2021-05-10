@@ -182,6 +182,7 @@ export default function ChatList(props) {
   // }
   React.useEffect(() => {
     onShowChanged(false);
+    setTotalUnread(0);
   }, [!isFocused]);
   function getUnseenMessageCount(groupID, userID) {
     let userTotalMessageReadField = "totalMessageRead_" + userID;
@@ -294,7 +295,6 @@ export default function ChatList(props) {
         // true values first
         return (x.data[pinQuery] === y.data[pinQuery])? 0 : x.data[pinQuery]? -1 : 1;
     });
-    setTotalUnread(0);
     processChat(chats, ownUserID, true);
   }
 
@@ -650,6 +650,7 @@ export default function ChatList(props) {
         if(this.unsub){
           this.unsub();
         }
+        setTotalUnread(0);
       // }
     }
     InteractionManager.runAfterInteractions(() => {
