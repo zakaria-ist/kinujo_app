@@ -27,6 +27,7 @@ import FooterChat from "./FooterChat.js";
 import ListMessage from "./ListMessage.js";
 import ChatPopup from "./ChatPopup.js";
 import { StyleSheet } from "react-native";
+import messageNotify from "../../lib/messageNotify";
 const alert = new CustomAlert();
 var uuid = require("react-native-uuid");
 
@@ -119,7 +120,14 @@ export default function ChatScreen(props) {
                   timeStamp: firestore.FieldValue.serverTimestamp(),
                   image: url,
                 })
-                .then(function () { });
+                .then(function () { 
+                  messageNotify({
+                    messageSenderID: userId,
+                    groupID,
+                    msg: "Photo"
+                  })
+
+                });
             });
           })
           .catch((error) => { });
@@ -771,6 +779,11 @@ export default function ChatScreen(props) {
           .doc().set(data)
           .then((item) => {
             updateUnseenMessageCount(groupID, userId);
+            messageNotify({
+              messageSenderID: userId,
+              groupID,
+              msg
+            })
           }).catch(err => {
             let newListMsg = newChats.filter(el => el.id != idMsg)
             setChats(newListMsg)

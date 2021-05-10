@@ -8,6 +8,10 @@ import {
   Dimensions,
   TextInput,
   SafeAreaView,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  ScrollView
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -30,6 +34,8 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { useIsFocused } from "@react-navigation/native";
 const request = new Request();
 const alert = new CustomAlert();
+const win = Dimensions.get("window");
+const ratioSearchIcon = win.width / 16 / 19;
 
 function updateUser(user, field, value) {
   if (!value) return;
@@ -40,6 +46,7 @@ function updateUser(user, field, value) {
   } else {
     obj[field] = value;
   }
+  console.log(obj, value)
   request
     .patch(user.url, obj)
     .then(function (response) {
@@ -65,6 +72,7 @@ function updateUser(user, field, value) {
 }
 let controller;
 export default function StoreInformation(props) {
+  const BUTTON_SIZE = 40;
   const [password, onPasswordChanged] = useStateIfMounted("XXXXXXXXXXX STORE");
   const [editPassword, onEditPasswordChanged] = useStateIfMounted(false);
   const [editCorporateName, onEditCorporateNameChanged] = useStateIfMounted(false);
@@ -76,6 +84,8 @@ export default function StoreInformation(props) {
   const [editPrefecture, onEditPrefectureChanged] = useStateIfMounted(false);
   const [editAddress1, onEditAddress1Changed] = useStateIfMounted(false);
   const [editAddress2, onEditAddress2Changed] = useStateIfMounted(false);
+  const [phoneNumber, onPhoneNumberChanged] = useStateIfMounted("");
+  const [editPhoneNumber, onEditPhoneNumberChanged] = useStateIfMounted(false);
   const [corporateName, onCorporateNameChanged] = useStateIfMounted("");
   const [representativeName, onRepresentativeNameChanged] = useStateIfMounted("");
   const [postalCode, onPostalCodeChanged] = useStateIfMounted("");
@@ -88,6 +98,12 @@ export default function StoreInformation(props) {
   const [editNickName, onEditNickNameChanged] = useStateIfMounted(false);
   const [editRealName, onEditRealNameChanged] = useStateIfMounted(false);
   const [realName, onRealNameChanged] = useStateIfMounted("");
+  const [countryHtml, setCountryHtml] = useStateIfMounted(<View></View>);
+  const [showCountry, onShowCountryChanged] = useStateIfMounted(false);
+  const [countryCode, setCountryCode] = useStateIfMounted("");
+  const [callingCode, onCallingCodeChanged] = useStateIfMounted("");
+  const [searchText, setSearchText] = useStateIfMounted("");
+  const [countryCodeHtml, onCountryCodeHtmlChanged] = useStateIfMounted([]);
   const isFocused = useIsFocused();
 
   React.useEffect(() => {
@@ -113,6 +129,53 @@ export default function StoreInformation(props) {
   }, []);
 
   React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      setCountryCode("+81");
+      onCallingCodeChanged("+81");
+    });
+  }, [isFocused]);
+
+  function processCountryHtml(countries) {
+    let html = [];
+    countries.map((country) => {
+      html.push(
+        <TouchableWithoutFeedback
+          onPress={() => {
+            setCountryCode(country.tel_code);
+            onCallingCodeChanged(country.tel_code);
+            AsyncStorage.setItem("selectedCountry", country.tel_code).then(
+              () => {
+                onShowCountryChanged(false);
+              }
+            );
+          }}
+        >
+          <View style={styles.contactListContainer}>
+            <View style={styles.contactTabContainer}>
+              <Text style={styles.contactListName}>
+                {country.name} ({country.tel_code})
+              </Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    });
+    return html;
+  }
+  function closePressed() {
+    onShowCountryChanged(false);
+    setSearchText("");
+  }
+  React.useEffect(() => {
+    InteractionManager.runAfterInteractions(() => {
+      request.get("country_codes/").then(function (response) {
+        countries = response.data;
+        setCountryHtml(processCountryHtml(countries));
+      });
+    });
+  }, [true]);
+
+  React.useEffect(() => {
     if(!isFocused){
       onEditPasswordChanged(false);
       onEditPostalCodeChanged(false);
@@ -121,8 +184,18 @@ export default function StoreInformation(props) {
       onEditRepresentativeNameChanged(false);
       onEditNickNameChanged(false);
       onEditRealNameChanged(false);
+      onEditPhoneNumberChanged(false);
     }
     InteractionManager.runAfterInteractions(() => {
+      request.get("country_codes/").then(function (response) {
+        let tmpCountry = response.data.map((country) => {
+          return {
+            id: country.tel_code,
+            name: country.tel_code,
+          };
+        });
+        onCountryCodeHtmlChanged(tmpCountry);
+      });
       request.get("prefectures/").then(function (response) {
         let tmpPrefectures = response.data.map((prefecture) => {
           return {
@@ -140,6 +213,7 @@ export default function StoreInformation(props) {
           request
             .get(url)
             .then(function (response) {
+              console.log(response.data);
               onUserChanged(response.data);
               onNickNameChanged(response.data.nickname);
               onRealNameChanged(response.data.real_name);
@@ -149,6 +223,18 @@ export default function StoreInformation(props) {
               onPrefectureChanged(response.data.prefecture);
               onAddress1Changed(response.data.address1);
               onAddress2Changed(response.data.address2);
+              if (response.data.corporate_tel_code && response.data.corporate_tel_code != null) {
+                setCountryCode(response.data.corporate_tel_code);
+                onCallingCodeChanged(response.data.corporate_tel_code);
+              } else {
+                setCountryCode("");
+                onCallingCodeChanged("");
+              }
+              if (response.data.corporate_tel) {
+                onPhoneNumberChanged(response.data.corporate_tel);
+              } else {
+                onPhoneNumberChanged("");
+              }
             })
             .catch(function (error) {
               if (
@@ -171,6 +257,54 @@ export default function StoreInformation(props) {
   }, [isFocused]);
   return (
     <SafeAreaView>
+      <Modal visible={showCountry}>
+        <SafeAreaView>
+        <TouchableOpacity onPress={closePressed} style={[styles.button,{backgroundColor: 'white',borderColor: 'white'}]}>
+          <Icon name={'close'} color={'black'} size={BUTTON_SIZE} />
+        </TouchableOpacity>
+          <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+            <View style={styles.searchInputContainer}>
+              <TextInput
+                onPress={() => this.textInput.focus()}
+                ref={(input) => {
+                  this.textInput = input;
+                }}
+                value={searchText}
+                onChangeText={(text) => {
+                  setSearchText(text);
+                  setCountryHtml(
+                    processCountryHtml(
+                      countries.filter((country) => {
+                        return (
+                          country.name
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0 ||
+                          country.tel_code
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0
+                        );
+                      })
+                    )
+                  );
+                }}
+                autoFocus={true}
+                placeholder=""
+                placeholderTextColor={"white"}
+                style={styles.searchContactTextInput}
+              ></TextInput>
+              <Image
+                style={styles.searchIcon}
+                source={require("../assets/Images/searchIcon.png")}
+              />
+            </View>
+          </View>
+          <ScrollView>
+            <View style={{ marginHorizontal: widthPercentageToDP("4%") }}>
+              {countryHtml}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
       <CustomHeader
         onFavoriteChanged="noFavorite"
         onBack={() => {
@@ -370,6 +504,106 @@ export default function StoreInformation(props) {
           )}
         </View>
         <View style={styles.productInformationContainer}>
+            <Text style={styles.textInContainerLeft}>
+              {Translate.t("corporatePhoneNumber")}
+            </Text>
+            {editPhoneNumber == true ? (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="check"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => {
+                    if (phoneNumber) {
+                      onEditPhoneNumberChanged(false);
+                      updateUser(user, "corporate_tel_code", callingCode);
+                      setTimeout(() => {
+                        updateUser(user, "corporate_tel", phoneNumber);
+                      }, 1000);
+                    } else {
+                      alert.warning(Translate.t("fieldEmpty"));
+                    }
+                  }}
+                />
+
+                <TextInput
+                  value={phoneNumber}
+                  onChangeText={(value) => onPhoneNumberChanged(value)}
+                  keyboardType={'numeric'}
+                  style={{
+                    borderRadius: 10,
+                    fontSize: RFValue(11),
+                    borderWidth: 1,
+                    borderColor: "black",
+                    height: heightPercentageToDP("6%"),
+                    width: widthPercentageToDP("27%"),
+                    paddingLeft: widthPercentageToDP("1%")
+                  }}
+                />
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    onShowCountryChanged(true);
+                  }}
+                >
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      padding: 5,
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      width: widthPercentageToDP("23%"),
+                      height: heightPercentageToDP("6%"),
+                      marginRight: widthPercentageToDP("1%")
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: RFValue(10),
+                        paddingLeft: widthPercentageToDP("3%"),
+                      }}
+                    >
+                      {countryCode}
+                    </Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            ) : (
+              <View
+                style={{
+                  position: "absolute",
+                  right: widthPercentageToDP("-4%"),
+                  flexDirection: "row-reverse",
+                  alignItems: "center",
+                }}
+              >
+                <Icon
+                  reverse
+                  name="pencil"
+                  type="font-awesome"
+                  size={RFValue("12")}
+                  underlayColor="transparent"
+                  color="transparent"
+                  reverseColor="black"
+                  onPress={() => onEditPhoneNumberChanged(true)}
+                />
+                <Text style={{ fontSize: RFValue(12) }}>
+                  {callingCode + phoneNumber}
+                </Text>
+              </View>
+            )}
+        </View>
+        <View style={styles.productInformationContainer}>
           <Text style={styles.productInformationTitle}>
             {Translate.t("representativeName")}
           </Text>
@@ -531,60 +765,6 @@ export default function StoreInformation(props) {
           <Text style={styles.productInformationTitle}>
             {Translate.t("prefecture")}
           </Text>
-          {/* {editPrefecture == true ? (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="check"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => {
-                  onEditPrefectureChanged(false);
-                  updateUser(user, "prefecture_id", prefecture);
-                }}
-              />
-              <TextInput
-                value={prefecture}
-                onChangeText={(value) => onPrefectureChanged(value)}
-                style={styles.textInput}
-              />
-            </View>
-          ) : (
-            <View
-              style={{
-                position: "absolute",
-                right: 0,
-                flexDirection: "row-reverse",
-                alignItems: "center",
-                justifyContent: "flex-start",
-                marginRight: widthPercentageToDP("-3%"),
-              }}
-            >
-              <Icon
-                reverse
-                name="pencil"
-                type="font-awesome"
-                size={RFValue("12")}
-                underlayColor="transparent"
-                color="transparent"
-                reverseColor="black"
-                onPress={() => onEditPrefectureChanged(true)}
-              />
-              <Text style={{ fontSize: RFValue(12) }}>{prefecture}</Text>
-            </View>
-          )} */}
           <DropDownPicker
             controller={(instance) => (controller = instance)}
             onOpen={() => onEditPrefectureChanged(true)}
@@ -777,5 +957,50 @@ const styles = StyleSheet.create({
     width: widthPercentageToDP("50%"),
     borderRadius: 7,
     paddingLeft: 10
+  },
+  contactTabContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchContactTextInput: {
+    height: heightPercentageToDP("6%"),
+    paddingLeft: widthPercentageToDP("5%"),
+    paddingRight: widthPercentageToDP("15%"),
+    flex: 1,
+    color: "black",
+    fontSize: RFValue(11),
+    borderWidth: 1,
+    borderColor: "black",
+    borderRadius: win.width / 2,
+  },
+  contactListContainer: {
+    marginTop: heightPercentageToDP("3%"),
+  },
+  searchIcon: {
+    width: win.width / 16,
+    height: 19 * ratioSearchIcon,
+    position: "absolute",
+    right: 0,
+    marginRight: widthPercentageToDP("5%"),
+  },
+  searchInputContainer: {
+    marginTop: heightPercentageToDP("3%"),
+    borderWidth: 1,
+    borderColor: "white",
+    // backgroundColor: "orange",
+    alignItems: "center",
+    flexDirection: "row",
+    borderRadius: win.width / 2,
+    height: heightPercentageToDP("6%"),
+  },
+  contactListImage: {
+    width: RFValue(40),
+    height: RFValue(40),
+    alignSelf: "center",
+    borderRadius: win.width / 2,
+  },
+  contactListName: {
+    fontSize: RFValue(14),
+    marginLeft: widthPercentageToDP("5%"),
   },
 });
