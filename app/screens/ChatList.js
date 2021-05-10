@@ -741,9 +741,9 @@ export default function ChatList(props) {
               alignSelf: "center",
               marginTop: heightPercentageToDP("30%"),
               borderColor: Colors.D7CCA6,
-              alignItems: "flex-start",
-              paddingLeft: widthPercentageToDP("5%"),
-              paddingRight: widthPercentageToDP("25%"),
+              // alignItems: "flex-start",
+              // paddingLeft: widthPercentageToDP("5%"),
+              // paddingRight: widthPercentageToDP("25%"),
             }}
           >
             <View
@@ -751,17 +751,18 @@ export default function ChatList(props) {
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(14) }}>
+              <Text style={{ fontSize: RFValue(14), paddingLeft: 20, paddingRight: 20 }}>
                 {longPressObj ? longPressObj.name : ""}
               </Text>
               <View
                 style={{
                   marginTop: heightPercentageToDP("2%"),
-                  justifyContent: "space-evenly",
-                  height: heightPercentageToDP("35%"),
+                  // justifyContent: "space-evenly",
+                  // height: heightPercentageToDP("35%"),
                 }}
               >
                 <TouchableOpacity
+                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={onUpperFix}
                 >
                   <Text style={styles.longPressText}>
@@ -769,6 +770,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={() => {
                     let update = {};
                     update["notify_" + ownUserID] =
@@ -791,6 +793,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={() => {
                     let update = {};
                     update["hide_" + ownUserID] =
@@ -808,6 +811,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={() => {
                     let update = {};
                     update["delete_" + ownUserID] =
@@ -825,6 +829,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={{paddingLeft: 20, paddingVertical: 15}}
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -848,6 +853,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={{paddingLeft: 20, paddingVertical: 15}}
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
