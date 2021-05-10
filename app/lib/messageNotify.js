@@ -1,9 +1,3 @@
-// const functions = require("firebase-functions");
-// const admin = require("firebase-admin");
-// const { document } = require("firebase-functions/lib/providers/firestore");
-// const { user } = require("firebase-functions/lib/providers/auth");
-
-// admin.initializeApp();
 import firestore from '@react-native-firebase/firestore'
 import functions from '@react-native-firebase/functions'
 const db = firestore();
@@ -114,11 +108,13 @@ export default async function messageNotify({ messageSenderID, groupID, msg }) {
     await Promise.all(userPromise)
 
     console.log('====================================');
-    console.log('==list token', tokens, msg, ' duration ', (new Date().getTime() - time) / 1000, 's');
+    console.log('==list token', tokens, msg, ' duration ', logTime({
+        time, label: 'end of function'
+    }));
     console.log('====================================');
 
 
-    tokens.length && functions().httpsCallable('addMessage')({
+    tokens.length && functions().httpsCallable('messageNotification')({
         tokens,
         notiData: payload
     }).then(rs => {
@@ -130,8 +126,5 @@ export default async function messageNotify({ messageSenderID, groupID, msg }) {
         console.log('==error', err);
         console.log('====================================');
     })
-
-    // admin.messaging()
-    //     .sendToDevice(tokens, payload, options);
 }
 
