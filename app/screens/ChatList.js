@@ -182,6 +182,7 @@ export default function ChatList(props) {
   // }
   React.useEffect(() => {
     onShowChanged(false);
+    setTotalUnread(0);
   }, [!isFocused]);
   function getUnseenMessageCount(groupID, userID) {
     let userTotalMessageReadField = "totalMessageRead_" + userID;
@@ -294,7 +295,6 @@ export default function ChatList(props) {
         // true values first
         return (x.data[pinQuery] === y.data[pinQuery])? 0 : x.data[pinQuery]? -1 : 1;
     });
-    setTotalUnread(0);
     processChat(chats, ownUserID, true);
   }
 
@@ -650,6 +650,7 @@ export default function ChatList(props) {
         if(this.unsub){
           this.unsub();
         }
+        setTotalUnread(0);
       // }
     }
     InteractionManager.runAfterInteractions(() => {
@@ -749,9 +750,9 @@ export default function ChatList(props) {
               alignSelf: "center",
               marginTop: heightPercentageToDP("30%"),
               borderColor: Colors.D7CCA6,
-              // alignItems: "flex-start",
-              // paddingLeft: widthPercentageToDP("5%"),
-              // paddingRight: widthPercentageToDP("25%"),
+              alignItems: "flex-start",
+              paddingLeft: widthPercentageToDP("5%"),
+              paddingRight: widthPercentageToDP("25%"),
             }}
           >
             <View
@@ -759,18 +760,17 @@ export default function ChatList(props) {
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(14), paddingLeft: 20, paddingRight: 20 }}>
+              <Text style={{ fontSize: RFValue(14) }}>
                 {longPressObj ? longPressObj.name : ""}
               </Text>
               <View
                 style={{
                   marginTop: heightPercentageToDP("2%"),
-                  // justifyContent: "space-evenly",
-                  // height: heightPercentageToDP("35%"),
+                  justifyContent: "space-evenly",
+                  height: heightPercentageToDP("35%"),
                 }}
               >
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={onUpperFix}
                 >
                   <Text style={styles.longPressText}>
@@ -778,7 +778,6 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={() => {
                     let update = {};
                     update["notify_" + ownUserID] =
@@ -801,7 +800,6 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={() => {
                     let update = {};
                     update["hide_" + ownUserID] =
@@ -819,7 +817,6 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
                   onPress={() => {
                     let update = {};
                     update["delete_" + ownUserID] =
@@ -837,7 +834,6 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -861,7 +857,6 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);

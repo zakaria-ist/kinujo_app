@@ -37,6 +37,7 @@ import "firebase/firestore";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import Shop from "../assets/icons/shop.svg";
 import i18n from "i18n-js";
+import imageHelper from "../lib/imageHelper";
 const db = firebase.firestore();
 var kanjidate = require("kanjidate");
 import Format from "../lib/format";
@@ -117,9 +118,17 @@ export default function PurchaseHistory(props) {
     let tmpOrderHtml = [];
     for (var i = 0; i < orders.length; i++) {
       let order = orders[i];
-      // if (getProductImages(order).length > 0) {
-      //   console.log(getProductImages(order)[0].image.image);
-      // }
+      let thisProduct = order && order.product_jan_code ?
+      order.product_jan_code.horizontal.product_variety.product :
+      order.product_jan_code.vertical.product_variety.product
+      let productUrl = thisProduct ? thisProduct.url : "";
+      let productImage = thisProduct.productImages.filter((image) => {
+        return image.is_hidden == 0 && image.image.is_hidden == 0;
+      });
+      productImage = productImage.map(img=>{
+        return imageHelper.getOriginalImage(img?.image?.image)
+      })
+
       let orderDate = new Date(order.order.created).yyyymmdd();
       let year = new Date(order.order.created).getFullYear();
       if (defaultLanguage == 'ja') {
@@ -156,53 +165,61 @@ export default function PurchaseHistory(props) {
               } */}
             </Text>
             <View style={styles.purchaseHistoryProductContainer}>
-              <View style={styles.productInformationContainer}>
-                {getProductImages(order).length > 0 ? (
-                  <Image
+            <TouchableWithoutFeedback
+                onPress={() => {
+                  props.navigation.navigate("HomeStoreList", {
+                    url: productUrl,
+                    image: productImage.length > 0 ? productImage : [],
+                  });
+                }}
+              >
+                <View style={styles.productInformationContainer}>
+                  {productImage.length > 0 ? (
+                    <Image
+                      style={{
+                        height: RFValue(45),
+                        width: RFValue(45),
+                      }}
+                      source={{ uri: productImage[0] }}
+                    />
+                  ) : (
+                    <Image
+                      style={{
+                        height: RFValue(45),
+                        width: RFValue(45),
+                      }}
+                      source={require("../assets/Images/cover_img.jpg")}
+                    />
+                  )}
+
+                  <View
                     style={{
-                      height: RFValue(45),
-                      width: RFValue(45),
+                      marginLeft: widthPercentageToDP("3%"),
+
+                      width: widthPercentageToDP("57%"),
                     }}
-                    source={{ uri: getProductImages(order)[0].image.image }}
-                  />
-                ) : (
-                  <Image
+                  >
+                    <Text style={styles.productInformationText}>
+                      {order.product_jan_code.horizontal
+                        ? order.product_jan_code.horizontal.product_variety
+                            .product.name
+                        : order.product_jan_code.vertical.product_variety.product
+                            .name}
+                    </Text>
+                    <Text>{format.separator(order.order.total_amount)} 円</Text>
+                    {/* <Text>{format.separator(order.total_price)} 円</Text> */}
+                  </View>
+                  <View
                     style={{
-                      height: RFValue(45),
-                      width: RFValue(45),
+                      position: "absolute",
+                      right: 0,
+                      marginRight: widthPercentageToDP("3%"),
                     }}
-                    source={require("../assets/Images/cover_img.jpg")}
-                  />
-                )}
-
-                <View
-                  style={{
-                    marginLeft: widthPercentageToDP("3%"),
-
-                    width: widthPercentageToDP("57%"),
-                  }}
-                >
-                  <Text style={styles.productInformationText}>
-                    {order.product_jan_code.horizontal
-                      ? order.product_jan_code.horizontal.product_variety
-                          .product.name
-                      : order.product_jan_code.vertical.product_variety.product
-                          .name}
-                  </Text>
-                  <Text>{format.separator(order.order.total_amount)} 円</Text>
-                  {/* <Text>{format.separator(order.total_price)} 円</Text> */}
+                  >
+                    <Next style={styles.nextIcon} />
+                  </View>
                 </View>
-                <View
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    marginRight: widthPercentageToDP("3%"),
-                  }}
-                >
-                  <Next style={styles.nextIcon} />
-                </View>
-              </View>
-
+              </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
                 onPress={() => {
                   lastId = 0;
@@ -210,7 +227,7 @@ export default function PurchaseHistory(props) {
                   props.navigation.navigate("PurchaseHistoryDetails", {
                     url: order.url,
                     order: order,
-                    image: getProductImages(order)[0].image.image,
+                    image: productImage.length > 0 ? productImage[0] : [],
                     orderDate: orderDate
                   });
                 }}

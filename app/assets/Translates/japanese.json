@@ -184,6 +184,8 @@
   "askLogin": "既にアカウントをお持ちの方は下記よりログインしてください",
   "confirm_logout" : "ログアウトしますか？",
   "storeName,PersonInCharge,Address": "店舗名・担当者名・住所",
+  "corporate,representative,Address": "法人名・代表者名・住所",
+  "corporatePhoneNumber": "法人電話番号",
   "corporateName": "法人名",
   "representativeName": "法人代表者名",
   "image_allowed": "画像のみ許可 ",
