@@ -610,13 +610,53 @@ export default function ChatScreen(props) {
     })
   }
 
+  async function updateUserLastMessage(groupID, isCancelAll) {
+    let groupData = await db.collection("chat").doc(groupID).get();
+    groupData = groupData.data();
+    let chatMessages = [];
+    await db.collection("chat").doc(groupID).collection("messages").orderBy("timeStamp", "desc").limit(100).get().then((querySnapShot) => {
+      querySnapShot.docs.map((snapShot) => {
+        chatMessages.push(snapShot.data())
+      })
+    })
+    let users = [];
+    if (isCancelAll === true) {
+      users.push(userId);
+    } else {
+      users = groupData.users;
+    }
+    for (var i = 0; i < users.length; i++) {
+      let userLastMessageField = "lastMessage_" + users[i];
+      let userLastMessageTimeField = "lastMessageTime_" + users[i];
+      let userLastMessageTimeStampField = "lastMessageTimeStamp_" + users[i];
+      if (longPressObj.data.createdAt == groupData[userLastMessageTimeField] &&
+        longPressObj.message == groupData[userLastMessageField]) {
+          console.log("LAST MESSSAGE TRUE", "users[i]", users[i], longPressObj.message);
+          console.log('chatMessage', chatMessages.length);
+          let filtered = chatMessages.filter( el => !el?.delete && !el?.[`delete_${users[i]}`] )
+          console.log('filtered', filtered.length);
+          let newLastMessage = filtered[0];
+          if (newLastMessage) {
+            await db.collection("chat").doc(groupID).set({
+              [userLastMessageField]: newLastMessage.message,
+              [userLastMessageTimeField]: newLastMessage.createdAt,
+              [userLastMessageTimeStampField]: newLastMessage.timeStamp,
+            },{
+              merge: true,
+            });
+          }
+        } else {
+          console.log("LAST MESSSAGE FALSE", "users[i]", users[i], longPressObj.message);
+        }
+    }
+  }
 
   const onCancel = (isCancelAll) => {
 
-    let query = `delete_${userId}`
+    let query = "delete";
 
     if (isCancelAll === true) {
-      query = "delete"
+      query = `delete_${userId}`;
     }
     let update = {};
     update[query] = true
@@ -629,8 +669,10 @@ export default function ChatScreen(props) {
       .doc(longPressObj.id)
       .set(update, {
         merge: true,
+      })
+      .then(() => {
+        updateUserLastMessage(groupID, isCancelAll);
       });
-
     chats = chats.map((chat) => {
       if (chat.id == longPressObj.id) {
         chat.data[query] = update[query]

@@ -663,7 +663,7 @@ export default function CustomerInformation(props) {
                       alignSelf: "center",
                     }}
                   >
-                    Save
+                    {Translate.t("save")}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>

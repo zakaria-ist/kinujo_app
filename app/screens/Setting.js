@@ -519,7 +519,7 @@ export default function Setting(props) {
           >
             <View style={styles.tabContainer}>
               <Text style={styles.textInContainerLeft}>
-                {Translate.t("personalInformation")}
+                {props.route.params.is_store ? Translate.t("storeInformation") : Translate.t("personalInformation")}
               </Text>
               <View
                 style={{
