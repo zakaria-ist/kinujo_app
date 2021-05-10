@@ -519,7 +519,7 @@ export default function Setting(props) {
           >
             <View style={styles.tabContainer}>
               <Text style={styles.textInContainerLeft}>
-                {Translate.t("personalInformation")}
+                {props.route.params.is_store ? Translate.t("storeInformation") : Translate.t("personalInformation")}
               </Text>
               <View
                 style={{
@@ -535,7 +535,7 @@ export default function Setting(props) {
                     alignSelf: "center",
                   }}
                 >
-                  {Translate.t("storeName,PersonInCharge,Address")}
+                  {props.route.params.is_store ? Translate.t("corporate,representative,Address") : Translate.t("storeName,PersonInCharge,Address")}
                 </Text>
                 <NextArrow style={styles.nextIcon} />
               </View>
