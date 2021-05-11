@@ -76,8 +76,11 @@ export default function Contact(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          if (snapShot.doc.data().type != "group") {
+          if (
+            snapShot.doc.data().type != "groups" &&
+            snapShot.doc.data().users.length == 2
+          ) {
+            let users = snapShot.doc.data().users;
             for (var i = 0; i < users.length; i++) {
               if (users[i] == friendID) {
                 groupID = snapShot.doc.id;
@@ -186,13 +189,6 @@ export default function Contact(props) {
       if(contactPinned[a.id] && contactPinned[b.id]){
         return contactPinned[a.id] > contactPinned[b.id] ? -1 : 1
       }
-      // if (!contactPinned[a.id] && contactPinned[b.id]) {
-      //   return true;
-      // }
-      // if (contactPinned[a.id] && !contactPinned[b.id]) {
-      //   return false;
-      // }
-      // return a.show_name > b.show_name;
       return (contactPinned[a.id] === contactPinned[b.id])? 0 : contactPinned[a.id]? -1 : 1;
     });
 
@@ -450,12 +446,18 @@ export default function Contact(props) {
           let ids = [];
           let items = [];
           let deleteIds = [];
+          contactNotify = {};
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
+            console.log('item', item);
             if (!item["delete"]) {
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"] ? item["pinnedTime"] : false;
-              contactNotify[item.id] = item["notify"];
+              if (String(item.id) in contactNotify && contactNotify[String(item.id)] == undefined) {
+                contactNotify[String(item.id)] = item["notify"];
+              } else if(String(item.id) in contactNotify == false) {
+                contactNotify[String(item.id)] = item["notify"];
+              }
             }
 
             if (item["delete"]) {
@@ -1028,7 +1030,6 @@ export default function Contact(props) {
                               })
                           } else {
                             querySnapshot.forEach((snapShot) => {
-                              console.log(contactNotify[snapShot.data().id])
                               let notification = snapShot.data().notify;
                               if (notification == null || notification == undefined) {
                                 notification = false;
@@ -1058,12 +1059,12 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "folder") {
                       let update = {};
                       update["notify"] =
-                        longPressObj.data.data["notify"] == "" ||
-                        longPressObj.data.data["notify"]
-                          ? false
-                          : true;
+                        longPressObj.data.data["notify"] == false
+                          ? true
+                          : false;
+                      
                       db.collection("users")
-                        .doc(userId)
+                        .doc(String(userId))
                         .collection("folders")
                         .doc(longPressObj.data.id.toString())
                         .set(update, {
@@ -1074,13 +1075,12 @@ export default function Contact(props) {
                         });
                     } else if (longPressObj.type == "group") {
                       let update = {};
-                      console.log(longPressObj.data.data["notify_" + userId])
                       update["notify_" + userId] =
                         longPressObj.data.data["notify_" + userId] == false
                           ? true
                           : false;
                       db.collection("chat")
-                        .doc(longPressObj.data.id)
+                        .doc(longPressObj.data.id.toString())
                         .set(update, {
                           merge: true,
                         })
@@ -1098,8 +1098,9 @@ export default function Contact(props) {
                     {Translate.t("notification")}{" "}
                     {longPressObj &&
                     longPressObj.data &&
-                    ((longPressObj.type == "user" && contactNotify[longPressObj.data['id']] == false) || 
-                    (longPressObj.type != "user" && longPressObj.data.data["notify_" + userId] == false))
+                    ((longPressObj.type == "user" && contactNotify[String(longPressObj.data['id'])] == false) || 
+                    (longPressObj.type == "folder" && longPressObj.data.data["notify"] == false) ||
+                    (longPressObj.type == "group" && longPressObj.data.data["notify_" + userId] == false))
                       ? "ON"
                       : "OFF"}
                   </Text>
@@ -1202,10 +1203,9 @@ export default function Contact(props) {
                                 .set(
                                   {
                                     delete:
-                                      longPressObj.data["delete"] == "" ||
-                                      longPressObj.data["delete"]
-                                        ? false
-                                        : true,
+                                    documentSnapshot.data().delete == false
+                                        ? true
+                                        : false,
                                   },
                                   {
                                     merge: true,
@@ -1220,10 +1220,9 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "folder") {
                       let update = {};
                       update["delete"] =
-                        longPressObj.data.data["delete"] == "" ||
-                        longPressObj.data.data["delete"]
-                          ? false
-                          : true;
+                      longPressObj.data.data["delete"] == false
+                        ? true
+                        : false;
                       db.collection("users")
                         .doc(userId)
                         .collection("folders")
@@ -1237,12 +1236,11 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "group") {
                       let update = {};
                       update["delete_" + userId] =
-                        longPressObj.data.data["delete_" + userId] == "" ||
-                        longPressObj.data.data["delete_" + userId]
-                          ? false
-                          : true;
+                        longPressObj.data.data["delete_" + userId] == false
+                          ? true
+                          : false;
                       db.collection("chat")
-                        .doc(longPressObj.data.id)
+                        .doc(longPressObj.data.id.toString())
                         .set(update, {
                           merge: true,
                         })
