@@ -558,7 +558,7 @@ export default function ChatScreen(props) {
       onNameChanged(props.route.params.groupName);
     }
 
-    InteractionManager.runAfterInteractions(() => {
+    // InteractionManager.runAfterInteractions(() => {
       chatsRef
         .doc(groupID)
         .get()
@@ -570,7 +570,7 @@ export default function ChatScreen(props) {
           }
         })
         .then(function () { });
-    });
+    // });
 
     return function () {
       if (this?.unsub) {

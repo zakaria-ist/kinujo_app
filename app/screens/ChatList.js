@@ -38,6 +38,7 @@ import Request from "../lib/request";
 import Clipboard from "@react-native-community/clipboard";
 import moment from 'moment-timezone';
 import * as Localization from "expo-localization";
+import commonHelper from "../lib/commonHelper.js";
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -78,6 +79,8 @@ function getDate(string) {
     items[5]
   );
 }
+
+let listTempNoti = {}
 
 async function getDetail(ownId, snapShotId, data) {
   try{
@@ -289,7 +292,12 @@ export default function ChatList(props) {
       }
 
       if(!x?.data[pinQuery] && !y.data[pinQuery]){
-        return x.timeStamp > y.timeStamp ? -1 : 1
+
+        return commonHelper.compare2arr(
+          x?.data?.lastMessageTime,
+          y?.data?.lastMessageTime
+        )
+        // return x.timeStamp > y.timeStamp ? -1 : 1
       }
 
         // true values first
@@ -675,6 +683,7 @@ export default function ChatList(props) {
     });
 
     return function () {
+      listTempNoti={}
       chats = [];
       onChatHtmlChanged([]);
       if (gUnsubscribe) {
@@ -697,6 +706,9 @@ export default function ChatList(props) {
       });
       onShowChanged(false);
     }
+
+    let notiKey = "notify_" + ownUserID
+    let notiEnable = listTempNoti[notiKey] !== undefined ? listTempNoti[notiKey] :  longPressObj?.data?.[notiKey]
 
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
@@ -781,10 +793,10 @@ export default function ChatList(props) {
                 <TouchableOpacity
                   onPress={() => {
                     let update = {};
-                    update["notify_" + ownUserID] =
-                      longPressObj.data["notify_" + ownUserID] == false
-                        ? true
-                        : false;
+
+                  update[notiKey] = !notiEnable
+
+                      listTempNoti[notiKey] = !notiEnable
                     db.collection("chat").doc(longPressObj.id).set(update, {
                       merge: true,
                     });
@@ -793,11 +805,9 @@ export default function ChatList(props) {
                 >
                   <Text style={styles.longPressText}>
                     {Translate.t("notification")}{" "}
-                    {longPressObj &&
-                    longPressObj.data &&
-                    longPressObj.data["notify_" + ownUserID] == false
-                      ? "ON"
-                      : "OFF"}
+                    {notiEnable
+                      ? "OFF"
+                      : "ON"}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
