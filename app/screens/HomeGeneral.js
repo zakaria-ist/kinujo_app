@@ -346,7 +346,7 @@ export default function Home(props) {
                     tokenID: deviceToken,
                   })
                   .then(() => {
-                    console.log("tokenID successfully written!");
+                    console.log("tokenID successfully written!", deviceToken);
                   })
                   .catch((error) => {
                     console.error("Error writing tokenID: ", error);
