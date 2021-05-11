@@ -248,14 +248,16 @@ export default function PurchaseHistory(props) {
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
-                onPress={() =>
+                onPress={() => {
+                  console.log('sellerID', order.order.seller.id);
+                  console.log('sellerNAME', order.order.seller.store_name ? order.order.seller.store_name : order.order.seller.nickname);
                   redirectToChat(
                     order.order.seller.id,
                     order.order.seller.store_name
                       ? order.order.seller.store_name
                       : order.order.seller.nickname
                   )
-                }
+                }}
               >
                 <View style={styles.productInformationContainer}>
                   <Text style={styles.productInformationText}>
@@ -308,10 +310,15 @@ export default function PurchaseHistory(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == orderID) {
-              groupID = snapShot.doc.id;
+          if (
+            snapShot.doc.data().type != "groups" &&
+            snapShot.doc.data().users.length == 2
+          ) {
+            let users = snapShot.doc.data().users;
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == orderID) {
+                groupID = snapShot.doc.id;
+              }
             }
           }
         });

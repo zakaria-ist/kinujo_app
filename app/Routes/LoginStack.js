@@ -106,12 +106,17 @@ function BottomNavigationGeneral(props) {
           .get(url)
           .then(function (response) {
             if (response.data.is_approved && response.data.is_seller && response.data.authority.id == 4) {
-              alert.warning(Translate.t("account_approved"), () => {
-                // props.navigation.navigate("HomeStore");
-                props.navigation.reset({
-                  index: 0,
-                  routes: [{ name: "HomeStore" }],
-                });
+              AsyncStorage.getItem("approval").then(function (approval) {
+                if (!approval) {
+                  AsyncStorage.setItem("approval", "done").then(() => {});
+                  alert.warning(Translate.t("account_approved"), () => {
+                    // props.navigation.navigate("HomeStore");
+                    props.navigation.reset({
+                      index: 0,
+                      routes: [{ name: "HomeStore" }],
+                    });
+                  })
+                }
               })
             }
           })

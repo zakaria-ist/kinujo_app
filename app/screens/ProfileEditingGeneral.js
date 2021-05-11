@@ -748,7 +748,24 @@ export default function ProfileEditingGeneral(props) {
                 </Text>
               </View>
             </View>
-          : []}
+          : 
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: heightPercentageToDP("2%"),
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: RFValue(10),
+                  marginLeft: widthPercentageToDP("5%"),
+                }}
+              >
+                KINUJO ID : {user.user_code}
+              </Text>
+            </View>
+          }
 
           {/* ALL TABS CONTAINER */}
           <View style={{ marginTop: heightPercentageToDP("3%") }}>

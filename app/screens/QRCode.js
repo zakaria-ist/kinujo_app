@@ -162,14 +162,47 @@ export default function QRCode(props) {
         .collection("friends")
         .get()
         .then((querySnapshot) => {
-          let existing_friend = []
+          let found = false;
+          let existing_friend = 'no';
           querySnapshot.forEach(documentSnapshot => {
-            existing_friend.push(documentSnapshot.data().id)
+            console.log(documentSnapshot.data())
+            if (documentSnapshot.data().id == code.toString()) {
+              if(documentSnapshot.data().delete == true) {
+                db.collection("users")
+                  .doc(String(userId))
+                  .collection("friends")
+                  .doc(documentSnapshot.id.toString())
+                  .set(
+                    {
+                      delete: false,
+                    },
+                    {
+                      merge: true,
+                    }
+                  )
+                  .then(() => {
+                    existing_friend = 'deleted';
+                    Alert.alert(
+                      Translate.t("information"),
+                      Translate.t("friendAdded"),
+                      [
+                        {
+                          text: "OK",
+                          onPress: () => {},
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  });
+              } else {
+                existing_friend = 'yes';
+              }
+            }
           });
 
-          if(existing_friend.includes(code.toString())) {
+          if(existing_friend == 'yes') {
             alert.warning(Translate.t('friendAlreadyExist'));
-          } else {
+          } else if(existing_friend == 'no'){
             request.addFriend(userId, code).then(() => {
               request.addFriend(code, userId).then(() => {
                 Alert.alert(
