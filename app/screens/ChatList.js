@@ -38,6 +38,7 @@ import Request from "../lib/request";
 import Clipboard from "@react-native-community/clipboard";
 import moment from 'moment-timezone';
 import * as Localization from "expo-localization";
+import commonHelper from "../lib/commonHelper.js";
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -289,7 +290,12 @@ export default function ChatList(props) {
       }
 
       if(!x?.data[pinQuery] && !y.data[pinQuery]){
-        return x.timeStamp > y.timeStamp ? -1 : 1
+
+        return commonHelper.compare2arr(
+          x?.data?.lastMessageTime,
+          y?.data?.lastMessageTime
+        )
+        // return x.timeStamp > y.timeStamp ? -1 : 1
       }
 
         // true values first
