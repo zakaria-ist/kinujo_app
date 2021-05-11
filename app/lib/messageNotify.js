@@ -57,10 +57,6 @@ export default async function messageNotify({ messageSenderID, groupID, msg }) {
             badge: '1'
         },
     };
-    const options = {
-        priority: "high",
-    };
-
     let tokens = []
 
     // loop all user in group chat
@@ -86,10 +82,8 @@ export default async function messageNotify({ messageSenderID, groupID, msg }) {
                 }
             });
             customers.docs.map((docRef) => {
-                functions.logger.log("customer", docRef.id);
                 if (docRef.id == String(messageSenderID)) {
                     blocked = docRef.data().blockMode ? true : false;
-                    functions.logger.log("customer[blockMode]", blocked);
                 }
             });
 
