@@ -13,7 +13,8 @@ import {
   TouchableNativeFeedback,
   SafeAreaView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  ScrollView
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
@@ -254,6 +255,7 @@ export default function CustomerInformation(props) {
         }}
         text={notViewPageHeader ? '' :Translate.t("customerInformation") }
       />
+      <ScrollView>
       <View>
         <ImageBackground
           style={{
@@ -297,7 +299,7 @@ export default function CustomerInformation(props) {
               fontSize: RFValue(15),
             }}
           >
-            {inviteShow ? "App invitation QR code" : "My QR Code"}
+            {inviteShow ? Translate.t("appInviteQR") : Translate.t("QRCode")}
           </Text>
           <View
             style={{
@@ -328,6 +330,7 @@ export default function CustomerInformation(props) {
         style={{
           marginTop: heightPercentageToDP("-5%"),
           width: widthPercentageToDP("100%"),
+          paddingBottom: widthPercentageToDP("25%"),
           left: 0,
         }}
       >
@@ -672,6 +675,7 @@ export default function CustomerInformation(props) {
         </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
       </Modal>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -500,8 +500,11 @@ export default function HomeStoreList(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          if (snapShot.doc.data().type != "group") {
+          if (
+            snapShot.doc.data().type != "groups" &&
+            snapShot.doc.data().users.length == 2
+          ) {
+            let users = snapShot.doc.data().users;
             for (var i = 0; i < users.length; i++) {
               if (users[i] == friendID) {
                 groupID = snapShot.doc.id;

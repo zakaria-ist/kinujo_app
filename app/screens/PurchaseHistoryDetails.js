@@ -120,10 +120,15 @@ export default function PurchaseHistoryDetails(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == orderID) {
-              groupID = snapShot.doc.id;
+          if (
+            snapShot.doc.data().type != "groups" &&
+            snapShot.doc.data().users.length == 2
+          ) {
+            let users = snapShot.doc.data().users;
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == orderID) {
+                groupID = snapShot.doc.id;
+              }
             }
           }
         });

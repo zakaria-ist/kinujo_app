@@ -143,11 +143,7 @@ export default function StoreInformation(props) {
           onPress={() => {
             setCountryCode(country.tel_code);
             onCallingCodeChanged(country.tel_code);
-            AsyncStorage.setItem("selectedCountry", country.tel_code).then(
-              () => {
-                onShowCountryChanged(false);
-              }
-            );
+            onShowCountryChanged(false);
           }}
         >
           <View style={styles.contactListContainer}>
@@ -227,7 +223,7 @@ export default function StoreInformation(props) {
                 setCountryCode(response.data.corporate_tel_code);
                 onCallingCodeChanged(response.data.corporate_tel_code);
               } else {
-                setCountryCode("");
+                setCountryCode("+81");
                 onCallingCodeChanged("");
               }
               if (response.data.corporate_tel) {
@@ -305,6 +301,7 @@ export default function StoreInformation(props) {
           </ScrollView>
         </SafeAreaView>
       </Modal>
+      
       <CustomHeader
         onFavoriteChanged="noFavorite"
         onBack={() => {
@@ -315,11 +312,13 @@ export default function StoreInformation(props) {
         }}
         text={Translate.t("storeInformation")}
       />
+      <ScrollView>
       <CustomSecondaryHeader outUser={user} props={props}
         name={user.nickname}
         accountType={Translate.t("storeAccount")}
       />
-      <View style={{ marginTop: heightPercentageToDP("2%") }}>
+      
+      <View style={{ marginTop: heightPercentageToDP("2%"), paddingBottom: widthPercentageToDP("25%") }}>
         <View style={styles.productInformationContainer}>
           <Text style={styles.productInformationTitle}>
             {Translate.t("realName")}
@@ -926,6 +925,7 @@ export default function StoreInformation(props) {
           )}
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

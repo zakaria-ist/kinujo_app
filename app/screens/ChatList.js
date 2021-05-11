@@ -642,7 +642,8 @@ export default function ChatList(props) {
     this.unsub = chatRef
       .where("users", "array-contains", String(ownUserID))
       .onSnapshot((querySnapShot) => {
-        if(!isFocused) return
+        if(!isFocused) return;
+        setTotalUnread(0);
         processQuerySnapshot(querySnapShot).then(()=>{
 
         }).catch((error)=>{
