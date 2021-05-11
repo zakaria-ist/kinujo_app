@@ -80,6 +80,8 @@ function getDate(string) {
   );
 }
 
+let listTempNoti = {}
+
 async function getDetail(ownId, snapShotId, data) {
   try{
     let timeStamp;
@@ -680,6 +682,7 @@ export default function ChatList(props) {
     });
 
     return function () {
+      listTempNoti={}
       chats = [];
       onChatHtmlChanged([]);
       if (gUnsubscribe) {
@@ -702,6 +705,9 @@ export default function ChatList(props) {
       });
       onShowChanged(false);
     }
+
+    let notiKey = "notify_" + ownUserID
+    let notiEnable = listTempNoti[notiKey] !== undefined ? listTempNoti[notiKey] :  longPressObj?.data?.[notiKey]
 
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
@@ -786,10 +792,10 @@ export default function ChatList(props) {
                 <TouchableOpacity
                   onPress={() => {
                     let update = {};
-                    update["notify_" + ownUserID] =
-                      longPressObj.data["notify_" + ownUserID] == false
-                        ? true
-                        : false;
+
+                  update[notiKey] = !notiEnable
+
+                      listTempNoti[notiKey] = !notiEnable
                     db.collection("chat").doc(longPressObj.id).set(update, {
                       merge: true,
                     });
@@ -798,11 +804,9 @@ export default function ChatList(props) {
                 >
                   <Text style={styles.longPressText}>
                     {Translate.t("notification")}{" "}
-                    {longPressObj &&
-                    longPressObj.data &&
-                    longPressObj.data["notify_" + ownUserID] == false
-                      ? "ON"
-                      : "OFF"}
+                    {notiEnable
+                      ? "OFF"
+                      : "ON"}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
