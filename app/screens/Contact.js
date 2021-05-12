@@ -1016,7 +1016,8 @@ export default function Contact(props) {
                       db.collection("users")
                         .doc(String(userId))
                         .collection("friends")
-                        .where("id", "==", longPressObj.data.id)
+                        .where("id", 'in', [Number(longPressObj.data.id), String(longPressObj.data.id)])
+                        // .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
                           if(querySnapshot.size == 0){
@@ -1024,15 +1025,16 @@ export default function Contact(props) {
                               .doc(String(userId))
                               .collection("friends").add({
                                 "notify" : false,
-                                "id" : longPressObj.data.id
+                                "id" : String(longPressObj.data.id)
                               }).then(() => {
                                 populateUser();
                               })
                           } else {
                             querySnapshot.forEach((snapShot) => {
-                              let notification = snapShot.data().notify;
-                              if (notification == null || notification == undefined) {
-                                notification = false;
+                              // let notification = snapShot.data().notify;
+                              let notification = contactNotify[String(longPressObj.data['id'])];
+                              if (notification === '' || notification === null || notification === undefined) {
+                                notification = true;
                               }
                               // alert.warning(snapShot.id);
                               db.collection("users")
@@ -1085,7 +1087,6 @@ export default function Contact(props) {
                           merge: true,
                         })
                         .then(() => {
-                          console.log("DONE")
                           populateGroup();
                         }).catch((error)=>{
                           console.log(error)
