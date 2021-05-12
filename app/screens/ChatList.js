@@ -794,9 +794,9 @@ export default function ChatList(props) {
                   onPress={() => {
                     let update = {};
 
-                  update[notiKey] = !notiEnable
+                    update[notiKey] = !notiEnable
 
-                      listTempNoti[notiKey] = !notiEnable
+                    listTempNoti[notiKey] = !notiEnable
                     db.collection("chat").doc(longPressObj.id).set(update, {
                       merge: true,
                     });
