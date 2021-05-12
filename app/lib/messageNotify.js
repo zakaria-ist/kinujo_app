@@ -61,10 +61,12 @@ export default async function messageNotify({ messageSenderID, groupID, msg }) {
 
     // loop all user in group chat
     const userPromise = groupData.users.map(async user => {
-        let notificationStatus = "notify_" + user;
-
-        if (user != messageSenderID && !groupData[notificationStatus]) {
-
+        let notificationUser = "notify_" + user;
+        let notificationStatus = groupData[notificationUser];
+        if (notificationStatus === '' || notificationStatus === null || notificationStatus === undefined) {
+            notificationStatus = true;
+          }
+        if (String(user) != String(messageSenderID) && notificationStatus) {
             let [friends, customers, userToken] = await Promise.all([
                 getFriendPromise(user, messageSenderID),
                 getCustomerPromise(user),
