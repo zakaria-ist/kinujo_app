@@ -162,11 +162,10 @@ export default function QRCode(props) {
         .collection("friends")
         .get()
         .then((querySnapshot) => {
-          let found = false;
           let existing_friend = 'no';
           querySnapshot.forEach(documentSnapshot => {
             console.log(documentSnapshot.data())
-            if (documentSnapshot.data().id == code.toString()) {
+            if (documentSnapshot.data().id.toString() == code.toString()) {
               if(documentSnapshot.data().delete == true) {
                 db.collection("users")
                   .doc(String(userId))
