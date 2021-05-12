@@ -121,6 +121,7 @@ export default function ChatScreen(props) {
                   image: url,
                 })
                 .then(function () { 
+                  updateUnseenMessageCount(groupID, userId);
                   messageNotify({
                     messageSenderID: userId,
                     groupID,
@@ -603,7 +604,14 @@ export default function ChatScreen(props) {
 
 
 
-  const onCopy = () => { Clipboard.setString(longPressObj.message); onShowPopUpChanged(false) }
+  const onCopy = () => { 
+    if (longPressObj.image) {
+      Clipboard.setString(longPressObj.image);
+    } else {
+      Clipboard.setString(longPressObj.message);
+    }
+     onShowPopUpChanged(false) 
+  }
 
   const onFoward = () => {
     // props.navigation.goBack()
@@ -755,39 +763,63 @@ export default function ChatScreen(props) {
   // }
 
   const onSendMsg = (msg) => {
-    console.log('press', isUserBlocked);
     // setMessages("");
     if (!isUserBlocked) {
       let tmpMessage = msg;
       let createdAt = getTime();
-      const data = {
-        userID: userId,
-        createdAt: createdAt,
-        timeStamp: firestore.FieldValue.serverTimestamp(),
-        message: tmpMessage,
-      }
-      let idMsg = uuid.v4()
-      let newMsg = {
-        data,
-        "first": true,
-        "id": idMsg
-      }
-      updateChats(chats.concat([newMsg]))
-      if (tmpMessage) {
-        chatsRef.doc(groupID)
+      if (tmpMessage.includes('png') && tmpMessage.includes('https://firebasestorage.googleapis.com/')) {
+        chatsRef
+          .doc(groupID)
           .collection("messages")
-          .doc().set(data)
-          .then((item) => {
+          .add({
+            userID: userId,
+            createdAt: createdAt,
+            message: "Photo",
+            timeStamp: firestore.FieldValue.serverTimestamp(),
+            image: tmpMessage,
+          })
+          .then(function () { 
             updateUnseenMessageCount(groupID, userId);
             messageNotify({
               messageSenderID: userId,
               groupID,
-              msg
+              msg: "Photo"
             })
-          }).catch(err => {
+          })
+          .catch(err => {
             let newListMsg = newChats.filter(el => el.id != idMsg)
             setChats(newListMsg)
           });
+      } else {
+        const data = {
+          userID: userId,
+          createdAt: createdAt,
+          timeStamp: firestore.FieldValue.serverTimestamp(),
+          message: tmpMessage,
+        }
+        let idMsg = uuid.v4()
+        let newMsg = {
+          data,
+          "first": true,
+          "id": idMsg
+        }
+        updateChats(chats.concat([newMsg]))
+        if (tmpMessage) {
+          chatsRef.doc(groupID)
+            .collection("messages")
+            .doc().set(data)
+            .then((item) => {
+              updateUnseenMessageCount(groupID, userId);
+              messageNotify({
+                messageSenderID: userId,
+                groupID,
+                msg
+              })
+            }).catch(err => {
+              let newListMsg = newChats.filter(el => el.id != idMsg)
+              setChats(newListMsg)
+            });
+        }
       }
     }
   }
