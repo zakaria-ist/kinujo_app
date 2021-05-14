@@ -99,7 +99,7 @@
     "react-native-paper": "^4.2.0",
     "react-native-permissions": "^2.2.2",
     "react-native-propel-kit": "^0.8.9",
-    "react-native-push-notification": "^7.2.3",
+    "react-native-push-notification": "^7.3.1",
     "react-native-qrcode-scanner": "^1.4.1",
     "react-native-qrcode-svg": "^6.1.1",
     "react-native-reanimated": "~1.13.0",
