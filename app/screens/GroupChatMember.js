@@ -46,7 +46,7 @@ let ids = [];
 let tmpFriend = [];
 let tmpFriendIds = [];
 let users = [];
-export default function FolderMemberSelection(props) {
+export default function GroupChatMember(props) {
   const [searchText, onSearchTextChanged] = useStateIfMounted("");
   const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
   const [loaded, onLoaded] = useStateIfMounted(false);

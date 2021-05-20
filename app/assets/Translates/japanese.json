@@ -46,6 +46,7 @@
   "passwordReset": "パスワードの再設定",
   "phoneNumberForPasswordReset": "登録した携帯電話番号を入力してください。",
   "sendVerificatioCode": "認証コード送信",
+  "reSendVerificatioCode": "認証コード再送信",
   "resendVerificationCodeText": "再送信可能まで",
   "clickHereIfNoReceiveVerificationCode": "認証コードが届かない場合はこちら",
   "newPasswordSetting": "新しいパスワード設定",

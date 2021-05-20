@@ -60,6 +60,7 @@ function getID(url) {
 }
 
 export default function FolderContactList(props) {
+  const isFocused = useIsFocused();
   const [user, onUserChanged] = useStateIfMounted({});
   const [searchTerm, onSearchTermChanged] = useStateIfMounted([]);
   const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
@@ -188,7 +189,7 @@ export default function FolderContactList(props) {
           });
       });
     });
-  }, [useIsFocused]);
+  }, [isFocused]);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
