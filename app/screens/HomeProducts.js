@@ -134,6 +134,19 @@ export default function HomeProducts({
                     if (removeFavourite) {
                       removeFavourite("true");
                     }
+
+                    db.collection("products")
+                      .doc(product_id.toString())
+                      .get()
+                      .then(function (doc) {
+                        if (doc.exists) {
+                          db.collection("products")
+                            .doc(product_id.toString())
+                            .update({
+                              view: firebase.firestore.FieldValue.increment(-1),
+                            });
+                        }
+                      });
                   } else {
                     db.collection("users")
                       .doc(userId.toString())
@@ -142,6 +155,25 @@ export default function HomeProducts({
                       .set({
                         status: "added",
                         type: productAuthorityID,
+                      });
+
+                    db.collection("products")
+                      .doc(product_id.toString())
+                      .get()
+                      .then(function (doc) {
+                        if (doc.exists) {
+                          db.collection("products")
+                            .doc(product_id.toString())
+                            .update({
+                              view: firebase.firestore.FieldValue.increment(1),
+                            });
+                        } else {
+                          db.collection("products")
+                            .doc(product_id.toString())
+                            .set({
+                              view: 1,
+                            });
+                        }
                       });
                     if (addFavourite) {
                       addFavourite("true");

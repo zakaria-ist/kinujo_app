@@ -407,6 +407,7 @@ export default function SalesManagement(props) {
         }
       }
     );
+    
     let tmpCommissionProducts = [];
     let userCommissionList = [];
     commissionProducts.map(
@@ -425,10 +426,10 @@ export default function SalesManagement(props) {
               userCommissionList.push(commissionProduct) ;
             }
           } else {
-            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["user_id"] != userID) {
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) != String(userID)) {
               tmpCommissionProducts.push(commissionProduct) ;
             }
-            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["user_id"] == userID) {
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) == String(userID)) {
               userCommissionList.push(commissionProduct) ;
             }
           }
