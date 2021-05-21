@@ -77,6 +77,7 @@ export default function PasswordReset(props) {
         onResendShow(true);
       } else if (timer == 0) {
         triggerResend(true);
+        onVerficaitonButtonClicked(false);
       }
     });
   });
@@ -184,6 +185,7 @@ export default function PasswordReset(props) {
                 }).then(function(response) {
                   if (!response.data.success) {
                     onVerficaitonButtonClicked(true);
+                    setTimer(30);
                     signInWithPhoneNumber("+" + callingCode + phone)
                       .then(() => {})
                       .catch((error) => {
@@ -201,7 +203,7 @@ export default function PasswordReset(props) {
           >
             <View style={styles.sendVerificationCodeButton}>
               <Text style={styles.sendVerificationCodeButtonText}>
-                {Translate.t("sendVerificatioCode")}
+                {resend == true ? Translate.t("reSendVerificatioCode") : Translate.t("sendVerificatioCode")}
               </Text>
             </View>
           </TouchableWithoutFeedback>

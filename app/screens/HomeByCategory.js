@@ -321,12 +321,13 @@ export default function HomeByCategory(props) {
       tmpFeaturedProducts = tmpFeaturedProducts.sort((productA, productB) => {
         let productA_count = productsView[productA.id] ? productsView[productA.id] : 0
         let productB_count = productsView[productB.id] ? productsView[productB.id] : 0
-        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
+        return (productB_count - productA_count);
       });
       tmpKinujoProducts = tmpKinujoProducts.sort((productA, productB) => {
         let productA_count = productsView[productA.id] ? productsView[productA.id] : 0
         let productB_count = productsView[productB.id] ? productsView[productB.id] : 0
-        return (productA_count >= productB_count)? 0 : productA_count? -1 : 1;
+        // return (productA_count === productB_count)? 0 : productA_count? -1 : 1;
+        return (productB_count - productA_count);
       });
       onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
       onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));

@@ -710,6 +710,50 @@ export default function ChatList(props) {
     let notiKey = "notify_" + ownUserID
     let notiEnable = listTempNoti[notiKey] !== undefined ? listTempNoti[notiKey] :  longPressObj?.data?.[notiKey]
 
+  function updateContactNotification(data, value) {
+    let friendId = data.users.filter((user) => {
+      return String(user) != String(ownUserID);
+    })
+    if(friendId.length) {
+      friendId = friendId[0];
+      db.collection("users")
+        .doc(String(ownUserID))
+        .collection("friends")
+        .where("id", 'in', [Number(friendId), String(friendId)])
+        .get()
+        .then((querySnapshot) => {
+          if(querySnapshot.size == 0){
+            db.collection("users")
+              .doc(String(ownUserID))
+              .collection("friends").add({
+                "notify" : value,
+                "id" : String(friendId)
+              }).then(() => {
+                console.log('Contact notify flag updated');
+              })
+          } else {
+            querySnapshot.forEach((snapShot) => {
+              db.collection("users")
+                .doc(String(ownUserID))
+                .collection("friends")
+                .doc(snapShot.id)
+                .set(
+                  {
+                    notify: value
+                  },
+                  {
+                    merge: true,
+                  }
+                )
+                .then(() => {
+                  console.log('Contact notify flag updated');
+                });
+            });
+          }
+        });
+    }
+  }
+
   return (
     <TouchableWithoutFeedback onPress={() => onShowChanged(false)}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -801,6 +845,7 @@ export default function ChatList(props) {
                       merge: true,
                     });
                     onShowChanged(false);
+                    updateContactNotification(longPressObj.data, !notiEnable);
                   }}
                 >
                   <Text style={styles.longPressText}>

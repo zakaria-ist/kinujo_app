@@ -300,24 +300,24 @@ export default function HomeStoreList(props) {
               .then(function (response) {
                 onProductChanged(response.data);
 
-                db.collection("products")
-                  .doc(String(response.data.id))
-                  .get()
-                  .then(function (doc) {
-                    if (doc.exists) {
-                      db.collection("products")
-                        .doc(String(response.data.id))
-                        .update({
-                          view: firebase.firestore.FieldValue.increment(1),
-                        });
-                    } else {
-                      db.collection("products")
-                        .doc(String(response.data.id))
-                        .set({
-                          view: 1,
-                        });
-                    }
-                  });
+                // db.collection("products")
+                //   .doc(String(response.data.id))
+                //   .get()
+                //   .then(function (doc) {
+                //     if (doc.exists) {
+                //       db.collection("products")
+                //         .doc(String(response.data.id))
+                //         .update({
+                //           view: firebase.firestore.FieldValue.increment(1),
+                //         });
+                //     } else {
+                //       db.collection("products")
+                //         .doc(String(response.data.id))
+                //         .set({
+                //           view: 1,
+                //         });
+                //     }
+                //   });
 
                 db.collection("users")
                   .doc(userId)
