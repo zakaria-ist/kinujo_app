@@ -544,7 +544,23 @@ export default function Cart(props) {
 
             <View style={styles.allTabsContainer}>
               <TouchableWithoutFeedback
-                // onPress={() => onPaymentMethodShow(!paymentMethodShow)}
+                onPress={() => {
+                  shop.addressShow == true
+                    ? Animated.parallel([
+                        Animated.timing(cartItemOpacity, {
+                          toValue: heightPercentageToDP("0%"),
+                          duration: 100,
+                          useNativeDriver: false,
+                        }),
+                      ]).start(() => {}, shop.addressShow = false, onUpdate(ids, user.is_seller && user.is_approved))
+                    : Animated.parallel([
+                        Animated.timing(cartItemOpacity, {
+                          toValue: heightPercentageToDP("100%"),
+                          duration: 30000,
+                          useNativeDriver: false,
+                        }),
+                      ]).start(() => {}, shop.addressShow = true, onUpdate(ids, user.is_seller && user.is_approved));
+                }}
               >
                 <View
                   style={{
@@ -562,14 +578,28 @@ export default function Cart(props) {
                   >
                     {Translate.t("deliveryAddressCart")}
                   </Text>
-
+                  {shop.addressShow == true ? (
+                    <UpArrowLogo
+                      width={18}
+                      height={18}
+                      style={styles.upWhiteArrow}
+                    />
+                  ) : (
+                    <ArrowDownLogo
+                      width={18}
+                      height={18}
+                      style={styles.upWhiteArrow}
+                    />
+                  )}
                 </View>
               </TouchableWithoutFeedback>
-              <View
-                // style={paymentMethodShow == false ? styles.none : ""}
+              <Animated.View
+                style={shop.addressShow == true ? styles.cartAnimation : styles.none}
               >
-                {addressHtml}
-              </View>
+                <View>
+                  {addressHtml}
+                </View>
+              </Animated.View>
             </View>
             <TouchableWithoutFeedback
               onPress={() => {
@@ -673,7 +703,8 @@ export default function Cart(props) {
               shipping: 0,
               tax: 0,
               shopHtml: [],
-              cartItemShow: true
+              cartItemShow: true,
+              addressShow: true
             })
           }
         })
@@ -1006,7 +1037,8 @@ export default function Cart(props) {
                       shipping: 0,
                       tax: 0,
                       shopHtml: [],
-                      cartItemShow: true
+                      cartItemShow: true,
+                      addressShow: true
                     })
                   }
                 })

@@ -469,7 +469,7 @@ export default function Contact(props) {
               deleteIds.push(item.id);
             }
             if (item["hide"]) {
-              hideIds.push(item.id);
+              hideIds.push(parseInt(item.id));
             }
           });
 
@@ -1296,8 +1296,8 @@ export default function Contact(props) {
                 </TouchableOpacity>
                 {longPressObj.type == "user" ? (
                   <TouchableOpacity
-                    onPressIn={() => onShowChanged(false)}
                     onPress={() => {
+                      onShowChanged(false);
                       AsyncStorage.setItem(
                         "ids",
                         JSON.stringify([longPressObj.data.id.toString()])
@@ -1318,8 +1318,8 @@ export default function Contact(props) {
                 ) : null}
                 {longPressObj.type == "user" ? (
                   <TouchableOpacity
-                    onPressIn={() => onShowChanged(false)}
                     onPress={() => {
+                      onShowChanged(false);
                       AsyncStorage.setItem(
                         "ids",
                         JSON.stringify([longPressObj.data.id.toString()])

@@ -75,11 +75,16 @@ export default function FolderContactList(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.docChanges().forEach((snapShot) => {
-          let users = snapShot.doc.data().users;
-          for (var i = 0; i < users.length; i++) {
-            if (users[i] == friendID) {
-              groupID = snapShot.doc.id;
-              groupName = snapShot.doc.data().groupName;
+          if (
+            snapShot.doc.data().type != "groups" &&
+            snapShot.doc.data().users.length == 2
+          ) {
+            let users = snapShot.doc.data().users;
+            for (var i = 0; i < users.length; i++) {
+              if (users[i] == friendID) {
+                groupID = snapShot.doc.id;
+                groupName = snapShot.doc.data().groupName;
+              }
             }
           }
         });

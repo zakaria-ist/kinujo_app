@@ -46,6 +46,7 @@ import RNFetchBlob from "rn-fetch-blob";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import AddBlack from "../assets/icons/addBlack.svg";
+import Dustbin from "../assets/icons/dustbin.svg";
 import Format from "../lib/format";
 import { firebaseConfig } from "../../firebaseConfig.js";
 if (!firebase.apps.length) {
@@ -217,41 +218,55 @@ export default function ProductInformationAddNew(props) {
                   });
                 onProductImagesChanged(oldImages);
                 onProductPageDisplayMethodChanged("slidingType");
-                let tmpImages = response.data.productImages;
-
-                let html = [];
-                tmpImages.map((image) => {
-                  image = image.image;
-                  if (!image.is_hidden) {
-                    html.push(
-                      <View
-                        key={image.id}
-                        style={{
-                          marginTop: heightPercentageToDP("1%"),
-                          height: 1,
-                          width: "100%",
-                          height: heightPercentageToDP("30%"),
-                          borderRadius: 1,
-                          borderWidth: 1,
-                          borderColor: Colors.deepGrey,
-                          borderStyle: "dashed",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Image
-                          style={{
-                            width: "100%",
-                            height: heightPercentageToDP("30%"),
-                            position: "absolute",
-                          }}
-                          source={{ uri: image.image }}
-                        />
-                      </View>
-                    );
-                  }
-                });
-                onProductImageHtmlChanged(html);
+                // let tmpImages = response.data.productImages;
+                createImagesHtml(oldImages);
+                // let html = [];
+                // tmpImages.map((image) => {
+                //   image = image.image;
+                //   if (!image.is_hidden) {
+                //     html.push(
+                //       <View
+                //         key={image.id}
+                //         style={{
+                //           marginTop: heightPercentageToDP("1%"),
+                //           height: 1,
+                //           width: "100%",
+                //           height: heightPercentageToDP("30%"),
+                //           borderRadius: 1,
+                //           borderWidth: 1,
+                //           borderColor: Colors.deepGrey,
+                //           borderStyle: "dashed",
+                //           justifyContent: "center",
+                //           alignItems: "center",
+                //         }}
+                //       >
+                //         <TouchableWithoutFeedback
+                //           onPress={() => {console.log('PRESS DELETE')}}
+                //         >
+                //         <Dustbin
+                //           style={{
+                //             width: win.width / 15,
+                //             height: 20 * ratioProductAddIcon,
+                //             position: "absolute",
+                //             zIndex: 100,
+                //             right: 5,
+                //             top: 5,
+                //           }}
+                //         />
+                //         </TouchableWithoutFeedback>
+                //         <Image
+                //           style={{
+                //             width: "100%",
+                //             height: heightPercentageToDP("30%"),
+                //             position: "absolute",
+                //           }}
+                //           source={{ uri: image.image }}
+                //         />
+                //       </View>
+                //     );
+                //   }
+                // });
+                // onProductImageHtmlChanged(html);
                 if (response.data.variety == 0) {
                   let productVariety = response.data.productVarieties[0];
                   let productVarietySelection =
@@ -488,6 +503,73 @@ export default function ProductInformationAddNew(props) {
         });
     });
   }, [isFocused]);
+
+  function createImagesHtml(tmpImages) {
+    let html = [];
+    tmpImages.map((image) => {
+      html.push(
+        <View
+          key={image.id}
+          style={{
+            marginTop: heightPercentageToDP("1%"),
+            height: 1,
+            width: "100%",
+            height: heightPercentageToDP("30%"),
+            borderRadius: 1,
+            borderWidth: 1,
+            borderColor: Colors.deepGrey,
+            borderStyle: "dashed",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TouchableWithoutFeedback
+            onPress={() => {
+              console.log('PRESS DELETE');
+              alert.ask(Translate.t("confirm_delete"), ()=>{
+                // let newImages = productImages
+                let newImages = tmpImages
+                .filter((pImage) => {
+                  return image.id != pImage.id;
+                });
+
+                let newProductImages = productImages.map((pImage) => {
+                  if (pImage.id == image.id && pImage.is_old) {
+                    pImage["is_delete"] = true;
+                  }
+                  return pImage;
+                });
+                onProductImagesChanged(newProductImages);
+                createImagesHtml(newImages);
+              })
+              
+            }}
+          >
+          <Dustbin
+            style={{
+              width: win.width / 15,
+              height: 20 * ratioProductAddIcon,
+              position: "absolute",
+              zIndex: 100,
+              right: 5,
+              top: 5,
+            }}
+          />
+          </TouchableWithoutFeedback>
+          <Image
+            style={{
+              width: "100%",
+              height: heightPercentageToDP("30%"),
+              position: "absolute",
+            }}
+            source={{ uri: image.image }}
+          />
+        </View>
+      );
+    });
+    onProductImageHtmlChanged(html);
+  }
+
   function onValueChanged(variant) {
     onProductVariationChanged(variant);
     if (variant == "none") {
@@ -671,6 +753,7 @@ export default function ProductInformationAddNew(props) {
   }
 
   function saveProduct(draft) {
+    console.log(productImages);
     AsyncStorage.getItem("user").then(function (url) {
       let urls = url.split("/");
       urls = urls.filter((url) => {
@@ -1341,36 +1424,37 @@ export default function ProductInformationAddNew(props) {
                                 let tmpImages = productImages;
                                 tmpImages.push(response.data);
                                 onProductImagesChanged(tmpImages);
-                                let html = [];
-                                tmpImages.map((image) => {
-                                  html.push(
-                                    <View
-                                      key={image.id}
-                                      style={{
-                                        marginTop: heightPercentageToDP("1%"),
-                                        height: 1,
-                                        width: "100%",
-                                        height: heightPercentageToDP("30%"),
-                                        borderRadius: 1,
-                                        borderWidth: 1,
-                                        borderColor: Colors.deepGrey,
-                                        borderStyle: "dashed",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                      }}
-                                    >
-                                      <Image
-                                        style={{
-                                          width: "100%",
-                                          height: heightPercentageToDP("30%"),
-                                          position: "absolute",
-                                        }}
-                                        source={{ uri: image.image }}
-                                      />
-                                    </View>
-                                  );
-                                });
-                                onProductImageHtmlChanged(html);
+                                createImagesHtml(tmpImages);
+                                // let html = [];
+                                // tmpImages.map((image) => {
+                                //   html.push(
+                                //     <View
+                                //       key={image.id}
+                                //       style={{
+                                //         marginTop: heightPercentageToDP("1%"),
+                                //         height: 1,
+                                //         width: "100%",
+                                //         height: heightPercentageToDP("30%"),
+                                //         borderRadius: 1,
+                                //         borderWidth: 1,
+                                //         borderColor: Colors.deepGrey,
+                                //         borderStyle: "dashed",
+                                //         justifyContent: "center",
+                                //         alignItems: "center",
+                                //       }}
+                                //     >
+                                //       <Image
+                                //         style={{
+                                //           width: "100%",
+                                //           height: heightPercentageToDP("30%"),
+                                //           position: "absolute",
+                                //         }}
+                                //         source={{ uri: image.image }}
+                                //       />
+                                //     </View>
+                                //   );
+                                // });
+                                // onProductImageHtmlChanged(html);
                               })
                               .catch((error) => {
                                 onSpinnerChanged(false);
