@@ -397,7 +397,8 @@ export default function SearchProducts(props) {
                 onSearchTermChanged(value);
                 let tmpProducts = products.filter((product) => {
                   return (
-                    product.name.toLowerCase().indexOf(value.toLowerCase()) >= 0
+                    product.name.toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
+                    (product.user.shop_name ? product.user.shop_name : product.user.nickname).toLowerCase().indexOf(value.toLowerCase()) >= 0
                   );
                 });
                 performProductHtml(tmpProducts);

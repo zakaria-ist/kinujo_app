@@ -25,6 +25,7 @@
   "ok" : "OK",
   "confirm": "Confirm",
   "confirm_logout" : "Are you sure you want to logout?",
+  "confirm_delete" : "Are you sure you want to delete?",
   "productCreate": "Create Product",
   "askLogin": "If you already have an account, please log in below",
   "logout": "Logout",
