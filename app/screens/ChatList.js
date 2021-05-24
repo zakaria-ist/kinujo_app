@@ -12,7 +12,6 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
-//test
 
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
