@@ -124,17 +124,17 @@ export default function ChatText({
                 isSelf ? styles.right_chatbox : styles.left_chatbox,
               ]}
             >
-              <Hyperlink
-                linkStyle={{ color: "#2980b9" }}
+              <TouchableWithoutFeedback
+                // linkStyle={{ color: "#2980b9" }}
                 onLongPress={()=>{
                   if(longPress){
                     longPress();
                   }
                 }}
-                onPress={hyperLinkClicked}
+                // onPress={hyperLinkClicked}
               >
-                <Text>{text}</Text>
-              </Hyperlink>
+                <Text selectable={true}>{text}</Text>
+              </TouchableWithoutFeedback>
             </View>
           ) : (
             <View
@@ -151,7 +151,7 @@ export default function ChatText({
                   }
                 }}
               >
-                <Text>{text}</Text>
+                <Text selectable={true}>{text}</Text>
               </Hyperlink>
             </View>
           )}
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     maxWidth: width - 160,
-    minHeight: 20,
+    minHeight: 50,
   },
   avatar: {
     width: RFValue(30),

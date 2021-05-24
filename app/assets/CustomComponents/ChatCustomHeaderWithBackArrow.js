@@ -30,6 +30,7 @@ import KinujoWord from "../icons/kinujo.svg";
 import BackArrow from "../icons/arrow_back.svg";
 import CustomAlert from "../../lib/alert";
 import GroupImages from "./GroupImages";
+import navigationHelper from "../../lib/navigationHelper.js";
 const alert = new CustomAlert();
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
@@ -39,7 +40,7 @@ const db = firebase.firestore();
 
 const win = Dimensions.get("window");
 let userId;
-export default function CustomKinujoWord({
+export default function ChatCustomHeaderWithBackArrow({
   text,
   onFavoritePress,
   onPress,
@@ -47,6 +48,7 @@ export default function CustomKinujoWord({
   userUrl,
   name,
   images,
+  chatUserId,
   onCartCount,
   overrideCartCount,
 }) {
@@ -116,6 +118,15 @@ export default function CustomKinujoWord({
     }
   }, [overrideCartCount]);
 
+  function navigateToContactDetail (){
+    if(chatUserId) {
+      navigationHelper.navigate("CustomerInformation", {
+        url: chatUserId,
+        notViewHeader: true
+      })
+    }
+  }
+
   return (
     <SafeAreaView
       style={{
@@ -143,6 +154,15 @@ export default function CustomKinujoWord({
           <BackArrow style={{ width: RFValue(20), height: RFValue(20), marginRight: widthPercentageToDP("5%") }} />
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={navigateToContactDetail}
+        >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
         <GroupImages
             width={heightPercentageToDP("6%")}
             height={heightPercentageToDP("6%")}
@@ -155,6 +175,8 @@ export default function CustomKinujoWord({
         >
           {name}
         </Text>
+      </View>
+      </TouchableOpacity>
       </View>
       <View
         style={{
