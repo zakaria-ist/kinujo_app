@@ -23,7 +23,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 
 const request = new Request();
 
-export default function CustomKinujoWord({
+export default function CustomSelectHeader({
   onPress,
   name,
   accountType,

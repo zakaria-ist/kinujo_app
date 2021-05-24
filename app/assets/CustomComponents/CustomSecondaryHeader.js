@@ -24,7 +24,7 @@ import GroupImages from "./GroupImages";
 
 const request = new Request();
 
-export default function CustomKinujoWord({
+export default function CustomSecondaryHeader({
   onPress,
   name,
   accountType,
