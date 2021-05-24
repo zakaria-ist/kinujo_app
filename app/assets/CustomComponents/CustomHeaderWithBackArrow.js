@@ -38,7 +38,7 @@ const db = firebase.firestore();
 
 const win = Dimensions.get("window");
 let userId;
-export default function CustomKinujoWord({
+export default function CustomHeaderWithBackArrow({
   text,
   onFavoritePress,
   onPress,
