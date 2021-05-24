@@ -807,9 +807,6 @@ export default function ChatList(props) {
               alignSelf: "center",
               marginTop: heightPercentageToDP("30%"),
               borderColor: Colors.D7CCA6,
-              // alignItems: "flex-start",
-              // paddingLeft: widthPercentageToDP("5%"),
-              // paddingRight: widthPercentageToDP("25%"),
             }}
           >
             <View
@@ -828,7 +825,7 @@ export default function ChatList(props) {
                 }}
               >
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
+                  style={styles.longPressItem}
                   onPress={onUpperFix}
                 >
                   <Text style={styles.longPressText}>
@@ -836,7 +833,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
+                  style={styles.longPressItem}
                   onPress={() => {
                     let update = {};
                     update[notiKey] = !notiEnable
@@ -860,7 +857,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
+                  style={styles.longPressItem}
                   onPress={() => {
                     let update = {};
                     update["hide_" + ownUserID] =
@@ -878,7 +875,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
+                  style={styles.longPressItem}
                   onPress={() => {
                     let update = {};
                     update["delete_" + ownUserID] =
@@ -896,7 +893,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
+                  style={styles.longPressItem}
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -920,7 +917,7 @@ export default function ChatList(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{paddingLeft: 20, paddingVertical: 15}}
+                  style={styles.longPressItem}
                   // onPressIn={() => onShowChanged(false)}
                   onPress={() => {
                     onShowChanged(false);
@@ -1017,6 +1014,12 @@ const styles = StyleSheet.create({
   },
   longPressText: {
     fontSize: RFValue(12),
+  },
+  longPressItem: {
+    paddingLeft: 20,
+    paddingVertical: 15,
+    paddingRight: widthPercentageToDP("25%"),
+    paddingLeft: widthPercentageToDP("5%")
   },
 });
 
