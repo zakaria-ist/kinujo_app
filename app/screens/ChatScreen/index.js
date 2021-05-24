@@ -177,6 +177,7 @@ export default function ChatScreen(props) {
   let favData = props.route.params.favData;
   const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
   const [name, onNameChanged] = useStateIfMounted("");
+  const [chatUserId, onChatUserIdChanged] = useStateIfMounted("");
 
   React.useEffect(() => {
     // hideEmoji();
@@ -215,6 +216,7 @@ export default function ChatScreen(props) {
     if (tmpName) return tmpName;
     if (users.length > 0) {
       let user = users[0];
+      onChatUserIdChanged(user);
       onUserUrlChanged("profiles/" + user);
       user = await request.get("profiles/" + user);
       user = user.data;
@@ -896,6 +898,7 @@ export default function ChatScreen(props) {
           text={Translate.t("chat")}
           // onBack={() => props.navigation.goBack()}
           onBack={() => props.navigation.navigate("ChatList")}
+          chatUserId={chatUserId}
           images={images}
           name={name} userUrl={userUrl}
           onFavoritePress={() => props.navigation.navigate("Favorite")}
