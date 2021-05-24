@@ -175,6 +175,7 @@ export default function BankAccountRegistration(props) {
                 }}
                 value={bankCode}
                 maxLength={4}
+                keyboardType={"numeric"}
               ></TextInput>
 
               <TextInput
@@ -205,6 +206,7 @@ export default function BankAccountRegistration(props) {
                 }}
                 value={branchCode}
                 maxLength={3}
+                keyboardType={"numeric"}
               ></TextInput>
               <TextInput
                 onFocus={() => controller.close()}

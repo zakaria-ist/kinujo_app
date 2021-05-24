@@ -49,6 +49,7 @@ let globalUsers = [];
 let globalGroups = [];
 let contactPinned = {};
 let contactNotify = {};
+let contactHide = {};
 let selectedUserId;
 let userId;
 let blocks = [];
@@ -333,7 +334,7 @@ export default function Contact(props) {
             });
             onShowChanged(true);
           }}
-          key={folders[i]["id"]}
+          key={folder["folderId"]}
           onPress={() => {
             props.navigation.navigate("FolderContactList", {
               folderID: folder["folderId"],
@@ -446,13 +447,17 @@ export default function Contact(props) {
           let ids = [];
           let items = [];
           let deleteIds = [];
+          let hideIds = [];
+          contactPinned = {};
           contactNotify = {};
+          contactHide = {};
           querySnapshot.forEach((documentSnapshot) => {
             let item = documentSnapshot.data();
-            console.log('item', item);
+            // console.log('item', item);
             if (!item["delete"]) {
               ids.push(item.id);
               contactPinned[item.id] = item["pinned"] ? item["pinnedTime"] : false;
+              contactHide[item.id] = item["hide"] ? item["hide"] : false;
               if (String(item.id) in contactNotify && contactNotify[String(item.id)] == undefined) {
                 contactNotify[String(item.id)] = item["notify"];
               } else if(String(item.id) in contactNotify == false) {
@@ -462,6 +467,9 @@ export default function Contact(props) {
 
             if (item["delete"]) {
               deleteIds.push(item.id);
+            }
+            if (item["hide"]) {
+              hideIds.push(parseInt(item.id));
             }
           });
 
@@ -479,6 +487,7 @@ export default function Contact(props) {
                 globalUsers = globalUsers.filter((user) => {
                   return (
                     !deleteIds.includes(user.id) &&
+                    !hideIds.includes(user.id) &&
                     !blocks.includes(user.id) && 
                     !deleteIds.includes(String(user.id))
                   );
@@ -584,7 +593,8 @@ export default function Contact(props) {
       db.collection("users")
         .doc(String(userId))
         .collection("friends")
-        .where("id", "==", String(longPressObj.data.id))
+        .where("id", 'in', [Number(longPressObj.data.id), String(longPressObj.data.id)])
+        // .where("id", "==", String(longPressObj.data.id))
         .get()
         .then((querySnapshot) => {
           if (querySnapshot.size > 0) {
@@ -648,6 +658,26 @@ export default function Contact(props) {
         });
     }
     onShowChanged(false);
+  }
+
+  function updateChatNotification(friendId, value) {
+    db.collection("chat")
+      .where("users", "array-contains", String(userId))
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.docChanges().forEach((snapShot) => {
+          let users = snapShot.doc.data().users;
+          if (users.includes(String(friendId))) {
+            let docId = snapShot.doc.id;
+            let update = {};
+            update['notify_' + String(userId)] = value;
+            db.collection("chat").doc(docId).set(update, {
+              merge: true,
+            });
+          }
+        })
+      })
+    
   }
 
   return (
@@ -1028,6 +1058,7 @@ export default function Contact(props) {
                                 "id" : String(longPressObj.data.id)
                               }).then(() => {
                                 populateUser();
+                                updateChatNotification(longPressObj.data.id, false);
                               })
                           } else {
                             querySnapshot.forEach((snapShot) => {
@@ -1054,6 +1085,7 @@ export default function Contact(props) {
                                 )
                                 .then(() => {
                                   populateUser();
+                                  updateChatNotification(longPressObj.data.id, !notification);
                                 });
                             });
                           }
@@ -1112,11 +1144,16 @@ export default function Contact(props) {
                       db.collection("users")
                         .doc(String(userId))
                         .collection("friends")
-                        .where("id", "==", String(longPressObj.data.id))
+                        .where("id", 'in', [Number(longPressObj.data.id), String(longPressObj.data.id)])
+                        // .where("id", "==", String(longPressObj.data.id))
                         .get()
                         .then((querySnapshot) => {
                           if (querySnapshot.size > 0) {
                             querySnapshot.forEach((documentSnapshot) => {
+                              let hide = contactHide[String(longPressObj.data['id'])];
+                              if (hide === '' || hide === null || hide === undefined) {
+                                hide = false;
+                              }
                               db.collection("users")
                                 .doc(String(userId))
                                 .collection("friends")
@@ -1124,10 +1161,9 @@ export default function Contact(props) {
                                 .set(
                                   {
                                     hide:
-                                      longPressObj["hide"] == "" ||
-                                      longPressObj["hide"]
-                                        ? false
-                                        : true,
+                                      hide == false
+                                      ? true
+                                      : false,
                                   },
                                   {
                                     merge: true,
@@ -1142,10 +1178,11 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "folder") {
                       let update = {};
                       update["hide"] =
-                        longPressObj.data.data["hide"] == "" ||
-                        longPressObj.data.data["hide"]
-                          ? false
-                          : true;
+                        longPressObj.data.data["hide"] === "" ||
+                        longPressObj.data.data["hide"] === undefined ||
+                        !longPressObj.data.data["hide"] 
+                          ? true
+                          : false;
                       db.collection("users")
                         .doc(userId)
                         .collection("folders")
@@ -1159,10 +1196,11 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "group") {
                       let update = {};
                       update["hide_" + userId] =
-                        longPressObj.data.data["hide_" + userId] == "" ||
-                        longPressObj.data.data["hide_" + userId]
-                          ? false
-                          : true;
+                        longPressObj.data.data["hide_" + userId] === "" ||
+                        longPressObj.data.data["hide_" + userId] === undefined ||
+                        !longPressObj.data.data["hide_" + userId]
+                          ? true
+                          : false;
                       db.collection("chat")
                         .doc(longPressObj.data.id)
                         .set(update, {
@@ -1258,8 +1296,8 @@ export default function Contact(props) {
                 </TouchableOpacity>
                 {longPressObj.type == "user" ? (
                   <TouchableOpacity
-                    onPressIn={() => onShowChanged(false)}
                     onPress={() => {
+                      onShowChanged(false);
                       AsyncStorage.setItem(
                         "ids",
                         JSON.stringify([longPressObj.data.id.toString()])
@@ -1280,8 +1318,8 @@ export default function Contact(props) {
                 ) : null}
                 {longPressObj.type == "user" ? (
                   <TouchableOpacity
-                    onPressIn={() => onShowChanged(false)}
                     onPress={() => {
+                      onShowChanged(false);
                       AsyncStorage.setItem(
                         "ids",
                         JSON.stringify([longPressObj.data.id.toString()])
