@@ -397,7 +397,7 @@
   "Please_fill_in_product_description": "商品説明文を入力してください",
   "Please_fill_in_Jan_Code": "JANコードを入力してください",
   "Please_fill_in_stock": "在庫を入力してください",
-  "limitedStock": "バリエーションを選択してください。",
+  "limitedStock": "在庫がありません。",
   "cartFilterMsg": "在庫が限られているか空の場合、商品はカートから削除されます",
   "send": "送信",
   "all": "すべて",
