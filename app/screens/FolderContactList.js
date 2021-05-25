@@ -49,6 +49,7 @@ if (!firebase.apps.length) {
 }
 const db = firebase.firestore();
 let globalUsers = [];
+let userId = "";
 
 function getID(url) {
   let urls = url.split("/");
@@ -62,10 +63,9 @@ function getID(url) {
 export default function FolderContactList(props) {
   const isFocused = useIsFocused();
   const [user, onUserChanged] = useStateIfMounted({});
-  const [searchTerm, onSearchTermChanged] = useStateIfMounted([]);
-  const [userHtml, onUserHtmlChanged] = useStateIfMounted(<View></View>);
-  // const [longPressObj, onLongPressObjChanged] = useStateIfMounted({});
-  // const [show, onShowChanged] = useStateIfMounted(false);
+  const [searchTerm, onSearchTermChanged] = useStateIfMounted("");
+  const [userHtml, onUserHtmlChanged] = useStateIfMounted([]);
+  
   function redirectToChat(friendID, friendName) {
     let groupID;
     let groupName;
@@ -172,17 +172,16 @@ export default function FolderContactList(props) {
   }
 
   React.useEffect(() => {
-    InteractionManager.runAfterInteractions(() => {
-      AsyncStorage.getItem("user").then(function (url) {
-        let userId = getID(url);
-        firebase
-          .firestore()
-          .collection("users")
-          .doc(userId)
-          .collection("folders")
-          .doc(props.route.params.folderID)
-          .get()
-          .then(function (snapshot) {
+    AsyncStorage.getItem("user").then(function (url) {
+      userId = getID(url);
+      db
+        .collection("users")
+        .doc(userId)
+        .collection("folders")
+        .doc(props.route.params.folderID)
+        .get()
+        .then(function (snapshot) {
+          if (snapshot) {
             request
               .get("user/byIds/", {
                 ids: snapshot.data().users,
@@ -191,10 +190,16 @@ export default function FolderContactList(props) {
                 globalUsers = response.data.users;
                 onUserHtmlChanged(processUserHtml(props, response.data.users));
               });
-          });
-      });
+            }
+        });
     });
   }, [isFocused]);
+  
+  React.useEffect(() => {
+    onUserHtmlChanged([]);
+    onSearchTermChanged("");
+  }, [!isFocused]);
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <CustomHeader
