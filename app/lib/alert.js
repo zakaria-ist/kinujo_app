@@ -9,7 +9,7 @@ class CustomAlert {
         text,
         [
           {
-            text: Translate.t("ok"),
+            text: "OK",
             onPress: () => {
               func();
             },
@@ -37,7 +37,7 @@ class CustomAlert {
       text,
       [
         {
-          text: Translate.t("ok"),
+          text: "OK",
           onPress: () => {
             func();
           },

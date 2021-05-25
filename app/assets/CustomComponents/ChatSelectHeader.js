@@ -38,7 +38,7 @@ const request = new Request();
 const db = firebase.firestore();
 
 const win = Dimensions.get("window");
-export default function CustomKinujoWord({
+export default function ChatSelectHeader({
   onSend,
   onCancel,
 }) {

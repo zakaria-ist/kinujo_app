@@ -166,6 +166,7 @@ export default function BankAccountRegistration(props) {
                 placeholderTextColor={Colors.deepGrey}
                 style={styles.textInput}
                 onChangeText={(text) => {
+                  text = String(text).replace(/[^0-9]/g, "");
                   onBankCodeChanged(text);
                   if (zenginCode[text]) {
                     onFinancialNameChanged(zenginCode[text]["name"]);
@@ -193,6 +194,7 @@ export default function BankAccountRegistration(props) {
                 placeholderTextColor={Colors.deepGrey}
                 style={styles.textInput}
                 onChangeText={(text) => {
+                  text = String(text).replace(/[^0-9]/g, "");
                   onBranckCodeChanged(text);
                   if (zenginCode[bankCode]) {
                     if (zenginCode[bankCode]["branches"][text]) {

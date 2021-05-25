@@ -35,7 +35,7 @@ const db = firebase.firestore();
 
 const win = Dimensions.get("window");
 let userId;
-export default function CustomKinujoWord({ text, onFavoritePress, onPress, onCartCount }) {
+export default function CustomHeader({ text, onFavoritePress, onPress, onCartCount }) {
   const [cartCount, onCartChanged] = useStateIfMounted(0);
   const ratioKinujo = win.width / 4 / 78;
   const ratioFavorite = win.width / 14 / 24;
