@@ -133,7 +133,17 @@ export default function ChatText({
                 }}
                 // onPress={hyperLinkClicked}
               >
-                <Text selectable={true}>{text}</Text>
+                {Platform.OS === 'ios' ? (
+                  // iOS requires a textinput for word selections
+                  <TextInput
+                    value={text}
+                    editable={false}
+                    multiline
+                  />
+                ) : (
+                  // Android can do word selections just with <Text>
+                  <Text selectable>{text}</Text>
+                )}
               </TouchableWithoutFeedback>
             </View>
           ) : (
@@ -151,7 +161,7 @@ export default function ChatText({
                   }
                 }}
               >
-                <Text selectable={true}>{text}</Text>
+                <Text selectable>{text}</Text>
               </Hyperlink>
             </View>
           )}
@@ -341,7 +351,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     maxWidth: width - 160,
-    minHeight: 50,
+    minHeight: 30,
   },
   avatar: {
     width: RFValue(30),
