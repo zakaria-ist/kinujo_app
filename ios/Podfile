@@ -26,6 +26,8 @@ target 'kinujo' do
 
   pod 'react-native-splash-screen', :path => '../node_modules/react-native-splash-screen'
 
+  pod 'react-native-cameraroll', :path => '../node_modules/@react-native-community/cameraroll'
+
   post_install do |installer|
     flipper_post_install(installer)
   end
