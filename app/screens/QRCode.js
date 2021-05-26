@@ -6,20 +6,22 @@ import {
   Image,
   View,
   Dimensions,
-  Switch,
+  // Switch,
   TouchableOpacity,
   TouchableWithoutFeedback,
   TouchableNativeFeedback,
-  KeyboardAvoidingView,
-  TextInput,
+  // KeyboardAvoidingView,
+  // TextInput,
   Platform,
-  Animated,
-  Button,
-  Linking,
+  // Animated,
+  // Button,
+  // Linking,
   SafeAreaView,
   ScrollView,
+  PermissionsAndroid
 } from "react-native";
-
+import CameraRoll from "@react-native-community/cameraroll";
+import RNFS from "react-native-fs";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import RNQRGenerator from "rn-qr-generator";
@@ -28,6 +30,8 @@ import {
   heightPercentageToDP,
   widthPercentageToDP,
 } from "react-native-responsive-screen";
+import Share from "react-native-share";
+import Clipboard from "@react-native-community/clipboard";
 import CustomAlert from "../lib/alert";
 import Translate from "../assets/Translates/Translate";
 import jsQR from "jsqr";
@@ -82,6 +86,18 @@ function findParams(data, param) {
   return "";
 }
 
+async function hasAndroidPermission() {
+  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+
+  const hasPermission = await PermissionsAndroid.check(permission);
+  if (hasPermission) {
+    return true;
+  }
+
+  const status = await PermissionsAndroid.request(permission);
+  return status === 'granted';
+}
+
 async function buildLink(userId, is_store) {
   const link = await dynamicLinks().buildLink(
     {
@@ -113,6 +129,7 @@ export default function QRCode(props) {
   const [userLink, onUserLinkChanged] = useStateIfMounted("");
   const [interacted, setInteracted] = useState(false);
   const [cameraTimeout, setCameraTimeout] = useState(0);
+  let qrImage = "";
   React.useEffect(() => {
     if(!isFocused){
       setInviteShow(false);
@@ -593,13 +610,14 @@ export default function QRCode(props) {
             </Text>
             <View
               style={{
-                marginTop: heightPercentageToDP(10),
+                marginTop: heightPercentageToDP(5),
                 justifyContent: "center",
                 alignItems: "center",
               }}
             >
               <View style={[styles.qr_image]}>
                 <QRCodeIcon
+                  getRef={(ref) => (qrImage = ref)}
                   size={
                     widthPercentageToDP(50)
                   }
@@ -622,6 +640,91 @@ export default function QRCode(props) {
                 /> */}
               </View>
             </View>
+            <View
+              style={{
+                marginTop: heightPercentageToDP(35),
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}
+            >
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    let link = store ? storeLink : userLink;
+                    Clipboard.setString(link);
+                    Alert.alert(
+                      Translate.t("information"),
+                      Translate.t("urlCopied"),
+                      [
+                        {
+                          text: "OK",
+                          onPress: () => {},
+                        },
+                      ],
+                      { cancelable: false }
+                    );
+                  }}
+                >
+                  <Image
+                    style={[styles.image]}
+                    source={require("../assets/Images/url-link-512.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    let link = store ? storeLink : userLink;
+                    const shareOptions = {
+                      title: "",
+                      message: link,
+                    };
+                    Share.open(shareOptions)
+                      .then((res) => {})
+                      .catch((err) => {});
+                  }}
+                >
+                  <Image
+                    style={[styles.image]}
+                    source={require("../assets/Images/button_share-512.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (Platform.OS === "android" && !(hasAndroidPermission())) {
+                      return;
+                    }
+                    qrImage.toDataURL((data) => {
+                      RNFS.writeFile(RNFS.CachesDirectoryPath+"/qrImage.png", data, 'base64')
+                        .then((success) => {
+                          return CameraRoll.save(RNFS.CachesDirectoryPath+"/qrImage.png", 'photo');
+                        })
+                        .then(() => {
+                          Alert.alert(
+                            Translate.t("information"),
+                            Translate.t("qrImageSaved"),
+                            [
+                              {
+                                text: "OK",
+                                onPress: () => {},
+                              },
+                            ],
+                            { cancelable: false }
+                          );
+                        })
+                    });
+                  }}
+                >
+                  <Image
+                    style={[styles.image]}
+                    source={require("../assets/Images/download-png.png")}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
         {/* </View> */}
@@ -630,6 +733,10 @@ export default function QRCode(props) {
 }
 
 const styles = StyleSheet.create({
+  image: {
+    width: 40,
+    height: 40
+  },
   centerText: {
     flex: 1,
     fontSize: 18,
