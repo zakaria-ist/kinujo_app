@@ -734,7 +734,7 @@ export default function QRCode(props) {
 
 const styles = StyleSheet.create({
   image: {
-    width: 40, 
+    width: 40,
     height: 40
   },
   centerText: {
