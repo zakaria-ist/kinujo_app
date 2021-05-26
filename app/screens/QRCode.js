@@ -21,7 +21,7 @@ import {
   PermissionsAndroid
 } from "react-native";
 import CameraRoll from "@react-native-community/cameraroll";
-import RNFS from "react-native-fs"
+import RNFS from "react-native-fs";
 import { useStateIfMounted } from "use-state-if-mounted";
 import CachedImage from 'react-native-expo-cached-image';
 import RNQRGenerator from "rn-qr-generator";
@@ -734,7 +734,7 @@ export default function QRCode(props) {
 
 const styles = StyleSheet.create({
   image: {
-    width: 40, 
+    width: 40,
     height: 40
   },
   centerText: {
