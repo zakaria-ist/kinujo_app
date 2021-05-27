@@ -230,6 +230,8 @@
   "removeUpperFixed": "Release",
   "nonRepresent": "Hide",
   "copy": "Copy",
+  "urlCopied": "URL is copied",
+  "qrImageSaved": "QR Image is saved to Image Gallery.",
   "forward": "Forward",
   "cancelOnlyMe": "Cancel (Only Me)",
   "addToFav": "Add to Favourites",
