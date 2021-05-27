@@ -62,6 +62,8 @@ let productLoaded = false;
 let controller;
 
 export default function Cart(props) {
+  props["dddfadlg;nrae"] = "fasdkfnjasdkjf";
+  console.log(props)
   // const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
   // const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
   const [cartCount, onCartCountChanged] = useStateIfMounted(0);
@@ -70,6 +72,8 @@ export default function Cart(props) {
   const cartItemOpacity = useRef(
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
+
+  let item_height = 1000
 
   const paymentItemHeight = useRef(
     new Animated.Value(heightPercentageToDP("28%"))
@@ -201,7 +205,8 @@ export default function Cart(props) {
     });
     shopUpdate(ids, is_store);
   }
-  function processCartHtml(props, products, maps, is_store = false) {
+  function processCartHtml(props, products, maps, is_store = false, shop) {
+    console.log(shop)
     productLoaded = false;
     let tmpCartHtml = [];
     let isVis = [];
@@ -259,7 +264,7 @@ export default function Cart(props) {
                   controller={(instance) => {
                     controller = instance;
                   }}
-                  // zIndex={9999}
+                  zIndex={9999}
                   style={{
                     borderWidth: 1,
                     backgroundColor: "white",
@@ -286,11 +291,13 @@ export default function Cart(props) {
                     color: Colors.F0EEE9,
                   }}
                   placeholder={Translate.t("unit")}
+                  dropDownMaxHeight={300}
                   dropDownStyle={{
+                    zIndex: 9999,
+                    position: "absolute",
                     width: widthPercentageToDP("20%"),
                     backgroundColor: "white",
                     color: "black",
-                    height: heightPercentageToDP("10.5%"),
                     zIndex: realIndex,
                   }}
                   onOpen={() => {
@@ -490,7 +497,7 @@ export default function Cart(props) {
             <View>
               <View>{shop.shopHtml}</View>
             </View>
-            <View>
+            <View style={{zIndex: -9999}}>
               <View
                 style={{
                   flexDirection: "row",
@@ -528,6 +535,7 @@ export default function Cart(props) {
             <View
               style={{
                 flexDirection: "row",
+                zIndex: -9999,
                 justifyContent: "flex-end",
                 marginTop: heightPercentageToDP("2%"),
               }}
@@ -764,7 +772,7 @@ export default function Cart(props) {
         shop.tax = tax;
         // shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
         shop.total = Math.round(tmpShipping + subTotal + tax)
-        shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store);
+        shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store, shop);
         processCartView(props, shop, shopFirebaseProducts);
     });
     productLoaded = true;
@@ -1303,6 +1311,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP(".5%"),
   },
   allTabsContainer: {
+    zIndex:-9999,
     marginTop: heightPercentageToDP("3%"),
   },
   tabContainer: {
