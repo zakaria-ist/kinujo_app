@@ -146,9 +146,10 @@ export default function ShippingList(props) {
                 onPress={() => setDefaultAddress(address.url)}
               >
                 <View style={styles.tabContainer}>
+                  <Text style={styles.textInTabContainer}>{address.address_name}</Text>
                   <View style={{ fontSize: RFValue(12) }}>
-                  {i18n.locale == 'ja' ? <Text>{address.name} 様</Text>
-                                   : <Text>{address.name}</Text>}
+                  {i18n.locale == 'ja' ? <Text style={styles.textInTabContainer}>{address.name} 様</Text>
+                                   : <Text style={styles.textInTabContainer}>{address.name}</Text>}
                   </View>
                   <Text style={styles.textInTabContainer}>{address.zip1}</Text>
                   <Text

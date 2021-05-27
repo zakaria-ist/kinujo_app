@@ -167,6 +167,7 @@ export default function Cart(props) {
               justifyContent: "center",
             }}
           >
+            <Text style={styles.textInTabContainer}>{pAddresses.address_name}</Text>
             <View
               style={{
                 fontSize: RFValue(12),
@@ -174,8 +175,8 @@ export default function Cart(props) {
                 width: widthPercentageToDP("45%"),
               }}
             >
-            {i18n.locale == 'ja' ? <Text>{pAddresses.name} 様</Text>
-                                   : <Text>{pAddresses.name}</Text>}
+              {i18n.locale == 'ja' ? <Text style={styles.textInTabContainer}>{pAddresses.name} 様</Text>
+                                    : <Text style={styles.textInTabContainer}>{pAddresses.name}</Text>}
             </View>
             <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
             <Text style={styles.textInTabContainer}>
