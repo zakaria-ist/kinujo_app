@@ -202,7 +202,6 @@ export default function Cart(props) {
     shopUpdate(ids, is_store);
   }
   function processCartHtml(props, products, maps, is_store = false) {
-    console.log(shop)
     productLoaded = false;
     let tmpCartHtml = [];
     let isVis = [];
