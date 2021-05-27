@@ -73,8 +73,6 @@ export default function Cart(props) {
     new Animated.Value(heightPercentageToDP("100%"))
   ).current;
 
-  let item_height = 1000
-
   const paymentItemHeight = useRef(
     new Animated.Value(heightPercentageToDP("28%"))
   ).current;
@@ -772,7 +770,7 @@ export default function Cart(props) {
         shop.tax = tax;
         // shop.total = parseInt(tmpShipping) + parseInt(subTotal) + parseInt(tax);
         shop.total = Math.round(tmpShipping + subTotal + tax)
-        shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store, shop);
+        shop.shopHtml = processCartHtml(props, shopProducts, shopFirebaseProducts, is_store);
         processCartView(props, shop, shopFirebaseProducts);
     });
     productLoaded = true;
