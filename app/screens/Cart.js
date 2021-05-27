@@ -37,6 +37,7 @@ import RemoveLogo from "../assets/icons/removeIcon.svg";
 import UpArrowLogo from "../assets/icons/up_whiteArrow.svg";
 import CheckBox from "@react-native-community/checkbox";
 import Format from "../lib/format";
+import i18n from "i18n-js";
 import ArrowDownLogo from "../assets/icons/arrowDownWhite.svg";
 const format = new Format();
 const request = new Request();
@@ -166,15 +167,16 @@ export default function Cart(props) {
               justifyContent: "center",
             }}
           >
-            <Text
+            <View
               style={{
                 fontSize: RFValue(12),
                 // backgroundColor: "orange",
                 width: widthPercentageToDP("45%"),
               }}
             >
-              {pAddresses.name}
-            </Text>
+            {i18n.locale == 'ja' ? <Text>{pAddresses.name} 様</Text>
+                                   : <Text>{pAddresses.name}</Text>}
+            </View>
             <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
             <Text style={styles.textInTabContainer}>
               {pAddresses.prefecture.name}

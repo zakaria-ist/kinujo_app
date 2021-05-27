@@ -28,6 +28,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Request from "../lib/request";
 import CustomAlert from "../lib/alert";
 import Add from "../assets/icons/add.svg";
+import i18n from "i18n-js";
 import Dustbin from "../assets/icons/dustbin.svg";
 const request = new Request();
 const alert = new CustomAlert();
@@ -145,7 +146,10 @@ export default function ShippingList(props) {
                 onPress={() => setDefaultAddress(address.url)}
               >
                 <View style={styles.tabContainer}>
-                  <Text style={{ fontSize: RFValue(12) }}>{address.name}</Text>
+                  <View style={{ fontSize: RFValue(12) }}>
+                  {i18n.locale == 'ja' ? <Text>{address.name} 様</Text>
+                                   : <Text>{address.name}</Text>}
+                  </View>
                   <Text style={styles.textInTabContainer}>{address.zip1}</Text>
                   <Text
                       style={{
