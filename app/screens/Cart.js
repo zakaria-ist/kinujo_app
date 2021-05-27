@@ -259,7 +259,7 @@ export default function Cart(props) {
                   controller={(instance) => {
                     controller = instance;
                   }}
-                  // zIndex={9999}
+                  zIndex={9999}
                   style={{
                     borderWidth: 1,
                     backgroundColor: "white",
@@ -286,11 +286,13 @@ export default function Cart(props) {
                     color: Colors.F0EEE9,
                   }}
                   placeholder={Translate.t("unit")}
+                  dropDownMaxHeight={300}
                   dropDownStyle={{
+                    zIndex: 9999,
+                    position: "absolute",
                     width: widthPercentageToDP("20%"),
                     backgroundColor: "white",
                     color: "black",
-                    height: heightPercentageToDP("10.5%"),
                     zIndex: realIndex,
                   }}
                   onOpen={() => {
@@ -490,7 +492,7 @@ export default function Cart(props) {
             <View>
               <View>{shop.shopHtml}</View>
             </View>
-            <View>
+            <View style={{zIndex: -9999}}>
               <View
                 style={{
                   flexDirection: "row",
@@ -528,6 +530,7 @@ export default function Cart(props) {
             <View
               style={{
                 flexDirection: "row",
+                zIndex: -9999,
                 justifyContent: "flex-end",
                 marginTop: heightPercentageToDP("2%"),
               }}
@@ -1303,6 +1306,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP(".5%"),
   },
   allTabsContainer: {
+    zIndex:-9999,
     marginTop: heightPercentageToDP("3%"),
   },
   tabContainer: {
