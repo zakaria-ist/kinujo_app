@@ -62,8 +62,6 @@ let productLoaded = false;
 let controller;
 
 export default function Cart(props) {
-  props["dddfadlg;nrae"] = "fasdkfnjasdkjf";
-  console.log(props)
   // const [cartItemShow, onCartItemShowChanged] = useStateIfMounted(true);
   // const [paymentMethodShow, onPaymentMethodShow] = useStateIfMounted(true);
   const [cartCount, onCartCountChanged] = useStateIfMounted(0);
