@@ -219,7 +219,7 @@ export default function PasswordReset(props) {
             >
               {i18n.locale.includes('ja') || i18n.locale.includes('JP')
                             ? Translate.t("resendVerificationCodeText") + timer + "s"
-                            : timer + "s" + Translate.t("resendVerificationCodeText")}
+                            : timer + "s " + Translate.t("resendVerificationCodeText")}
             </Text>
           ) : (
             <View></View>
