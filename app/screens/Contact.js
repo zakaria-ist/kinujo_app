@@ -788,7 +788,7 @@ export default function Contact(props) {
                         width: win.width / 13,
                         height: ratioFolder * 23,
                       }}
-                      source={require("../assets/Images/folderIcon.png")}
+                      source={require("../assets/Images/folderIcon_2.png")}
                     />
                     <Text style={styles.tabLeftText}>
                       {Translate.t("folder")}
@@ -1008,9 +1008,6 @@ export default function Contact(props) {
               alignSelf: "center",
               marginTop: heightPercentageToDP("30%"),
               borderColor: Colors.D7CCA6,
-              alignItems: "flex-start",
-              paddingLeft: widthPercentageToDP("5%"),
-              paddingRight: widthPercentageToDP("25%"),
             }}
           >
             <View
@@ -1018,7 +1015,7 @@ export default function Contact(props) {
                 marginTop: heightPercentageToDP("3%"),
               }}
             >
-              <Text style={{ fontSize: RFValue(14) }}>
+              <Text style={{ fontSize: RFValue(14), paddingLeft: 20, paddingRight: 20 }}>
                 {getName(longPressObj)}
               </Text>
               <View
@@ -1029,6 +1026,7 @@ export default function Contact(props) {
                 }}
               >
                 <TouchableOpacity
+                  style={styles.longPressItem}
                   onPress={upperFixPress}
                 >
                   <Text style={styles.longPressText}>
@@ -1040,6 +1038,7 @@ export default function Contact(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={styles.longPressItem}
                   onPress={() => {
                     // alert.warning("1" + longPressObj.data.data["notify"]);
                     if (longPressObj.type == "user") {
@@ -1139,6 +1138,7 @@ export default function Contact(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={styles.longPressItem}
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       db.collection("users")
@@ -1218,6 +1218,7 @@ export default function Contact(props) {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  style={styles.longPressItem}
                   onPress={() => {
                     if (longPressObj.type == "user") {
                       globalUsers = globalUsers.filter((user) => {
@@ -1296,6 +1297,7 @@ export default function Contact(props) {
                 </TouchableOpacity>
                 {longPressObj.type == "user" ? (
                   <TouchableOpacity
+                    style={styles.longPressItem}
                     onPress={() => {
                       onShowChanged(false);
                       AsyncStorage.setItem(
@@ -1318,6 +1320,7 @@ export default function Contact(props) {
                 ) : null}
                 {longPressObj.type == "user" ? (
                   <TouchableOpacity
+                    style={styles.longPressItem}
                     onPress={() => {
                       onShowChanged(false);
                       AsyncStorage.setItem(
@@ -1417,5 +1420,11 @@ const styles = StyleSheet.create({
     height: heightPercentageToDP("100%"),
     borderColor: Colors.D7CCA6,
     alignItems: "flex-start",
+  },
+  longPressItem: {
+    paddingLeft: 20,
+    paddingVertical: 15,
+    paddingRight: widthPercentageToDP("25%"),
+    paddingLeft: widthPercentageToDP("5%"),
   },
 });
