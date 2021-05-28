@@ -37,6 +37,7 @@ import RemoveLogo from "../assets/icons/removeIcon.svg";
 import UpArrowLogo from "../assets/icons/up_whiteArrow.svg";
 import CheckBox from "@react-native-community/checkbox";
 import Format from "../lib/format";
+import i18n from "i18n-js";
 import ArrowDownLogo from "../assets/icons/arrowDownWhite.svg";
 const format = new Format();
 const request = new Request();
@@ -166,15 +167,17 @@ export default function Cart(props) {
               justifyContent: "center",
             }}
           >
-            <Text
+            <Text style={styles.textInTabContainer}>{pAddresses.address_name}</Text>
+            <View
               style={{
                 fontSize: RFValue(12),
                 // backgroundColor: "orange",
                 width: widthPercentageToDP("45%"),
               }}
             >
-              {pAddresses.name}
-            </Text>
+              {i18n.locale == 'ja' ? <Text style={styles.textInTabContainer}>{pAddresses.name} 様</Text>
+                                    : <Text style={styles.textInTabContainer}>{pAddresses.name}</Text>}
+            </View>
             <Text style={styles.textInTabContainer}>{pAddresses.zip1}</Text>
             <Text style={styles.textInTabContainer}>
               {pAddresses.prefecture.name}
@@ -256,7 +259,7 @@ export default function Cart(props) {
                   controller={(instance) => {
                     controller = instance;
                   }}
-                  // zIndex={9999}
+                  zIndex={9999}
                   style={{
                     borderWidth: 1,
                     backgroundColor: "white",
@@ -283,11 +286,13 @@ export default function Cart(props) {
                     color: Colors.F0EEE9,
                   }}
                   placeholder={Translate.t("unit")}
+                  dropDownMaxHeight={300}
                   dropDownStyle={{
+                    zIndex: 9999,
+                    position: "absolute",
                     width: widthPercentageToDP("20%"),
                     backgroundColor: "white",
                     color: "black",
-                    height: heightPercentageToDP("10.5%"),
                     zIndex: realIndex,
                   }}
                   onOpen={() => {
@@ -487,7 +492,7 @@ export default function Cart(props) {
             <View>
               <View>{shop.shopHtml}</View>
             </View>
-            <View>
+            <View style={{zIndex: -9999}}>
               <View
                 style={{
                   flexDirection: "row",
@@ -525,6 +530,7 @@ export default function Cart(props) {
             <View
               style={{
                 flexDirection: "row",
+                zIndex: -9999,
                 justifyContent: "flex-end",
                 marginTop: heightPercentageToDP("2%"),
               }}
@@ -1300,6 +1306,7 @@ const styles = StyleSheet.create({
     marginTop: heightPercentageToDP(".5%"),
   },
   allTabsContainer: {
+    zIndex:-9999,
     marginTop: heightPercentageToDP("3%"),
   },
   tabContainer: {

@@ -100,7 +100,7 @@ function BottomNavigationGeneral(props) {
   let currentRouteName = currentRouteState?.routeNames?.[currentRouteState?.index];
 
   if (props && props.route && props.route.state) {
-    if (lastRoute != currentRouteName) {
+    // if (lastRoute != currentRouteName) {
       AsyncStorage.getItem("user").then(function (url) {
         request
           .get(url)
@@ -116,13 +116,18 @@ function BottomNavigationGeneral(props) {
                       routes: [{ name: "HomeStore" }],
                     });
                   })
+                } else {
+                  props.navigation.reset({
+                    index: 0,
+                    routes: [{ name: "HomeStore" }],
+                  });
                 }
               })
             }
           })
       })
       lastRoute = currentRouteName;
-    }
+    // }
   }
   // let isShow = false;
 
