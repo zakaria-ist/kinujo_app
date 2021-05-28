@@ -111,16 +111,15 @@ export default function ProfileInformation(props) {
           request
             .get(url)
             .then(function (response) {
-              console.log('response', response.data);
               onUserChanged(response.data);
-              onNameChanged(response.data.real_name);
-              onNicknameChanged(response.data.nickname);
-              onGenderChanged(response.data.gender);
-              onBirthdayChanged(response.data.birthday);
-              onPostalCodeChanged(response.data.zipcode);
-              onPrefectureChanged(response.data.prefecture);
-              onAddress1Changed(response.data.address1);
-              onAddress2Changed(response.data.address2);
+              // onNameChanged(response.data.real_name);
+              // onNicknameChanged(response.data.nickname);
+              // onGenderChanged(response.data.gender);
+              // onBirthdayChanged(response.data.birthday);
+              // onPostalCodeChanged(response.data.zipcode);
+              // onPrefectureChanged(response.data.prefecture);
+              // onAddress1Changed(response.data.address1);
+              // onAddress2Changed(response.data.address2);
             })
             .catch(function (error) {
               if (

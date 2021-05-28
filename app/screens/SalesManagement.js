@@ -39,7 +39,7 @@ const request = new Request();
 const alert = new CustomAlert();
 const win = Dimensions.get("window");
 const ratioDownForMore = win.width / 26 / 15;
-let userID;
+let userId;
 let isMaster = 0;
 let year = new Date().getFullYear();
 let month = new Date().getMonth() + 1;
@@ -49,52 +49,8 @@ let userSales = [];
 let userCommissions = [];
 let taxRate = 0;
 let reducedTaxRate = 0;
-// let salesProducts = [];
+let orderIds = [];
 
-// function processSaleHtml(sales) {
-//   let tmpSaleHtml = [];
-//   for (var i = 0; i < sales.length; i++) {
-//     let sale = sales[i];
-//     tmpSaleHtml.push(
-//       <TouchableWithoutFeedback key={i}>
-//         <View style={styles.commissionTabContainer}>
-//           <Text style={styles.commissionTabText}>
-//             {kanjidate.format(
-//               "{Y:4}/{M:2}/{D:2}",
-//               new Date(sale.order.created)
-//             )}
-//           </Text>
-//           <View
-//             style={{
-//               width: widthPercentageToDP("36%"),
-//               // position: "absolute",
-//               left: 0,
-//               marginLeft: widthPercentageToDP("3%"),
-//               // paddingBottom: heightPercentageToDP("2%"),
-//             }}
-//           >
-//             <Text style={styles.commissionTabText}>
-//               {sale.product_jan_code.horizontal
-//                 ? sale.product_jan_code.horizontal.product_variety.product.name
-//                 : sale.product_jan_code.vertical.product_variety.product.name}
-//             </Text>
-//           </View>
-//           <Text
-//             style={{
-//               position: "absolute",
-//               fontSize: RFValue(12),
-//               right: 0,
-//               paddingBottom: heightPercentageToDP("2%"),
-//             }}
-//           >
-//             {format.separator(sale.unit_price)}円
-//           </Text>
-//         </View>
-//       </TouchableWithoutFeedback>
-//     );
-//   }
-//   return tmpSaleHtml;
-// }
 function processSaleHtml(orders, sales, tmpCommissionProducts) {
   let tmpSaleHtml = [];
   for (var i = 0; i < orders.length; i++) {
@@ -105,12 +61,15 @@ function processSaleHtml(orders, sales, tmpCommissionProducts) {
       sale = sale[0];
       let ttlCommission = 0;
       tmpCommissionProducts.map((tmpCommission) => {
-        if (tmpCommission.order_product.order.id == orders[i]) {
-          ttlCommission += tmpCommission.is_food 
-              ? parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * reducedTaxRate)
-              : parseInt(tmpCommission.amount) + parseInt(parseFloat(tmpCommission.amount) * taxRate)
+        if (tmpCommission[0] == orders[i]) {
+          ttlCommission += tmpCommission[2]
+              ? parseInt(tmpCommission[1]) + parseInt(parseFloat(tmpCommission[1]) * reducedTaxRate)
+              : parseInt(tmpCommission[1]) + parseInt(parseFloat(tmpCommission[1]) * taxRate)
         }
       })
+      if(!ttlCommission) {
+        ttlCommission = 0;
+      }
     
       tmpSaleHtml.push(
         <TouchableWithoutFeedback key={i}>
@@ -118,7 +77,7 @@ function processSaleHtml(orders, sales, tmpCommissionProducts) {
             <Text style={styles.commissionTabText}>
               {kanjidate.format(
                 "{Y:4}/{M:2}/{D:2}",
-                new Date(sale.order_product.order.created)
+                new Date(sale.order_product.order.order_date)
               )}
             </Text>
             <View
@@ -200,7 +159,7 @@ function processCommissionHtml(commissions) {
           <Text style={styles.commissionTabText}>
             {kanjidate.format(
               "{Y:4}/{M:2}/{D:2}",
-              new Date(commission.order_product.order.created)
+              new Date(commission.order_product.order.order_date)
             )}
           </Text>
           <View
@@ -273,8 +232,8 @@ export default function SalesManagement(props) {
         urls = urls.filter((url) => {
           return url;
         });
-        let userId = urls[urls.length - 1];
-        userID = userId;
+        userId = urls[urls.length - 1];
+        // userID = userId;
         request
           .get(url)
           .then(function (response) {
@@ -340,73 +299,9 @@ export default function SalesManagement(props) {
         if (isFocused) {
           onSpinnerChanged(true);
         }
-        request
-          .get("commissionProducts/" + userId + "/")
-          .then(function (response) {
-            if (response.data.commissionProducts) {
-              commissionProducts = response.data.commissionProducts;
-            } else {
-              commissionProducts = [];
-            }
-            if (response.data.userSales) {
-              userSales = response.data.userSales;
-            } else {
-              userSales = [];
-            }
-            if (response.data.userCommissions) {
-              userCommissions = response.data.userCommissions;
-            } else {
-              userCommissions = [];
-            }
-            isMaster = response.data.isMaster;
-            onSpinnerChanged(false);
-            onUpdate();
-          })
-          .catch(function (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              Object.keys(error.response.data).length > 0
-            ) {
-              alert.warning(
-                error.response.data[Object.keys(error.response.data)[0]][0] +
-                  "(" +
-                  Object.keys(error.response.data)[0] +
-                  ")"
-              );
-            }
-            onCommissionLoaded(true);
-            onSpinnerChanged(false);
-          });
 
-        // request
-        //   .get("saleProducts/" + userId + "/")
-        //   .then(function (response) {
-        //     // salesProducts = [];
-        //     if (response.data.saleProducts) {
-        //       salesProducts = response.data.saleProducts;
-        //     } else {
-        //       salesProducts = [];
-        //     }
-        //     onUpdate();
-        //   })
-        //   .catch(function (error) {
-        //     if (
-        //       error &&
-        //       error.response &&
-        //       error.response.data &&
-        //       Object.keys(error.response.data).length > 0
-        //     ) {
-        //       alert.warning(
-        //         error.response.data[Object.keys(error.response.data)[0]][0] +
-        //           "(" +
-        //           Object.keys(error.response.data)[0] +
-        //           ")"
-        //       );
-        //     }
-        //     onSaleLoaded(true);
-        //   });
+        onUpdate();
+
       });
     });
   }, [isFocused]);
@@ -418,66 +313,44 @@ export default function SalesManagement(props) {
   }, [!isFocused]);
 
 
-  function onUpdate(date) {
-    // onSpinnerChanged(true);
-    let tmpDate = new Date();
-    if (date) {
-      tmpDate = date;
-    }
-    onDateChange(tmpDate);
-    onPlaceHolderDate(
-      tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
-    );
-    let orders = [];
-    commissionProducts.map(
-      (commissionProduct) => {
-        let periods = commissionProduct["order_product"]["order"][
-          "created"
-        ].split("-");
-        let year = periods[0];
-        let month = periods[1];
-        if (!commissionProduct["is_hidden"] && isMaster && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
-          if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
-            if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
-              orders.push(commissionProduct["order_product"]["order"]['id'])
-            }
-          }
-        }
-        else if (!commissionProduct["is_hidden"] && commissionProduct["order_product"]["order"]["seller"]["id"] == userID) {
-          if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
-            if (orders.indexOf(commissionProduct["order_product"]["order"]['id']) == -1) {
-              orders.push(commissionProduct["order_product"]["order"]['id'])
-            }
-          }
-        }
-      }
-    );
+  function renderUI(tmpDate) {
     let tmpCommissionProducts = [];
     let userCommissionList = [];
     commissionProducts.map(
       (commissionProduct) => {
-        let periods = commissionProduct["order_product"]["order"][
-          "created"
-        ].split("-");
-        let year = periods[0];
-        let month = periods[1];
-        if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
+        // let periods = commissionProduct["order_product"]["order"][
+        //   "created"
+        // ].split("-");
+        // let year = periods[0];
+        // let month = periods[1];
+        // if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
           if (isMaster) {
-            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
-              tmpCommissionProducts.push(commissionProduct) ;
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && 
+              commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
+                tmpCommissionProducts.push([
+                  commissionProduct["order_product"]["order"]["id"],
+                  commissionProduct["order_product"]["amount"],
+                  commissionProduct["order_product"]["is_food"]
+                ]);
             }
-            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] != "1") {
-              userCommissionList.push(commissionProduct) ;
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && 
+                commissionProduct["user"]["authority"]["id"] == "1" &&
+                commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] != "1") {
+              userCommissionList.push(commissionProduct);
             }
           } else {
-            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) != String(userID)) {
-              tmpCommissionProducts.push(commissionProduct) ;
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) != String(userId)) {
+              tmpCommissionProducts.push([
+                commissionProduct["order_product"]["order"]["id"],
+                commissionProduct["order_product"]["amount"],
+                commissionProduct["order_product"]["is_food"]
+              ]);
             }
-            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) == String(userID)) {
-              userCommissionList.push(commissionProduct) ;
+            if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) == String(userId)) {
+              userCommissionList.push(commissionProduct);
             }
           }
-        }
+        // }
       }
     );
     onCommissionsChanged(userCommissionList);
@@ -486,48 +359,88 @@ export default function SalesManagement(props) {
     );
     let commissionTotal = 0;
     userCommissions.map((commission) => {
-      if (commission.year == tmpDate.getFullYear() && commission.month == (tmpDate.getMonth() + 1)) {
+      // if (commission.year == tmpDate.getFullYear() && commission.month == (tmpDate.getMonth() + 1)) {
         commissionTotal += commission.total_amount;
-      }
+      // }
     });
     onTotalCommissionChanged(commissionTotal);
 
-
-    // let tmpSaleProducts = salesProducts.filter((saleProduct) => {
-    //   if (!saleProduct["is_hidden"]) {
-    //     let periods = saleProduct["order"]["created"].split("-");
-    //     let year = periods[0];
-    //     let month = periods[1];
-    //     return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
-    //   }
-    // });
     let tmpSaleProducts = commissionProducts.filter(
       (commissionProduct) => {
         if (!commissionProduct["is_hidden"] && commissionProduct["is_sales"]) {
-          let periods = commissionProduct["order_product"]["order"][
-            "created"
-          ].split("-");
-          let year = periods[0];
-          let month = periods[1];
-          return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+          // let periods = commissionProduct["order_product"]["order"][
+          //   "created"
+          // ].split("-");
+          // let year = periods[0];
+          // let month = periods[1];
+          // return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
+          return true;
         }
       }
     );
     onSalesChanged(tmpSaleProducts);
-    onSaleHtmlChanged(processSaleHtml(orders, tmpSaleProducts, tmpCommissionProducts));
+    onSaleHtmlChanged(processSaleHtml(orderIds, tmpSaleProducts, tmpCommissionProducts));
     let saleTotal = 0;
     userSales.map((sale) => {
-      if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
+      // if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
         saleTotal += sale.total_amount;
-      }
+      // }
     });
     onTotalSaleChanged(saleTotal);
 
     onTotalChanged(
       format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
     );
-    // onSpinnerChanged(false);
+    onSpinnerChanged(false);
   }
+
+  function onUpdate(date) {
+    if (isFocused) {
+      onSpinnerChanged(true);
+    }
+    let tmpDate = new Date();
+    if (date) {
+      tmpDate = date;
+    }
+    onDateChange(tmpDate);
+    onPlaceHolderDate(
+      tmpDate.getFullYear() + "年" + (tmpDate.getMonth() + 1) + "月"
+    );
+  
+    let year = tmpDate.getFullYear();
+    let month = tmpDate.getMonth() + 1;
+    request
+      .get("commissionProducts/" + userId + "/" + year + "/" + month + "/")
+      .then(function (response) {
+        commissionProducts = response.data.commissionProducts;
+        userSales = response.data.userSales;
+        userCommissions = response.data.userCommissions;
+        orderIds = response.data.orderIds;
+        isMaster = response.data.isMaster;
+
+        onSpinnerChanged(false);
+        renderUI(tmpDate);
+      })
+      .catch(function (error) {
+        if (
+          error &&
+          error.response &&
+          error.response.data &&
+          Object.keys(error.response.data).length > 0
+        ) {
+          alert.warning(
+            error.response.data[Object.keys(error.response.data)[0]][0] +
+              "(" +
+              Object.keys(error.response.data)[0] +
+              ")"
+          );
+        }
+        onCommissionLoaded(true);
+        onSpinnerChanged(false);
+      });
+    
+  }
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Spinner
