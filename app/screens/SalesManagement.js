@@ -314,6 +314,7 @@ export default function SalesManagement(props) {
 
 
   function renderUI(tmpDate) {
+    onSpinnerChanged(false);
     let tmpCommissionProducts = [];
     let userCommissionList = [];
     commissionProducts.map(
@@ -360,7 +361,7 @@ export default function SalesManagement(props) {
     let commissionTotal = 0;
     userCommissions.map((commission) => {
       // if (commission.year == tmpDate.getFullYear() && commission.month == (tmpDate.getMonth() + 1)) {
-        commissionTotal += commission.total_amount;
+        commissionTotal += commission;
       // }
     });
     onTotalCommissionChanged(commissionTotal);
@@ -383,7 +384,7 @@ export default function SalesManagement(props) {
     let saleTotal = 0;
     userSales.map((sale) => {
       // if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
-        saleTotal += sale.total_amount;
+        saleTotal += sale;
       // }
     });
     onTotalSaleChanged(saleTotal);
@@ -391,7 +392,6 @@ export default function SalesManagement(props) {
     onTotalChanged(
       format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
     );
-    onSpinnerChanged(false);
   }
 
   function onUpdate(date) {
@@ -417,11 +417,12 @@ export default function SalesManagement(props) {
         userCommissions = response.data.userCommissions;
         orderIds = response.data.orderIds;
         isMaster = response.data.isMaster;
-
         onSpinnerChanged(false);
         renderUI(tmpDate);
       })
       .catch(function (error) {
+        onCommissionLoaded(true);
+        onSpinnerChanged(false);
         if (
           error &&
           error.response &&
@@ -435,8 +436,6 @@ export default function SalesManagement(props) {
               ")"
           );
         }
-        onCommissionLoaded(true);
-        onSpinnerChanged(false);
       });
     
   }
@@ -487,6 +486,11 @@ export default function SalesManagement(props) {
             zIndex: 999,
           }}
         >
+          <View
+            style={{
+              flexDirection: "row"
+            }}
+          >
           <MonthPicker
             initialValue={new Date()}
             value={date}
@@ -505,24 +509,26 @@ export default function SalesManagement(props) {
               fontSize: RFValue(12),
             }}
           />
-          <Text
-            style={{
-              zIndex: -999,
-              color: "black",
-              alignItems: "center",
-              // width: widthPercentageToDP("23%"),
-              height: heightPercentageToDP("4%"),
-              borderRadius: 5,
-              textAlign: "center",
-              fontSize: RFValue(12),
-              position: "absolute",
-            }}
-          >
-            {placeholderDate}
+          
+            <Text
+              style={{
+                zIndex: -999,
+                color: "black",
+                alignItems: "center",
+                // width: widthPercentageToDP("23%"),
+                height: heightPercentageToDP("4%"),
+                borderRadius: 5,
+                textAlign: "center",
+                fontSize: RFValue(12),
+                position: "absolute",
+              }}
+            >
+              {placeholderDate}
+            </Text>
             <View>
-            <Icon name="chevron-down" size={12} style={{marginLeft: 5}}/>
+              <Icon name="chevron-down" size={12} style={{marginLeft: 15}}/>
             </View>
-          </Text>
+          </View>
           <View
             style={{
               borderWidth: 2,

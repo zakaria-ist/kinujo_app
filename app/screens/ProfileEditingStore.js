@@ -280,13 +280,77 @@ export default function ProfileEditingStore(props) {
       });
   }
 
-  handleChoosePhoto = (type, name = "") => {
-    const options = {
-      mediaType: "photo",
-      allowsEditing: true
-    };
-    ImagePicker.launchImageLibrary(options, (response) => {
-      if (response.uri) {
+  // handleChoosePhoto = (type, name = "") => {
+  //   const options = {
+  //     mediaType: "photo",
+  //     allowsEditing: true
+  //   };
+  //   ImagePicker.launchImageLibrary(options, (response) => {
+  //     if (response.uri) {
+  //     if(response.type.includes("image")){
+  //         const formData = new FormData();
+  //         formData.append("image", {
+  //           ...response,
+  //           uri:
+  //             Platform.OS === "android"
+  //               ? response.uri
+  //               : response.uri.replace("file://", ""),
+  //           name: name ? name : "mobile-" + uuid.v4() + ".jpg",
+  //           type: "image/jpeg", // it may be necessary in Android.
+  //         });
+  //         request
+  //           .post("images/", formData, {
+  //             "Content-Type": "multipart/form-data",
+  //           })
+  //           .then((response) => {
+  //             request
+  //               .post(user.url.replace("profiles", "updateProfileImage"), {
+  //                 image_id: response.data.id,
+  //                 type: type,
+  //               })
+  //               .then(function (response) {
+  //                 loadUser();
+  //               })
+  //               .catch(function (error) {
+  //                 if (
+  //                   error &&
+  //                   error.response &&
+  //                   error.response.data &&
+  //                   Object.keys(error.response.data).length > 0
+  //                 ) {
+  //                   alert.warning(
+  //                     error.response.data[
+  //                       Object.keys(error.response.data)[0]
+  //                     ][0] +
+  //                       "(" +
+  //                       Object.keys(error.response.data)[0] +
+  //                       ")"
+  //                   );
+  //                 }
+  //               });
+  //           })
+  //           .catch((error) => {
+  //             alert.warning(JSON.stringify(error));
+  //             if (
+  //               error &&
+  //               error.response &&
+  //               error.response.data &&
+  //               Object.keys(error.response.data).length > 0
+  //             ) {
+  //               alert.warning(
+  //                 error.response.data[Object.keys(error.response.data)[0]][0]
+  //               );
+  //             }
+  //           });
+  //     } else {
+  //       alert.warning(Translate.t("image_allowed"))
+  //     }
+  //   }
+  //   });
+  // };
+
+  handleChoosePhoto = (response, type, name = "") => {
+    if (response.uri) {
       if(response.type.includes("image")){
           const formData = new FormData();
           formData.append("image", {
@@ -346,8 +410,33 @@ export default function ProfileEditingStore(props) {
         alert.warning(Translate.t("image_allowed"))
       }
     }
-    });
   };
+
+  function selectImage(type, name = "") {
+    let options = {
+      title: Translate.t('chooseOneImage'),
+      takePhotoButtonTitle: Translate.t('takePhoto'),
+      chooseFromLibraryButtonTitle: Translate.t('chooseFromGallery'),
+      cancelButtonTitle: Translate.t('cancel'),
+      storageOptions: {
+        skipBackup: true
+      }
+    };
+
+    ImagePicker.showImagePicker(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled photo picker');
+        Alert.alert(Translate.t('noImageSelected'));
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+      } else {
+        handleChoosePhoto(response, type, name);
+      }
+    });
+  }
+
   function validateEmail(address) {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,100})+$/;
     if (address && reg.test(address) === false) {
@@ -534,7 +623,7 @@ export default function ProfileEditingStore(props) {
             >
               <TouchableWithoutFeedback
                 onPress={() => {
-                  handleChoosePhoto("background_img");
+                  selectImage("background_img");
                 }}
               >
                 <Camera 
@@ -570,7 +659,7 @@ export default function ProfileEditingStore(props) {
             >
               <TouchableWithoutFeedback
                 onPress={() => {
-                  handleChoosePhoto("background_img");
+                  selectImage("background_img");
                 }}
               >
                 <Camera 
@@ -626,7 +715,7 @@ export default function ProfileEditingStore(props) {
               >
                 <TouchableWithoutFeedback
                   onPress={() => {
-                    handleChoosePhoto("image", "user_" + user.id + ".jpg");
+                    selectImage("image", "user_" + user.id + ".jpg");
                   }}
                 >
                   {/* <Image
@@ -652,7 +741,7 @@ export default function ProfileEditingStore(props) {
               >
                 <TouchableWithoutFeedback
                   onPress={() => {
-                    handleChoosePhoto("image", "user_" + user.id + ".jpg");
+                    selectImage("image", "user_" + user.id + ".jpg");
                   }}
                 >
                   {/* <Image
