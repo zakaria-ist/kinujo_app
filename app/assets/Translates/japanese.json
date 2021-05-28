@@ -330,7 +330,7 @@
   "auth/invalid-verification-code": "無効な検証コード",
   "deleteItem": "このアイテムを削除しますか？",
   "pass_reset_success" : "パスワードが正常にリセットされました",
-  "no_select_jancode": "オプションを選んでください。",
+  "no_select_jancode": "バリエーションを選んでください。",
   "information": "",
   "productList": "商品一覧",
   "cartUpdated": "カートが更新されました",
