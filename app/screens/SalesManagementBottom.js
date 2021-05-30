@@ -24,6 +24,7 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeader";
 import CustomSecondaryHeader from "../assets/CustomComponents/CustomSecondaryHeader";
@@ -318,6 +319,7 @@ export default function SalesManagement(props) {
   }, [!isFocused]);
 
   function renderUI(tmpDate) {
+    onSpinnerChanged(false);
     let tmpCommissionProducts = [];
     let userCommissionList = [];
     commissionProducts.map(
@@ -397,7 +399,6 @@ export default function SalesManagement(props) {
     onTotalChanged(
       format.separator(parseFloat(commissionTotal) + parseFloat(saleTotal))
     );
-    onSpinnerChanged(false);
   }
 
   function onUpdate(date) {
@@ -428,6 +429,8 @@ export default function SalesManagement(props) {
         renderUI(tmpDate);
       })
       .catch(function (error) {
+        onCommissionLoaded(true);
+        onSpinnerChanged(false);
         if (
           error &&
           error.response &&
@@ -441,8 +444,6 @@ export default function SalesManagement(props) {
               ")"
           );
         }
-        onCommissionLoaded(true);
-        onSpinnerChanged(false);
       });
     
   }
@@ -493,37 +494,46 @@ export default function SalesManagement(props) {
             zIndex: 999,
           }}
         >
-          <MonthPicker
-            initialValue={new Date()}
-            value={date}
-            // placeholder={placeholderDate}
-            onChange={onUpdate}
+          <View
             style={{
-              // zIndex: 999,
-              color: "transparent",
-              alignItems: "center",
-              // width: widthPercentageToDP("23%"),
-              height: heightPercentageToDP("4%"),
-              borderRadius: 5,
-              textAlign: "center",
-              fontSize: RFValue(12),
-            }}
-          />
-          <Text
-            style={{
-              zIndex: -999,
-              color: "black",
-              alignItems: "center",
-              // width: widthPercentageToDP("23%"),
-              height: heightPercentageToDP("4%"),
-              borderRadius: 5,
-              textAlign: "center",
-              fontSize: RFValue(12),
-              position: "absolute",
+              flexDirection: "row"
             }}
           >
-            {placeholderDate}
-          </Text>
+            <MonthPicker
+              initialValue={new Date()}
+              value={date}
+              // placeholder={placeholderDate}
+              onChange={onUpdate}
+              style={{
+                // zIndex: 999,
+                color: "transparent",
+                alignItems: "center",
+                // width: widthPercentageToDP("23%"),
+                height: heightPercentageToDP("4%"),
+                borderRadius: 5,
+                textAlign: "center",
+                fontSize: RFValue(12),
+              }}
+            />
+            <Text
+              style={{
+                zIndex: -999,
+                color: "black",
+                alignItems: "center",
+                // width: widthPercentageToDP("23%"),
+                height: heightPercentageToDP("4%"),
+                borderRadius: 5,
+                textAlign: "center",
+                fontSize: RFValue(12),
+                position: "absolute",
+              }}
+            >
+              {placeholderDate}
+            </Text>
+            <View>
+              <Icon name="chevron-down" size={12} style={{marginLeft: 15}}/>
+            </View>
+          </View>
           <View
             style={{
               borderWidth: 2,
