@@ -592,7 +592,7 @@ export default function Home(props) {
       //   </TouchableWithoutFeedback>
       // );
       tmpCategoryHtml.push(
-        <TouchableWithoutFeedback
+        <TouchableWithoutFeedback key={category.name}
           onPress={() => navigateToCategorisePage(category.id, category.name)}
         >
           <View style={styles.categoryContainer} key={category.id}>
