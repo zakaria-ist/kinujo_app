@@ -107,7 +107,7 @@ function BottomNavigationGeneral(props) {
           .then(function (response) {
             if (response.data.is_approved && response.data.is_seller && response.data.authority.id == 4) {
               AsyncStorage.getItem("approval").then(function (approval) {
-                if (!approval) {
+                if (approval == null) {
                   AsyncStorage.setItem("approval", "done").then(() => {});
                   alert.warning(Translate.t("account_approved"), () => {
                     // props.navigation.navigate("HomeStore");

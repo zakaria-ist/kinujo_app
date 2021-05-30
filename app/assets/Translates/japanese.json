@@ -404,5 +404,9 @@
   "invalidAccountNumber": "正しい口座番号を入力してください",
   "notApproved": "ストア承認中",
   "unregisteredPhone": "登録されていない電話番号です",
-  "realName": "氏名"
+  "realName": "氏名",
+  "takePhoto": "カメラで撮影",
+  "chooseFromGallery": "アルバムから選択",
+  "chooseOneImage": "画像を1つ選んでください",
+  "noImageSelected": "画像が選択されていません"
 }
