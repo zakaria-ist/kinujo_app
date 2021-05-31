@@ -962,6 +962,9 @@ export default function ProductInformationAddNew(props) {
 
   function selectImage() {
     let options = {
+      // maxWidth: 1024,
+      // maxHeight: 768,
+      quality: 0.9,
       title: Translate.t('chooseOneImage'),
       takePhotoButtonTitle: Translate.t('takePhoto'),
       chooseFromLibraryButtonTitle: Translate.t('chooseFromGallery'),

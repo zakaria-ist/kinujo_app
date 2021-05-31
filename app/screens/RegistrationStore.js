@@ -107,8 +107,8 @@ export default function RegistrationStore(props) {
           >
             <Image
               style={{
-                width: win.width / 1.6,
-                height: 44 * ratioKinujo,
+                width: win.width - widthPercentageToDP("10%"),
+                height: 38 * ratioKinujo,
                 alignSelf: "center",
                 marginTop: heightPercentageToDP("3%"),
               }}

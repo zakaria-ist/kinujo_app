@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
+  Platform
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -296,9 +297,9 @@ export default function SalesManagement(props) {
               );
             }
           });
-        if (isFocused) {
-          onSpinnerChanged(true);
-        }
+        // if (isFocused) {
+        //   onSpinnerChanged(true);
+        // }
 
         onUpdate();
 
@@ -412,12 +413,13 @@ export default function SalesManagement(props) {
     request
       .get("commissionProducts/" + userId + "/" + year + "/" + month + "/")
       .then(function (response) {
+        onSpinnerChanged(false);
         commissionProducts = response.data.commissionProducts;
         userSales = response.data.userSales;
         userCommissions = response.data.userCommissions;
         orderIds = response.data.orderIds;
         isMaster = response.data.isMaster;
-        onSpinnerChanged(false);
+        
         renderUI(tmpDate);
       })
       .catch(function (error) {
@@ -437,7 +439,9 @@ export default function SalesManagement(props) {
           );
         }
       });
-    
+    if (Platform.OS == 'ios') {
+      onSpinnerChanged(false);
+    }
   }
 
   return (

@@ -37,10 +37,10 @@ export default function AccountExamination(props) {
     >
       <Image
         style={{
-          width: win.width / 1.6,
-          height: 44 * ratioKinujo,
+          width: win.width - widthPercentageToDP("10%"),
+          height: 38 * ratioKinujo,
           alignSelf: "center",
-          marginTop: heightPercentageToDP("6%"),
+          marginTop: heightPercentageToDP("6%")
         }}
         source={require("../assets/Images/kinujo.png")}
       />
