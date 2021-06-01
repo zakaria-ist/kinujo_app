@@ -788,7 +788,7 @@ export default function Contact(props) {
                         width: win.width / 13,
                         height: ratioFolder * 23,
                       }}
-                      source={require("../assets/Images/folderIcon_2.png")}
+                      source={require("../assets/Images/folderIcon.png")}
                     />
                     <Text style={styles.tabLeftText}>
                       {Translate.t("folder")}

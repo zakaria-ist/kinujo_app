@@ -26,6 +26,7 @@ import {
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 var uuid = require("react-native-uuid");
+import Spinner from "react-native-loading-spinner-overlay";
 import Translate from "../assets/Translates/Translate";
 import { useIsFocused } from "@react-navigation/native";
 import { RFValue } from "react-native-responsive-fontsize";
@@ -97,9 +98,13 @@ export default function ProfileEditingStore(props) {
   ] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   const isFocused = useIsFocused();
+  const [spinner, onSpinnerChanged] = useStateIfMounted(false);
 
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      if(!isFocused) {
+        onSpinnerChanged(false);
+      }
       AsyncStorage.getItem("selectedCountry").then((val) => {
         if (val) {
           // onCountryChanged(val);
@@ -223,6 +228,7 @@ export default function ProfileEditingStore(props) {
       onEditPhoneNumberChanged(false);
       onEditNickNameChanged(false);
       onEditShopNameChanged(false);
+      onSpinnerChanged(false);
     }
 
     if (isFocused) {
@@ -374,8 +380,10 @@ export default function ProfileEditingStore(props) {
                 })
                 .then(function (response) {
                   loadUser();
+                  onSpinnerChanged(false);
                 })
                 .catch(function (error) {
+                  onSpinnerChanged(false);
                   if (
                     error &&
                     error.response &&
@@ -394,6 +402,7 @@ export default function ProfileEditingStore(props) {
                 });
             })
             .catch((error) => {
+              onSpinnerChanged(false);
               alert.warning(JSON.stringify(error));
               if (
                 error &&
@@ -407,13 +416,19 @@ export default function ProfileEditingStore(props) {
               }
             });
       } else {
+        onSpinnerChanged(false);
         alert.warning(Translate.t("image_allowed"))
       }
+    } else {
+      onSpinnerChanged(false);
     }
   };
 
   function selectImage(type, name = "") {
     let options = {
+      maxWidth: 1024,
+      maxHeight: 768,
+      quality: 0.8,
       title: Translate.t('chooseOneImage'),
       takePhotoButtonTitle: Translate.t('takePhoto'),
       chooseFromLibraryButtonTitle: Translate.t('chooseFromGallery'),
@@ -432,6 +447,7 @@ export default function ProfileEditingStore(props) {
       } else if (response.customButton) {
         console.log('User tapped custom button: ', response.customButton);
       } else {
+        onSpinnerChanged(true);
         handleChoosePhoto(response, type, name);
       }
     });
@@ -449,6 +465,11 @@ export default function ProfileEditingStore(props) {
   }
   return (
     <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
+      <Spinner
+        visible={spinner}
+        textContent={"Loading..."}
+        textStyle={styles.spinnerTextStyle}
+      />
       <Modal visible={showCountry}>
         <SafeAreaView>
         <TouchableOpacity onPress={closePressed} style={[styles.button,{backgroundColor: 'white',borderColor: 'white'}]}>
@@ -1450,5 +1471,8 @@ const styles = StyleSheet.create({
   contactListName: {
     fontSize: RFValue(14),
     marginLeft: widthPercentageToDP("5%"),
+  },
+  spinnerTextStyle: {
+    color: "#FFF",
   },
 });
