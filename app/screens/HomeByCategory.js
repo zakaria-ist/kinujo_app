@@ -334,51 +334,8 @@ export default function HomeByCategory(props) {
     }
     if (type == "reset") {
       onSelected("");
-      request.get("simple_products/").then(function (response) {
-        let products = response.data;
-        products = products.sort((p1, p2) => {
-          if (p1.created > p2.created) {
-            return -1;
-          }
-          return 1;
-        });
-
-        products = products.filter((product) => {
-          let date = new Date(product.is_opened);
-          if (user.is_seller) {
-            return (
-              product.is_opened == 1 &&
-              new Date() > date &&
-              product.is_hidden == 0 &&
-              product.is_draft == 0 &&
-              (product.target == 0 || product.target == 2)
-            );
-          } else {
-            return (
-              product.is_opened == 1 &&
-              new Date() > date &&
-              product.is_hidden == 0 &&
-              product.is_draft == 0 &&
-              (product.target == 0 || product.target == 1)
-            );
-          }
-        });
-
-        kinujoProducts = products.filter((product) => {
-          // if (product.category.id == categoryID) {
-            return product.user.authority.id == 1;
-          // }
-        });
-        featuredProducts = products.filter((product) => {
-          // if (product.category.id == categoryID) {
-            return product.user.authority.id != 1;
-          // }
-        });
-        filteredFeaturedProducts = featuredProducts;
-        filteredKinujoProducts = kinujoProducts;
-        onKinujoHtmlChanged(processKinujoProductHtml(kinujoProducts));
-        onFeaturedHtmlChanged(processFeaturedProductHtml(featuredProducts));
-      });
+      onKinujoHtmlChanged(processKinujoProductHtml(tmpKinujoProducts));
+      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
     }
     hideSortingAimation();
   }

@@ -331,8 +331,8 @@ export default function SalesManagement(props) {
               commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
                 tmpCommissionProducts.push([
                   commissionProduct["order_product"]["order"]["id"],
-                  commissionProduct["order_product"]["amount"],
-                  commissionProduct["order_product"]["is_food"]
+                  commissionProduct["amount"],
+                  commissionProduct["is_food"]
                 ]);
             }
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && 
@@ -344,8 +344,8 @@ export default function SalesManagement(props) {
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) != String(userId)) {
               tmpCommissionProducts.push([
                 commissionProduct["order_product"]["order"]["id"],
-                commissionProduct["order_product"]["amount"],
-                commissionProduct["order_product"]["is_food"]
+                commissionProduct["amount"],
+                commissionProduct["is_food"]
               ]);
             }
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) == String(userId)) {
