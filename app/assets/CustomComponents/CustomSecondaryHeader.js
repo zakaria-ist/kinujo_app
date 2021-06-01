@@ -187,7 +187,12 @@ export default function CustomSecondaryHeader({
               fontSize: RFValue(12),
             }}
           >
-            {userAccountType}
+            {user && user.authority && user.authority.id == 1 ? Translate.t("masterAccount") 
+            : user && user.authority && user.authority.id == 2 ? Translate.t("specialAccount")
+            : user && user.authority && user.authority.id == 3 ? Translate.t("ambassadorAccount")
+            : user && user.authority && user.authority.id == 4 ? Translate.t("storeAccount")
+            : user && user.authority && user.authority.id == 5 ? Translate.t("generalAccount")
+            : ""}
           </Text>
 
           {editProfile == "editProfile" ? (
