@@ -79,8 +79,8 @@ export default function TermsOfCondition(props) {
         <WhiteBackArrow onPress={() => props.navigation.goBack()} />
         <Image
           style={{
-            width: win.width / 1.6,
-            height: 44 * ratio,
+            width: win.width - widthPercentageToDP("10%"),
+            height: 38 * ratio,
             alignSelf: "center",
             marginTop: heightPercentageToDP("3%"),
           }}

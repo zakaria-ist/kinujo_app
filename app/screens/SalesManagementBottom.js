@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   SafeAreaView,
   ScrollView,
+  Platform
 } from "react-native";
 import { useStateIfMounted } from "use-state-if-mounted";
 import Spinner from "react-native-loading-spinner-overlay";
@@ -53,6 +54,7 @@ let reducedTaxRate = 0;
 let orderIds = [];
 
 function processSaleHtml(orders, sales, tmpCommissionProducts) {
+  console.log('orders, sales, tmpCommissionProducts', orders, sales, tmpCommissionProducts);
   let tmpSaleHtml = [];
   for (var i = 0; i < orders.length; i++) {
     let sale = sales.filter((salee) => {
@@ -152,9 +154,10 @@ function processSaleHtml(orders, sales, tmpCommissionProducts) {
 }
 
 function processCommissionHtml(commissions) {
+  console.log('commissions', commissions);
   let tmpCommissionHtml = [];
   for (var i = 0; i < commissions.length; i++) {
-    let commission = commissions[i]
+    let commission = commissions[i];
     tmpCommissionHtml.push(
       <TouchableWithoutFeedback key={i}>
         <View style={styles.commissionTabContainer}>
@@ -301,9 +304,9 @@ export default function SalesManagement(props) {
               );
             }
           });
-        if(isFocused) {
-          onSpinnerChanged(true);
-        }
+        // if(isFocused) {
+        //   onSpinnerChanged(true);
+        // }
 
         onUpdate();
 
@@ -324,19 +327,13 @@ export default function SalesManagement(props) {
     let userCommissionList = [];
     commissionProducts.map(
       (commissionProduct) => {
-        // let periods = commissionProduct["order_product"]["order"][
-        //   "created"
-        // ].split("-");
-        // let year = periods[0];
-        // let month = periods[1];
-        // if (year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1) {
           if (isMaster) {
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && 
               commissionProduct["order_product"]["order"]["seller"]["authority"]["id"] == "1") {
               tmpCommissionProducts.push([
                 commissionProduct["order_product"]["order"]["id"],
-                commissionProduct["order_product"]["amount"],
-                commissionProduct["order_product"]["is_food"]
+                commissionProduct["amount"],
+                commissionProduct["is_food"]
               ]);
             }
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && 
@@ -348,51 +345,38 @@ export default function SalesManagement(props) {
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) != String(userId)) {
               tmpCommissionProducts.push([
                 commissionProduct["order_product"]["order"]["id"],
-                commissionProduct["order_product"]["amount"],
-                commissionProduct["order_product"]["is_food"]
+                commissionProduct["amount"],
+                commissionProduct["is_food"]
               ]);
             }
             if (!commissionProduct["is_hidden"] && !commissionProduct["is_sales"] && String(commissionProduct["user_id"]) == String(userId)) {
               userCommissionList.push(commissionProduct);
             }
           }
-        // }
       }
     );
-    onCommissionsChanged(userCommissionList);
+    // onCommissionsChanged(userCommissionList);
     onComissionHtmlChanged(
       processCommissionHtml(userCommissionList)
     );
     let commissionTotal = 0;
     userCommissions.map((commission) => {
-      // if (commission.year == tmpDate.getFullYear() && commission.month == (tmpDate.getMonth() + 1)) {
-        // commissionTotal += commission.total_amount;
-        commissionTotal += commission;
-      // }
+        commissionTotal += parseInt(commission);
     });
     onTotalCommissionChanged(commissionTotal);
 
     let tmpSaleProducts = commissionProducts.filter(
       (commissionProduct) => {
         if (!commissionProduct["is_hidden"] && commissionProduct["is_sales"]) {
-          // let periods = commissionProduct["order_product"]["order"][
-          //   "created"
-          // ].split("-");
-          // let year = periods[0];
-          // let month = periods[1];
-          // return year == tmpDate.getFullYear() && month == tmpDate.getMonth() + 1;
           return true;
         }
       }
     );
-    onSalesChanged(tmpSaleProducts);
+    // onSalesChanged(tmpSaleProducts);
     onSaleHtmlChanged(processSaleHtml(orderIds, tmpSaleProducts, tmpCommissionProducts));
     let saleTotal = 0;
     userSales.map((sale) => {
-      // if (sale.year == tmpDate.getFullYear() && sale.month == (tmpDate.getMonth() + 1)) {
-        // saleTotal += sale.total_amount;
-        saleTotal += sale;
-      // }
+        saleTotal += parseInt(sale);
     });
     onTotalSaleChanged(saleTotal);
 
@@ -419,13 +403,13 @@ export default function SalesManagement(props) {
     request
       .get("commissionProducts/" + userId + "/" + year + "/" + month + "/")
       .then(function (response) {
+        onSpinnerChanged(false);
         commissionProducts = response.data.commissionProducts;
         userSales = response.data.userSales;
         userCommissions = response.data.userCommissions;
         orderIds = response.data.orderIds;
         isMaster = response.data.isMaster;
-
-        onSpinnerChanged(false);
+        
         renderUI(tmpDate);
       })
       .catch(function (error) {
@@ -445,16 +429,18 @@ export default function SalesManagement(props) {
           );
         }
       });
-    
+    if (Platform.OS == 'ios') {
+      onSpinnerChanged(false);
+    }
   }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Spinner
+      {spinner && <Spinner
         visible={spinner}
         textContent={"Loading..."}
         textStyle={styles.spinnerTextStyle}
-      />
+      />}
       <CustomHeader
         text={Translate.t("salesManagement")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
