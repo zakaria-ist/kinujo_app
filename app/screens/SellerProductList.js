@@ -242,8 +242,7 @@ export default function SellerProductList(props) {
     }
     if (type == "reset") {
       onSelected("");
-      categoryFeaturedProducts = featuredProducts;
-      onFeaturedHtmlChanged(processFeaturedProductHtml(categoryFeaturedProducts));
+      onFeaturedHtmlChanged(processFeaturedProductHtml(tmpFeaturedProducts));
       // request.get("products/").then(function (response) {
       //   let products = response.data;
       //   products = products.sort((p1, p2) => {

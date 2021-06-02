@@ -227,12 +227,9 @@ export default function Favorite(props) {
       }).start();
   }
   function filterProductsBySorting(type) {
-    let tmpFeaturedProducts;
-    let tmpKinujoProducts;
-    if (featuredProducts && kinujoProducts) {
-      tmpFeaturedProducts = featuredProducts;
-      tmpKinujoProducts = kinujoProducts;
-    }
+    let tmpFeaturedProducts = featuredProducts;
+    let tmpKinujoProducts = kinujoProducts;
+    
     if (type == "latestFirst") {
       onSelected("latestFirst");
       if (tmpFeaturedProducts) {
@@ -330,9 +327,7 @@ export default function Favorite(props) {
       onSelected("");
 
       onFeaturedHtmlChanged(processFeatured(props, users, tmpFeaturedProducts));
-      onFavouriteHtmlChanged(
-        processFavouriteHtml(props, users, tmpKinujoProducts)
-      );
+      onFavouriteHtmlChanged(processFavouriteHtml(props, users, tmpKinujoProducts));
     }
     hideSortingAnimation();
   }
