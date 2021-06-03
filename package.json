@@ -7,7 +7,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "fixbuild": "node ./android-release-gradle-fix.js;",
-    "postinstall": "yarn fixbuild; npx jetify; cd ios; pod install",
+    "postinstall": "npx patch-package; yarn fixbuild; npx jetify; cd ios; pod install",
     "bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res/",
     "ra": "yarn kj; fastlane android rl; yarn kj; yarn noti; yarn s",
     "da": "yarn kj; fastlane android db; yarn kj; yarn noti; yarn s",
