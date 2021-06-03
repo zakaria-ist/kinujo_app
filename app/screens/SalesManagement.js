@@ -19,12 +19,13 @@ import { useIsFocused } from "@react-navigation/native";
 import * as Localization from "expo-localization";
 import BackdropProvider from "@mgcrea/react-native-backdrop-provider";
 import { BackdropContext } from "@mgcrea/react-native-backdrop-provider";
-import { MonthPicker } from "react-native-propel-kit";
+import { MonthPicker } from "@mgcrea/react-native-date-picker";
 import {
   widthPercentageToDP,
   heightPercentageToDP,
 } from "react-native-responsive-screen";
 import Translate from "../assets/Translates/Translate";
+import i18n from "i18n-js";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { RFValue } from "react-native-responsive-fontsize";
 import CustomHeader from "../assets/CustomComponents/CustomHeaderWithBackArrow";
@@ -498,6 +499,7 @@ export default function SalesManagement(props) {
           <MonthPicker
             initialValue={new Date()}
             value={date}
+            locale={i18n.locale}
             confirmTitle={Translate.t("confirm")}
             cancelTitle={Translate.t("cancel")}
             // placeholder={placeholderDate}
