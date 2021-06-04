@@ -508,7 +508,7 @@ export default function SalesManagement(props) {
               // zIndex: 999,
               color: "transparent",
               alignItems: "center",
-              // width: widthPercentageToDP("23%"),
+              width: widthPercentageToDP("24%"),
               height: heightPercentageToDP("4%"),
               borderRadius: 5,
               textAlign: "center",
@@ -530,10 +530,10 @@ export default function SalesManagement(props) {
               }}
             >
               {placeholderDate}
-            </Text>
-            <View>
-              <Icon name="chevron-down" size={12} style={{marginLeft: 15}}/>
+              <View>
+            <Icon name="chevron-down" size={12} style={{marginLeft: widthPercentageToDP("2%"),}}/>
             </View>
+            </Text>
           </View>
           <View
             style={{
