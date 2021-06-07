@@ -393,6 +393,17 @@ export default function ChatScreen(props) {
     let documentSnapshot = await chatsRef.doc(groupID).get();
     if (documentSnapshot && documentSnapshot.data()) {
       let tmpUsers = documentSnapshot.data().users;
+      // prepare imageMap
+      request
+        .get("user/byIds/", {
+          ids: documentSnapshot.data().users,
+        })
+        .then((response) => {
+          allUsers = response.data.users;
+          allUsers.map((user) => {
+            imageMap[user.id] = user.image ? user.image.image : "";
+          });
+        });
       tmpUsers = tmpUsers.filter((user) => {
         return user != userId;
       });
