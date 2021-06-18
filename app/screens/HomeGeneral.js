@@ -57,6 +57,11 @@ import imageHelper from "../lib/imageHelper";
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+import {
+  getTrackingStatus,
+  requestTrackingPermission,
+  TrackingStatus,
+} from 'react-native-tracking-transparency';
 const format = new Format();
 const db = firebase.firestore();
 const request = new Request();
@@ -78,6 +83,7 @@ export default function Home(props) {
   const [showCategory, onCategoryShow] = useStateIfMounted(false);
   const [categoryHtml, onCategoryHtmlChanged] = useStateIfMounted([]);
   const [cartCount, onCartCountChanged] = useStateIfMounted(0);
+  const [trackingStatus, setTrackingStatus] = useStateIfMounted(TrackingStatus | 'not-determined');
   const isFocused = useIsFocused();
   const right = React.useRef(new Animated.Value(widthPercentageToDP("-80%")))
     .current;
@@ -319,6 +325,27 @@ export default function Home(props) {
     handlerCount = 0;
     Linking.removeEventListener('url', handleOpenURL);
   }, [!isFocused]);
+
+  // Request app tracking permission
+  React.useEffect(() => {
+    getTrackingStatus()
+      .then((status) => {
+        setTrackingStatus(status);
+        if (status == 'not-determined') {
+          trackingPermission();
+        }
+      })
+      .catch((e) => Alert.alert('Error', e?.toString?.() ?? e));
+  }, []);
+
+  const trackingPermission = React.useCallback(async () => {
+    try {
+      const status = await requestTrackingPermission();
+      setTrackingStatus(status);
+    } catch (e) {
+      Alert.alert('Error', e?.toString?.() ?? e);
+    }
+  }, []);
 
   async function requestUserPermission(response_user) {
     await messaging().requestPermission()
