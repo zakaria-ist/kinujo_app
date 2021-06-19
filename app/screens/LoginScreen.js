@@ -136,7 +136,7 @@ async function init(props, foreground) {
       Linking.getInitialURL().then((url) => {
         if (url) {
           url = decodeURI(url);
-          url = url.replace("https://kinujo.page.link/?link=", "")
+          url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
           url = url.replaceAll("%3D", '=');
           url = url.replaceAll("%26", '&');
           saveProduct(props, url);
@@ -189,7 +189,7 @@ async function init(props, foreground) {
           if (url) {
             url = decodeURI(url);
             console.log('url', url);
-            url = url.replace("https://kinujo.page.link/?link=", "")
+            url = url.replace("https://kinujo-link.c2sg.asia/?link=", "")
             url = url.replaceAll("%3D", '=');
             url = url.replaceAll("%26", '&');
             saveProduct(props, url);

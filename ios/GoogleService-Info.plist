@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>510807835075-a970uj8rrl0vmpdugi8iequ35bg1s1o8.apps.googleusercontent.com</string>
+	<string>177676210326-cd0kckp8lcfa1c2633j5gn0aah826jtv.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.510807835075-a970uj8rrl0vmpdugi8iequ35bg1s1o8</string>
+	<string>com.googleusercontent.apps.177676210326-cd0kckp8lcfa1c2633j5gn0aah826jtv</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>510807835075-510hq962suevjuvog8pecqioa5nadhn3.apps.googleusercontent.com</string>
+	<string>177676210326-8ko04qjj66ac2scnpll6b0mp7une29st.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCtr4Hc9NJ3FA7ocCRChuWte69wwdamh8E</string>
+	<string>AIzaSyCnt9SJ-mXJQdWjYr8pZE9k8nQVDl4rWOI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>510807835075</string>
+	<string>177676210326</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.kinujo</string>
+	<string>net.c2sg.kinujo</string>
 	<key>PROJECT_ID</key>
-	<string>kinujo-test2</string>
+	<string>temp-d963a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>kinujo-test2.appspot.com</string>
+	<string>temp-d963a.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:510807835075:ios:8dceb76986fc042e64bd76</string>
+	<string>1:177676210326:ios:998538cd63843fbd7432b7</string>
 	<key>DATABASE_URL</key>
-	<string>https://kinujo-test2.firebaseio.com</string>
+	<string>https://temp-d963a.firebaseio.com</string>
 </dict>
 </plist>

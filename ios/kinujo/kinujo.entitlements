@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:kinujo.page.link</string>
+		<string>applinks:kinujo-link.c2sg.asia</string>
 	</array>
 </dict>
 </plist>

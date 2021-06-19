@@ -12,7 +12,7 @@
     "version": "1.0.0",
     "android": {
       "softwareKeyboardLayoutMode": "pan",
-      "package": "com.example.kinujo",
+      "package": "net.c2sg.kinujo",
       "googleServicesFile": "./google-services"
     },
     "orientation": "portrait",
@@ -35,7 +35,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.example.kinujo"
+      "bundleIdentifier": "net.c2sg.kinujo"
     },
     "web": {
       "favicon": "./app/assets/Images/favicon.png"

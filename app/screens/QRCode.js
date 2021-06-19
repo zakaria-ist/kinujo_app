@@ -102,15 +102,15 @@ async function buildLink(userId, is_store) {
   const link = await dynamicLinks().buildLink(
     {
       link:
-        "https://kinujo.page.link" + is_store + "store?userId=" + userId + "&store=" + is_store,
+        "https://kinujo-link.c2sg.asia" + is_store + "store?userId=" + userId + "&store=" + is_store,
       // domainUriPrefix is created in your Firebase console
-      domainUriPrefix: "https://kinujo.page.link",
+      domainUriPrefix: "https://kinujo-link.c2sg.asia",
       android: {
-        packageName: "com.example.kinujo",
+        packageName: "net.c2sg.kinujo",
       },
       ios: {
         appStoreId: "123123123",
-        bundleId: "com.example.kinujo",
+        bundleId: "net.c2sg.kinujo",
       },
     },
     dynamicLinks.ShortLinkType.UNGUESSABLE
@@ -734,7 +734,7 @@ export default function QRCode(props) {
 
 const styles = StyleSheet.create({
   image: {
-    width: 40, 
+    width: 40,
     height: 40
   },
   centerText: {

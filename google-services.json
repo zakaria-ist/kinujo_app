@@ -1,51 +1,50 @@
 {
   "project_info": {
-    "project_number": "510807835075",
-    "firebase_url": "https://kinujo-test2.firebaseio.com",
-    "project_id": "kinujo-test2",
-    "storage_bucket": "kinujo-test2.appspot.com"
+    "project_number": "177676210326",
+    "firebase_url": "https://temp-d963a.firebaseio.com",
+    "project_id": "temp-d963a",
+    "storage_bucket": "temp-d963a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:510807835075:android:70a7554b021a684464bd76",
+        "mobilesdk_app_id": "1:177676210326:android:f4433f534454a0927432b7",
         "android_client_info": {
-          "package_name": "com.example.kinujo"
+          "package_name": "net.c2sg.kinujo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "510807835075-510hq962suevjuvog8pecqioa5nadhn3.apps.googleusercontent.com",
+          "client_id": "177676210326-8ko04qjj66ac2scnpll6b0mp7une29st.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.kinujo",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "510807835075-c22q6cd7la588skistqscpe6hcrkjulb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.kinujo",
+            "package_name": "net.c2sg.kinujo",
             "certificate_hash": "b0a033d4e18e5544a19d3ac3bb8bee6093baea93"
           }
         },
         {
-          "client_id": "510807835075-qhv1spkbk4vjqcoogfm7fite02ichlr0.apps.googleusercontent.com",
+          "client_id": "177676210326-bkl7lr02t6l3ek304lv5sptqti2hao5e.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAQqhUAk6huuZcKlFVibVzNyXytB_CgXgo"
+          "current_key": "AIzaSyBOcTa0qUEOuUMpdhjgH6634SqC1AnJoLU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "510807835075-qhv1spkbk4vjqcoogfm7fite02ichlr0.apps.googleusercontent.com",
+              "client_id": "177676210326-bkl7lr02t6l3ek304lv5sptqti2hao5e.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "177676210326-375gitr8coe70emc11d1ai4f2krtlffa.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "net.c2sg.nappy"
+              }
             }
           ]
         }

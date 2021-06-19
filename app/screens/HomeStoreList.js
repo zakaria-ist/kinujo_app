@@ -110,18 +110,18 @@ export default function HomeStoreList(props) {
     const link = await dynamicLinks().buildLink(
       {
         link:
-          "https://kinujo.page.link?userId=" +
+          "https://kinujo-link.c2sg.asia?userId=" +
           userId +
           "&store=0&product_id=" +
           productId,
         // domainUriPrefix is created in your Firebase console
-        domainUriPrefix: "https://kinujo.page.link",
+        domainUriPrefix: "https://kinujo-link.c2sg.asia",
         android: {
-          packageName: "com.example.kinujo",
+          packageName: "net.c2sg.kinujo",
         },
         ios: {
           appStoreId: "123123123",
-          bundleId: "com.example.kinujo",
+          bundleId: "net.c2sg.kinujo",
         },
       },
       dynamicLinks.ShortLinkType.UNGUESSABLE
