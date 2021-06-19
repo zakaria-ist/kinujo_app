@@ -67,9 +67,9 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you&apos;re nearby.</string>
+	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you're nearby.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you&apos;re nearby.</string>
+	<string>This app requires bluetooth access to find and connect to Bluetooth accessories. This app may also use Bluetooth to know when you're nearby.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires camera access to scan QR Code and upload photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -82,6 +82,8 @@
 	<string>This app requires photo library access to function properly.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires photo library access to upload photo.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app requires your permission to track in order to show you more relevant ads.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
