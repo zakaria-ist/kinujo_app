@@ -642,7 +642,7 @@ export default function QRCode(props) {
             </View>
             <View
               style={{
-                marginTop: heightPercentageToDP(35),
+                marginTop: heightPercentageToDP(38),
                 flexDirection: "row",
                 justifyContent: "space-evenly",
                 alignItems: "center",
