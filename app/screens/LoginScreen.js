@@ -57,10 +57,10 @@ function findParams(data, param) {
     });
     console.log('searchParams', searchParams);
     if (!searchParams.lemgth && param == "store") {
-      if (tmps[0].indexOf('asia1store') >= 0) {
+      if (tmps[0].indexOf('asia1store') >= 0 || tmps[0].indexOf('jp1store') >= 0) {
         return "1";
       }
-      if (tmps[0].indexOf('asia0store') >= 0) {
+      if (tmps[0].indexOf('asia0store') >= 0 || tmps[0].indexOf('jp0store') >= 0) {
         return "0";
       }
     } else {
@@ -109,6 +109,22 @@ async function performUrl(props, link) {
     else if (link.indexOf('asia0store?') >= 0) {
       store = "0";
       links = link.split('asia0store?');
+    }
+    else if (link.indexOf('jp1store%3F') >= 0) {
+      store = "1";
+      links = link.split('jp1store%3F');
+    }
+    else if (link.indexOf('jp1store?') >= 0) {
+      store = "1";
+      links = link.split('jp1store?');
+    }
+    else if (link.indexOf('jp0store%3F') >= 0) {
+      store = "0";
+      links = link.split('jp0store%3F');
+    }
+    else if (link.indexOf('jp0store?') >= 0) {
+      store = "0";
+      links = link.split('jp0store?');
     }
     if (links) {
       userId = get_user_id(links[1]);
