@@ -346,6 +346,7 @@ export default function ChatScreen(props) {
     //remove duplicates
     // chats = chats.filter((v, i , a)=>a.findIndex(t=>(t.id === v.id))===i)
     let last = "";
+    let delete_key = 'delete_' + userId;
 
     chats = chats.map((chat, i) => {
       chat.first = false;
@@ -365,7 +366,7 @@ export default function ChatScreen(props) {
       }
       let dates = chat.data.createdAt.split(":");
       let date = dates[0] + ":" + dates[1] + ":" + dates[2];
-      if (date != last) {
+      if (date != last && chat.data.userID && chat.data[delete_key] != true) {
         chats[i].first = true;
         last = date;
       }
