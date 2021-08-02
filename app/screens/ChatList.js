@@ -321,6 +321,12 @@ export default function ChatList(props) {
         //!chat["block"]
       );
     });
+    
+    let now = moment().tz(myTimeZone);
+    let yesterday = now.clone(); yesterday.subtract(1, 'd');
+    now = now.format('YYYY:MM:DD');
+    yesterday = yesterday.format('YYYY:MM:DD');
+
     tmpChats.map((chat) => {
       console.log('chat', chat.data['lastMessage']);
       let myMsgSeenCount = parseInt(chat.data["totalMessageRead_" + ownUserID]);
@@ -366,12 +372,13 @@ export default function ChatList(props) {
       let tmpDay = date[2].length > 1 ? date[2] : '0' + date[2]; //message created at
       let tmpHours = date[3].length > 1 ? date[3] : '0' + date[3];
       let tmpMinutes = date[4].length > 1 ? date[4] : '0' + date[4];
+      let chatDate = date[0] + ':' + tmpMonth + ':' + tmpDay;
       lastReadDate = chat.data[lastReadDateField];
 
       name = chat.name;
       images = chat.images;
       lastMessage = chat.data["lastMessage_" + ownUserID] ? chat.data["lastMessage_" + ownUserID].substring(0,30) : chat.data.lastMessage.substring(0,30)
-      if (tmpDay == today && chat.data.totalMessage > 0) {
+      if (chatDate == now && chat.data.totalMessage > 0) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
@@ -420,7 +427,7 @@ export default function ChatList(props) {
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
-                {tmpDay == today ? (
+                {chatDate == now ? (
                   <Text style={styles.tabTextTime}>
                     {tmpHours + ":" + tmpMinutes}
                   </Text>
@@ -448,7 +455,7 @@ export default function ChatList(props) {
             </View>
           </TouchableWithoutFeedback>
         );
-      } else if (tmpDay == today - 1 && chat.data.totalMessage > 0) {
+      } else if (chatDate == yesterday && chat.data.totalMessage > 0) {
         tmpChatHtml.push(
           <TouchableWithoutFeedback
             key={chat.id}
@@ -497,7 +504,7 @@ export default function ChatList(props) {
                 </Text>
               </View>
               <View style={styles.tabRightContainer}>
-                {tmpDay == today - 1 ? (
+                {chatDate == yesterday ? (
                   <Text style={styles.tabTextTime}>{"Yesterday"}</Text>
                 ) : (
                   <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
