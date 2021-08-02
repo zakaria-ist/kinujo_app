@@ -335,7 +335,7 @@ export default function RegistrationStore(props) {
               </View>
             </TouchableWithoutFeedback>
             <View
-              onPress={() => props.navigation.goBack()}
+              onPress={() => props.navigation.navigate("TermsOfCondition", {"referUser": refUser, "store": 0})}
               style={{
                 flexDirection: "row",
                 justifyContent: "center",
@@ -344,7 +344,7 @@ export default function RegistrationStore(props) {
               }}
             >
               <TouchableWithoutFeedback
-                onPress={() => props.navigation.goBack()}
+                onPress={() => props.navigation.navigate("TermsOfCondition", {"referUser": refUser, "store": 0})}
               >
                 <View style={{flexDirection:"row"}}>
                   <Text
@@ -357,7 +357,7 @@ export default function RegistrationStore(props) {
                     {Translate.t("nonBeautician")}
                   </Text>
                   <Image
-                    onPress={() => props.navigation.goBack()}
+                    onPress={() => props.navigation.navigate("TermsOfCondition", {"referUser": refUser, "store": 0})}
                     style={{
                       alignSelf: "center",
                       marginLeft: 5,
