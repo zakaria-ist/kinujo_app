@@ -85,13 +85,17 @@ const ChatItem = ({
     }
 
     return useMemo(() => {
-        let props = parentProps
+        let props = parentProps;
+        let momentDateOfMsg = moment(chat.data.createdAt, 'YYYY:MM:DD:HH:mm').tz(myTimeZone);
 
         let dateOfMessage = null
         let now = moment().tz(myTimeZone);
-        let tStamps = chat.data.timeStamp.toDate();
-        let momentDateOfMsg = moment(tStamps).tz(myTimeZone);
-        // let momentDateOfMsg = moment(chat.data.createdAt, 'YYYY:MM:DD:HH:mm').tz(myTimeZone);
+        try {
+            let tStamps = chat.data.timeStamp.toDate();
+            momentDateOfMsg = moment(tStamps).tz(myTimeZone);
+        } catch(e) {
+            momentDateOfMsg = moment(chat.data.createdAt, 'YYYY:MM:DD:HH:mm').tz(myTimeZone);
+        }
         let yesterday = now.clone(); yesterday.subtract(1, 'd');
         if (chat.first) {
             if (now.isSame(momentDateOfMsg, 'd')) {
