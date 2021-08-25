@@ -505,7 +505,7 @@ export default function ChatList(props) {
               </View>
               <View style={styles.tabRightContainer}>
                 {chatDate == yesterday ? (
-                  <Text style={styles.tabTextTime}>{"Yesterday"}</Text>
+                  <Text style={styles.tabTextTime}>{Translate.t("yesterday")}</Text>
                 ) : (
                   <Text style={styles.tabTextTime}>{tmpMonth + "/" + tmpDay}</Text>
                 )}
