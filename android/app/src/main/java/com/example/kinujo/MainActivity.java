@@ -1,7 +1,7 @@
 package net.c2sg.kinujo;
 
 import android.os.Bundle;
-
+import android.content.Context;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
@@ -18,16 +18,23 @@ import android.os.Build;
 
 
 public class MainActivity extends ReactActivity {
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    SplashScreen.show(this); 
-    super.onCreate(savedInstanceState);
-    // SplashScreen.show(...) has to be called after super.onCreate(...)
-    // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
-    // SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
-    WebView.setWebContentsDebuggingEnabled(true);
-  }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen.show(this);
+        super.onCreate(savedInstanceState);
+        // SplashScreen.show(...) has to be called after super.onCreate(...)
+        // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
+        // SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
+        WebView.setWebContentsDebuggingEnabled(true);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Remove all notification when app is open
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+    }
 
     /**
      * Returns the name of the main component registered from JavaScript.
