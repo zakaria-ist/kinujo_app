@@ -283,7 +283,7 @@ export default function GroupChatMember(props) {
         onFavoritePress={() => props.navigation.navigate("Favorite")}
         onPress={() => props.navigation.navigate("Cart")}
       />
-      <TouchableWithoutFeedback onPress={() => finishSelect()}>
+      <TouchableOpacity onPress={() => finishSelect()}>
         <Text
           style={{
             fontSize: RFValue(12),
@@ -297,7 +297,7 @@ export default function GroupChatMember(props) {
         >
           {Translate.t("next")}
         </Text>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <View
         style={{
           marginHorizontal: widthPercentageToDP("4%"),
