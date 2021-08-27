@@ -200,7 +200,7 @@ export default function CreateFolder(props) {
           backHandler();
         }}
       />
-      <TouchableWithoutFeedback onPress={() => folderCreate()}>
+      <TouchableOpacity onPress={() => folderCreate()}>
         <Text
           style={{
             fontSize: RFValue(14),
@@ -214,7 +214,7 @@ export default function CreateFolder(props) {
         >
           {Translate.t("create")}
         </Text>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <View
         style={{
           marginTop: heightPercentageToDP("3%"),

@@ -7,6 +7,7 @@ import {
   Image,
   View,
   Dimensions,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   SafeAreaView,
   TextInput,
@@ -49,6 +50,7 @@ let friendTotalMessageReadField;
 let friendNames = [];
 let tmpUserHtml = [];
 let userId;
+let userName;
 let tmpGroupID;
 let chatRoomID;
 export default function GroupChatCreation(props) {
@@ -95,10 +97,19 @@ export default function GroupChatCreation(props) {
           return url;
         });
         userId = urls[urls.length - 1];
+        request
+          .get(url)
+          .then(function (response) {
+            userName = response.data.nickname;
+            console.log('userName', userName);
+          })
+          .catch(function (error) {
+            console.log('ERROR', error);
+          })
 
         AsyncStorage.getItem("ids").then((val) => {
           friendIds = JSON.parse(val);
-          console.log(friendIds)
+          console.log('friendIds', friendIds);
           dbFriendIds = JSON.parse(val);
           if (friendIds != null) {
             memberCount = friendIds.length;
@@ -172,6 +183,7 @@ export default function GroupChatCreation(props) {
           });
 
           friendIds.push(String(userId));
+          friendNames.push(String(userName));
 
           let ownMessageUnseenField = "unseenMessageCount_" + String(userId);
           let ownTotalMessageReadField = "totalMessageRead_" + String(userId);
@@ -273,7 +285,7 @@ export default function GroupChatCreation(props) {
         onPress={() => props.navigation.navigate("Cart")}
         onBack={() => bankHandler()}
       />
-      <TouchableWithoutFeedback onPress={() => groupCreate()}>
+      <TouchableOpacity onPress={() => groupCreate()}>
         <Text
           style={{
             fontSize: RFValue(14),
@@ -287,7 +299,7 @@ export default function GroupChatCreation(props) {
         >
           {Translate.t("create")}
         </Text>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <View
         style={{
           marginTop: heightPercentageToDP("3%"),
