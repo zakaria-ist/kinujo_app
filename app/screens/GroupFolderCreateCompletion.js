@@ -138,7 +138,8 @@ export default function GroupFolderCreateCompletion(props) {
     InteractionManager.runAfterInteractions(() => {
       let tmpUserListHtml = [];
       for (var i = 0; i < friendIds.length; i++) {
-        console.log(friendNames[i]);
+        // console.log("friendIds[i]", friendIds[i]);
+        // console.log("friendNames[i]", friendNames[i]);
         tmpUserListHtml.push(
           <View
             key={friendIds[i]}

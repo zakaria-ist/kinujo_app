@@ -438,7 +438,7 @@ export default function FolderMemberSelection(props) {
         onPress={() => props.navigation.navigate("Cart")}
         onFavoritePress={() => props.navigation.navigate("Favorite")}
       />
-      <TouchableWithoutFeedback onPress={() => finishSelect()}>
+      <TouchableOpacity onPress={() => finishSelect()}>
         <View
           style={{
             height: heightPercentageToDP("5%"),
@@ -457,7 +457,7 @@ export default function FolderMemberSelection(props) {
             {Translate.t("next")}
           </Text>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <ScrollView>
       <View
         style={{

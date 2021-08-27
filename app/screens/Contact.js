@@ -1260,9 +1260,10 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "folder") {
                       let update = {};
                       update["delete"] =
-                      longPressObj.data.data["delete"] == false
-                        ? true
-                        : false;
+                      longPressObj.data.data["delete"] && 
+                      longPressObj.data.data["delete"] == true
+                        ? false
+                        : true;
                       db.collection("users")
                         .doc(userId)
                         .collection("folders")
@@ -1276,9 +1277,10 @@ export default function Contact(props) {
                     } else if (longPressObj.type == "group") {
                       let update = {};
                       update["delete_" + userId] =
-                        longPressObj.data.data["delete_" + userId] == false
-                          ? true
-                          : false;
+                        longPressObj.data.data["delete_" + userId] && 
+                        longPressObj.data.data["delete_" + userId] == true
+                          ? false
+                          : true;
                       db.collection("chat")
                         .doc(longPressObj.data.id.toString())
                         .set(update, {
