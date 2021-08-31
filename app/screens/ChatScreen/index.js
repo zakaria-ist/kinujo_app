@@ -37,6 +37,7 @@ if (Platform.OS === "android") {
 
 const request = new Request();
 let userId;
+let userName;
 let groupID;
 let groupName;
 let userTotalReadMessageField;
@@ -124,6 +125,7 @@ export default function ChatScreen(props) {
                   updateUnseenMessageCount(groupID, userId);
                   messageNotify({
                     messageSenderID: userId,
+                    messageSenderName: userName,
                     groupID,
                     msg: "Photo"
                   })
@@ -385,6 +387,14 @@ export default function ChatScreen(props) {
       return url;
     });
     userId = urls[urls.length - 1];
+
+    await AsyncStorage.getItem("user").then(function (url) {
+      request
+        .get(url)
+        .then(function (response) {
+          userName = response.data.nickname;
+        })
+    })
 
     getName(userId, data).then((name) => {
       onNameChanged(name);
@@ -796,6 +806,7 @@ export default function ChatScreen(props) {
             updateUnseenMessageCount(groupID, userId);
             messageNotify({
               messageSenderID: userId,
+              messageSenderName: userName,
               groupID,
               msg: "Photo"
             })
@@ -826,6 +837,7 @@ export default function ChatScreen(props) {
               updateUnseenMessageCount(groupID, userId);
               messageNotify({
                 messageSenderID: userId,
+                messageSenderName: userName,
                 groupID,
                 msg
               })

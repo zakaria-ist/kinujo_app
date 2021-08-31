@@ -30,7 +30,7 @@ const logTime = ({ time, label }) => {
     console.log('====================================');
 }
 
-export default async function messageNotify({ messageSenderID, groupID, msg }) {
+export default async function messageNotify({ messageSenderID, messageSenderName, groupID, msg }) {
     let time = new Date().getTime()
 
     let groupData = await db.collection("chat")
@@ -52,6 +52,7 @@ export default async function messageNotify({ messageSenderID, groupID, msg }) {
         notification: {
             priority: "high",
             title: "Kinujo",
+            // title: String(messageSenderName),
             body: String(msg),
             sound: 'default',
             badge: '1'
