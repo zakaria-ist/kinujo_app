@@ -27,6 +27,7 @@ import CustomKinujoWord from "../assets/CustomComponents/CustomKinujoWord";
 import { firebaseConfig } from "../../firebaseConfig.js";
 import firebase from "firebase/app";
 import auth from "@react-native-firebase/auth";
+import DeviceInfo from 'react-native-device-info';
 import {
   heightPercentageToDP,
   widthPercentageToDP,
@@ -50,14 +51,37 @@ export default function SMSAuthentication(props) {
   const [code, onCodeChanged] = useStateIfMounted("");
   const [confirm, setConfirm] = useStateIfMounted(null);
   const [spinner, onSpinnerChanged] = useStateIfMounted(false);
+  const [userId, onUserId] = useStateIfMounted('');
 
   async function signInWithPhoneNumber(phoneNumber) {
     console.log(phoneNumber)
-    // console.log(phoneNumber);
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
 
     console.log(confirmation);
-    setConfirm(confirmation);
+    if (confirmation.verificationId) {
+      setConfirm(confirmation);
+    } else {
+      DeviceInfo.getCarrier().then((carrier) => {
+        let data = {
+          "phone_number": phoneNumber,
+          "carrier_name": carrier,
+          "brand_name": String(DeviceInfo.getBrand()),
+          "device_id": String(DeviceInfo.getDeviceId()),
+          "os_version": String(Platform.OS + '-' + DeviceInfo.getSystemVersion()),
+          "errors": confirmation.error ? confirmation.error : "Code is not sent.",
+          "user_id": userId
+        } 
+
+        request
+          .post("sms/errors/logs", data)
+          .then(function (response) {
+            console.log('SMS Error log api', response.data.success)
+          })
+          .catch((error) => {
+            console.log('SMS Error log api error', error)
+          });
+      });
+    }
   }
 
   function signInWithPhoneNumber2(phoneNumber) {
@@ -72,6 +96,14 @@ export default function SMSAuthentication(props) {
     InteractionManager.runAfterInteractions(() => {
       signInWithPhoneNumber2("+" + props.route.params.username.replace("+", ""));
     });
+    AsyncStorage.getItem("user").then((url) => {
+      let urls = url.split("/");
+      urls = urls.filter((url) => {
+        return url;
+      });
+      let user = urls[urls.length - 1];
+      onUserId(user);
+    })
   }, []);
   return (
     <LinearGradient
