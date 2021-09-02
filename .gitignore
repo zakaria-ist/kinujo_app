@@ -229,3 +229,6 @@ android/app/src/main/res/raw/node_modules_mdndata_css_properties.json
 android/app/src/main/res/raw/node_modules_mdndata_css_syntaxes.json
 android/app/src/main/res/raw/node_modules_momenttimezone_data_packed_latest.json
 android/app/src/main/assets/index.android.bundle
+android/app/src/main/res/drawable-mdpi/app_assets_images_button_share512.png
+android/app/src/main/res/drawable-mdpi/app_assets_images_downloadpng.png
+android/app/src/main/res/drawable-mdpi/app_assets_images_urllink512.png

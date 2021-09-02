@@ -408,5 +408,6 @@
   "takePhoto": "カメラで撮影",
   "chooseFromGallery": "アルバムから選択",
   "chooseOneImage": "画像を1つ選んでください",
-  "noImageSelected": "画像が選択されていません"
+  "noImageSelected": "画像が選択されていません",
+  "verified": "検証済み"
 }

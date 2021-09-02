@@ -69,6 +69,7 @@ export default function SMSAuthentication(props) {
           "device_id": String(DeviceInfo.getDeviceId()),
           "os_version": String(Platform.OS + '-' + DeviceInfo.getSystemVersion()),
           "errors": confirmation.error ? confirmation.error : "Code is not sent.",
+          "status": confirmation.state ? confirmation.state : "",
           "user_id": userId
         } 
 
@@ -80,7 +81,13 @@ export default function SMSAuthentication(props) {
           .catch((error) => {
             console.log('SMS Error log api error', error)
           });
+
+          if (confirmation.state == "verified") {
+            alert.warning("verified");
+            registerUser();
+          }
       });
+
     }
   }
 
@@ -105,6 +112,72 @@ export default function SMSAuthentication(props) {
       onUserId(user);
     })
   }, []);
+
+  function registerUser() {
+    if (!props.route.params.type) {
+      request
+        .post("user/register", props.route.params)
+        .then(function (response) {
+          console.log(response.data);
+          response = response.data;
+          if (response.success) {
+            onSpinnerChanged(false);
+            AsyncStorage.setItem(
+              "user",
+              response.data.user.url
+            ).then(function (response) {
+              if (props.route.params.authority == "general") {
+                props.navigation.navigate("RegisterCompletion", {
+                  authority: props.route.params.authority,
+                });
+              } else if (
+                props.route.params.authority == "store"
+              ) {
+                props.navigation.navigate(
+                  "StoreAccountSelection",
+                  {
+                    authority: props.route.params.authority,
+                  }
+                );
+              }
+            });
+          } else {
+            if (
+              response.errors &&
+              Object.keys(response.errors).length > 0
+            ) {
+              let tmpErrorMessage =
+                response.errors[
+                  Object.keys(response.errors)[0]
+                ][0] +
+                "(" +
+                Object.keys(response.errors)[0] +
+                ")";
+              // alert.warning(tmpErrorMessage);
+              let errorMessage = String(
+                tmpErrorMessage.split("(").pop()
+              );
+              alert.warning(
+                Translate.t("register-(" + errorMessage),
+                () => {
+                  onSpinnerChanged(false);
+                  props.navigation.goBack();
+                }
+              );
+            }
+          }
+        })
+        .catch((error) => {
+          onSpinnerChanged(false);
+          request.displayError(error);
+        });
+      } else {
+        AsyncStorage.setItem("verified", "1").then(() => {
+          onSpinnerChanged(false);
+          props.navigation.goBack();
+        });
+      }
+  }
   return (
     <LinearGradient
       colors={[Colors.E4DBC0, Colors.C2A059]}
@@ -168,62 +241,7 @@ export default function SMSAuthentication(props) {
                 let userData = auth()
                   .signInWithCredential(credential)
                   .then(() => {
-                    request
-                      .post("user/register", props.route.params)
-                      .then(function (response) {
-                        console.log(response.data);
-                        response = response.data;
-                        if (response.success) {
-                          onSpinnerChanged(false);
-                          AsyncStorage.setItem(
-                            "user",
-                            response.data.user.url
-                          ).then(function (response) {
-                            if (props.route.params.authority == "general") {
-                              props.navigation.navigate("RegisterCompletion", {
-                                authority: props.route.params.authority,
-                              });
-                            } else if (
-                              props.route.params.authority == "store"
-                            ) {
-                              props.navigation.navigate(
-                                "StoreAccountSelection",
-                                {
-                                  authority: props.route.params.authority,
-                                }
-                              );
-                            }
-                          });
-                        } else {
-                          if (
-                            response.errors &&
-                            Object.keys(response.errors).length > 0
-                          ) {
-                            let tmpErrorMessage =
-                              response.errors[
-                                Object.keys(response.errors)[0]
-                              ][0] +
-                              "(" +
-                              Object.keys(response.errors)[0] +
-                              ")";
-                            // alert.warning(tmpErrorMessage);
-                            let errorMessage = String(
-                              tmpErrorMessage.split("(").pop()
-                            );
-                            alert.warning(
-                              Translate.t("register-(" + errorMessage),
-                              () => {
-                                onSpinnerChanged(false);
-                                props.navigation.goBack();
-                              }
-                            );
-                          }
-                        }
-                      })
-                      .catch((error) => {
-                        onSpinnerChanged(false);
-                        request.displayError(error);
-                      });
+                    registerUser();
                   })
                   .catch((error) => {
                     alert.warning(Translate.t(error.code), () => {
