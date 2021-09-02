@@ -406,5 +406,6 @@
   "takePhoto": "Take Photo",
   "chooseFromGallery": "Choose from Gallery",
   "chooseOneImage": "You can choose one image",
-  "noImageSelected": "You did not select any image"
+  "noImageSelected": "You did not select any image",
+  "verified": "Verified"
 }
