@@ -54,10 +54,10 @@ export default function SMSAuthentication(props) {
   const [userId, onUserId] = useStateIfMounted('');
 
   async function signInWithPhoneNumber(phoneNumber) {
-    console.log(phoneNumber)
+    console.log('phoneNumber', phoneNumber);
     const confirmation = await auth().verifyPhoneNumber(phoneNumber);
-
     console.log(confirmation);
+
     if (confirmation.verificationId) {
       setConfirm(confirmation);
     } else {
@@ -69,25 +69,23 @@ export default function SMSAuthentication(props) {
           "device_id": String(DeviceInfo.getDeviceId()),
           "os_version": String(Platform.OS + '-' + DeviceInfo.getSystemVersion()),
           "errors": confirmation.error ? confirmation.error : "Code is not sent.",
-          "status": confirmation.state ? confirmation.state : "",
+          "status": confirmation.state ? confirmation.state : "Unknown",
           "user_id": userId
         } 
 
         request
           .post("sms/errors/logs", data)
           .then(function (response) {
-            console.log('SMS Error log api', response.data.success)
+            console.log('SMS Error log api', response.data.success);
+            if (confirmation.state == "verified") {
+              alert.warning("verified");
+              registerUser();
+            }
           })
           .catch((error) => {
             console.log('SMS Error log api error', error)
           });
-
-          if (confirmation.state == "verified") {
-            alert.warning("verified");
-            registerUser();
-          }
       });
-
     }
   }
 
@@ -101,15 +99,18 @@ export default function SMSAuthentication(props) {
   const phone = props.route.params.username;
   React.useEffect(() => {
     InteractionManager.runAfterInteractions(() => {
+      console.log('props.route.params.username', props.route.params.username);
       signInWithPhoneNumber2("+" + props.route.params.username.replace("+", ""));
     });
     AsyncStorage.getItem("user").then((url) => {
-      let urls = url.split("/");
-      urls = urls.filter((url) => {
-        return url;
-      });
-      let user = urls[urls.length - 1];
-      onUserId(user);
+      if (url) {
+        let urls = url.split("/");
+        urls = urls.filter((url) => {
+          return url;
+        });
+        let user = urls[urls.length - 1];
+        onUserId(user);
+      }
     })
   }, []);
 
