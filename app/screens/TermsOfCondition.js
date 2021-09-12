@@ -46,7 +46,7 @@ export default function TermsOfCondition(props) {
           let terms = response.data[0].privacy_policy;
           let view_arr = [];
           view_arr.push(
-            <Text style={styles.利用規約Content}>
+            <Text style={styles.利用規約Content} key="terms">
               {terms}
             </Text>
           )
