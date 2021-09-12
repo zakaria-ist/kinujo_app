@@ -10,11 +10,6 @@ import "firebase/firestore";
 import messaging from "@react-native-firebase/messaging";
 import { firebaseConfig } from "./firebaseConfig";
 import { useNavigation } from "react-navigation-hooks";
-import {
-  notifications,
-  NotificationMessage,
-  Android,
-} from "react-native-firebase-push-notifications";
 import { cos } from "react-native-reanimated";
 import { enableScreens } from 'react-native-screens';
 if (!firebase.apps.length) {
