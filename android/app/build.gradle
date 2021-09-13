@@ -135,7 +135,11 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
+<<<<<<< HEAD
         versionName '1.3.24-release'
+=======
+        versionName '1.3.25-release'
+>>>>>>> origin/release
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
