@@ -1,5 +1,5 @@
 import React from "react";
-import { InteractionManager } from 'react-native';
+import { InteractionManager, AppState } from 'react-native';
 
 import {
   StyleSheet,
@@ -75,6 +75,8 @@ let taxRate = 0;
 let handlerCount = 0;
 
 export default function Home(props) {
+  const appState = React.useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useStateIfMounted(appState.current);
   const [favoriteText, showFavoriteText] = useStateIfMounted(false);
   const [user, onUserChanged] = useStateIfMounted({});
   const [featuredHtml, onFeaturedHtmlChanged] = useStateIfMounted([]);
@@ -328,23 +330,32 @@ export default function Home(props) {
 
   // Request app tracking permission
   React.useEffect(() => {
-    getTrackingStatus()
-      .then((status) => {
-        setTrackingStatus(status);
-        if (status == 'not-determined') {
-          trackingPermission();
+    const subscription = AppState.addEventListener("change", async (nextAppState) => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        console.log("App has come to the foreground!");
+        if (Platform.OS === 'ios') {
+          const trackingStatus = await getTrackingStatus();
+          setTrackingStatus(trackingStatus);
+          if(trackingStatus === 'not-determined'){
+            try {
+              const status = await requestTrackingPermission();
+              setTrackingStatus(status);
+            } catch (e) {
+              alert.warning('Error', e?.toString?.() ?? e);
+            }
+          }
         }
-      })
-      .catch((e) => Alert.alert('Error', e?.toString?.() ?? e));
-  }, []);
+      }
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+    });
 
-  const trackingPermission = React.useCallback(async () => {
-    try {
-      const status = await requestTrackingPermission();
-      setTrackingStatus(status);
-    } catch (e) {
-      Alert.alert('Error', e?.toString?.() ?? e);
-    }
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   async function requestUserPermission(response_user) {
