@@ -11,6 +11,7 @@ Pods/
 build/
 app/build/
 app/build/intermediates/
+android/
 android/build/
 android/app/build/
 android/app/build/intermediates/
