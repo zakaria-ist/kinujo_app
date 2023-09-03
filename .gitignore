@@ -11,7 +11,11 @@ Pods/
 build/
 app/build/
 app/build/intermediates/
+android/build/
+android/app/build/
+android/app/build/intermediates/
 gradle
+android/gradle
 .gradle
 Podfile.lock
 local.properties
