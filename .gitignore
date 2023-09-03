@@ -12,6 +12,7 @@ build/
 app/build/
 app/build/intermediates/
 android/
+android/java_pid50797.hprof
 android/build/
 android/app/build/
 android/app/build/intermediates/
